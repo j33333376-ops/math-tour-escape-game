@@ -1,614 +1,259 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>옹진 섬탈출 게임 - 인트로</title>
-    <style>
-        /* 공통 폰트 설정 */
-        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+<meta charset="UTF-8">
+<title>인천대공원 MATHTOUR - A01</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
 
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #1a1a1a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    background: #f2f7f2;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
 
-        /* 16:9 비율의 게임 컨테이너 */
-        #game-container {
-            width: 100%;
-            max-width: 1066px;
-            aspect-ratio: 16 / 9;
-            background: linear-gradient(180deg, #4da8da 0%, #1a4a76 100%);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            font-family: 'Noto Sans KR', sans-serif;
-        }
+  #game-container {
+    position: relative;
+    width: 100%;
+    max-width: 1066px;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: linear-gradient(180deg, #cfe3c9 0%, #f2f7f2 55%, #e7ddc4 100%);
+    border: 4px solid #2d5a27;
+    box-shadow: 0 8px 24px rgba(45,90,39,0.25);
+  }
 
-        /* 스테이지 표시기 */
-        .stage-indicator {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background-color: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-family: 'Black Han Sans', sans-serif;
-            font-size: 1.2rem;
-            z-index: 100;
-        }
+  /* 나무 팻말 상단 표시바 */
+  #signpost {
+    position: absolute;
+    top: 14px; left: 50%;
+    transform: translateX(-50%);
+    background: #6d4c41;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 2px, transparent 2px, transparent 10px);
+    color: #fdfbf7;
+    padding: 8px 26px;
+    border-radius: 14px;
+    border: 3px solid #4e342e;
+    font-family: 'Gowun Batang', serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    z-index: 5;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
 
-        /* 메인 타이틀 */
-        .main-title {
-            position: absolute;
-            top: 10%;
-            width: 100%;
-            text-align: center;
-            font-family: 'Black Han Sans', sans-serif;
-            font-size: clamp(3rem, 5vw, 4.5rem);
-            color: #ffffff;
-            text-shadow: 4px 4px 0px #1e40af, 8px 8px 15px rgba(0,0,0,0.5);
-            margin: 0;
-            z-index: 100;
-            letter-spacing: 5px;
-        }
+  #stage {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
 
-        /* 상황 설명 텍스트 */
-        .story-text {
-            position: absolute;
-            top: 28%;
-            width: 80%;
-            left: 10%;
-            text-align: center;
-            font-family: 'Noto Sans KR', sans-serif;
-            font-size: 1.2rem;
-            color: #e2e8f0;
-            font-weight: 700;
-            line-height: 1.6;
-            letter-spacing: -0.02em;
-            text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
-            z-index: 100;
-        }
+  /* 에셋: 환경미래관 (건물) */
+  #asset-환경미래관 {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    z-index: 1;
+  }
 
-        /* 공통 버튼 스타일 */
-        .btn-nav {
-            position: absolute;
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 30px;
-            font-family: 'Noto Sans KR', sans-serif;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            transition: background-color 0.2s, transform 0.1s;
-            z-index: 110;
-        }
-        .btn-nav:hover {
-            background-color: #2563eb;
-        }
-        .btn-nav:active {
-            transform: scale(0.95) translateX(-50%) !important; /* 중앙 배치 버튼용 예외 처리 */
-        }
+  /* 인물 배치 */
+  .char-wrapper {
+    position: absolute;
+    bottom: 40px;
+    overflow: visible;
+    z-index: 3;
+    filter: brightness(0.55);
+    transition: filter .2s;
+  }
+  .char-wrapper.active {
+    filter: brightness(1);
+  }
+  .char-wrapper iframe {
+    border: 0;
+    width: 260px;
+    height: 320px;
+    pointer-events: none;
+  }
 
-        /* 시작하기 버튼 (중앙 배치로 변경) */
-        #btn-next {
-            top: 40%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 14px 40px;
-            font-size: 1.4rem;
-            border-radius: 50px; /* 둥근 버튼으로 강조 */
-            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
-            animation: pulse-btn 2s infinite;
-        }
+  #char-민우   { left: 90px;  }
+  #char-서연   { left: 340px; }
+  #char-옥금   { left: 590px; }
+  #char-미스터첸 { left: 830px; transform: scaleX(-1); }
+  #char-미스터첸 iframe { transform: scaleX(-1); }
 
-        @keyframes pulse-btn {
-            0% { transform: translateX(-50%) scale(1); box-shadow: 0 6px 15px rgba(0,0,0,0.4); }
-            50% { transform: translateX(-50%) scale(1.05); box-shadow: 0 10px 25px rgba(59, 130, 246, 0.8); }
-            100% { transform: translateX(-50%) scale(1); box-shadow: 0 6px 15px rgba(0,0,0,0.4); }
-        }
+  /* 대화창 (유형2) */
+  #dialogue-box {
+    position: absolute;
+    left: 30px; right: 30px; bottom: 20px;
+    min-height: 130px;
+    background: rgba(45,90,39,0.8);
+    border: 3px solid #6d4c41;
+    border-radius: 16px;
+    padding: 16px 24px;
+    color: #fdfbf7;
+    z-index: 10;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  }
+  #speaker-name {
+    font-family: 'Gowun Batang', serif;
+    font-size: 20px;
+    color: #f4a261;
+    margin-bottom: 6px;
+  }
+  #dialogue-text {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    letter-spacing: -0.02em;
+  }
+  #dialogue-hint {
+    position: absolute;
+    right: 18px; bottom: 10px;
+    font-size: 12px;
+    color: #d8e6d3;
+    font-family: 'Nanum Gothic Coding', monospace;
+  }
 
-        /* 불시착하는 비행기 연출 */
-        .crashing-plane {
-            position: absolute;
-            top: 12%;
-            right: 8%;
-            font-size: 4rem;
-            transform: rotate(35deg);
-            z-index: 20;
-            filter: drop-shadow(0px 10px 10px rgba(0,0,0,0.5));
-            animation: plane-shake 0.5s infinite alternate;
-        }
-        .crashing-plane::after {
-            content: '🔥';
-            position: absolute;
-            top: -10px;
-            left: -20px;
-            font-size: 2.5rem;
-        }
+  /* 버튼 */
+  .btn-nav {
+    position: absolute;
+    background: #2d5a27;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 20px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(45,90,39,0.2);
+    z-index: 20;
+    transition: background .2s;
+  }
+  .btn-nav:hover { background: #6d4c41; }
 
-        @keyframes plane-shake {
-            0% { transform: rotate(35deg) translate(0, 0); }
-            100% { transform: rotate(37deg) translate(5px, 5px); }
-        }
-
-        /* 5개의 섬 (배경) - 캐릭터들 사이사이 빈 공간으로 위치 재배치 */
-        .island {
-            position: absolute;
-            transform: translateX(-50%); /* 기준점을 섬의 중앙으로 설정하여 배치 용이성 확보 */
-            background: linear-gradient(135deg, #4ade80, #166534);
-            border-radius: 50% 50% 30% 30%;
-            box-shadow: inset -5px -10px 15px rgba(0,0,0,0.4), 0 10px 20px rgba(0,0,0,0.3);
-            z-index: 10;
-        }
-        .island::before { /* 섬 이름 태그 */
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #fff;
-            font-family: 'Nanum Gothic Coding', monospace;
-            font-size: 0.9rem;
-            font-weight: 700;
-            text-shadow: 1px 1px 3px #000;
-            white-space: nowrap;
-        }
-        
-        /* 캐릭터들 사이 간격(18%, 34%, 50%, 66%, 82%)에 맞춰 완벽 분배 */
-        .island-1 { width: 140px; height: 60px; top: 58%; left: 18%; }
-        .island-1::before { content: '백령도'; }
-        
-        .island-2 { width: 110px; height: 50px; top: 68%; left: 34%; background: linear-gradient(135deg, #65a30d, #3f6212); }
-        .island-2::before { content: '연평도'; }
-        
-        .island-3 { width: 160px; height: 70px; top: 56%; left: 50%; }
-        .island-3::before { content: '덕적도'; }
-        
-        .island-4 { width: 130px; height: 55px; top: 68%; left: 66%; background: linear-gradient(135deg, #10b981, #047857); }
-        .island-4::before { content: '영흥도'; }
-        
-        .island-5 { width: 180px; height: 80px; top: 58%; left: 82%; }
-        .island-5::before { content: '영종도'; }
-
-        /* 캐릭터 래퍼 (크기 조정 및 균등 배치 기준점 변경) */
-        .char-wrapper {
-            position: absolute;
-            bottom: -30px;
-            transform-origin: bottom center;
-            transform: translateX(-50%) scale(0.45); /* 중앙 정렬 후 스케일 적용하여 여백 안정화 */
-            z-index: 50;
-        }
-
-    </style>
+  #btn-prev { left: 20px; bottom: 20px; }
+  #btn-next, #btn-skip { right: 20px; bottom: 20px; }
+  #btn-next { display: none; }
+</style>
 </head>
 <body>
 
 <div id="game-container">
-    
-    <div class="stage-indicator">인트로 (게임 시작)</div>
-    <h1 class="main-title">옹진 섬탈출 게임</h1>
-    <div class="story-text">제주도 수학여행에서 돌아오던 중 북한 NLL에 불시착했다!<br>북한군의 추격을 피해 5개의 섬을 거쳐 무사히 인천으로 돌아가자.</div>
-    
-    <button class="btn-nav" id="btn-next">게임 시작하기</button>
+  <div id="signpost">환경미래관 앞</div>
 
-    <div class="crashing-plane">🛩️</div>
-    
-    <div class="island island-1"></div>
-    <div class="island island-2"></div>
-    <div class="island island-3"></div>
-    <div class="island island-4"></div>
-    <div class="island island-5"></div>
-
-    <div class="char-wrapper" style="left: 10%;">
-        <div class="kyobok-minwoo-component" style="display: inline-block; overflow: visible !important;">
-            <style>
-                .kmw-stage { position: relative; width: 260px; height: 320px; margin: 0 auto; animation: kmw-breatheHuman 4s ease-in-out infinite; overflow: visible !important; }
-                @keyframes kmw-breatheHuman { 0%, 100% { transform: scale(1) translateY(0px); } 50% { transform: scale(1.01) translateY(-3px); } }
-                .kmw-head-wrapper { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 120px; height: 130px; overflow: visible !important; }
-                .kmw-ear-l, .kmw-ear-r { position: absolute; top: 52px; width: 16px; height: 26px; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; z-index: 2; }
-                .kmw-ear-l { left: -11px; border-radius: 50% 0 0 50%; transform: rotate(-10deg); }
-                .kmw-ear-r { right: -11px; border-radius: 0 50% 50% 0; transform: rotate(10deg); }
-                .kmw-hair-back { position: absolute; top: -8px; left: -4px; width: 128px; height: 80px; background-color: #242424; border: 3.5px solid #141414; border-radius: 60px 60px 20px 20px; z-index: 1; }
-                .kmw-neck { position: absolute; top: 105px; left: 50%; transform: translateX(-50%); width: 28px; height: 40px; background-color: #ffdbb5; border-left: 3.5px solid #8d5b4c; border-right: 3.5px solid #8d5b4c; z-index: 3; }
-                .kmw-face-skin { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; border-radius: 50px 50px 60px 60px; z-index: 4; overflow: hidden; }
-                .kmw-front-hair { position: absolute; top: 0; left: 0; width: 100%; height: 42px; background-color: #242424; border-bottom: 3.5px solid #141414; z-index: 10; }
-                .kmw-hair-point { position: absolute; top: 36px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 10px solid #141414; z-index: 11; }
-                .kmw-eyebrow-l, .kmw-eyebrow-r { position: absolute; top: 50px; width: 18px; height: 4px; background-color: #221a15; border-radius: 2px; z-index: 6; }
-                .kmw-eyebrow-l { left: 22px; transform: rotate(5deg); }
-                .kmw-eyebrow-r { right: 22px; transform: rotate(-5deg); }
-                .kmw-eye-l, .kmw-eye-r { position: absolute; top: 62px; width: 15px; height: 15px; background-color: #221a15; border-radius: 50%; z-index: 6; }
-                .kmw-eye-l::after, .kmw-eye-r::after { content: ''; position: absolute; top: 2px; left: 2px; width: 4px; height: 4px; background-color: #fff; border-radius: 50%; }
-                .kmw-eye-l { left: 24px; }
-                .kmw-eye-r { right: 24px; }
-                .kmw-blush-l, .kmw-blush-r { position: absolute; top: 78px; width: 18px; height: 9px; background-color: rgba(244, 63, 94, 0.4); border-radius: 50%; filter: blur(0.5px); z-index: 6; }
-                .kmw-blush-l { left: 16px; }
-                .kmw-blush-r { right: 16px; }
-                .kmw-mouth { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); width: 22px; height: 11px; background-color: #e11d48; border-radius: 2px 2px 12px 12px; border: 1.5px solid #9f1239; z-index: 6; }
-                .kmw-uniform-top { position: absolute; top: 180px; left: 50%; transform: translateX(-50%); width: 124px; height: 110px; background-color: #1e293b; border: 3.5px solid #475569; border-radius: 24px 24px 10px 10px; z-index: 7; overflow: hidden; }
-                .kmw-collar-l { position: absolute; top: -2px; left: 32px; width: 30px; height: 26px; background-color: #ffffff; border: 3px solid #475569; transform: rotate(-30deg); border-radius: 0 0 5px 0; }
-                .kmw-collar-r { position: absolute; top: -2px; right: 32px; width: 30px; height: 26px; background-color: #ffffff; border: 3px solid #475569; transform: rotate(30deg); border-radius: 0 0 0 5px; }
-                .kmw-tie { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 12px; height: 50px; background-color: #b91c1c; border: 2px solid #7f1d1d; border-radius: 2px 2px 6px 6px; z-index: 10; }
-                .kmw-tie::after { content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 16px; height: 10px; background-color: #b91c1c; border: 2px solid #7f1d1d; border-radius: 3px; }
-            </style>
-            <div class="kmw-stage">
-                <div class="kmw-head-wrapper">
-                    <div class="kmw-hair-back"></div>
-                    <div class="kmw-ear-l"></div>
-                    <div class="kmw-ear-r"></div>
-                    <div class="kmw-neck"></div>
-                    <div class="kmw-face-skin">
-                        <div class="kmw-front-hair"></div>
-                        <div class="kmw-hair-point" style="left: 15px;"></div>
-                        <div class="kmw-hair-point" style="left: 45px;"></div>
-                        <div class="kmw-hair-point" style="right: 25px;"></div>
-                        <div class="kmw-eyebrow-l"></div>
-                        <div class="kmw-eyebrow-r"></div>
-                        <div class="kmw-eye-l"></div>
-                        <div class="kmw-eye-r"></div>
-                        <div class="kmw-blush-l"></div>
-                        <div class="kmw-blush-r"></div>
-                        <div class="kmw-mouth"></div>
-                    </div>
-                </div>
-                <div class="kmw-uniform-top">
-                    <div class="kmw-collar-l"></div>
-                    <div class="kmw-collar-r"></div>
-                    <div class="kmw-tie"></div>
-                </div>
-            </div>
-        </div>
+  <div id="stage">
+    <!-- 에셋: 건물 (환경미래관) -->
+    <div id="asset-환경미래관" style="width:520px; height:390px; overflow:hidden;">
+      <iframe src="인천대공원_장소_환경미래관.html" scrolling="no" style="border:0; width:520px; height:390px; transform-origin:top left; pointer-events:none;"></iframe>
     </div>
 
-    <div class="char-wrapper" style="left: 26%;">
-        <div class="kyobok-seoyeon-component" style="display: inline-block; overflow: visible !important;">
-            <style>
-                .ksy-stage { position: relative; width: 260px; height: 320px; margin: 0 auto; animation: ksy-breatheHuman 4s ease-in-out infinite; overflow: visible !important; }
-                @keyframes ksy-breatheHuman { 0%, 100% { transform: scale(1) translateY(0px); } 50% { transform: scale(1.01) translateY(-3px); } }
-                .ksy-head-wrapper { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 120px; height: 130px; overflow: visible !important; }
-                .ksy-ponytail { position: absolute; top: 15px; right: -36px; width: 44px; height: 85px; background-color: #4a3728; border: 3.5px solid #2d1f10; border-radius: 0 40px 15px 40px; transform: rotate(15deg); z-index: 1; }
-                .ksy-hair-elastic { position: absolute; top: 28px; right: -6px; width: 14px; height: 14px; background-color: #fb7185; border: 2px solid #e11d48; border-radius: 50%; z-index: 2; }
-                .ksy-hair-back { position: absolute; top: -8px; left: -4px; width: 128px; height: 85px; background-color: #4a3728; border: 3.5px solid #2d1f10; border-radius: 60px 60px 20px 20px; z-index: 1; }
-                .ksy-ear-l, .ksy-ear-r { position: absolute; top: 52px; width: 16px; height: 26px; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; z-index: 2; }
-                .ksy-ear-l { left: -11px; border-radius: 50% 0 0 50%; transform: rotate(-10deg); }
-                .ksy-ear-r { right: -11px; border-radius: 0 50% 50% 0; transform: rotate(10deg); }
-                .ksy-neck { position: absolute; top: 105px; left: 50%; transform: translateX(-50%); width: 28px; height: 40px; background-color: #ffdbb5; border-left: 3.5px solid #8d5b4c; border-right: 3.5px solid #8d5b4c; z-index: 3; }
-                .ksy-face-skin { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; border-radius: 50px 50px 60px 60px; z-index: 4; overflow: hidden; }
-                .ksy-front-hair { position: absolute; top: 0; left: 0; width: 100%; height: 45px; background-color: #4a3728; border-bottom: 3.5px solid #2d1f10; z-index: 10; }
-                .ksy-hair-point { position: absolute; top: 39px; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 9px solid #2d1f10; z-index: 11; }
-                .ksy-eye-l, .ksy-eye-r { position: absolute; top: 62px; width: 15px; height: 15px; background-color: #221a15; border-radius: 50%; z-index: 6; }
-                .ksy-eye-l::after, .ksy-eye-r::after { content: ''; position: absolute; top: 2px; left: 2px; width: 4px; height: 4px; background-color: #fff; border-radius: 50%; }
-                .ksy-eye-l { left: 24px; }
-                .ksy-eye-r { right: 24px; }
-                .ksy-blush-l, .ksy-blush-r { position: absolute; top: 78px; width: 18px; height: 9px; background-color: rgba(244, 63, 94, 0.4); border-radius: 50%; filter: blur(0.5px); z-index: 6; }
-                .ksy-blush-l { left: 16px; }
-                .ksy-blush-r { right: 16px; }
-                .ksy-mouth-surprise { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); width: 14px; height: 14px; background-color: #f43f5e; border-radius: 50%; border: 2px solid #be123c; z-index: 6; }
-                .ksy-uniform-top { position: absolute; top: 180px; left: 50%; transform: translateX(-50%); width: 124px; height: 110px; background-color: #1e293b; border: 3.5px solid #475569; border-radius: 24px 24px 10px 10px; z-index: 7; overflow: hidden; }
-                .ksy-collar-l { position: absolute; top: -2px; left: 32px; width: 30px; height: 26px; background-color: #ffffff; border: 3px solid #475569; transform: rotate(-30deg); border-radius: 0 0 5px 0; }
-                .ksy-collar-r { position: absolute; top: -2px; right: 32px; width: 30px; height: 26px; background-color: #ffffff; border: 3px solid #475569; transform: rotate(30deg); border-radius: 0 0 0 5px; }
-                .ksy-ribbon { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 32px; height: 14px; background-color: #e11d48; border: 2px solid #9f1239; border-radius: 4px; z-index: 10; }
-                .ksy-ribbon::before { content: ''; position: absolute; top: -4px; left: -14px; width: 18px; height: 20px; background-color: #e11d48; border: 2px solid #9f1239; border-radius: 6px 2px 2px 6px; transform: rotate(-15deg); }
-                .ksy-ribbon::after { content: ''; position: absolute; top: -4px; right: -14px; width: 18px; height: 20px; background-color: #e11d48; border: 2px solid #9f1239; border-radius: 2px 6px 6px 2px; transform: rotate(15deg); }
-                .ksy-skirt { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 126px; height: 35px; background: repeating-linear-gradient(90deg, #64748b, #64748b 10px, #475569 10px, #475569 20px); border: 3px solid #334155; border-radius: 5px 5px 12px 12px; z-index: 8; }
-            </style>
-            <div class="ksy-stage">
-                <div class="ksy-head-wrapper">
-                    <div class="ksy-ponytail"></div>
-                    <div class="ksy-hair-elastic"></div>
-                    <div class="ksy-hair-back"></div>
-                    <div class="ksy-ear-l"></div>
-                    <div class="ksy-ear-r"></div>
-                    <div class="ksy-neck"></div>
-                    <div class="ksy-face-skin">
-                        <div class="ksy-front-hair"></div>
-                        <div class="ksy-hair-point" style="left: 20px;"></div>
-                        <div class="ksy-hair-point" style="left: 50px;"></div>
-                        <div class="ksy-hair-point" style="right: 30px;"></div>
-                        <div class="ksy-eye-l"></div>
-                        <div class="ksy-eye-r"></div>
-                        <div class="ksy-blush-l"></div>
-                        <div class="ksy-blush-r"></div>
-                        <div class="ksy-mouth-surprise"></div>
-                    </div>
-                </div>
-                <div class="ksy-uniform-top">
-                    <div class="ksy-collar-l"></div>
-                    <div class="ksy-collar-r"></div>
-                    <div class="ksy-ribbon"></div>
-                    <div class="ksy-skirt"></div>
-                </div>
-            </div>
-        </div>
+    <!-- 인물 -->
+    <div class="char-wrapper" id="char-민우">
+      <iframe src="등장인물_민우.html" scrolling="no"></iframe>
     </div>
-
-    <div class="char-wrapper" style="left: 42%;">
-        <div class="ami-component-wrapper" style="display: inline-block; overflow: visible !important;">
-            <style>
-                .robot-container { position: relative; width: 260px; height: 290px; margin: 0 auto; animation: ami-float 4s ease-in-out infinite; overflow: visible !important; }
-                @keyframes ami-float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
-                .robot-head { position: absolute; top: 25px; left: 50%; transform: translateX(-50%); width: 140px; height: 125px; background: linear-gradient(135deg, #e2e8f0, #cbd5e1); border-radius: 40px 40px 35px 35px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), inset -4px -4px 10px rgba(0,0,0,0.1); border: 4px solid #475569; z-index: 10; }
-                .robot-visor { position: absolute; top: 25px; left: 10px; right: 10px; height: 65px; background-color: #1e293b; border-radius: 20px; border: 3px solid #64748b; display: flex; justify-content: space-around; align-items: center; padding: 0 15px; }
-                .robot-eye { width: 22px; height: 22px; background-color: #00f2fe; border-radius: 50%; box-shadow: 0 0 15px #00f2fe; animation: ami-blink 5s infinite; }
-                @keyframes ami-blink { 0%, 96%, 100% { transform: scaleY(1); } 98% { transform: scaleY(0.05); } }
-                .robot-ear-l, .robot-ear-r { position: absolute; top: 65px; width: 12px; height: 30px; background-color: #64748b; border: 3px solid #475569; z-index: 5; }
-                .robot-ear-l { left: 42px; border-radius: 5px 0 0 5px; }
-                .robot-ear-r { right: 42px; border-radius: 0 5px 5px 0; }
-                .robot-antenna { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 8px; height: 45px; background-color: #94a3b8; border: 3px solid #475569; border-radius: 4px; z-index: 5; }
-                .robot-antenna-tip { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 20px; height: 20px; background-color: #38bdf8; border: 3px solid #475569; border-radius: 50%; box-shadow: 0 0 12px #38bdf8; }
-                .robot-neck { position: absolute; top: 140px; left: 50%; transform: translateX(-50%); width: 32px; height: 25px; background: linear-gradient(90deg, #94a3b8, #cbd5e1); border: 3.5px solid #475569; border-radius: 4px; z-index: 5; }
-                .robot-body { position: absolute; top: 160px; left: 50%; transform: translateX(-50%); width: 110px; height: 90px; background: linear-gradient(135deg, #cbd5e1, #94a3b8); border: 4px solid #475569; border-radius: 25px 25px 20px 20px; z-index: 8; }
-                .robot-chest-core { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 38px; height: 38px; background-color: #38bdf8; border-radius: 50%; border: 3px solid #475569; box-shadow: 0 0 10px rgba(56, 189, 248, 0.8); }
-                .robot-shoulder-l, .robot-shoulder-r { position: absolute; top: 175px; width: 18px; height: 18px; background-color: #64748b; border: 3px solid #475569; border-radius: 50%; z-index: 9; }
-                .robot-shoulder-l { left: 62px; }
-                .robot-shoulder-r { right: 62px; }
-                .robot-arm-l, .robot-arm-r { position: absolute; top: 185px; width: 14px; height: 45px; background-color: #cbd5e1; border: 3.5px solid #475569; border-radius: 7px; z-index: 6; transform-origin: top center; }
-                .robot-arm-l { left: 52px; animation: ami-waveLeft 3s ease-in-out infinite alternate; }
-                .robot-arm-r { right: 52px; animation: ami-waveRight 3s ease-in-out infinite alternate; }
-                @keyframes ami-waveLeft { 0% { transform: rotate(15deg); } 100% { transform: rotate(30deg); } }
-                @keyframes ami-waveRight { 0% { transform: rotate(-15deg); } 100% { transform: rotate(-30deg); } }
-                .robot-shadow { width: 120px; height: 12px; background-color: rgba(15, 23, 42, 0.4); border-radius: 50%; margin: 5px auto 0; }
-            </style>
-            <div class="robot-container">
-                <div class="robot-antenna"></div>
-                <div class="robot-antenna-tip"></div>
-                <div class="robot-ear-l"></div>
-                <div class="robot-ear-r"></div>
-                <div class="robot-head">
-                    <div class="robot-visor">
-                        <div class="robot-eye"></div>
-                        <div class="robot-eye"></div>
-                    </div>
-                </div>
-                <div class="robot-neck"></div>
-                <div class="robot-body">
-                    <div class="robot-chest-core"></div>
-                </div>
-                <div class="robot-shoulder-l"></div>
-                <div class="robot-shoulder-r"></div>
-                <div class="robot-arm-l"></div>
-                <div class="robot-arm-r"></div>
-            </div>
-            <div class="robot-shadow"></div>
-        </div>
+    <div class="char-wrapper" id="char-서연">
+      <iframe src="등장인물_서연.html" scrolling="no"></iframe>
     </div>
-
-    <div class="char-wrapper" style="left: 58%;">
-        <div class="north-korean-soldier-component" style="display: inline-block; overflow: visible !important;">
-            <style>
-                .nk-stage { position: relative; width: 260px; height: 320px; margin: 0 auto; animation: nk-breatheHuman 4s ease-in-out infinite; overflow: visible !important; }
-                @keyframes nk-breatheHuman { 0%, 100% { transform: scale(1) translateY(0px); } 50% { transform: scale(1.01) translateY(-3px); } }
-                .nk-head-wrapper { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 120px; height: 130px; overflow: visible !important; }
-                .nk-ear-l, .nk-ear-r { position: absolute; top: 52px; width: 16px; height: 26px; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; z-index: 2; }
-                .nk-ear-l { left: -11px; border-radius: 50% 0 0 50%; transform: rotate(-10deg); }
-                .nk-ear-r { right: -11px; border-radius: 0 50% 50% 0; transform: rotate(10deg); }
-                .nk-hair-back { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); width: 124px; height: 65px; background-color: #1a1512; border: 3.5px solid #0d0a08; border-radius: 40px 40px 20px 20px; z-index: 1; }
-                .nk-neck { position: absolute; top: 105px; left: 50%; transform: translateX(-50%); width: 28px; height: 40px; background-color: #ffdbb5; border-left: 3.5px solid #8d5b4c; border-right: 3.5px solid #8d5b4c; z-index: 3; }
-                .nk-face-skin { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; border-radius: 50px 50px 60px 60px; z-index: 4; overflow: hidden; }
-                .nk-eyebrow-l, .nk-eyebrow-r { position: absolute; top: 52px; width: 20px; height: 5px; background-color: #1a1512; border-radius: 2px; z-index: 6; }
-                .nk-eyebrow-l { left: 22px; transform: rotate(8deg); }
-                .nk-eyebrow-r { right: 22px; transform: rotate(-8deg); }
-                .nk-eye-l, .nk-eye-r { position: absolute; top: 64px; width: 15px; height: 15px; background-color: #221a15; border-radius: 50%; z-index: 6; }
-                .nk-eye-l::after, .nk-eye-r::after { content: ''; position: absolute; top: 2px; left: 2px; width: 4px; height: 4px; background-color: #fff; border-radius: 50%; }
-                .nk-eye-l { left: 24px; }
-                .nk-eye-r { right: 24px; }
-                .nk-blush-l, .nk-blush-r { position: absolute; top: 80px; width: 18px; height: 9px; background-color: rgba(244, 63, 94, 0.35); border-radius: 50%; filter: blur(0.5px); z-index: 6; }
-                .nk-blush-l { left: 16px; }
-                .nk-blush-r { right: 16px; }
-                .nk-mouth { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); width: 20px; height: 4px; background-color: #b91c1c; border-radius: 2px; z-index: 6; }
-                .nk-military-hat { position: absolute; top: -24px; left: 50%; transform: translateX(-50%); width: 134px; height: 55px; background-color: #55533a; border: 3.5px solid #383726; border-radius: 12px 12px 4px 4px; z-index: 10; }
-                .nk-hat-brim { position: absolute; bottom: -6.5px; left: 50%; transform: translateX(-50%); width: 134px; height: 10px; background-color: #2e2d1f; border-radius: 0 0 8px 8px; z-index: 11; }
-                .nk-red-star { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 18px; height: 18px; background-color: #dc2626; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); border: 1px solid #fee2e2; z-index: 12; }
-                .nk-uniform-top { position: absolute; top: 180px; left: 50%; transform: translateX(-50%); width: 124px; height: 110px; background-color: #55533a; border: 3.5px solid #383726; border-radius: 20px 20px 10px 10px; z-index: 7; overflow: hidden; }
-                .nk-collar-center { position: absolute; top: -2px; left: 50%; transform: translateX(-50%); width: 44px; height: 24px; background-color: #43422e; border: 3px solid #383726; border-radius: 0 0 6px 6px; z-index: 9; }
-                .nk-epaulet-l, .nk-epaulet-r { position: absolute; top: 4px; width: 26px; height: 10px; background-color: #d97706; border: 2px solid #92400e; z-index: 8; }
-                .nk-epaulet-l { left: 2px; transform: rotate(-10deg); border-radius: 4px 2px 2px 4px; }
-                .nk-epaulet-r { right: 2px; transform: rotate(10deg); border-radius: 2px 4px 4px 2px; }
-                .nk-pocket-l, .nk-pocket-r { position: absolute; top: 42px; width: 32px; height: 24px; background-color: #4a4933; border: 2.5px solid #383726; border-radius: 3px; }
-                .nk-pocket-l { left: 14px; }
-                .nk-pocket-r { right: 14px; }
-            </style>
-            <div class="nk-stage">
-                <div class="nk-head-wrapper">
-                    <div class="nk-hair-back"></div>
-                    <div class="nk-ear-l"></div>
-                    <div class="nk-ear-r"></div>
-                    <div class="nk-neck"></div>
-                    <div class="nk-face-skin">
-                        <div class="nk-eyebrow-l"></div>
-                        <div class="nk-eyebrow-r"></div>
-                        <div class="nk-eye-l"></div>
-                        <div class="nk-eye-r"></div>
-                        <div class="nk-blush-l"></div>
-                        <div class="nk-blush-r"></div>
-                        <div class="nk-mouth"></div>
-                    </div>
-                    <div class="nk-military-hat">
-                        <div class="nk-red-star"></div>
-                        <div class="nk-hat-brim"></div>
-                    </div>
-                </div>
-                <div class="nk-uniform-top">
-                    <div class="nk-collar-center"></div>
-                    <div class="nk-epaulet-l"></div>
-                    <div class="nk-epaulet-r"></div>
-                    <div class="nk-pocket-l"></div>
-                    <div class="nk-pocket-r"></div>
-                </div>
-            </div>
-        </div>
+    <div class="char-wrapper" id="char-옥금">
+      <iframe src="등장인물_옥금.html" scrolling="no"></iframe>
     </div>
-
-    <div class="char-wrapper" style="left: 74%;">
-        <div class="doctor-choe-perfect-component" style="display: inline-block; overflow: visible !important;">
-            <style>
-                .dcr-stage { position: relative; width: 260px; height: 320px; margin: 0 auto; animation: dcr-breathe 4s ease-in-out infinite; overflow: visible !important; }
-                @keyframes dcr-breathe { 0%, 100% { transform: scale(1) translateY(0px); } 50% { transform: scale(1.01) translateY(-4px); } }
-                .dcr-head-wrapper { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); width: 125px; height: 125px; overflow: visible !important; }
-                .dcr-ear-l, .dcr-ear-r { position: absolute; top: 55px; width: 16px; height: 26px; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; z-index: 3; }
-                .dcr-ear-l { left: -11px; border-radius: 50% 0 0 50%; transform: rotate(-10deg); }
-                .dcr-ear-r { right: -11px; border-radius: 0 50% 50% 0; transform: rotate(10deg); }
-                .dcr-neck { position: absolute; top: 100px; left: 50%; transform: translateX(-50%); width: 28px; height: 40px; background-color: #ffdbb5; border-left: 3.5px solid #8d5b4c; border-right: 3.5px solid #8d5b4c; z-index: 3; }
-                .dcr-face-skin { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; border-radius: 50% 50% 45% 45%; z-index: 5; overflow: hidden; }
-                .dcr-wrinkle { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 40px; height: 3px; background-color: #8d5b4c; border-radius: 2px; opacity: 0.5; z-index: 6; }
-                .dcr-wrinkle-2 { position: absolute; top: 29px; left: 50%; transform: translateX(-50%); width: 25px; height: 3px; background-color: #8d5b4c; border-radius: 2px; opacity: 0.5; z-index: 6; }
-                .dcr-eyebrow-l, .dcr-eyebrow-r { position: absolute; top: 42px; width: 22px; height: 6px; background-color: #f1f5f9; border: 2px solid #475569; border-radius: 4px; z-index: 7; }
-                .dcr-eyebrow-l { left: 18px; transform: rotate(5deg); }
-                .dcr-eyebrow-r { right: 18px; transform: rotate(-5deg); }
-                .dcr-eye-l, .dcr-eye-r { position: absolute; top: 55px; width: 14px; height: 14px; background-color: #221a15; border-radius: 50%; z-index: 7; }
-                .dcr-eye-l { left: 26px; }
-                .dcr-eye-r { right: 26px; }
-                .dcr-darkcircle-l, .dcr-darkcircle-r { position: absolute; top: 64px; width: 24px; height: 10px; border-bottom: 3px solid rgba(141, 91, 76, 0.5); border-radius: 50%; z-index: 6; }
-                .dcr-darkcircle-l { left: 21px; }
-                .dcr-darkcircle-r { right: 21px; }
-                .dcr-beard { position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 46px; height: 42px; background-color: #f1f5f9; border-left: 3.5px solid #475569; border-right: 3.5px solid #475569; border-bottom: 3.5px solid #475569; border-radius: 0 0 22px 22px; z-index: 6; }
-                .dcr-mouth { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); width: 20px; height: 5px; background-color: #b91c1c; border-radius: 2px; z-index: 7; }
-                .dcr-glasses { position: absolute; top: 42px; left: 50%; transform: translateX(-50%); width: 110px; height: 44px; z-index: 10; }
-                .dcr-lens { position: absolute; width: 44px; height: 44px; border: 3.5px solid #475569; border-radius: 50%; background-color: rgba(255, 255, 255, 0.1); }
-                .dcr-lens-l { left: 4px; }
-                .dcr-lens-r { right: 4px; }
-                .dcr-bridge { position: absolute; top: 20px; left: 46px; width: 18px; height: 4px; background-color: #475569; }
-                .dcr-hair-back { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 128px; height: 70px; background-color: #f1f5f9; border: 3.5px solid #475569; border-radius: 50px 50px 0 0; z-index: 2; }
-                .dcr-spike { position: absolute; background-color: #f1f5f9; border: 3.5px solid #475569; z-index: 1; }
-                .dcr-spike-1 { top: -20px; left: 16px; width: 32px; height: 32px; transform: rotate(15deg) skewY(10deg); border-radius: 8px 0 0 0; }
-                .dcr-spike-2 { top: -25px; left: 48px; width: 34px; height: 34px; transform: rotate(45deg); border-radius: 6px 0 0 0; }
-                .dcr-spike-3 { top: -18px; right: 16px; width: 30px; height: 30px; transform: rotate(65deg) skewX(10deg); border-radius: 6px 0 0 0; }
-                .dcr-uniform { position: absolute; top: 180px; left: 50%; transform: translateX(-50%); width: 124px; height: 110px; background-color: #ffffff; border: 3.5px solid #cbd5e1; border-radius: 24px 24px 10px 10px; z-index: 8; overflow: hidden; }
-                .dcr-inner-shirt { position: absolute; top: -2px; left: 50%; transform: translateX(-50%); width: 36px; height: 40px; background-color: #0d9488; border-left: 3.5px solid #0f766e; border-right: 3.5px solid #0f766e; border-bottom: 3.5px solid #0f766e; border-radius: 0 0 6px 6px; z-index: 9; }
-                .dcr-collar-l { position: absolute; top: -2px; left: 24px; width: 28px; height: 48px; background-color: #ffffff; border: 3.5px solid #cbd5e1; transform: rotate(-22deg); border-radius: 0 0 6px 0; z-index: 10; }
-                .dcr-collar-r { position: absolute; top: -2px; right: 24px; width: 28px; height: 48px; background-color: #ffffff; border: 3.5px solid #cbd5e1; transform: rotate(22deg); border-radius: 0 0 0 6px; z-index: 10; }
-                .dcr-center-line { position: absolute; top: 44px; left: 50%; transform: translateX(-50%); width: 3.5px; height: 70px; background-color: #cbd5e1; z-index: 9; }
-                .dcr-pocket { position: absolute; top: 56px; right: 14px; width: 26px; height: 22px; background-color: #ffffff; border: 2.5px solid #cbd5e1; border-radius: 2px; z-index: 10; }
-                .dcr-pen { position: absolute; top: 48px; right: 20px; width: 4px; height: 14px; background-color: #ef4444; border-radius: 1px; z-index: 11; }
-                .dcr-pen-clip { position: absolute; top: 52px; right: 17px; width: 2px; height: 8px; background-color: #b91c1c; z-index: 11; }
-            </style>
-            <div class="dcr-stage">
-                <div class="dcr-head-wrapper">
-                    <div class="dcr-hair-spike dcr-spike dcr-spike-1"></div>
-                    <div class="dcr-hair-spike dcr-spike dcr-spike-2"></div>
-                    <div class="dcr-hair-spike dcr-spike dcr-spike-3"></div>
-                    <div class="dcr-hair-back"></div>
-                    <div class="dcr-ear-l"></div>
-                    <div class="dcr-ear-r"></div>
-                    <div class="dcr-neck"></div>
-                    <div class="dcr-face-skin">
-                        <div class="dcr-wrinkle"></div>
-                        <div class="dcr-wrinkle-2"></div>
-                        <div class="dcr-eyebrow-l"></div>
-                        <div class="dcr-eyebrow-r"></div>
-                        <div class="dcr-eye-l"></div>
-                        <div class="dcr-eye-r"></div>
-                        <div class="dcr-darkcircle-l"></div>
-                        <div class="dcr-darkcircle-r"></div>
-                        <div class="dcr-beard">
-                            <div class="dcr-mouth"></div>
-                        </div>
-                    </div>
-                    <div class="dcr-glasses">
-                        <div class="dcr-lens dcr-lens-l"></div>
-                        <div class="dcr-lens dcr-lens-r"></div>
-                        <div class="dcr-bridge"></div>
-                    </div>
-                </div>
-                <div class="dcr-uniform">
-                    <div class="dcr-inner-shirt"></div>
-                    <div class="dcr-center-line"></div>
-                    <div class="dcr-collar-l"></div>
-                    <div class="dcr-collar-r"></div>
-                    <div class="dcr-pocket"></div>
-                    <div class="dcr-pen"></div>
-                    <div class="dcr-pen-clip"></div>
-                </div>
-            </div>
-        </div>
+    <div class="char-wrapper" id="char-미스터첸">
+      <iframe src="등장인물_미스터첸.html" scrolling="no"></iframe>
     </div>
+  </div>
 
-    <div class="char-wrapper" style="left: 90%;">
-        <div class="captain-kang-component" style="display: inline-block; overflow: visible !important;">
-            <style>
-                .ck-stage { position: relative; width: 260px; height: 320px; margin: 0 auto; animation: ck-breatheHuman 4s ease-in-out infinite; overflow: visible !important; }
-                @keyframes ck-breatheHuman { 0%, 100% { transform: scale(1) translateY(0px); } 50% { transform: scale(1.01) translateY(-3px); } }
-                .ck-head-wrapper { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); width: 120px; height: 130px; overflow: visible !important; }
-                .ck-ear-l, .ck-ear-r { position: absolute; top: 52px; width: 16px; height: 26px; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; z-index: 2; }
-                .ck-ear-l { left: -11px; border-radius: 50% 0 0 50%; transform: rotate(-10deg); }
-                .ck-ear-r { right: -11px; border-radius: 0 50% 50% 0; transform: rotate(10deg); }
-                .ck-hair-back { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 124px; height: 70px; background-color: #332211; border: 3.5px solid #1a1108; border-radius: 40px 40px 15px 15px; z-index: 1; }
-                .ck-neck { position: absolute; top: 105px; left: 50%; transform: translateX(-50%); width: 28px; height: 40px; background-color: #ffdbb5; border-left: 3.5px solid #8d5b4c; border-right: 3.5px solid #8d5b4c; z-index: 3; }
-                .ck-face-skin { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; border-radius: 50px 50px 60px 60px; z-index: 4; overflow: hidden; }
-                .ck-eyebrow-l, .ck-eyebrow-r { position: absolute; top: 50px; width: 22px; height: 6px; background-color: #1a1108; border-radius: 3px; z-index: 6; }
-                .ck-eyebrow-l { left: 20px; transform: rotate(-5deg); }
-                .ck-eyebrow-r { right: 20px; transform: rotate(10deg); }
-                .ck-eye-l, .ck-eye-r { position: absolute; top: 62px; width: 15px; height: 15px; background-color: #221a15; border-radius: 50%; z-index: 6; }
-                .ck-eye-l::after, .ck-eye-r::after { content: ''; position: absolute; top: 2px; left: 2px; width: 4px; height: 4px; background-color: #fff; border-radius: 50%; }
-                .ck-eye-l { left: 24px; }
-                .ck-eye-r { right: 24px; height: 8px; border-radius: 15px 15px 0 0; top: 66px; }
-                .ck-scar { position: absolute; top: 58px; right: 18px; width: 4px; height: 22px; background-color: #8d5b4c; opacity: 0.6; transform: rotate(25deg); border-radius: 2px; z-index: 6; }
-                .ck-mustache-l, .ck-mustache-r { position: absolute; top: 80px; width: 22px; height: 12px; background-color: #332211; border: 2px solid #1a1108; z-index: 7; }
-                .ck-mustache-l { left: 39px; border-radius: 10px 0 10px 4px; transform: rotate(-10deg); }
-                .ck-mustache-r { right: 39px; border-radius: 0 10px 4px 10px; transform: rotate(10deg); }
-                .ck-mouth { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); width: 18px; height: 4px; background-color: #9f1239; border-radius: 2px; z-index: 6; }
-                .ck-captain-hat { position: absolute; top: -26px; left: 50%; transform: translateX(-50%); width: 136px; height: 52px; background-color: #ffffff; border: 3.5px solid #1e293b; border-radius: 16px 16px 4px 4px; z-index: 10; }
-                .ck-hat-band { position: absolute; bottom: 0; left: 0; width: 100%; height: 16px; background-color: #1e293b; z-index: 11; }
-                .ck-hat-brim { position: absolute; bottom: -7px; left: 50%; transform: translateX(-50%); width: 140px; height: 10px; background-color: #0f172a; border-radius: 0 0 10px 10px; z-index: 12; }
-                .ck-hat-badge { position: absolute; top: 12px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 10px; height: 10px; background-color: #eab308; border: 1.5px solid #ca8a04; z-index: 13; }
-                .ck-uniform-top { position: absolute; top: 180px; left: 50%; transform: translateX(-50%); width: 124px; height: 110px; background-color: #0f172a; border: 3.5px solid #334155; border-radius: 22px 22px 10px 10px; z-index: 7; overflow: hidden; }
-                .ck-collar-l { position: absolute; top: -2px; left: 32px; width: 32px; height: 28px; background-color: #1e293b; border: 3px solid #334155; transform: rotate(-25deg); border-radius: 0 0 6px 0; }
-                .ck-collar-r { position: absolute; top: -2px; right: 32px; width: 32px; height: 28px; background-color: #1e293b; border: 3px solid #334155; transform: rotate(25deg); border-radius: 0 0 0 6px; }
-                .ck-epaulet-l, .ck-epaulet-r { position: absolute; top: 4px; width: 24px; height: 9px; background-color: #eab308; border: 2px solid #ca8a04; z-index: 8; }
-                .ck-epaulet-l { left: 3px; transform: rotate(-12deg); border-radius: 3px 1px 1px 3px; }
-                .ck-epaulet-r { right: 3px; transform: rotate(12deg); border-radius: 1px 3px 3px 1px; }
-                .ck-button-1 { position: absolute; top: 35px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background-color: #eab308; border: 1.5px solid #ca8a04; border-radius: 50%; z-index: 10; }
-                .ck-button-2 { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background-color: #eab308; border: 1.5px solid #ca8a04; border-radius: 50%; z-index: 10; }
-            </style>
-            <div class="ck-stage">
-                <div class="ck-head-wrapper">
-                    <div class="ck-hair-back"></div>
-                    <div class="ck-ear-l"></div>
-                    <div class="ck-ear-r"></div>
-                    <div class="ck-neck"></div>
-                    <div class="ck-face-skin">
-                        <div class="ck-eyebrow-l"></div>
-                        <div class="ck-eyebrow-r"></div>
-                        <div class="ck-eye-l"></div>
-                        <div class="ck-eye-r"></div>
-                        <div class="ck-scar"></div>
-                        <div class="ck-mustache-l"></div>
-                        <div class="ck-mustache-r"></div>
-                        <div class="ck-mouth"></div>
-                    </div>
-                    <div class="ck-captain-hat">
-                        <div class="ck-hat-band"></div>
-                        <div class="ck-hat-badge"></div>
-                        <div class="ck-hat-brim"></div>
-                    </div>
-                </div>
-                <div class="ck-uniform-top">
-                    <div class="ck-collar-l"></div>
-                    <div class="ck-collar-r"></div>
-                    <div class="ck-epaulet-l"></div>
-                    <div class="ck-epaulet-r"></div>
-                    <div class="ck-button-1"></div>
-                    <div class="ck-button-2"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+  <!-- 대화창 -->
+  <div id="dialogue-box" onclick="advanceDialogue()">
+    <div id="speaker-name"></div>
+    <div id="dialogue-text"></div>
+    <div id="dialogue-hint">클릭해서 계속 ▶</div>
+  </div>
 
+  <button class="btn-nav" id="btn-prev" onclick="goPrev()">이전</button>
+  <button class="btn-nav" id="btn-next" onclick="goNext()">다음</button>
+  <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
 </div>
 
 <script>
-    // 다음 장면 버튼 동작 (현재 탭에서 A02.html로 이동)
-    document.getElementById('btn-next').addEventListener('click', function() {
-        window.location.href = 'A02.html';
-    });
+  const prevUrl = "index.html";
+  const nextUrl = "A02.html";
+
+  const dialogues = [
+    { speaker: "민우", text: "서연아, 저기 환경미래관 앞에 있는 시계 같은 거 봤어? 되게 신기하게 생겼던데.", target: "char-민우" },
+    { speaker: "서연", text: "아, 나도 봤어! 숫자가 계속 줄어들던데... 저게 대체 뭘까?", target: "char-서연" },
+    { speaker: "옥금", text: "얘들아, 저건 '기후위기시계'란다. 지구의 평균 기온이 산업화 이전보다 1.5도 이상 오르기까지 남은 시간을 보여주는 시계야.", target: "char-옥금" },
+    { speaker: "민우", text: "1.5도요? 겨우 그 정도 오르는 게 뭐가 그렇게 큰일이에요?", target: "char-민우" },
+    { speaker: "옥금", text: "숫자는 작아 보여도 지구 전체의 평균이라 그 영향은 정말 크단다. 시간이 얼마 남지 않았다는 걸 보여주기 위해 저렇게 시계로 만든 거지.", target: "char-옥금" },
+    { speaker: "서연", text: "그렇구나... 근데 저기 지나가시는 분, 뭔가 하실 말씀이 있으신가 봐요.", target: "char-서연" },
+    { speaker: "미스터첸", text: "허허, 마침 좋은 이야기를 나누고 있었구먼. 평균 기온이 계속 오르면 우리가 상상하는 것보다 훨씬 위험한 일들이 벌어진다네.", target: "char-미스터첸" },
+    { speaker: "미스터첸", text: "빙하가 녹아 해수면이 높아지고, 폭염과 가뭄, 대형 산불이 더 자주 일어나지. 또 태풍과 폭우 같은 극단적인 날씨도 늘어난단다.", target: "char-미스터첸" },
+    { speaker: "미스터첸", text: "생태계의 균형도 무너져서 많은 동식물이 살 곳을 잃게 되지. 그러니 저 시계가 0이 되기 전에, 우리가 할 수 있는 일을 찾아야 한다네.", target: "char-미스터첸" },
+    { speaker: "민우", text: "우리가 할 수 있는 일이라... 궁금해요. 더 알아보고 싶어요!", target: "char-민우" }
+  ];
+
+  let currentIndex = 0;
+  const dialogueBox = document.getElementById('dialogue-box');
+  const speakerName = document.getElementById('speaker-name');
+  const dialogueText = document.getElementById('dialogue-text');
+  const charWrappers = document.querySelectorAll('.char-wrapper');
+
+  function renderDialogue() {
+    const d = dialogues[currentIndex];
+    speakerName.textContent = d.speaker;
+    dialogueText.textContent = d.text;
+    charWrappers.forEach(w => w.classList.remove('active'));
+    const target = document.getElementById(d.target);
+    if (target) target.classList.add('active');
+  }
+
+  function advanceDialogue() {
+    currentIndex++;
+    if (currentIndex >= dialogues.length) {
+      endDialogue();
+    } else {
+      renderDialogue();
+    }
+  }
+
+  function skipDialogue() {
+    endDialogue();
+  }
+
+  function endDialogue() {
+    dialogueBox.style.display = 'none';
+    document.getElementById('btn-skip').style.display = 'none';
+    charWrappers.forEach(w => w.classList.add('active'));
+    document.getElementById('btn-prev').style.display = 'block';
+    if (nextUrl) {
+      document.getElementById('btn-next').style.display = 'block';
+      document.getElementById('btn-next').textContent = '다음';
+    } else {
+      document.getElementById('btn-next').style.display = 'block';
+      document.getElementById('btn-next').textContent = 'End';
+    }
+  }
+
+  function goPrev() {
+    if (prevUrl) window.location.href = prevUrl;
+  }
+
+  function goNext() {
+    if (nextUrl) {
+      window.location.href = nextUrl;
+    } else {
+      window.location.href = 'index.html';
+    }
+  }
+
+  // 초기화
+  document.getElementById('btn-next').style.display = 'none';
+  renderDialogue();
 </script>
 
 </body>
