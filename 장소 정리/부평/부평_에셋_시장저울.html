@@ -1,0 +1,83 @@
+<!-- 원본 크기: 500x750 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>시장 저울</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .bjs-svg { display:block; width:100%; height:auto; }
+  .bjs-needle { animation: bjs-needle 4.4s ease-in-out infinite; transform-origin: 250px 258px; }
+  @keyframes bjs-needle { 0%,100% { transform: rotate(-24deg);} 50% { transform: rotate(30deg);} }
+</style>
+</head>
+<body>
+<svg class="bjs-svg" viewBox="0 0 500 750" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="시장 저울">
+<title>시장 저울</title>
+<desc>전통 시장의 접시 달린 앉은뱅이 저울.</desc>
+<defs>
+  <linearGradient id="bjsBody" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#8c9298"/><stop offset="0.35" stop-color="#dfe4e8"/>
+    <stop offset="0.6" stop-color="#b6bec6"/><stop offset="1" stop-color="#7d848c"/>
+  </linearGradient>
+  <linearGradient id="bjsPan" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#eef2f5"/><stop offset="1" stop-color="#a8b0b8"/>
+  </linearGradient>
+  <radialGradient id="bjsFace" cx="0.4" cy="0.32" r="0.8">
+    <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e2e6ea"/>
+  </radialGradient>
+</defs>
+<ellipse cx="250" cy="706" rx="176" ry="26" fill="#3a4048" opacity="0.2"/>
+<!-- 접시 -->
+<ellipse cx="250" cy="120" rx="196" ry="34" fill="url(#bjsPan)" stroke="#6e757c" stroke-width="5"/>
+<path d="M54,120 C54,150 130,166 250,166 C370,166 446,150 446,120 L446,132 C446,164 370,180 250,180 C130,180 54,164 54,132 Z"
+      fill="#98a0a8" stroke="#6e757c" stroke-width="4"/>
+<ellipse cx="250" cy="118" rx="164" ry="24" fill="#dde3e8" opacity="0.7"/>
+<!-- 지지대 -->
+<rect x="232" y="176" width="36" height="52" rx="6" fill="url(#bjsBody)" stroke="#5e666e" stroke-width="4"/>
+<!-- 본체 -->
+<path d="M96,228 L404,228 C424,228 436,242 436,262 L436,352 C436,372 424,386 404,386 L96,386 C76,386 64,372 64,352 L64,262 C64,242 76,228 96,228 Z"
+      fill="url(#bjsBody)" stroke="#5e666e" stroke-width="5"/>
+<!-- 눈금판 -->
+<circle cx="250" cy="300" r="92" fill="url(#bjsFace)" stroke="#5e666e" stroke-width="5"/>
+<circle cx="250" cy="300" r="78" fill="none" stroke="#b6bec6" stroke-width="2"/>
+<g stroke="#3a4048" stroke-width="4" stroke-linecap="round">
+  <line x1="250" y1="222" x2="250" y2="238"/>
+  <line x1="184" y1="252" x2="196" y2="262"/><line x1="316" y1="252" x2="304" y2="262"/>
+  <line x1="164" y1="316" x2="180" y2="315"/><line x1="336" y1="316" x2="320" y2="315"/>
+  <line x1="196" y1="364" x2="206" y2="352"/><line x1="304" y1="364" x2="294" y2="352"/>
+</g>
+<g stroke="#7d848c" stroke-width="2.4">
+  <line x1="216" y1="230" x2="219" y2="244"/><line x1="284" y1="230" x2="281" y2="244"/>
+  <line x1="170" y1="278" x2="184" y2="284"/><line x1="330" y1="278" x2="316" y2="284"/>
+</g>
+<g font-family="sans-serif" font-size="17" font-weight="bold" fill="#3a4048">
+  <text x="250" y="262" text-anchor="middle">0</text>
+  <text x="330" y="322" text-anchor="middle">2</text>
+  <text x="170" y="322" text-anchor="middle">6</text>
+  <text x="250" y="382" text-anchor="middle">4</text>
+</g>
+<!-- 바늘 -->
+<g class="bjs-needle">
+  <polygon points="250,300 256,306 250,214 244,306" fill="#c2452e"/>
+</g>
+<circle cx="250" cy="300" r="13" fill="#5e666e" stroke="#3a4048" stroke-width="3"/>
+<circle cx="250" cy="300" r="5" fill="#c9c4bb"/>
+<!-- 하단 몸체 -->
+<path d="M78,386 L422,386 L448,470 C452,486 442,498 426,498 L74,498 C58,498 48,486 52,470 Z"
+      fill="url(#bjsBody)" stroke="#5e666e" stroke-width="5"/>
+<rect x="150" y="410" width="200" height="46" rx="8" fill="#3a4048" stroke="#20262c" stroke-width="3"/>
+<g fill="#ffd94f" font-family="monospace" font-size="34" font-weight="bold">
+  <text x="250" y="444" text-anchor="middle">1.25kg</text>
+</g>
+<!-- 다리 -->
+<rect x="86" y="498" width="60" height="196" rx="10" fill="#6e757c" stroke="#4a5058" stroke-width="4"/>
+<rect x="354" y="498" width="60" height="196" rx="10" fill="#6e757c" stroke="#4a5058" stroke-width="4"/>
+<rect x="60" y="676" width="380" height="30" rx="12" fill="#4a5058" stroke="#2c3238" stroke-width="4"/>
+<!-- 광택 -->
+<path d="M96,246 L96,368" stroke="#ffffff" stroke-width="10" opacity="0.3" stroke-linecap="round"/>
+<path d="M100,120 C160,104 340,104 400,120" fill="none" stroke="#ffffff" stroke-width="8" opacity="0.5"/>
+</svg>
+</body>
+</html>

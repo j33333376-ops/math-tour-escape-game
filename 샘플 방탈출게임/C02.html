@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차이나타운 체험학습앱 - 대불호텔 객실 (장면 2)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* 공통 리셋 및 배경 */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #2d3748; /* 컨테이너 밖 어두운 배경 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 게임 컨테이너 - 16:9 비율 유지 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #2b1d1d; 
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* =========================================
+           배경 디자인 (CSS Art)
+           ========================================= */
+        #bg-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1; /* 가장 뒤로 배치 */
+            pointer-events: none;
+        }
+
+        /* 1. 벽지 (19세기 서양식 앤틱 스트라이프) */
+        .wall {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70%;
+            background: repeating-linear-gradient(
+                to right,
+                #3a2424,
+                #3a2424 40px,
+                #452b2b 40px,
+                #452b2b 80px
+            );
+            border-bottom: 15px solid #2d1c11; /* 걸레받이 */
+            box-shadow: inset 0 -20px 30px rgba(0,0,0,0.5);
+        }
+
+        /* 2. 바닥 (원목 마루) */
+        .floor {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background-color: #3e2723;
+            background-image: repeating-linear-gradient(
+                to right,
+                transparent,
+                transparent 48px,
+                #26150f 48px,
+                #26150f 50px
+            );
+            transform: perspective(600px) rotateX(45deg);
+            transform-origin: top;
+            box-shadow: inset 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        /* 중앙 양탄자 */
+        .rug {
+            position: absolute;
+            bottom: -5%;
+            left: 50%;
+            transform: translateX(-50%) perspective(500px) rotateX(40deg);
+            width: 70%;
+            height: 40%;
+            background: #8c3030;
+            border: 10px solid #d4af37;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+            background-image: repeating-radial-gradient(
+                circle at center,
+                transparent,
+                transparent 20px,
+                rgba(212, 175, 55, 0.2) 20px,
+                rgba(212, 175, 55, 0.2) 40px
+            );
+        }
+
+        /* 3. 중앙 창문 및 달빛 */
+        .window {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 240px;
+            height: 350px;
+            background-color: #0f172a;
+            border: 12px solid #2d1c11;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        .moon {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: #f5f0e6;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #f5f0e6, 0 0 40px #d4af37;
+        }
+
+        .window-pane {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(to right, transparent 48%, #2d1c11 48%, #2d1c11 52%, transparent 52%),
+                linear-gradient(to bottom, transparent 48%, #2d1c11 48%, #2d1c11 52%, transparent 52%);
+        }
+
+        /* 커튼 */
+        .curtain {
+            position: absolute;
+            top: 10%;
+            width: 150px;
+            height: 400px;
+            background-color: #8c3030;
+            border-radius: 0 0 50% 50%;
+            box-shadow: inset -10px 0 20px rgba(0,0,0,0.5), 5px 5px 15px rgba(0,0,0,0.5);
+            border-bottom: 5px solid #d4af37;
+        }
+        .curtain.left {
+            left: calc(50% - 220px);
+            border-right: 5px solid #d4af37;
+            transform: skewY(-10deg);
+        }
+        .curtain.right {
+            right: calc(50% - 220px);
+            border-left: 5px solid #d4af37;
+            transform: skewY(10deg);
+        }
+        .curtain-top {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 460px;
+            height: 60px;
+            background-color: #661f1f;
+            border-bottom: 8px solid #d4af37;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+        }
+
+        /* 4. 침대 (왼쪽 배치) */
+        .bed-container {
+            position: absolute;
+            bottom: 12%;
+            left: 8%;
+            width: 300px;
+            height: 200px;
+        }
+        
+        .bed-headboard {
+            position: absolute;
+            bottom: 60px;
+            left: 10px;
+            width: 280px;
+            height: 140px;
+            background-color: #3e2723;
+            border: 5px solid #2d1c11;
+            border-radius: 40px 40px 0 0;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+        }
+
+        .bed-mattress {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            width: 300px;
+            height: 50px;
+            background-color: #f5f0e6;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+        }
+
+        .bed-blanket {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 280px;
+            height: 60px;
+            background-color: #8c3030;
+            border-radius: 5px;
+            border-bottom: 4px solid #d4af37;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.4);
+        }
+
+        .bed-pillow {
+            position: absolute;
+            bottom: 70px;
+            left: 40px;
+            width: 80px;
+            height: 40px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+        .bed-pillow.right { left: 140px; }
+
+        .bed-leg {
+            position: absolute;
+            bottom: 0;
+            width: 15px;
+            height: 30px;
+            background-color: #2d1c11;
+        }
+        .bed-leg.left { left: 20px; }
+        .bed-leg.right { right: 20px; }
+
+        /* 5. 앤틱 옷장 (오른쪽 배치) */
+        .wardrobe {
+            position: absolute;
+            bottom: 18%;
+            right: 8%;
+            width: 180px;
+            height: 320px;
+            background-color: #3e2723;
+            border: 6px solid #2d1c11;
+            box-shadow: -10px 10px 20px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        .wardrobe-top {
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            width: 188px;
+            height: 20px;
+            background-color: #2d1c11;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .wardrobe-door {
+            position: absolute;
+            top: 10px;
+            width: 76px;
+            height: 230px;
+            background-color: #4e342e;
+            border: 2px solid #2d1c11;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+        }
+        .wardrobe-door.left { left: 8px; }
+        .wardrobe-door.right { right: 8px; }
+
+        .wardrobe-handle {
+            position: absolute;
+            top: 50%;
+            width: 6px;
+            height: 30px;
+            background-color: #d4af37;
+            border-radius: 3px;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        .wardrobe-door.left .wardrobe-handle { right: 8px; }
+        .wardrobe-door.right .wardrobe-handle { left: 8px; }
+
+        .wardrobe-drawer {
+            position: absolute;
+            bottom: 10px;
+            left: 8px;
+            width: 152px;
+            height: 50px;
+            background-color: #4e342e;
+            border: 2px solid #2d1c11;
+        }
+
+        /* 조명 (비네팅 효과) */
+        .ambient-light {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 40%, transparent 20%, rgba(0, 0, 0, 0.75) 100%);
+            z-index: 10;
+        }
+
+        /* =========================================
+           UI 및 에셋 스타일
+           ========================================= */
+        #top-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #d4af37;
+            padding: 10px 30px;
+            border-radius: 8px;
+            color: #d4af37;
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            z-index: 100;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            letter-spacing: 0.05em;
+        }
+
+        .btn-nav {
+            position: absolute;
+            background-color: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 100;
+            transition: background-color 0.2s ease;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        #btn-prev { left: 20px; bottom: 20px; display: none; }
+        #btn-skip { right: 20px; bottom: 20px; }
+
+        /* 게임하기 버튼 (강조) */
+        #btn-play-game {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #8c3030;
+            color: #ffffff;
+            border: 3px solid #d4af37;
+            border-radius: 8px;
+            padding: 20px 50px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 110;
+            display: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.6), inset 0 0 10px rgba(0,0,0,0.3);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            animation: pulse 2s infinite;
+        }
+
+        #btn-play-game:hover {
+            background-color: #661f1f;
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(212, 175, 55, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+        }
+
+        /* 대화창 */
+        #dialogue-box {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            height: 150px;
+            background-color: rgba(0, 0, 0, 0.85);
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            padding: 20px 30px;
+            box-sizing: border-box;
+            z-index: 90;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+        }
+
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.05rem;
+            color: #ffffff;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            margin: 0;
+            word-break: keep-all;
+        }
+
+        .click-indicator {
+            position: absolute;
+            bottom: 15px;
+            right: 25px;
+            color: #d4af37;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.9rem;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* 에셋 래퍼 */
+        #asset-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 20; /* 배경보다 앞에 배치 */
+            pointer-events: none;
+        }
+
+        /* 보물 상자 (화면 중앙 연출용) */
+        #treasure-box {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 160px;
+            background-color: #8c3030;
+            border: 4px solid #d4af37;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.8);
+            z-index: 15; /* 배경 빛보다 위, 캐릭터 아래 */
+            transition: opacity 0.5s ease;
+        }
+
+        #treasure-box::before {
+            content: '';
+            width: 40px;
+            height: 50px;
+            background-color: #d4af37;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        #treasure-box span {
+            color: #d4af37;
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        /* 인물 래퍼 */
+        .character-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            bottom: 80px;
+            overflow: visible;
+            z-index: 30; /* 캐릭터 최상단 */
+            transition: filter 0.3s ease;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); 
+        }
+
+        #char-minwoo {
+            left: 15%;
+        }
+
+        #char-seoyeon {
+            right: 15%;
+            transform: scaleX(-1); /* 민우 쪽으로 반전 */
+        }
+
+        /* 비활성화 인물 어둡게 처리 */
+        .inactive {
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)) brightness(0.4);
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    
+    <div id="bg-layer">
+        <div class="wall"></div>
+        <div class="floor"></div>
+        <div class="rug"></div>
+        
+        <div class="window">
+            <div class="moon"></div>
+            <div class="window-pane"></div>
+        </div>
+        <div class="curtain left"></div>
+        <div class="curtain right"></div>
+        <div class="curtain-top"></div>
+
+        <div class="bed-container">
+            <div class="bed-headboard"></div>
+            <div class="bed-mattress"></div>
+            <div class="bed-blanket"></div>
+            <div class="bed-pillow"></div>
+            <div class="bed-pillow right"></div>
+            <div class="bed-leg left"></div>
+            <div class="bed-leg right"></div>
+        </div>
+
+        <div class="wardrobe">
+            <div class="wardrobe-top"></div>
+            <div class="wardrobe-door left">
+                <div class="wardrobe-handle"></div>
+            </div>
+            <div class="wardrobe-door right">
+                <div class="wardrobe-handle"></div>
+            </div>
+            <div class="wardrobe-drawer"></div>
+        </div>
+
+        <div class="ambient-light"></div>
+    </div>
+
+    <div id="asset-layer">
+        <div id="treasure-box">
+            <span>잠긴 상자</span>
+        </div>
+
+        <div id="char-minwoo" class="character-wrapper"></div>
+        <div id="char-seoyeon" class="character-wrapper"></div>
+    </div>
+
+    <div id="top-bar">대불호텔 객실</div>
+
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-name">화자</div>
+        <p id="dialogue-text">대사가 여기에 표시됩니다.</p>
+        <div class="click-indicator">▼ 클릭하여 진행</div>
+    </div>
+
+    <button id="btn-prev" class="btn-nav" onclick="navigate('C02.html')">이전</button>
+    <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+
+    <button id="btn-play-game" onclick="navigate('C03.html')">게임하기</button>
+</div>
+
+<script>
+    // --- 에셋 로딩 ---
+    async function loadAsset(containerId, filename) {
+        const container = document.getElementById(containerId);
+        try {
+            const response = await fetch(filename);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const htmlText = await response.text();
+            container.innerHTML = htmlText;
+        } catch (error) {
+            console.error(`Fetch failed for ${filename}, falling back to iframe.`, error);
+            container.innerHTML = `<iframe src="${filename}" scrolling="no" style="width:260px; height:320px; border:0; overflow:hidden;"></iframe>`;
+        }
+    }
+
+    // 캐릭터 로드 실행
+    window.addEventListener('DOMContentLoaded', () => {
+        loadAsset('char-minwoo', '민우.html');
+        loadAsset('char-seoyeon', '서연.html');
+        showDialogue();
+    });
+
+    // --- 대화 데이터 (옷 발견 및 입혀주기로 결심하는 부분까지만) ---
+    const dialogues = [
+        { speaker: "민우", text: "와아아! 서연아, 이것 봐! 방 한가운데에 엄청 크고 푹신한 의자... 가 아니라 이게 침대라는 거야?", target: "char-minwoo" },
+        { speaker: "서연", text: "맞아. 1889년 당시 조선 사람들은 온돌방에서 이불을 깔고 잤기 때문에, 대불호텔의 침대 방을 보고 엄청 신기해했대. 우리 교과서에서 배웠잖아!", target: "char-seoyeon" },
+        { speaker: "민우", text: "헤에, 신기하다... 앗? 그런데 방이 왜 이렇게 으스스하지? 어디선가 달그락거리는 소리가 나!", target: "char-minwoo" },
+        { speaker: "서연", text: "저기 봐! 침대 밑이랑 옷장이 조금씩 흔들리고 있어. 분명 미스터첸이 장난을 쳐 둔 게 분명해. 조사해 보자!", target: "char-seoyeon" },
+        
+        { speaker: "민우", text: "앗, 침대 밑에 조그만 비밀 상자가 있어! 상자 안에 이 방에서 나갈 수 있는 열쇠가 있지 않을까?", target: "char-minwoo" },
+        { speaker: "서연", text: "열쇠를 찾아보자!", target: "char-seoyeon" },
+        
+        { speaker: "시스템 메시지", text: "(나무 옷장 문이 삐걱거리며 열립니다. 안에는 19세기 말 유행했던 멋진 서양식 옷들이 들어있습니다.)", target: "none" },
+        { speaker: "민우", text: "우와, 옷장에 엄청 멋진 옷들이 많아! 만화에서 보던 신사 정장이랑 중절모도 있고, 화려한 드레스도 있네?", target: "char-minwoo" },
+        { speaker: "서연", text: "미스터 첸이 남긴 메모가 있어! '그 시절 멋쟁이로 변신시켜 주면 선물을 주지!' 라고 적혀있어.", target: "char-seoyeon" },
+        { speaker: "민우", text: "좋아! 우리가 개화기 스타일리스트가 되는 거야! 남성 마네킹이랑 여성 마네킹에게 어울리는 옷과 액세서리를 입혀주자!", target: "char-minwoo" }
+    ];
+
+    let currentIndex = 0;
+
+    // --- 대화 진행 로직 ---
+    function showDialogue() {
+        if (currentIndex < dialogues.length) {
+            const currentData = dialogues[currentIndex];
+            
+            document.getElementById('speaker-name').innerText = currentData.speaker;
+            document.getElementById('dialogue-text').innerText = currentData.text;
+
+            if (currentData.speaker.includes("시스템")) {
+                document.getElementById('dialogue-text').style.color = "#d4af37";
+            } else {
+                document.getElementById('dialogue-text').style.color = "#ffffff";
+            }
+
+            const allChars = document.querySelectorAll('.character-wrapper');
+            allChars.forEach(char => {
+                if (currentData.target === "none") {
+                    char.classList.add('inactive');
+                } else if (char.id === currentData.target) {
+                    char.classList.remove('inactive');
+                } else {
+                    char.classList.add('inactive');
+                }
+            });
+        } else {
+            endDialogue();
+        }
+    }
+
+    function advanceDialogue() {
+        currentIndex++;
+        showDialogue();
+    }
+
+    function skipDialogue() {
+        currentIndex = dialogues.length;
+        endDialogue();
+    }
+
+    function endDialogue() {
+        // 대화창, 스킵버튼 숨기기
+        document.getElementById('dialogue-box').style.display = 'none';
+        document.getElementById('btn-skip').style.display = 'none';
+        
+        // 이전 버튼과 '게임하기' 버튼 나타내기
+        document.getElementById('btn-prev').style.display = 'block';
+        document.getElementById('btn-play-game').style.display = 'block';
+
+        // 상자 연출 제거 (대화 종료 후 시야 확보)
+        document.getElementById('treasure-box').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('treasure-box').style.display = 'none';
+        }, 500);
+
+        // 모든 캐릭터 원래 밝기로 복구
+        const allChars = document.querySelectorAll('.character-wrapper');
+        allChars.forEach(char => {
+            char.classList.remove('inactive');
+        });
+    }
+
+    // --- 네비게이션 로직 ---
+    function navigate(url) {
+        if (url && url.trim() !== '') {
+            window.location.href = url;
+        } else {
+            alert("마지막 페이지입니다.");
+        }
+    }
+</script>
+
+</body>
+</html>

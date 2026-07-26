@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차이나타운 체험학습앱 - 제 1관문</title>
+    <style>
+        /* [공통 UI/UX 및 폰트 규칙] */
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        :root {
+            --dark-red: #8c3030;
+            --gold: #d4af37;
+            --text-dark: #2d3748;
+            --text-light: #ffffff;
+            --bg-color: #f5f0e6;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #222; /* 화면 밖 배경 (레터박스 역할) */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: var(--bg-color);
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            font-family: 'Noto Sans KR', sans-serif;
+            background-image: radial-gradient(circle at center, rgba(255,255,255,0.4) 0%, rgba(0,0,0,0.1) 100%); /* 세피아/양피지 톤 약간의 깊이감 */
+        }
+
+        /* 스테이지 상단 표시바 */
+        #stage-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 24px;
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 4px;
+            letter-spacing: 0.05em;
+            z-index: 10;
+        }
+
+        /* 에셋 컨테이너 (캐릭터, 건물) */
+        .asset-container {
+            position: absolute;
+            overflow: hidden;
+        }
+
+        /* 캐릭터 밝기 조절 (말하지 않는 캐릭터 어둡게) */
+        .asset-char {
+            transition: filter 0.4s ease;
+            z-index: 5;
+        }
+        .asset-char.inactive {
+            filter: brightness(0.4);
+        }
+
+        /* 대화창 (유형2) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            height: 140px;
+            background-color: rgba(0, 0, 0, 0.75);
+            border: 2px solid var(--gold);
+            border-radius: 8px;
+            color: var(--text-light);
+            padding: 20px 30px;
+            box-sizing: border-box;
+            z-index: 20;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            margin: 0;
+            word-break: keep-all;
+        }
+
+        /* 공통 버튼 */
+        .btn-nav {
+            position: absolute;
+            background-color: var(--dark-red);
+            color: var(--text-light);
+            border: 1px solid var(--gold);
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 30;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+            transform: translateY(-2px);
+        }
+
+        .btn-nav:active {
+            transform: translateY(0);
+        }
+
+        #btn-prev { left: 20px; bottom: 20px; display: none; }
+        #btn-next { right: 20px; bottom: 20px; display: none; }
+        #btn-skip { right: 20px; bottom: 180px; } /* 대화창 위에 위치 */
+
+        /* 팁 텍스트 (클릭 유도) */
+        #click-tip {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+            font-style: italic;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 스테이지 바 -->
+        <div id="stage-bar">제 1관문 : 차이나타운 패루</div>
+
+        <!-- 배경 건물: 패루 (A_패루.html) -->
+        <!-- 원본 900x650, 배율 0.6 적용 -> 크기 540x390 -->
+        <div id="bg-paeru" class="asset-container" style="left: 50%; bottom: 120px; transform: translateX(-50%); width: 540px; height: 390px; z-index: 1;">
+            <iframe src="A_패루.html" scrolling="no" style="border: 0; width: 900px; height: 650px; transform: scale(0.6); transform-origin: top left;"></iframe>
+        </div>
+
+        <!-- 등장인물: 민우 (민우.html) -->
+        <!-- 원본 260x320. 패루를 마주보게 하기 위해 약간 좌측 배치 및 우측 바라보도록 반전 처리 -->
+        <div id="char-minwoo" class="asset-container asset-char" style="left: 15%; bottom: 60px; width: 260px; height: 320px; transform: scaleX(-1);">
+            <iframe src="민우.html" scrolling="no" style="border: 0; width: 260px; height: 320px;"></iframe>
+        </div>
+
+        <!-- 등장인물: 서연 (서연.html) -->
+        <!-- 원본 260x320. 우측 배치. -->
+        <div id="char-seoyeon" class="asset-container asset-char" style="right: 15%; bottom: 60px; width: 260px; height: 320px;">
+            <iframe src="서연.html" scrolling="no" style="border: 0; width: 260px; height: 320px;"></iframe>
+        </div>
+
+        <!-- 대화창 영역 -->
+        <div id="dialogue-box" onclick="advanceDialogue()">
+            <div id="speaker-name">화자 이름</div>
+            <p id="dialogue-text">대사 내용</p>
+            <span id="click-tip">화면을 클릭하여 다음으로 ▽</span>
+        </div>
+
+        <!-- 네비게이션 및 스킵 버튼 -->
+        <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+        <button id="btn-prev" class="btn-nav" onclick="goPrev()">◀ 이전</button>
+        <button id="btn-next" class="btn-nav" onclick="goNext()">다음 ▶</button>
+    </div>
+
+    <script>
+        // 스토리 및 대사 배열 (민우, 서연, 안내원)
+        const dialogues = [
+            { speaker: "민우", text: "여기가 첫 관문이구나! 이 거대한 중국식 대문은 뭐야? 되게 화려하다.", target: "char-minwoo" },
+            { speaker: "서연", text: "맞아, 여기서 암호를 풀어야 해. 이 대문은 평범한 문이 아니야.", target: "char-seoyeon" },
+            { speaker: "시스템 안내", text: "이곳은 인천 차이나타운의 상징인 '패루'입니다. 과거 중국에서 마을 입구나 거리에 세우던 전통 대문이지요.", target: null },
+            { speaker: "민우", text: "아하, 마을을 지키는 웅장한 대문이구나. 그럼 여기서 퀴즈는 어떻게 푸는 거지?", target: "char-minwoo" },
+            { speaker: "시스템 안내", text: "제시하는 문제를 보고 정답란에 정확한 답을 넣으면 문이 열리고 다음 구역으로 통과할 수 있습니다.", target: null },
+            { speaker: "서연", text: "방금 내 홀로그램 지도에 첫 번째 단서가 수신됐어. 준비됐지, 민우야?", target: "char-seoyeon" },
+            { speaker: "민우", text: "물론이지! 배운 내용을 떠올리며 정답을 맞춰보자. 가자!", target: "char-minwoo" }
+        ];
+
+        let currentIndex = 0;
+        const dialogueBox = document.getElementById('dialogue-box');
+        const speakerNameElem = document.getElementById('speaker-name');
+        const dialogueTextElem = document.getElementById('dialogue-text');
+        
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const btnSkip = document.getElementById('btn-skip');
+
+        // 캐릭터 DOM 참조 배열
+        const characters = [
+            document.getElementById('char-minwoo'),
+            document.getElementById('char-seoyeon')
+        ];
+
+        // 대화 진행 함수
+        function advanceDialogue() {
+            if (currentIndex < dialogues.length) {
+                const current = dialogues[currentIndex];
+                
+                // 텍스트 및 화자 갱신
+                speakerNameElem.innerText = current.speaker;
+                dialogueTextElem.innerText = current.text;
+
+                // 캐릭터 밝기(포커스) 처리
+                characters.forEach(char => {
+                    if (current.target && char.id === current.target) {
+                        char.classList.remove('inactive'); // 말하는 캐릭터는 밝게
+                    } else {
+                        char.classList.add('inactive');    // 나머지는 어둡게
+                    }
+                });
+
+                currentIndex++;
+            } else {
+                endDialogue();
+            }
+        }
+
+        // 대화 종료 및 버튼 노출 함수
+        function endDialogue() {
+            dialogueBox.style.display = 'none';
+            btnSkip.style.display = 'none';
+            
+            // 모든 캐릭터 밝기 복구
+            characters.forEach(char => char.classList.remove('inactive'));
+
+            // 이전/다음 이동 버튼 노출
+            btnPrev.style.display = 'block';
+            btnNext.style.display = 'block';
+        }
+
+        // 건너뛰기 기능
+        function skipDialogue() {
+            currentIndex = dialogues.length; // 인덱스를 끝으로 밀어버림
+            endDialogue();
+        }
+
+        // 페이지 이동 라우팅
+        function goPrev() {
+            window.location.href = 'A01.html';
+        }
+
+        function goNext() {
+            window.location.href = 'A03.html';
+        }
+
+        // 초기 시작 시 첫 대사 출력
+        window.onload = () => {
+            advanceDialogue();
+        };
+    </script>
+</body>
+</html>

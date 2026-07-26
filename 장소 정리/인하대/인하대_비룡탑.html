@@ -1,0 +1,109 @@
+<!-- 원본 크기: 500x1000 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인하대학교 비룡탑</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .ibt-svg { display:block; width:100%; height:auto; }
+  .ibt-core { fill:#b8b2a4; stroke:#8c8676; stroke-width:1; }
+  .ibt-dragon { fill:none; stroke:url(#ibtBronze); stroke-linecap:round; stroke-linejoin:round; }
+  .ibt-scale { fill:#e8c468; opacity:0.55; }
+  .ibt-scale-dark { fill:#9a6a24; opacity:0.5; }
+  .ibt-claw { fill:url(#ibtBronze); stroke:#6a4416; stroke-width:1; }
+  .ibt-horn { fill:#d8a83e; stroke:#8a5a1e; stroke-width:1; }
+  .ibt-eye { fill:#e04030; }
+  .ibt-base { fill:#b0a790; stroke:#877d64; stroke-width:1.4; }
+  .ibt-base-dark { fill:#948a70; stroke:#6f6650; stroke-width:1.2; }
+  .ibt-plaque { fill:#3c342a; stroke:#231d15; stroke-width:1.2; }
+  .ibt-plaque-text { fill:#e8c468; font-family:"Malgun Gothic", sans-serif; font-size:20px; font-weight:bold; text-anchor:middle; }
+  .ibt-glow { fill:#ffe9a8; opacity:0.25; }
+  @keyframes ibtGlow { 0%,100% { opacity:0.18; } 50% { opacity:0.38; } }
+  .ibt-glow { animation: ibtGlow 3.6s ease-in-out infinite; }
+</style>
+</head>
+<body>
+<svg class="ibt-svg" viewBox="0 0 500 1000" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="인하대학교 비룡탑 용 조형물 탑">
+<title>인하대학교 비룡탑</title>
+<defs>
+  <linearGradient id="ibtBronze" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#f0d488"/>
+    <stop offset="0.45" stop-color="#c99a3e"/>
+    <stop offset="1" stop-color="#8a5a1e"/>
+  </linearGradient>
+</defs>
+
+<!-- 그림자 -->
+<ellipse cx="250" cy="962" rx="150" ry="16" fill="#000" opacity="0.12"/>
+
+<!-- 정상 후광 -->
+<circle class="ibt-glow" cx="250" cy="190" r="90"/>
+
+<!-- 기단부 (3단 석재) -->
+<ellipse class="ibt-base-dark" cx="250" cy="958" rx="150" ry="26"/>
+<ellipse class="ibt-base" cx="250" cy="944" rx="130" ry="22"/>
+<ellipse class="ibt-base-dark" cx="250" cy="916" rx="104" ry="18"/>
+<ellipse class="ibt-base" cx="250" cy="892" rx="80" ry="15"/>
+<rect class="ibt-base" x="205" y="862" width="90" height="34"/>
+
+<!-- 명판 -->
+<rect class="ibt-plaque" x="196" y="900" width="108" height="34" rx="3"/>
+<text class="ibt-plaque-text" x="250" y="924">비룡탑</text>
+
+<!-- 탑 중심 코어 (석재/금속 기둥) -->
+<polygon class="ibt-core" points="238,862 262,862 254,220 246,220"/>
+
+<!-- ══════ 용 몸통 (탑을 휘감아 오름) ══════ -->
+<path class="ibt-dragon" d="M250,860 C 190,824 322,780 236,738 C 166,704 330,668 244,620 C 168,584 326,548 240,500 C 168,466 320,432 244,388 C 176,356 312,326 244,286 C 202,262 262,240 248,214" stroke-width="30"/>
+<path class="ibt-dragon" d="M250,860 C 190,824 322,780 236,738 C 166,704 330,668 244,620 C 168,584 326,548 240,500 C 168,466 320,432 244,388 C 176,356 312,326 244,286 C 202,262 262,240 248,214" stroke-width="30" opacity="0.001"/>
+
+<!-- 비늘 텍스처 -->
+<g class="ibt-scale">
+  <circle cx="228" cy="820" r="9"/><circle cx="270" cy="796" r="9"/><circle cx="218" cy="756" r="8"/>
+  <circle cx="272" cy="700" r="9"/><circle cx="212" cy="666" r="8"/><circle cx="268" cy="620" r="9"/>
+  <circle cx="214" cy="576" r="8"/><circle cx="266" cy="530" r="9"/><circle cx="212" cy="488" r="8"/>
+  <circle cx="266" cy="440" r="9"/><circle cx="222" cy="400" r="8"/><circle cx="264" cy="356" r="8"/>
+  <circle cx="226" cy="316" r="7"/><circle cx="258" cy="278" r="7"/><circle cx="240" cy="244" r="6"/>
+</g>
+<g class="ibt-scale-dark">
+  <circle cx="248" cy="838" r="5"/><circle cx="246" cy="778" r="5"/><circle cx="250" cy="718" r="5"/>
+  <circle cx="244" cy="640" r="5"/><circle cx="248" cy="558" r="5"/><circle cx="246" cy="478" r="5"/>
+  <circle cx="250" cy="408" r="4.5"/><circle cx="248" cy="336" r="4.5"/><circle cx="250" cy="266" r="4"/>
+</g>
+
+<!-- 발톱(다리) 3곳 -->
+<g class="ibt-claw">
+  <path d="M228,700 Q196,690 186,708 Q198,706 208,714 Q206,700 228,700 Z"/>
+  <path d="M272,540 Q306,530 316,548 Q302,546 292,554 Q296,540 272,540 Z"/>
+  <path d="M226,400 Q192,392 182,408 Q196,406 206,414 Q202,400 226,400 Z"/>
+</g>
+
+<!-- ══════ 용 머리 (정상) ══════ -->
+<g transform="translate(250,205)">
+  <!-- 목 -->
+  <path d="M-6,40 Q-14,10 0,-6 Q14,10 6,40 Z" fill="url(#ibtBronze)"/>
+  <!-- 뿔 -->
+  <path class="ibt-horn" d="M-6,-14 Q-20,-46 -10,-64 Q-4,-42 -2,-14 Z"/>
+  <path class="ibt-horn" d="M6,-14 Q20,-46 10,-64 Q4,-42 2,-14 Z"/>
+  <!-- 얼굴 -->
+  <path d="M-16,-14 Q-18,-2 -10,8 Q0,14 10,8 Q18,-2 16,-14 Q0,-24 -16,-14 Z" fill="url(#ibtBronze)" stroke="#6a4416" stroke-width="1"/>
+  <!-- 주둥이 -->
+  <path d="M-9,4 Q0,20 9,4 Q4,12 0,12 Q-4,12 -9,4 Z" fill="#a06a24"/>
+  <!-- 눈 -->
+  <circle class="ibt-eye" cx="-7" cy="-6" r="2.6"/>
+  <circle class="ibt-eye" cx="7" cy="-6" r="2.6"/>
+  <!-- 갈기 -->
+  <path d="M-16,-12 Q-30,-8 -34,4 Q-24,-2 -14,-4 Z" fill="#c99a3e"/>
+  <path d="M16,-12 Q30,-8 34,4 Q24,-2 14,-4 Z" fill="#c99a3e"/>
+  <path d="M-4,-22 Q-2,-34 6,-40 Q4,-28 2,-20 Z" fill="#e8c468"/>
+</g>
+
+<!-- 여의주(구슬) -->
+<circle cx="250" cy="150" r="12" fill="#ffe9a8" stroke="#c99a3e" stroke-width="1.4"/>
+<circle cx="246" cy="146" r="4" fill="#fff" opacity="0.7"/>
+
+</svg>
+</body>
+</html>

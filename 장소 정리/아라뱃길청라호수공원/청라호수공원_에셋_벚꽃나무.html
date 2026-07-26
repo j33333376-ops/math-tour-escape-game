@@ -1,0 +1,87 @@
+<!-- 원본 크기: 600x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>벚꽃나무</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .cbt-svg { display:block; width:100%; height:auto; }
+  .cbt-sway { animation: cbt-sway 6s ease-in-out infinite; transform-origin: 300px 560px; }
+  @keyframes cbt-sway { 0%,100% { transform: rotate(-1.2deg);} 50% { transform: rotate(1.2deg);} }
+  .cbt-fall { animation: cbt-fall 7s ease-in-out infinite; }
+  @keyframes cbt-fall { 0% { transform: translate(0,0) rotate(0deg); opacity:0.95; } 100% { transform: translate(-40px,120px) rotate(160deg); opacity:0; } }
+</style>
+</head>
+<body>
+<svg class="cbt-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="벚꽃나무">
+<title>벚꽃나무</title>
+<desc>청라호수공원 산책로의 만개한 벚꽃나무.</desc>
+<defs>
+  <linearGradient id="cbtTrunk" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#5f4326"/><stop offset="0.4" stop-color="#8a6440"/><stop offset="1" stop-color="#4a3018"/>
+  </linearGradient>
+  <radialGradient id="cbtBlossom" cx="0.36" cy="0.3" r="0.8">
+    <stop offset="0" stop-color="#ffe4ee"/><stop offset="0.55" stop-color="#f9bcd4"/><stop offset="1" stop-color="#e08fb4"/>
+  </radialGradient>
+  <radialGradient id="cbtBlossom2" cx="0.4" cy="0.32" r="0.8">
+    <stop offset="0" stop-color="#fff2f6"/><stop offset="1" stop-color="#f4a8c8"/>
+  </radialGradient>
+</defs>
+<ellipse cx="300" cy="566" rx="200" ry="26" fill="#4a3a26" opacity="0.2"/>
+<g class="cbt-sway">
+  <!-- 줄기 -->
+  <path d="M266,560 C262,470 268,400 262,340 C258,296 244,262 226,236
+           M334,560 C338,470 332,400 338,340 C342,296 356,262 374,236"
+        fill="none" stroke="url(#cbtTrunk)" stroke-width="0"/>
+  <path d="M262,566 C258,472 268,398 260,336 C300,336 340,336 340,336 C332,398 342,472 338,566 Z" fill="url(#cbtTrunk)" stroke="#3a2412" stroke-width="4"/>
+  <!-- 가지 -->
+  <g stroke="url(#cbtTrunk)" stroke-width="20" fill="none" stroke-linecap="round">
+    <path d="M292,348 C266,306 220,282 178,268"/>
+    <path d="M308,348 C334,306 380,282 422,268"/>
+  </g>
+  <g stroke="url(#cbtTrunk)" stroke-width="12" fill="none" stroke-linecap="round">
+    <path d="M300,320 C296,270 288,232 274,200"/>
+    <path d="M232,290 C202,264 172,248 140,240"/>
+    <path d="M368,290 C398,264 428,248 460,240"/>
+    <path d="M300,300 C316,258 346,224 372,204"/>
+  </g>
+  <!-- 벚꽃 덩어리 -->
+  <g>
+    <circle cx="300" cy="164" r="86" fill="url(#cbtBlossom)"/>
+    <circle cx="186" cy="216" r="70" fill="url(#cbtBlossom)"/>
+    <circle cx="414" cy="216" r="70" fill="url(#cbtBlossom)"/>
+    <circle cx="112" cy="270" r="54" fill="url(#cbtBlossom2)"/>
+    <circle cx="488" cy="270" r="54" fill="url(#cbtBlossom2)"/>
+    <circle cx="240" cy="252" r="58" fill="url(#cbtBlossom2)"/>
+    <circle cx="360" cy="252" r="58" fill="url(#cbtBlossom2)"/>
+    <circle cx="300" cy="286" r="52" fill="url(#cbtBlossom)"/>
+  </g>
+  <!-- 개별 꽃 -->
+  <g>
+    <g transform="translate(300,140)"><g fill="#ffffff"><ellipse cx="0" cy="-13" rx="8" ry="11"/><ellipse cx="12" cy="-4" rx="8" ry="11" transform="rotate(72 12 -4)"/><ellipse cx="8" cy="11" rx="8" ry="11" transform="rotate(144 8 11)"/><ellipse cx="-8" cy="11" rx="8" ry="11" transform="rotate(216 -8 11)"/><ellipse cx="-12" cy="-4" rx="8" ry="11" transform="rotate(288 -12 -4)"/></g><circle r="5" fill="#f4c04c"/></g>
+    <g transform="translate(196,196) scale(0.85)"><g fill="#ffffff"><ellipse cx="0" cy="-13" rx="8" ry="11"/><ellipse cx="12" cy="-4" rx="8" ry="11" transform="rotate(72 12 -4)"/><ellipse cx="8" cy="11" rx="8" ry="11" transform="rotate(144 8 11)"/><ellipse cx="-8" cy="11" rx="8" ry="11" transform="rotate(216 -8 11)"/><ellipse cx="-12" cy="-4" rx="8" ry="11" transform="rotate(288 -12 -4)"/></g><circle r="5" fill="#f4c04c"/></g>
+    <g transform="translate(414,208) scale(0.9)"><g fill="#ffffff"><ellipse cx="0" cy="-13" rx="8" ry="11"/><ellipse cx="12" cy="-4" rx="8" ry="11" transform="rotate(72 12 -4)"/><ellipse cx="8" cy="11" rx="8" ry="11" transform="rotate(144 8 11)"/><ellipse cx="-8" cy="11" rx="8" ry="11" transform="rotate(216 -8 11)"/><ellipse cx="-12" cy="-4" rx="8" ry="11" transform="rotate(288 -12 -4)"/></g><circle r="5" fill="#f4c04c"/></g>
+    <g transform="translate(120,262) scale(0.75)"><g fill="#ffffff"><ellipse cx="0" cy="-13" rx="8" ry="11"/><ellipse cx="12" cy="-4" rx="8" ry="11" transform="rotate(72 12 -4)"/><ellipse cx="8" cy="11" rx="8" ry="11" transform="rotate(144 8 11)"/><ellipse cx="-8" cy="11" rx="8" ry="11" transform="rotate(216 -8 11)"/><ellipse cx="-12" cy="-4" rx="8" ry="11" transform="rotate(288 -12 -4)"/></g><circle r="5" fill="#f4c04c"/></g>
+    <g transform="translate(484,262) scale(0.75)"><g fill="#ffffff"><ellipse cx="0" cy="-13" rx="8" ry="11"/><ellipse cx="12" cy="-4" rx="8" ry="11" transform="rotate(72 12 -4)"/><ellipse cx="8" cy="11" rx="8" ry="11" transform="rotate(144 8 11)"/><ellipse cx="-8" cy="11" rx="8" ry="11" transform="rotate(216 -8 11)"/><ellipse cx="-12" cy="-4" rx="8" ry="11" transform="rotate(288 -12 -4)"/></g><circle r="5" fill="#f4c04c"/></g>
+    <g transform="translate(300,288) scale(0.8)"><g fill="#ffffff"><ellipse cx="0" cy="-13" rx="8" ry="11"/><ellipse cx="12" cy="-4" rx="8" ry="11" transform="rotate(72 12 -4)"/><ellipse cx="8" cy="11" rx="8" ry="11" transform="rotate(144 8 11)"/><ellipse cx="-8" cy="11" rx="8" ry="11" transform="rotate(216 -8 11)"/><ellipse cx="-12" cy="-4" rx="8" ry="11" transform="rotate(288 -12 -4)"/></g><circle r="5" fill="#f4c04c"/></g>
+  </g>
+</g>
+<!-- 떨어지는 꽃잎 -->
+<g fill="#f9bcd4">
+  <ellipse class="cbt-fall" cx="180" cy="336" rx="9" ry="6"/>
+  <ellipse class="cbt-fall" cx="420" cy="352" rx="8" ry="5.4" style="animation-delay:1.8s"/>
+  <ellipse class="cbt-fall" cx="300" cy="368" rx="9" ry="6" style="animation-delay:3.4s"/>
+  <ellipse class="cbt-fall" cx="240" cy="330" rx="7" ry="5" style="animation-delay:5s"/>
+</g>
+<!-- 바닥 꽃잎 -->
+<g fill="#f4a8c8" opacity="0.9">
+  <ellipse cx="180" cy="562" rx="10" ry="6" transform="rotate(-20 180 562)"/>
+  <ellipse cx="392" cy="568" rx="10" ry="6" transform="rotate(24 392 568)"/>
+  <ellipse cx="452" cy="556" rx="8" ry="5" transform="rotate(-14 452 556)"/>
+  <ellipse cx="140" cy="552" rx="8" ry="5" transform="rotate(30 140 552)"/>
+</g>
+</svg>
+</body>
+</html>

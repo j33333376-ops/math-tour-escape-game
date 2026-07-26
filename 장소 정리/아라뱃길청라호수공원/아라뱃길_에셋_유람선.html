@@ -1,0 +1,99 @@
+<!-- 원본 크기: 1000x500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아라뱃길 유람선</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .acy-svg { display:block; width:100%; height:auto; }
+  .acy-bob { animation: acy-bob 5s ease-in-out infinite; transform-origin: 500px 400px; }
+  @keyframes acy-bob { 0%,100% { transform: translateY(0) rotate(-0.8deg);} 50% { transform: translateY(-6px) rotate(0.8deg);} }
+  .acy-flag { animation: acy-flag 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: 0% 50%; }
+  @keyframes acy-flag { 0%,100% { transform: skewY(-6deg);} 50% { transform: skewY(6deg);} }
+</style>
+</head>
+<body>
+<svg class="acy-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="아라뱃길 유람선">
+<title>아라뱃길 유람선</title>
+<desc>아라뱃길 운하를 운항하는 2층 유람선.</desc>
+<defs>
+  <linearGradient id="acyHull" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#eef2f8"/><stop offset="1" stop-color="#aebccc"/>
+  </linearGradient>
+  <linearGradient id="acyBand" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#3f6fb4"/><stop offset="1" stop-color="#1f3f7c"/>
+  </linearGradient>
+  <linearGradient id="acyGlass" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#dceefa"/><stop offset="1" stop-color="#7fa8d4"/>
+  </linearGradient>
+</defs>
+<g class="acy-bob">
+  <!-- 깃발 -->
+  <line x1="176" y1="118" x2="176" y2="42" stroke="#8f9aa4" stroke-width="6" stroke-linecap="round"/>
+  <g class="acy-flag"><path d="M176,42 L250,60 L176,80 Z" fill="#d8604e" stroke="#9c3226" stroke-width="3"/></g>
+  <!-- 조타실 -->
+  <path d="M700,142 L836,142 L820,100 L716,100 Z" fill="url(#acyBand)" stroke="#152c58" stroke-width="4"/>
+  <rect x="726" y="112" width="84" height="26" rx="4" fill="url(#acyGlass)" stroke="#3a5c88" stroke-width="3"/>
+  <!-- 상부 갑판 -->
+  <rect x="180" y="142" width="660" height="18" rx="8" fill="#dce4ee" stroke="#7d8e9a" stroke-width="4"/>
+  <g stroke="#8f9aa4" stroke-width="6" stroke-linecap="round">
+    <line x1="220" y1="160" x2="220" y2="212"/><line x1="500" y1="160" x2="500" y2="212"/>
+    <line x1="796" y1="160" x2="796" y2="212"/>
+  </g>
+  <!-- 상부 난간 -->
+  <rect x="180" y="122" width="660" height="8" rx="4" fill="#8f9aa4"/>
+  <g stroke="#8f9aa4" stroke-width="3.4">
+    <line x1="240" y1="122" x2="240" y2="142"/><line x1="320" y1="122" x2="320" y2="142"/>
+    <line x1="400" y1="122" x2="400" y2="142"/><line x1="580" y1="122" x2="580" y2="142"/>
+    <line x1="660" y1="122" x2="660" y2="142"/>
+  </g>
+  <!-- 상부 승객 -->
+  <g fill="#4a5f7c" opacity="0.75">
+    <g transform="translate(300,122)"><circle cy="-14" r="7"/><path d="M-7,-8 L7,-8 L6,0 L-6,0 Z"/></g>
+    <g transform="translate(360,122)"><circle cy="-12" r="6"/><path d="M-6,-7 L6,-7 L5,0 L-5,0 Z"/></g>
+    <g transform="translate(620,122)"><circle cy="-14" r="7"/><path d="M-7,-8 L7,-8 L6,0 L-6,0 Z"/></g>
+  </g>
+  <!-- 선실 -->
+  <rect x="160" y="212" width="700" height="98" rx="14" fill="url(#acyHull)" stroke="#7d8e9a" stroke-width="5"/>
+  <g stroke="#3a5c88" stroke-width="4">
+    <rect x="196" y="234" width="90" height="56" rx="8" fill="url(#acyGlass)"/>
+    <rect x="302" y="234" width="90" height="56" rx="8" fill="url(#acyGlass)"/>
+    <rect x="408" y="234" width="90" height="56" rx="8" fill="url(#acyGlass)"/>
+    <rect x="514" y="234" width="90" height="56" rx="8" fill="url(#acyGlass)"/>
+    <rect x="620" y="234" width="90" height="56" rx="8" fill="url(#acyGlass)"/>
+    <rect x="726" y="234" width="90" height="56" rx="8" fill="url(#acyGlass)"/>
+  </g>
+  <g fill="#ffffff" opacity="0.5">
+    <path d="M202,282 L226,240 L246,240 L222,282 Z"/><path d="M308,282 L332,240 L352,240 L328,282 Z"/>
+    <path d="M414,282 L438,240 L458,240 L434,282 Z"/><path d="M520,282 L544,240 L564,240 L540,282 Z"/>
+    <path d="M626,282 L650,240 L670,240 L646,282 Z"/><path d="M732,282 L756,240 L776,240 L752,282 Z"/>
+  </g>
+  <!-- 선체 -->
+  <path d="M110,310 L890,310 C890,310 872,392 812,414 C748,438 262,438 198,414 C138,392 110,310 110,310 Z"
+        fill="url(#acyHull)" stroke="#7d8e9a" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M116,332 L884,332 L874,362 L126,362 Z" fill="url(#acyBand)"/>
+  <text x="500" y="356" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="bold" fill="#ffffff">ARA CRUISE</text>
+  <!-- 뱃머리 -->
+  <path d="M890,310 C930,304 952,290 958,272 C932,274 908,288 890,310 Z" fill="#dce8f2" stroke="#7d8e9a" stroke-width="4.4"/>
+  <!-- 구명튜브 -->
+  <g transform="translate(206,272)">
+    <circle r="22" fill="#e8623c" stroke="#a83f26" stroke-width="4"/>
+    <circle r="10" fill="#f2f6f8" stroke="#a83f26" stroke-width="3"/>
+  </g>
+  <!-- 창 아래 라인 -->
+  <g stroke="#8f9aa4" stroke-width="3" opacity="0.6">
+    <line x1="160" y1="306" x2="860" y2="306"/>
+  </g>
+</g>
+<!-- 물결 -->
+<g fill="none" stroke="#5f8fc4" stroke-width="9" stroke-linecap="round" opacity="0.75">
+  <path d="M90,442 q42,-16 84,0 q42,16 84,0"/>
+  <path d="M740,446 q42,-16 84,0 q42,16 84,0"/>
+</g>
+<path d="M120,478 q64,-20 128,0 q64,20 128,0 q64,-20 128,0 q64,20 128,0 q64,-20 128,0"
+      fill="none" stroke="#2c5f9c" stroke-width="13" stroke-linecap="round" opacity="0.65"/>
+</svg>
+</body>
+</html>

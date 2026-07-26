@@ -1,0 +1,338 @@
+<!-- ===================================================
+     [완성형 컴포넌트] 닥터 최 (Doctor Choe) - 두상 외곽선 완벽 보정본
+     =================================================== -->
+<div class="doctor-choe-perfect-component" style="display: inline-block; overflow: visible !important;">
+    
+    <style>
+        .dcr-stage {
+            position: relative;
+            width: 260px;
+            height: 320px;
+            margin: 0 auto;
+            animation: dcr-breathe 4s ease-in-out infinite;
+            overflow: visible !important;
+        }
+
+        @keyframes dcr-breathe {
+            0%, 100% { transform: scale(1) translateY(0px); }
+            50% { transform: scale(1.01) translateY(-4px); }
+        }
+
+        /* 두상 기본 구조 */
+        .dcr-head-wrapper {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 125px;
+            height: 125px;
+            overflow: visible !important;
+        }
+
+        /* 귀 */
+        .dcr-ear-l, .dcr-ear-r {
+            position: absolute;
+            top: 55px;
+            width: 16px;
+            height: 26px;
+            background-color: #ffdbb5;
+            border: 3.5px solid #8d5b4c;
+            z-index: 3;
+        }
+        .dcr-ear-l { left: -11px; border-radius: 50% 0 0 50%; transform: rotate(-10deg); }
+        .dcr-ear-r { right: -11px; border-radius: 0 50% 50% 0; transform: rotate(10deg); }
+
+        /* 목 구조 */
+        .dcr-neck {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 40px;
+            background-color: #ffdbb5;
+            border-left: 3.5px solid #8d5b4c;
+            border-right: 3.5px solid #8d5b4c;
+            z-index: 3;
+        }
+
+        /* 얼굴 피부 컨테이너 */
+        .dcr-face-skin {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffdbb5;
+            border: 3.5px solid #8d5b4c;
+            border-radius: 50% 50% 45% 45%;
+            z-index: 5;
+            overflow: hidden;
+        }
+
+        /* 이마 주름 */
+        .dcr-wrinkle {
+            position: absolute;
+            top: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background-color: #8d5b4c;
+            border-radius: 2px;
+            opacity: 0.5;
+            z-index: 6;
+        }
+        .dcr-wrinkle-2 {
+            position: absolute;
+            top: 29px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 3px;
+            background-color: #8d5b4c;
+            border-radius: 2px;
+            opacity: 0.5;
+            z-index: 6;
+        }
+
+        /* 눈썹 */
+        .dcr-eyebrow-l, .dcr-eyebrow-r {
+            position: absolute;
+            top: 42px;
+            width: 22px;
+            height: 6px;
+            background-color: #f1f5f9;
+            border: 2px solid #475569;
+            border-radius: 4px;
+            z-index: 7;
+        }
+        .dcr-eyebrow-l { left: 18px; transform: rotate(5deg); }
+        .dcr-eyebrow-r { right: 18px; transform: rotate(-5deg); }
+
+        /* 눈 및 다크서클 */
+        .dcr-eye-l, .dcr-eye-r {
+            position: absolute;
+            top: 55px;
+            width: 14px;
+            height: 14px;
+            background-color: #221a15;
+            border-radius: 50%;
+            z-index: 7;
+        }
+        .dcr-eye-l { left: 26px; }
+        .dcr-eye-r { right: 26px; }
+
+        .dcr-darkcircle-l, .dcr-darkcircle-r {
+            position: absolute;
+            top: 64px;
+            width: 24px;
+            height: 10px;
+            border-bottom: 3px solid rgba(141, 91, 76, 0.5);
+            border-radius: 50%;
+            z-index: 6;
+        }
+        .dcr-darkcircle-l { left: 21px; }
+        .dcr-darkcircle-r { right: 21px; }
+
+        /* 🧔 자연스러운 턱수염 (윗 테두리 선을 없앰) */
+        .dcr-beard {
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 46px;
+            height: 42px;
+            background-color: #f1f5f9;
+            border-left: 3.5px solid #475569;
+            border-right: 3.5px solid #475569;
+            border-bottom: 3.5px solid #475569;
+            border-radius: 0 0 22px 22px;
+            z-index: 6;
+        }
+
+        /* 입 */
+        .dcr-mouth {
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 5px;
+            background-color: #b91c1c;
+            border-radius: 2px;
+            z-index: 7;
+        }
+
+        /* 안경 디자인 */
+        .dcr-glasses {
+            position: absolute;
+            top: 42px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 110px;
+            height: 44px;
+            z-index: 10;
+        }
+        .dcr-lens {
+            position: absolute;
+            width: 44px;
+            height: 44px;
+            border: 3.5px solid #475569;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .dcr-lens-l { left: 4px; }
+        .dcr-lens-r { right: 4px; }
+        .dcr-bridge {
+            position: absolute;
+            top: 20px;
+            left: 46px;
+            width: 18px;
+            height: 4px;
+            background-color: #475569;
+        }
+
+        /* 💇‍♂️ 입체적인 백발 스파이크 헤어 구조 (마스크 제거) */
+        .dcr-hair-back {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 128px;
+            height: 70px;
+            background-color: #f1f5f9;
+            border: 3.5px solid #475569;
+            border-radius: 50px 50px 0 0;
+            z-index: 2; /* 스파이크보다 위에 와서 하단 선을 가려줌 */
+        }
+        .dcr-spike {
+            position: absolute;
+            background-color: #f1f5f9;
+            border: 3.5px solid #475569;
+            z-index: 1; /* 가장 뒤로 보냄으로써 두상 외곽선 훼손 금지 */
+        }
+        .dcr-spike-1 {
+            top: -20px; left: 16px; width: 32px; height: 32px;
+            transform: rotate(15deg) skewY(10deg);
+            border-radius: 8px 0 0 0;
+        }
+        .dcr-spike-2 {
+            top: -25px; left: 48px; width: 34px; height: 34px;
+            transform: rotate(45deg);
+            border-radius: 6px 0 0 0;
+        }
+        .dcr-spike-3 {
+            top: -18px; right: 16px; width: 30px; height: 30px;
+            transform: rotate(65deg) skewX(10deg);
+            border-radius: 6px 0 0 0;
+        }
+
+        /* 유니폼 */
+        .dcr-uniform {
+            position: absolute;
+            top: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 124px;
+            height: 110px;
+            background-color: #ffffff;
+            border: 3.5px solid #cbd5e1;
+            border-radius: 24px 24px 10px 10px;
+            z-index: 8;
+            overflow: hidden;
+        }
+        .dcr-inner-shirt {
+            position: absolute;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 36px;
+            height: 40px;
+            background-color: #0d9488;
+            border-left: 3.5px solid #0f766e;
+            border-right: 3.5px solid #0f766e;
+            border-bottom: 3.5px solid #0f766e;
+            border-radius: 0 0 6px 6px;
+            z-index: 9;
+        }
+        .dcr-collar-l {
+            position: absolute;
+            top: -2px; left: 24px; width: 28px; height: 48px;
+            background-color: #ffffff; border: 3.5px solid #cbd5e1;
+            transform: rotate(-22deg); border-radius: 0 0 6px 0; z-index: 10;
+        }
+        .dcr-collar-r {
+            position: absolute;
+            top: -2px; right: 24px; width: 28px; height: 48px;
+            background-color: #ffffff; border: 3.5px solid #cbd5e1;
+            transform: rotate(22deg); border-radius: 0 0 0 6px; z-index: 10;
+        }
+        .dcr-center-line {
+            position: absolute; top: 44px; left: 50%; transform: translateX(-50%);
+            width: 3.5px; height: 70px; background-color: #cbd5e1; z-index: 9;
+        }
+
+        /* 주머니와 펜 */
+        .dcr-pocket {
+            position: absolute; top: 56px; right: 14px; width: 26px; height: 22px;
+            background-color: #ffffff; border: 2.5px solid #cbd5e1; border-radius: 2px; z-index: 10;
+        }
+        .dcr-pen {
+            position: absolute; top: 48px; right: 20px; width: 4px; height: 14px;
+            background-color: #ef4444; border-radius: 1px; z-index: 11;
+        }
+        .dcr-pen-clip {
+            position: absolute; top: 52px; right: 17px; width: 2px; height: 8px;
+            background-color: #b91c1c; z-index: 11;
+        }
+    </style>
+
+    <div class="dcr-stage">
+        
+        <div class="dcr-head-wrapper">
+            <!-- 층위(z-index) 구조를 통해 부드럽게 결합하도록 배치 순서 변경 -->
+            <div class="dcr-hair-spike dcr-spike dcr-spike-1"></div>
+            <div class="dcr-hair-spike dcr-spike dcr-spike-2"></div>
+            <div class="dcr-hair-spike dcr-spike dcr-spike-3"></div>
+            
+            <div class="dcr-hair-back"></div> <!-- 사각형 마스크 없이 얘가 스파이크 밑단을 가려줍니다 -->
+            
+            <div class="dcr-ear-l"></div>
+            <div class="dcr-ear-r"></div>
+            <div class="dcr-neck"></div>
+            
+            <div class="dcr-face-skin">
+                <div class="dcr-wrinkle"></div>
+                <div class="dcr-wrinkle-2"></div>
+                <div class="dcr-eyebrow-l"></div>
+                <div class="dcr-eyebrow-r"></div>
+                <div class="dcr-eye-l"></div>
+                <div class="dcr-eye-r"></div>
+                <div class="dcr-darkcircle-l"></div>
+                <div class="dcr-darkcircle-r"></div>
+                
+                <div class="dcr-beard">
+                    <div class="dcr-mouth"></div>
+                </div>
+            </div>
+
+            <div class="dcr-glasses">
+                <div class="dcr-lens dcr-lens-l"></div>
+                <div class="dcr-lens dcr-lens-r"></div>
+                <div class="dcr-bridge"></div>
+            </div>
+        </div>
+
+        <!-- 의상 파트 -->
+        <div class="dcr-uniform">
+            <div class="dcr-inner-shirt"></div>
+            <div class="dcr-center-line"></div>
+            <div class="dcr-collar-l"></div>
+            <div class="dcr-collar-r"></div>
+            <div class="dcr-pocket"></div>
+            <div class="dcr-pen"></div>
+            <div class="dcr-pen-clip"></div>
+        </div>
+    </div>
+</div>

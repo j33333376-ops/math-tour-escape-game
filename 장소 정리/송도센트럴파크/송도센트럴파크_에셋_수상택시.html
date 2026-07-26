@@ -1,0 +1,91 @@
+<!-- 원본 크기: 1000x500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수상택시</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .sst-svg { display:block; width:100%; height:auto; }
+  .sst-bob { animation: sst-bob 4.6s ease-in-out infinite; transform-origin: 500px 380px; }
+  @keyframes sst-bob { 0%,100% { transform: translateY(0) rotate(-1deg);} 50% { transform: translateY(-7px) rotate(1deg);} }
+  .sst-wave { animation: sst-wave 3.4s ease-in-out infinite; }
+  @keyframes sst-wave { 0%,100% { opacity:0.45; } 50% { opacity:0.9; } }
+</style>
+</head>
+<body>
+<svg class="sst-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="수상택시">
+<title>수상택시</title>
+<desc>송도 센트럴파크 수로를 오가는 흰색 수상택시.</desc>
+<defs>
+  <linearGradient id="sstHull" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffffff"/><stop offset="0.55" stop-color="#eef4f7"/><stop offset="1" stop-color="#b8c8d2"/>
+  </linearGradient>
+  <linearGradient id="sstGlass" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#cfeaf5"/><stop offset="1" stop-color="#78aec6"/>
+  </linearGradient>
+  <linearGradient id="sstWater" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#8fc4d8"/><stop offset="1" stop-color="#4d88a4"/>
+  </linearGradient>
+</defs>
+<g class="sst-bob">
+  <!-- 차양/지붕 -->
+  <path d="M258,158 L742,158 L722,120 L278,120 Z" fill="#2f7f9c" stroke="#1c5468" stroke-width="5"/>
+  <rect x="250" y="152" width="500" height="16" rx="8" fill="#3f9ab8" stroke="#1c5468" stroke-width="4"/>
+  <g stroke="#8f9aa4" stroke-width="7" stroke-linecap="round">
+    <line x1="292" y1="168" x2="292" y2="242"/><line x1="708" y1="168" x2="708" y2="242"/>
+  </g>
+  <!-- 선실 -->
+  <rect x="270" y="176" width="460" height="126" rx="16" fill="url(#sstHull)" stroke="#7d8e9a" stroke-width="5"/>
+  <!-- 창문 -->
+  <g stroke="#5a7f92" stroke-width="4">
+    <rect x="300" y="200" width="88" height="66" rx="8" fill="url(#sstGlass)"/>
+    <rect x="404" y="200" width="88" height="66" rx="8" fill="url(#sstGlass)"/>
+    <rect x="508" y="200" width="88" height="66" rx="8" fill="url(#sstGlass)"/>
+    <rect x="612" y="200" width="88" height="66" rx="8" fill="url(#sstGlass)"/>
+  </g>
+  <g fill="#ffffff" opacity="0.55">
+    <path d="M306,258 L330,206 L352,206 L328,258 Z"/>
+    <path d="M410,258 L434,206 L456,206 L432,258 Z"/>
+    <path d="M514,258 L538,206 L560,206 L536,258 Z"/>
+    <path d="M618,258 L642,206 L664,206 L640,258 Z"/>
+  </g>
+  <!-- 승객 실루엣 -->
+  <g fill="#5f7f92" opacity="0.55">
+    <circle cx="332" cy="232" r="11"/><circle cx="440" cy="230" r="11"/>
+    <circle cx="548" cy="234" r="11"/><circle cx="654" cy="230" r="11"/>
+  </g>
+  <!-- 선체 -->
+  <path d="M180,302 L820,302 C820,302 806,366 754,388 C700,410 300,410 246,388 C194,366 180,302 180,302 Z"
+        fill="url(#sstHull)" stroke="#7d8e9a" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M186,330 L814,330 L806,354 L194,354 Z" fill="#2f7f9c" opacity="0.9"/>
+  <text x="500" y="350" text-anchor="middle" font-family="sans-serif" font-size="21" font-weight="bold" fill="#ffffff">WATER TAXI</text>
+  <!-- 뱃머리 -->
+  <path d="M820,302 C858,296 878,282 884,266 C862,268 838,282 820,302 Z" fill="#dce8ee" stroke="#7d8e9a" stroke-width="4.4"/>
+  <!-- 깃발 -->
+  <line x1="200" y1="120" x2="200" y2="60" stroke="#8f9aa4" stroke-width="6" stroke-linecap="round"/>
+  <path d="M200,60 L266,76 L200,92 Z" fill="#e8623c" stroke="#a83f26" stroke-width="3"/>
+  <!-- 구명튜브 -->
+  <g transform="translate(760,240)">
+    <circle r="26" fill="#e8623c" stroke="#a83f26" stroke-width="4"/>
+    <circle r="12" fill="#f2f6f8" stroke="#a83f26" stroke-width="3"/>
+    <g stroke="#f7f2e6" stroke-width="6">
+      <line x1="-24" y1="0" x2="-14" y2="0"/><line x1="14" y1="0" x2="24" y2="0"/>
+      <line x1="0" y1="-24" x2="0" y2="-14"/><line x1="0" y1="14" x2="0" y2="24"/>
+    </g>
+  </g>
+</g>
+<!-- 물결 -->
+<g class="sst-wave" fill="none" stroke="#7fc4d8" stroke-width="8" stroke-linecap="round">
+  <path d="M110,414 q40,-16 80,0 q40,16 80,0"/>
+  <path d="M730,418 q40,-16 80,0 q40,16 80,0"/>
+</g>
+<path d="M150,450 q60,-20 120,0 q60,20 120,0 q60,-20 120,0 q60,20 120,0 q60,-20 120,0"
+      fill="none" stroke="url(#sstWater)" stroke-width="14" stroke-linecap="round" opacity="0.8"/>
+<g fill="#ffffff" opacity="0.6">
+  <ellipse cx="240" cy="440" rx="26" ry="6"/><ellipse cx="760" cy="444" rx="26" ry="6"/>
+</g>
+</svg>
+</body>
+</html>

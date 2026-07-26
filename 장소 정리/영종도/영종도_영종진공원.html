@@ -1,0 +1,272 @@
+<!-- 원본 크기: 1200x520 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>영종도 영종진공원</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .yjj-svg { display:block; width:100%; height:auto; }
+
+  .yjj-stone { fill:#a49682; stroke:#7d7160; stroke-width:1; }
+  .yjj-stone2 { fill:#b2a48f; stroke:#8a7d68; stroke-width:1; }
+  .yjj-stone3 { fill:#968a76; stroke:#726650; stroke-width:1; }
+  .yjj-roof { fill:#5c4632; }
+  .yjj-roof-dark { fill:#3f3020; }
+
+  @keyframes yjjSmoke {
+    0% { transform: translateY(0) scale(1); opacity: 0.5; }
+    100% { transform: translateY(-26px) scale(1.6); opacity: 0; }
+  }
+  .yjj-smoke { animation: yjjSmoke 3.2s ease-out infinite; }
+  .yjj-smoke:nth-child(2) { animation-delay: 1.1s; }
+  .yjj-smoke:nth-child(3) { animation-delay: 2.2s; }
+
+  @keyframes yjjFlag {
+    0%, 100% { transform: skewX(0deg); }
+    50% { transform: skewX(-6deg); }
+  }
+  .yjj-flag { animation: yjjFlag 3s ease-in-out infinite; transform-origin: left center; }
+</style>
+</head>
+<body>
+<svg class="yjj-svg" viewBox="0 0 1200 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="영종진공원 성곽과 성문, 포대">
+<title>영종도 영종진공원</title>
+<defs>
+  <linearGradient id="yjjGateGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#8a6a3f"/>
+    <stop offset="1" stop-color="#5c4526"/>
+  </linearGradient>
+</defs>
+
+<!-- 지면 -->
+<rect x="0" y="430" width="1200" height="90" fill="#7fa060" opacity="0.35"/>
+<rect x="0" y="430" width="1200" height="4" fill="#5c7a44" opacity="0.4"/>
+
+<!-- ════════════════════════════════
+     좌측 성곽 (돌 성벽, 다각형 블록 패턴)
+════════════════════════════════ -->
+<g>
+  <!-- 성벽 본체 -->
+  <polygon class="yjj-stone" points="0,430 40,300 460,300 460,430"/>
+  <!-- 돌 블록 (엇갈린 배치) -->
+  <g>
+    <rect class="yjj-stone2" x="10" y="310" width="52" height="30"/>
+    <rect class="yjj-stone3" x="66" y="310" width="52" height="30"/>
+    <rect class="yjj-stone2" x="122" y="310" width="52" height="30"/>
+    <rect class="yjj-stone3" x="178" y="310" width="52" height="30"/>
+    <rect class="yjj-stone2" x="234" y="310" width="52" height="30"/>
+    <rect class="yjj-stone3" x="290" y="310" width="52" height="30"/>
+    <rect class="yjj-stone2" x="346" y="310" width="52" height="30"/>
+    <rect class="yjj-stone3" x="402" y="310" width="52" height="30"/>
+
+    <rect class="yjj-stone3" x="-16" y="344" width="52" height="30"/>
+    <rect class="yjj-stone2" x="38" y="344" width="52" height="30"/>
+    <rect class="yjj-stone3" x="94" y="344" width="52" height="30"/>
+    <rect class="yjj-stone2" x="150" y="344" width="52" height="30"/>
+    <rect class="yjj-stone3" x="206" y="344" width="52" height="30"/>
+    <rect class="yjj-stone2" x="262" y="344" width="52" height="30"/>
+    <rect class="yjj-stone3" x="318" y="344" width="52" height="30"/>
+    <rect class="yjj-stone2" x="374" y="344" width="52" height="30"/>
+    <rect class="yjj-stone3" x="430" y="344" width="52" height="30"/>
+
+    <rect class="yjj-stone2" x="8" y="378" width="52" height="30"/>
+    <rect class="yjj-stone3" x="64" y="378" width="52" height="30"/>
+    <rect class="yjj-stone2" x="120" y="378" width="52" height="30"/>
+    <rect class="yjj-stone3" x="176" y="378" width="52" height="30"/>
+    <rect class="yjj-stone2" x="232" y="378" width="52" height="30"/>
+    <rect class="yjj-stone3" x="288" y="378" width="52" height="30"/>
+    <rect class="yjj-stone2" x="344" y="378" width="52" height="30"/>
+    <rect class="yjj-stone3" x="400" y="378" width="52" height="30"/>
+
+    <rect class="yjj-stone3" x="4" y="412" width="52" height="18"/>
+    <rect class="yjj-stone2" x="60" y="412" width="52" height="18"/>
+    <rect class="yjj-stone3" x="116" y="412" width="52" height="18"/>
+    <rect class="yjj-stone2" x="172" y="412" width="52" height="18"/>
+    <rect class="yjj-stone3" x="228" y="412" width="52" height="18"/>
+    <rect class="yjj-stone2" x="284" y="412" width="52" height="18"/>
+    <rect class="yjj-stone3" x="340" y="412" width="52" height="18"/>
+    <rect class="yjj-stone2" x="396" y="412" width="52" height="18"/>
+  </g>
+  <!-- 여장 (성가퀴, 톱니모양) -->
+  <g class="yjj-stone" stroke="#7d7160">
+    <rect x="10" y="278" width="26" height="26"/>
+    <rect x="60" y="278" width="26" height="26"/>
+    <rect x="110" y="278" width="26" height="26"/>
+    <rect x="160" y="278" width="26" height="26"/>
+    <rect x="210" y="278" width="26" height="26"/>
+    <rect x="260" y="278" width="26" height="26"/>
+    <rect x="310" y="278" width="26" height="26"/>
+    <rect x="360" y="278" width="26" height="26"/>
+    <rect x="410" y="278" width="26" height="26"/>
+  </g>
+</g>
+
+<!-- ════════════════════════════════
+     우측 성곽 (대칭)
+════════════════════════════════ -->
+<g>
+  <polygon class="yjj-stone" points="740,300 1160,300 1200,430 740,430"/>
+  <g>
+    <rect class="yjj-stone2" x="748" y="310" width="52" height="30"/>
+    <rect class="yjj-stone3" x="804" y="310" width="52" height="30"/>
+    <rect class="yjj-stone2" x="860" y="310" width="52" height="30"/>
+    <rect class="yjj-stone3" x="916" y="310" width="52" height="30"/>
+    <rect class="yjj-stone2" x="972" y="310" width="52" height="30"/>
+    <rect class="yjj-stone3" x="1028" y="310" width="52" height="30"/>
+    <rect class="yjj-stone2" x="1084" y="310" width="52" height="30"/>
+    <rect class="yjj-stone3" x="1140" y="310" width="52" height="30"/>
+
+    <rect class="yjj-stone3" x="720" y="344" width="52" height="30"/>
+    <rect class="yjj-stone2" x="776" y="344" width="52" height="30"/>
+    <rect class="yjj-stone3" x="832" y="344" width="52" height="30"/>
+    <rect class="yjj-stone2" x="888" y="344" width="52" height="30"/>
+    <rect class="yjj-stone3" x="944" y="344" width="52" height="30"/>
+    <rect class="yjj-stone2" x="1000" y="344" width="52" height="30"/>
+    <rect class="yjj-stone3" x="1056" y="344" width="52" height="30"/>
+    <rect class="yjj-stone2" x="1112" y="344" width="52" height="30"/>
+    <rect class="yjj-stone3" x="1168" y="344" width="52" height="30"/>
+
+    <rect class="yjj-stone2" x="740" y="378" width="52" height="30"/>
+    <rect class="yjj-stone3" x="796" y="378" width="52" height="30"/>
+    <rect class="yjj-stone2" x="852" y="378" width="52" height="30"/>
+    <rect class="yjj-stone3" x="908" y="378" width="52" height="30"/>
+    <rect class="yjj-stone2" x="964" y="378" width="52" height="30"/>
+    <rect class="yjj-stone3" x="1020" y="378" width="52" height="30"/>
+    <rect class="yjj-stone2" x="1076" y="378" width="52" height="30"/>
+    <rect class="yjj-stone3" x="1132" y="378" width="52" height="30"/>
+
+    <rect class="yjj-stone3" x="744" y="412" width="52" height="18"/>
+    <rect class="yjj-stone2" x="800" y="412" width="52" height="18"/>
+    <rect class="yjj-stone3" x="856" y="412" width="52" height="18"/>
+    <rect class="yjj-stone2" x="912" y="412" width="52" height="18"/>
+    <rect class="yjj-stone3" x="968" y="412" width="52" height="18"/>
+    <rect class="yjj-stone2" x="1024" y="412" width="52" height="18"/>
+    <rect class="yjj-stone3" x="1080" y="412" width="52" height="18"/>
+    <rect class="yjj-stone2" x="1136" y="412" width="52" height="18"/>
+  </g>
+  <g class="yjj-stone" stroke="#7d7160">
+    <rect x="754" y="278" width="26" height="26"/>
+    <rect x="804" y="278" width="26" height="26"/>
+    <rect x="854" y="278" width="26" height="26"/>
+    <rect x="904" y="278" width="26" height="26"/>
+    <rect x="954" y="278" width="26" height="26"/>
+    <rect x="1004" y="278" width="26" height="26"/>
+    <rect x="1054" y="278" width="26" height="26"/>
+    <rect x="1104" y="278" width="26" height="26"/>
+    <rect x="1154" y="278" width="26" height="26"/>
+  </g>
+</g>
+
+<!-- ════════════════════════════════
+     중앙 성문 (홍예문 + 문루)
+════════════════════════════════ -->
+<g>
+  <!-- 홍예 석축 -->
+  <polygon class="yjj-stone" points="460,430 460,270 740,270 740,430"/>
+  <g class="yjj-stone2" stroke="#8a7d68">
+    <rect x="466" y="276" width="40" height="26"/>
+    <rect x="512" y="276" width="40" height="26"/>
+    <rect x="558" y="276" width="40" height="26"/>
+    <rect x="604" y="276" width="40" height="26"/>
+    <rect x="650" y="276" width="40" height="26"/>
+    <rect x="696" y="276" width="38" height="26"/>
+  </g>
+  <!-- 아치 통로 -->
+  <path d="M498,430 L498,360 Q498,310 600,310 Q702,310 702,360 L702,430 Z" fill="#241a10"/>
+  <path d="M498,430 L498,360 Q498,310 600,310 Q702,310 702,360 L702,430" fill="none" stroke="#7d7160" stroke-width="10"/>
+  <!-- 아치 쐐기돌 -->
+  <g fill="#b2a48f" stroke="#7d7160" stroke-width="1">
+    <path d="M540,320 L555,308 L565,316 L552,330 Z"/>
+    <path d="M600,308 L620,306 L620,318 L600,320 Z"/>
+    <path d="M660,320 L645,308 L635,316 L648,330 Z"/>
+  </g>
+
+  <!-- 문루 기단 -->
+  <rect x="470" y="255" width="260" height="18" fill="#c9bda6"/>
+  <rect x="470" y="255" width="260" height="5" fill="#8a7d68"/>
+
+  <!-- 문루 (누각) 몸체 -->
+  <rect x="500" y="190" width="200" height="65" fill="#8a3f2f"/>
+  <g fill="#c9432f" opacity="0.5">
+    <rect x="510" y="200" width="24" height="45"/>
+    <rect x="546" y="200" width="24" height="45"/>
+    <rect x="582" y="200" width="24" height="45"/>
+    <rect x="618" y="200" width="24" height="45"/>
+    <rect x="654" y="200" width="24" height="45"/>
+  </g>
+  <g stroke="#5c2a1f" stroke-width="2" fill="none">
+    <line x1="500" y1="220" x2="700" y2="220"/>
+  </g>
+  <!-- 기둥 -->
+  <g fill="#5c2a1f">
+    <rect x="496" y="190" width="8" height="65"/>
+    <rect x="596" y="190" width="8" height="65"/>
+    <rect x="696" y="190" width="8" height="65"/>
+  </g>
+
+  <!-- 팔작지붕 (문루 지붕) -->
+  <polygon class="yjj-roof" points="470,190 600,140 730,190 700,196 600,158 500,196"/>
+  <polygon class="yjj-roof-dark" points="470,190 730,190 730,200 470,200"/>
+  <path d="M600,140 Q470,178 470,196" fill="none" stroke="#241a10" stroke-width="3"/>
+  <path d="M600,140 Q730,178 730,196" fill="none" stroke="#241a10" stroke-width="3"/>
+  <circle cx="600" cy="140" r="6" fill="#3f3020"/>
+  <!-- 처마 곡선 장식 -->
+  <path d="M470,196 Q460,192 452,182" fill="none" stroke="#3f3020" stroke-width="4" stroke-linecap="round"/>
+  <path d="M730,196 Q740,192 748,182" fill="none" stroke="#3f3020" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- 현판 -->
+  <rect x="565" y="222" width="70" height="20" fill="#241a10"/>
+  <text x="600" y="237" text-anchor="middle" font-family="serif" font-size="13" fill="#e8c96a" font-weight="bold">永宗鎭</text>
+
+  <!-- 깃발 -->
+  <line x1="470" y1="140" x2="470" y2="255" stroke="#5c4526" stroke-width="4"/>
+  <polygon class="yjj-flag" points="470,140 470,168 512,158" fill="#8a2a24"/>
+  <circle cx="470" cy="150" r="3" fill="#c9c26a"/>
+</g>
+
+<!-- ════════════════════════════════
+     옛 포대 (대포)
+════════════════════════════════ -->
+<g transform="translate(140,438)">
+  <!-- 포대 단(포좌) -->
+  <rect x="-20" y="30" width="200" height="20" rx="3" fill="#8a7d68"/>
+  <rect x="-20" y="46" width="200" height="8" fill="#6a5f4d"/>
+  <!-- 포차(나무 받침) -->
+  <rect x="10" y="16" width="140" height="16" rx="3" fill="#6b4a2a"/>
+  <circle cx="30" cy="34" r="16" fill="#4a3520" stroke="#2e2010" stroke-width="2"/>
+  <circle cx="30" cy="34" r="6" fill="#2e2010"/>
+  <circle cx="130" cy="34" r="16" fill="#4a3520" stroke="#2e2010" stroke-width="2"/>
+  <circle cx="130" cy="34" r="6" fill="#2e2010"/>
+  <!-- 포신 -->
+  <g transform="rotate(-14)">
+    <rect x="-10" y="-14" width="150" height="24" rx="10" fill="#2a2a2a"/>
+    <rect x="-10" y="-14" width="150" height="8" rx="4" fill="#454545" opacity="0.6"/>
+    <ellipse cx="140" cy="-2" rx="9" ry="13" fill="#1a1a1a"/>
+    <circle cx="0" cy="-2" r="15" fill="#333"/>
+  </g>
+  <!-- 포탄 더미 -->
+  <g fill="#2a2a2a">
+    <circle cx="-40" cy="42" r="9"/>
+    <circle cx="-24" cy="42" r="9"/>
+    <circle cx="-32" cy="28" r="9"/>
+  </g>
+</g>
+<!-- 포대 연기 -->
+<g fill="#c9c2b0">
+  <circle class="yjj-smoke" cx="250" cy="418" r="8"/>
+  <circle class="yjj-smoke" cx="252" cy="418" r="8"/>
+  <circle class="yjj-smoke" cx="248" cy="418" r="8"/>
+</g>
+
+<!-- 소나무 (성벽 옆 디테일) -->
+<g transform="translate(940,410)">
+  <rect x="-4" y="0" width="8" height="35" fill="#5c4526"/>
+  <ellipse cx="0" cy="-14" rx="34" ry="20" fill="#4a6a3a"/>
+  <ellipse cx="-18" cy="0" rx="24" ry="16" fill="#3f5c30"/>
+  <ellipse cx="20" cy="-2" rx="24" ry="15" fill="#3f5c30"/>
+</g>
+</svg>
+</body>
+</html>

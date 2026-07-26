@@ -1,0 +1,209 @@
+<!-- 원본 크기: 560x540 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>디스코팡팡</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .dpp-svg { display:block; width:100%; height:auto; }
+
+  .dpp-base { fill:url(#dppBase); stroke:#3a3a3a; stroke-width:1; }
+  .dpp-strut { stroke:#e8b800; stroke-width:10; }
+  .dpp-strut-dark { stroke:#3a3a3a; stroke-width:10; }
+  .dpp-disc { fill:url(#dppDisc); stroke:#5b3a8c; stroke-width:3; }
+  .dpp-disc-rim { fill:none; stroke:#3a2360; stroke-width:4; opacity:0.5; }
+  .dpp-hub { fill:url(#dppHub); stroke:#3a2360; stroke-width:2; }
+  .dpp-sign-bg { fill:#e63946; stroke:#8c1f28; stroke-width:2; }
+  .dpp-sign-text { fill:#fff; font-family:sans-serif; font-size:22px; font-weight:bold; text-anchor:middle; }
+  .dpp-bulb-a { fill:#ffdd55; }
+  .dpp-bulb-b { fill:#ff5577; }
+
+  .dpp-bulb-a, .dpp-bulb-b { animation: dpp-blink 1.6s ease-in-out infinite; }
+  .dpp-bulb-b { animation-delay: 0.8s; }
+  @keyframes dpp-blink {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 1; }
+  }
+  .dpp-shine { animation: dpp-shine 5s ease-in-out infinite; transform-origin: 280px 258px; }
+  @keyframes dpp-shine {
+    0%,100% { opacity:0.10; }
+    50% { opacity:0.28; }
+  }
+</style>
+</head>
+<body>
+<svg class="dpp-svg" viewBox="0 0 560 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="디스코팡팡 놀이기구 일러스트">
+<title>디스코팡팡</title>
+<desc>원판형으로 회전하는 디스코팡팡 놀이기구. 기울어진 원판 둘레를 방사형 좌석이 타원 궤도로 돈다.</desc>
+
+<defs>
+  <radialGradient id="dppDisc" cx="0.4" cy="0.35" r="0.75">
+    <stop offset="0" stop-color="#a884d8"/>
+    <stop offset="0.6" stop-color="#7a52b8"/>
+    <stop offset="1" stop-color="#5b3a8c"/>
+  </radialGradient>
+  <radialGradient id="dppHub" cx="0.4" cy="0.35" r="0.75">
+    <stop offset="0" stop-color="#ffe58a"/>
+    <stop offset="1" stop-color="#e8b800"/>
+  </radialGradient>
+  <linearGradient id="dppBase" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#6a6a6a"/>
+    <stop offset="1" stop-color="#3a3a3a"/>
+  </linearGradient>
+  <linearGradient id="dppSky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#2b2350"/>
+    <stop offset="1" stop-color="#5a4a86"/>
+  </linearGradient>
+  <linearGradient id="dppFloor" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#4a4258"/>
+    <stop offset="1" stop-color="#2e2a3a"/>
+  </linearGradient>
+  <radialGradient id="dppGlow" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#ffe9a8" stop-opacity="0.55"/>
+    <stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+
+<!-- 배경: 야간 놀이공원 -->
+<rect x="0" y="0" width="560" height="470" fill="url(#dppSky)"/>
+<g fill="#ffffff" opacity="0.55">
+  <circle cx="60" cy="98" r="1.8"/><circle cx="140" cy="60" r="1.4"/><circle cx="470" cy="86" r="1.8"/>
+  <circle cx="520" cy="140" r="1.4"/><circle cx="40" cy="180" r="1.4"/><circle cx="510" cy="42" r="1.6"/>
+</g>
+<rect x="0" y="452" width="560" height="88" fill="url(#dppFloor)"/>
+<g stroke="#6a6280" stroke-width="1.4" opacity="0.6">
+  <line x1="0" y1="478" x2="560" y2="478"/>
+  <line x1="0" y1="506" x2="560" y2="506"/>
+  <line x1="120" y1="452" x2="96" y2="540"/>
+  <line x1="300" y1="452" x2="300" y2="540"/>
+  <line x1="460" y1="452" x2="486" y2="540"/>
+</g>
+<ellipse cx="280" cy="470" rx="180" ry="26" fill="#000000" opacity="0.3"/>
+<ellipse class="dpp-shine" cx="280" cy="258" rx="270" ry="180" fill="url(#dppGlow)"/>
+
+<!-- ════════ 안내 간판 ════════ -->
+<g>
+  <rect class="dpp-sign-bg" x="150" y="20" width="260" height="48" rx="10"/>
+  <text class="dpp-sign-text" x="280" y="53">DISCO PANG PANG</text>
+  <g class="dpp-bulb-a">
+    <circle cx="158" cy="44" r="4"/><circle cx="182" cy="26" r="4"/><circle cx="212" cy="20" r="4"/>
+    <circle cx="348" cy="20" r="4"/><circle cx="378" cy="26" r="4"/><circle cx="402" cy="44" r="4"/>
+  </g>
+  <g class="dpp-bulb-b">
+    <circle cx="170" cy="30" r="4"/><circle cx="196" cy="20" r="4"/><circle cx="280" cy="18" r="4"/>
+    <circle cx="364" cy="20" r="4"/><circle cx="390" cy="30" r="4"/>
+  </g>
+</g>
+
+<!-- ════════ 지지 기둥/유압 프레임 ════════ -->
+<polygon class="dpp-base" points="200,470 360,470 340,505 220,505"/>
+<line class="dpp-strut-dark" x1="220" y1="470" x2="260" y2="330"/>
+<line class="dpp-strut" x1="230" y1="470" x2="266" y2="335"/>
+<line class="dpp-strut-dark" x1="340" y1="470" x2="300" y2="330"/>
+<line class="dpp-strut" x1="330" y1="470" x2="296" y2="335"/>
+<line class="dpp-strut-dark" x1="280" y1="475" x2="280" y2="300"/>
+
+<!-- ════════ 기울어진 원판 (고정) ════════ -->
+<ellipse class="dpp-disc" cx="280" cy="258" rx="230" ry="96"/>
+<ellipse class="dpp-disc-rim" cx="280" cy="258" rx="196" ry="78"/>
+<ellipse cx="280" cy="258" rx="150" ry="60" fill="none" stroke="#3a2360" stroke-width="2.5" opacity="0.35"/>
+<ellipse cx="280" cy="258" rx="100" ry="40" fill="none" stroke="#3a2360" stroke-width="2" opacity="0.3"/>
+
+<!-- ════════ 좌석 (타원 궤도 공전) ════════ -->
+<g transform="translate(280,258)">
+    <g>
+      <rect x="-17" y="-30" width="34" height="34" rx="9" fill="#e63946" stroke="#3a2360" stroke-width="1.6"/>
+      <rect x="-13" y="-24" width="26" height="12" rx="5" fill="#ffffff" opacity="0.35"/>
+      <rect x="-19" y="2" width="38" height="9" rx="4" fill="#4a3170"/>
+      <animateMotion dur="14.0s" repeatCount="indefinite" begin="-0.0000s" path="M0,-96 a230,96 0 1,0 0,192 a230,96 0 1,0 0,-192"/>
+    </g>
+    <g>
+      <rect x="-17" y="-30" width="34" height="34" rx="9" fill="#f4a300" stroke="#3a2360" stroke-width="1.6"/>
+      <rect x="-13" y="-24" width="26" height="12" rx="5" fill="#ffffff" opacity="0.35"/>
+      <rect x="-19" y="2" width="38" height="9" rx="4" fill="#4a3170"/>
+      <animateMotion dur="14.0s" repeatCount="indefinite" begin="-1.1667s" path="M0,-96 a230,96 0 1,0 0,192 a230,96 0 1,0 0,-192"/>
+    </g>
+    <g>
+      <rect x="-17" y="-30" width="34" height="34" rx="9" fill="#ffd23f" stroke="#3a2360" stroke-width="1.6"/>
+      <rect x="-13" y="-24" width="26" height="12" rx="5" fill="#ffffff" opacity="0.35"/>
+      <rect x="-19" y="2" width="38" height="9" rx="4" fill="#4a3170"/>
+      <animateMotion dur="14.0s" repeatCount="indefinite" begin="-2.3333s" path="M0,-96 a230,96 0 1,0 0,192 a230,96 0 1,0 0,-192"/>
+    </g>
+    <g>
+      <rect x="-17" y="-30" width="34" height="34" rx="9" fill="#4caf6d" stroke="#3a2360" stroke-width="1.6"/>
+      <rect x="-13" y="-24" width="26" height="12" rx="5" fill="#ffffff" opacity="0.35"/>
+      <rect x="-19" y="2" width="38" height="9" rx="4" fill="#4a3170"/>
+      <animateMotion dur="14.0s" repeatCount="indefinite" begin="-3.5000s" path="M0,-96 a230,96 0 1,0 0,192 a230,96 0 1,0 0,-192"/>
+    </g>
+    <g>
+      <rect x="-17" y="-30" width="34" height="34" rx="9" fill="#3aa6d8" stroke="#3a2360" stroke-width="1.6"/>
+      <rect x="-13" y="-24" width="26" height="12" rx="5" fill="#ffffff" opacity="0.35"/>
+      <rect x="-19" y="2" width="38" height="9" rx="4" fill="#4a3170"/>
+      <animateMotion dur="14.0s" repeatCount="indefinite" begin="-4.6667s" path="M0,-96 a230,96 0 1,0 0,192 a230,96 0 1,0 0,-192"/>
+    </g>
+    <g>
+      <rect x="-17" y="-30" width="34" height="34" rx="9" fill="#5b6fdb" stroke="#3a2360" stroke-width="1.6"/>
+      <rect x="-13" y="-24" width="26" height="12" rx="5" fill="#ffffff" opacity="0.35"/>
+      <rect x="-19" y="2" width="38" height="9" rx="4" fill="#4a3170"/>
+      <animateMotion dur="14.0s" repeatCount="indefinite" begin="-5.8333s" path="M0,-96 a230,96 0 1,0 0,192 a230,96 0 1,0 0,-192"/>
+    </g>
+    <g>
+      <rect x="-17" y="-30" width="34" height="34" rx="9" fill="#e63946" stroke="#3a2360" stroke-width="1.6"/>
+      <rect x="-13" y="-24" width="26" height="12" rx="5" fill="#ffffff" opacity="0.35"/>
+      <rect x="-19" y="2" width="38" height="9" rx="4" fill="#4a3170"/>
+      <animateMotion dur="14.0s" repeatCount="indefinite" begin="-7.0000s" path="M0,-96 a230,96 0 1,0 0,192 a230,96 0 1,0 0,-192"/>
+    </g>
+    <g>
+      <rect x="-17" y="-30" width="34" height="34" rx="9" fill="#f4a300" stroke="#3a2360" stroke-width="1.6"/>
+      <rect x="-13" y="-24" width="26" height="12" rx="5" fill="#ffffff" opacity="0.35"/>
+      <rect x="-19" y="2" width="38" height="9" rx="4" fill="#4a3170"/>
+      <animateMotion dur="14.0s" repeatCount="indefinite" begin="-8.1667s" path="M0,-96 a230,96 0 1,0 0,192 a230,96 0 1,0 0,-192"/>
+    </g>
+    <g>
+      <rect x="-17" y="-30" width="34" height="34" rx="9" fill="#ffd23f" stroke="#3a2360" stroke-width="1.6"/>
+      <rect x="-13" y="-24" width="26" height="12" rx="5" fill="#ffffff" opacity="0.35"/>
+      <rect x="-19" y="2" width="38" height="9" rx="4" fill="#4a3170"/>
+      <animateMotion dur="14.0s" repeatCount="indefinite" begin="-9.3333s" path="M0,-96 a230,96 0 1,0 0,192 a230,96 0 1,0 0,-192"/>
+    </g>
+    <g>
+      <rect x="-17" y="-30" width="34" height="34" rx="9" fill="#4caf6d" stroke="#3a2360" stroke-width="1.6"/>
+      <rect x="-13" y="-24" width="26" height="12" rx="5" fill="#ffffff" opacity="0.35"/>
+      <rect x="-19" y="2" width="38" height="9" rx="4" fill="#4a3170"/>
+      <animateMotion dur="14.0s" repeatCount="indefinite" begin="-10.5000s" path="M0,-96 a230,96 0 1,0 0,192 a230,96 0 1,0 0,-192"/>
+    </g>
+    <g>
+      <rect x="-17" y="-30" width="34" height="34" rx="9" fill="#3aa6d8" stroke="#3a2360" stroke-width="1.6"/>
+      <rect x="-13" y="-24" width="26" height="12" rx="5" fill="#ffffff" opacity="0.35"/>
+      <rect x="-19" y="2" width="38" height="9" rx="4" fill="#4a3170"/>
+      <animateMotion dur="14.0s" repeatCount="indefinite" begin="-11.6667s" path="M0,-96 a230,96 0 1,0 0,192 a230,96 0 1,0 0,-192"/>
+    </g>
+    <g>
+      <rect x="-17" y="-30" width="34" height="34" rx="9" fill="#5b6fdb" stroke="#3a2360" stroke-width="1.6"/>
+      <rect x="-13" y="-24" width="26" height="12" rx="5" fill="#ffffff" opacity="0.35"/>
+      <rect x="-19" y="2" width="38" height="9" rx="4" fill="#4a3170"/>
+      <animateMotion dur="14.0s" repeatCount="indefinite" begin="-12.8333s" path="M0,-96 a230,96 0 1,0 0,192 a230,96 0 1,0 0,-192"/>
+    </g>
+</g>
+
+<!-- 테두리 조명 -->
+<g class="dpp-bulb-a">
+  <circle cx="280" cy="164" r="5"/><circle cx="380" cy="182" r="5"/><circle cx="450" cy="230" r="5"/>
+  <circle cx="450" cy="286" r="5"/><circle cx="380" cy="334" r="5"/><circle cx="280" cy="352" r="5"/>
+  <circle cx="180" cy="334" r="5"/><circle cx="110" cy="286" r="5"/>
+</g>
+<g class="dpp-bulb-b">
+  <circle cx="330" cy="170" r="5"/><circle cx="420" cy="205" r="5"/><circle cx="450" cy="258" r="5"/>
+  <circle cx="420" cy="312" r="5"/><circle cx="330" cy="347" r="5"/><circle cx="230" cy="347" r="5"/>
+  <circle cx="140" cy="312" r="5"/><circle cx="110" cy="258" r="5"/><circle cx="140" cy="205" r="5"/>
+</g>
+
+<!-- 중앙 허브 -->
+<circle class="dpp-hub" cx="280" cy="252" r="34"/>
+<circle cx="280" cy="252" r="12" fill="#fff" opacity="0.6"/>
+<rect x="276" y="196" width="8" height="34" fill="#5b3a8c"/>
+<path d="M280,192 L272,206 L288,206 Z" fill="#e63946"/>
+</svg>
+</body>
+</html>

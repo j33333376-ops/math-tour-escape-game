@@ -1,0 +1,127 @@
+<!-- 원본 크기: 900x500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>두무진</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .dmj-svg { display:block; width:100%; height:auto; }
+  .dmj-wave { animation: dmj-drift 6.5s ease-in-out infinite; transform-origin: center; }
+  @keyframes dmj-drift {
+    0%,100% { transform: translateX(0); opacity:0.6; }
+    50% { transform: translateX(12px); opacity:0.9; }
+  }
+  .dmj-bird { animation: dmj-fly 9s linear infinite; }
+  .dmj-bird2 { animation: dmj-fly 12s linear infinite reverse; }
+  @keyframes dmj-fly {
+    0% { transform: translate(0,0); }
+    50% { transform: translate(30px,-10px); }
+    100% { transform: translate(0,0); }
+  }
+</style>
+</head>
+<body>
+<svg class="dmj-svg" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="백령도 두무진 기암괴석 절벽 군상">
+<title>두무진</title>
+<desc>인천 옹진군 백령도 두무진, 바다에서 뾰족하게 솟은 회갈색 층리 기암괴석 절벽들</desc>
+<defs>
+  <linearGradient id="dmjRockFar" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#b7ac9c"/>
+    <stop offset="1" stop-color="#948a78"/>
+  </linearGradient>
+  <linearGradient id="dmjRockMid" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#a3937c"/>
+    <stop offset="1" stop-color="#786752"/>
+  </linearGradient>
+  <linearGradient id="dmjRockNear" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#8a7862"/>
+    <stop offset="1" stop-color="#544636"/>
+  </linearGradient>
+  <linearGradient id="dmjSea" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#4f96b4"/>
+    <stop offset="1" stop-color="#2c5c78"/>
+  </linearGradient>
+</defs>
+
+<!-- 배경 원경 암봉 -->
+<g fill="url(#dmjRockFar)" opacity="0.75">
+  <polygon points="30,420 60,240 90,300 110,220 140,340 170,420"/>
+  <polygon points="700,420 730,260 755,320 780,200 810,330 850,420"/>
+</g>
+
+<!-- 물(바닷물 지형 덩어리) -->
+<path d="M0,400 C120,388 240,410 360,396 C480,384 600,408 720,394 C800,386 860,398 900,392 L900,500 L0,500 Z" fill="url(#dmjSea)"/>
+
+<!-- 중경 암봉 -->
+<g fill="url(#dmjRockMid)">
+  <polygon points="130,430 165,300 185,340 210,260 235,320 255,290 280,430"/>
+  <polygon points="560,430 590,280 610,330 635,240 660,320 685,270 710,430"/>
+</g>
+<g stroke="#5c4e3c" stroke-width="1" opacity="0.45" fill="none">
+  <path d="M140,400 L270,395"/>
+  <path d="M150,370 L260,364"/>
+  <path d="M165,340 L245,336"/>
+  <path d="M575,400 L700,394"/>
+  <path d="M585,368 L690,362"/>
+  <path d="M600,336 L675,330"/>
+</g>
+
+<!-- 전경 주 암봉 3개 (가장 뾰족하고 진하게) -->
+<g fill="url(#dmjRockNear)">
+  <polygon points="300,436 320,320 336,360 355,260 372,330 390,290 405,436"/>
+  <polygon points="420,436 445,240 465,300 488,180 512,300 532,250 555,436"/>
+  <polygon points="80,436 100,340 118,375 138,300 158,360 176,330 196,436"/>
+</g>
+<!-- 층리(가로줄무늬) -->
+<g stroke="#3c3226" stroke-width="1.3" opacity="0.55" fill="none">
+  <path d="M296,412 L408,408"/>
+  <path d="M300,384 L400,380"/>
+  <path d="M306,356 L392,352"/>
+  <path d="M312,328 L378,325"/>
+  <path d="M318,300 L364,297"/>
+  <path d="M418,404 L558,398"/>
+  <path d="M424,368 L548,362"/>
+  <path d="M432,332 L536,326"/>
+  <path d="M440,296 L522,291"/>
+  <path d="M450,258 L505,254"/>
+  <path d="M78,412 L198,406"/>
+  <path d="M84,384 L188,378"/>
+  <path d="M92,356 L172,352"/>
+  <path d="M100,328 L156,324"/>
+</g>
+<!-- 바위 하이라이트 -->
+<g fill="#c9b89a" opacity="0.25">
+  <polygon points="470,190 488,180 500,240 480,246"/>
+  <polygon points="350,270 372,330 360,336 342,282"/>
+</g>
+
+<!-- 파도 -->
+<g class="dmj-wave" fill="none" stroke="#fff" stroke-width="2.6" opacity="0.7" stroke-linecap="round">
+  <path d="M10,412 C90,402 170,420 260,408 C350,398 430,416 520,406 C610,396 700,414 800,402 C840,398 870,404 890,400"/>
+</g>
+<g fill="none" stroke="#dff2f8" stroke-width="1.8" opacity="0.5" stroke-linecap="round">
+  <path d="M20,444 C110,434 200,452 300,440 C400,428 480,446 580,436 C680,424 780,442 890,432"/>
+</g>
+
+<!-- 바위 아래 부서지는 흰 파도 -->
+<g fill="#fff" opacity="0.55">
+  <ellipse cx="140" cy="432" rx="30" ry="6"/>
+  <ellipse cx="340" cy="432" rx="34" ry="6"/>
+  <ellipse cx="480" cy="432" rx="36" ry="6"/>
+  <ellipse cx="630" cy="432" rx="30" ry="6"/>
+</g>
+
+<!-- 갈매기 -->
+<g class="dmj-bird" stroke="#4a4a4a" stroke-width="2" fill="none" stroke-linecap="round">
+  <path d="M600,110 Q612,100 624,110"/>
+  <path d="M624,110 Q636,100 648,110"/>
+</g>
+<g class="dmj-bird2" stroke="#4a4a4a" stroke-width="1.6" fill="none" stroke-linecap="round">
+  <path d="M180,80 Q190,72 200,80"/>
+  <path d="M200,80 Q210,72 220,80"/>
+</g>
+</svg>
+</body>
+</html>

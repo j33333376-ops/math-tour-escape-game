@@ -1,0 +1,300 @@
+<!-- 원본 크기: 반응형 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인천대공원 환경미래관</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Black+Han+Sans&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    font-family:'Noto Sans KR', sans-serif;
+    min-height:100vh;
+    background: linear-gradient(180deg,#dcedf7 0%, #e7f1ea 52%, #d8ead0 100%);
+    color:#20362b;
+    padding: 30px 20px 46px;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* ===== 환경미래관 홀 ===== */
+  .hall { max-width:1280px; width:100%; margin:0 auto; display:flex; flex-direction:column; align-items:center; }
+  .hall-title { text-align:center; }
+  .hall-title h1 {
+    font-family:'Black Han Sans', sans-serif; font-size:2.7rem; color:#137a4b;
+    letter-spacing:1px; line-height:1.1;
+    text-shadow:0 2px 0 #fff, 0 4px 10px rgba(19,122,75,.15);
+  }
+  .hall-title h1 .eco { color:#0284c7; }
+  .hall-title p { color:#3aa17a; font-size:.82rem; font-weight:700; letter-spacing:4px; margin-top:6px; }
+  .hall-sub { margin-top:10px; color:#5b7566; font-size:.95rem; font-weight:500; }
+
+  .exhibits {
+    margin-top: 0; width:100%;
+    display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:center;
+    gap: 46px 90px; position:relative; padding: 0 10px 34px;
+  }
+  /* 전시장 바닥 */
+  .exhibits::before {
+    content:''; position:absolute; left:2%; right:2%; bottom:12px; height:60px;
+    background: radial-gradient(60% 100% at 50% 0, rgba(120,150,110,.28), rgba(120,150,110,0) 70%);
+    z-index:0;
+  }
+  .exhibit { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; }
+  .stage { display:flex; align-items:flex-end; justify-content:center; position:relative; }
+  .stage::after { /* 접지 그림자 */
+    content:''; position:absolute; bottom:-6px; left:50%; transform:translateX(-50%);
+    width:78%; height:22px; background:radial-gradient(50% 50% at 50% 50%, rgba(30,40,25,.22), rgba(30,40,25,0) 72%);
+    z-index:-1;
+  }
+  .stp-svg { display:block; height: 430px; width:auto; filter: drop-shadow(0 10px 10px rgba(0,0,0,.12)); }
+  .caption {
+    margin-top: 16px; background:#ffffff; border:2px solid #cfe3d4; border-radius:12px;
+    padding: 8px 20px; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,.08);
+  }
+  .caption b { display:block; color:#1f6a46; font-size:1rem; font-weight:700; }
+  .caption span { display:block; color:#7b9184; font-size:.72rem; letter-spacing:1px; margin-top:2px; }
+
+  /* 시계는 크기가 커서 축소 배치 */
+  .clock-holder { zoom: 0.82; }
+
+  /* ======================================================= */
+  /* ===== 기후위기시계 (원본 CSS 그대로 병합) ===== */
+  /* ======================================================= */
+  .clock-wrapper { display:flex; flex-direction:column; align-items:center; position:relative; }
+  .top-section { display:flex; align-items:flex-end; position:relative; left:-160px; margin-bottom:-5px; z-index:10; }
+  .seal-scale-wrapper { width:220px; height:90px; position:relative; z-index:12; margin-right:-15px; }
+  .seal-container { display:flex; align-items:flex-end; gap:15px; transform:scale(0.45); transform-origin:bottom left; position:absolute; bottom:0; left:0; }
+  .seal { width:140px; height:180px; border-radius:50% 50% 45% 45% / 60% 60% 40% 40%; position:relative; box-shadow:inset -10px -15px 15px rgba(0,0,0,0.05); }
+  .face { position:absolute; top:45px; width:100%; height:50px; }
+  .eye { width:12px; height:15px; background-color:#333; border-radius:50%; position:absolute; top:10px; }
+  .eye::after { content:''; position:absolute; top:2px; right:2px; width:4px; height:4px; background-color:white; border-radius:50%; }
+  .eye.left { left:40px; } .eye.right { right:40px; }
+  .nose { width:10px; height:8px; background-color:#333; border-radius:50%; position:absolute; top:25px; left:50%; transform:translateX(-50%); }
+  .mouth { width:20px; height:12px; border-bottom:3px solid #333; border-radius:0 0 10px 10px; position:absolute; top:30px; left:50%; transform:translateX(-50%); }
+  .flipper { width:40px; height:25px; border-radius:20px; position:absolute; top:90px; }
+  .hat { position:absolute; top:-15px; left:50%; transform:translateX(-50%); width:50px; height:25px; border-radius:25px 25px 0 0; z-index:2; }
+  .hat-brim { position:absolute; bottom:0; left:-10px; width:70px; height:8px; border-radius:5px; }
+  .blue-seal { background-color:#8cd1eb; transform:rotate(-5deg); }
+  .blue-seal .hat { background-color:#ffde59; transform:translateX(-50%) rotate(-15deg); }
+  .blue-seal .hat-brim { background-color:#f5c71a; }
+  .blue-seal .flipper { background-color:#8cd1eb; }
+  .blue-seal .flipper.left { left:-15px; transform:rotate(-30deg); }
+  .blue-seal .flipper.right { right:-5px; top:110px; transform:rotate(20deg); }
+  .blue-seal .mouth { height:15px; background-color:#c94f61; border:2px solid #333; border-top:none; }
+  .pink-seal { background-color:#f8b4c4; height:170px; z-index:1; }
+  .pink-seal .hat { background-color:#ec5895; top:-10px; }
+  .pink-seal .hat-brim { background-color:#d13d78; }
+  .pink-seal .flipper { background-color:#f8b4c4; }
+  .pink-seal .flipper.left { left:15px; top:110px; transform:rotate(45deg); width:30px; }
+  .pink-seal .flipper.right { right:15px; top:110px; transform:rotate(-45deg); width:30px; }
+  .pink-seal .spots { position:absolute; bottom:30px; left:20px; width:15px; height:15px; background-color:#d93d59; border-radius:50%; box-shadow:15px -10px 0 #d93d59, -5px -20px 0 -3px #d93d59; }
+  .white-seal { background-color:#ffffff; height:160px; transform:rotate(5deg); }
+  .white-seal .hat { background-color:#5bb3e4; width:40px; left:40%; top:-5px; transform:rotate(10deg); }
+  .white-seal .hat-brim { background-color:#4092bf; width:60px; left:-10px; }
+  .white-seal .flipper { background-color:#ffffff; box-shadow:-2px 2px 5px rgba(0,0,0,0.05); }
+  .white-seal .flipper.left { left:20px; top:100px; transform:rotate(30deg); }
+  .white-seal .flipper.right { right:-10px; transform:rotate(-30deg); }
+  .white-seal .spots { position:absolute; bottom:25px; left:20px; width:12px; height:12px; background-color:#add8e6; border-radius:50%; box-shadow:12px -15px 0 -2px #add8e6; }
+  .top-sign { background:linear-gradient(135deg,#e0f2fe 0%,#ffffff 100%); padding:15px 40px; border-radius:10px 40px 0 0; border:2px solid #bae6fd; border-bottom:none; text-align:center; box-shadow:0 -5px 10px rgba(0,0,0,0.05); position:relative; z-index:11; }
+  .top-sign h1 { color:#0284c7; font-family:'Black Han Sans', sans-serif; font-size:1.8rem; letter-spacing:1px; margin-bottom:2px; }
+  .top-sign p { color:#38bdf8; font-size:0.7rem; font-weight:700; letter-spacing:2px; }
+  .display-frame { background-color:#333; border:12px solid #555; border-radius:5px; padding:15px 25px; box-shadow:0 10px 30px rgba(0,0,0,0.3), inset 0 0 20px rgba(0,0,0,0.8); position:relative; z-index:20; width:100%; max-width:900px; }
+  .display-screen { background-color:#0a0a0a; border-radius:3px; padding:20px; display:flex; flex-direction:column; gap:15px; }
+  .time-row { display:flex; justify-content:center; align-items:baseline; gap:15px; font-family:'Share Tech Mono', monospace; }
+  .led-number { color:#ffffff; font-size:5rem; text-shadow:0 0 10px rgba(255,255,255,0.7); line-height:1; }
+  .led-text { color:#fbbf24; font-size:2.2rem; text-shadow:0 0 8px rgba(251,191,36,0.6); margin-right:10px; }
+  .colon { animation:blink 1s step-start infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+  .message-row { text-align:center; font-size:1.4rem; font-weight:700; letter-spacing:1px; word-spacing:2px; }
+  .text-red { color:#ef4444; text-shadow:0 0 8px rgba(239,68,68,0.6); margin-right:15px; }
+  .text-green { color:#4ade80; text-shadow:0 0 8px rgba(74,222,128,0.6); }
+  .legs { display:flex; justify-content:space-between; width:85%; margin-top:-5px; }
+  .leg { width:35px; height:180px; background:linear-gradient(90deg,#111 0%,#333 50%,#111 100%); border-radius:0 0 5px 5px; box-shadow:5px 5px 15px rgba(0,0,0,0.2); }
+
+  @media (max-width: 900px) {
+    .exhibits { gap: 34px; }
+    .clock-holder { zoom: 0.6; }
+    .stp-svg { height: 320px; }
+    .hall-title h1 { font-size:2rem; }
+  }
+</style>
+</head>
+<body>
+<div class="hall">
+  <div class="exhibits">
+    <!-- 왼쪽: 나무 캐릭터 -->
+    <figure class="exhibit">
+      <div class="stage">
+<svg class="stp-svg" viewBox="0 0 558 630" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="나무 그루터기 캐릭터">
+<title>나무 그루터기 캐릭터</title>
+<desc>머리 위에 새싹이 돋고 두 개의 나뭇가지 팔을 벌린, 눈과 옹이 입이 있는 귀여운 나무 그루터기 캐릭터.</desc>
+<defs>
+  <linearGradient id="stp-bark" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#9a6230"/><stop offset="0.28" stop-color="#c08a4e"/><stop offset="0.52" stop-color="#d0a066"/><stop offset="0.78" stop-color="#b3793f"/><stop offset="1" stop-color="#875528"/>
+  </linearGradient>
+  <radialGradient id="stp-top" cx="0.48" cy="0.4" r="0.72">
+    <stop offset="0" stop-color="#eed69f"/><stop offset="0.6" stop-color="#d3ac6d"/><stop offset="1" stop-color="#b98f50"/>
+  </radialGradient>
+  <linearGradient id="stp-arm" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#c08a4e"/><stop offset="0.5" stop-color="#b17b3f"/><stop offset="1" stop-color="#8a5a2e"/>
+  </linearGradient>
+  <radialGradient id="stp-cut" cx="0.5" cy="0.5" r="0.6">
+    <stop offset="0" stop-color="#ecd39c"/><stop offset="1" stop-color="#c39a5b"/>
+  </radialGradient>
+  <linearGradient id="stp-leaf" x1="0" y1="0" x2="0.2" y2="1">
+    <stop offset="0" stop-color="#77d23e"/><stop offset="0.6" stop-color="#54b528"/><stop offset="1" stop-color="#3c9a1e"/>
+  </linearGradient>
+  <radialGradient id="stp-knob" cx="0.4" cy="0.35" r="0.75">
+    <stop offset="0" stop-color="#c89a63"/><stop offset="1" stop-color="#96612f"/>
+  </radialGradient>
+  <clipPath id="stp-bodyclip">
+    <path d="M186,196 C186,212 232,225 283,225 C334,225 380,212 380,196 C381,260 385,340 386,410 C387,470 391,512 392,542 C395,566 386,582 371,587 C354,593 340,582 325,589 C309,596 296,586 282,591 C267,596 252,585 237,589 C221,595 206,587 191,583 C176,577 171,562 175,540 C178,510 180,470 180,410 C181,340 183,260 186,196 Z"/>
+  </clipPath>
+</defs>
+<ellipse cx="284" cy="596" rx="150" ry="20" fill="#3a2a18" opacity="0.12"/>
+<g>
+  <path d="M196,300 C150,294 100,292 66,296 C58,297 55,304 58,310 C62,318 100,320 150,326 C172,329 190,332 200,332 Z" fill="url(#stp-arm)" stroke="#6e4622" stroke-width="2.5" stroke-linejoin="round"/>
+  <ellipse cx="61" cy="303" rx="6.5" ry="12" fill="url(#stp-cut)" stroke="#8a6636" stroke-width="2" transform="rotate(-12 61 303)"/>
+  <g stroke="#6e4622" stroke-width="1.6" opacity="0.4" fill="none" stroke-linecap="round">
+    <path d="M90,304 C120,306 150,310 180,314"/><path d="M96,314 C126,317 156,320 186,324"/>
+  </g>
+</g>
+<g>
+  <path d="M366,300 C410,298 452,306 484,320 C494,324 498,334 492,339 C486,342 474,338 458,333 C424,323 396,326 366,334 Z" fill="url(#stp-arm)" stroke="#6e4622" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M474,330 C482,328 487,331 491,338" fill="none" stroke="#6e4622" stroke-width="2" opacity="0.5"/>
+  <g stroke="#6e4622" stroke-width="1.6" opacity="0.4" fill="none" stroke-linecap="round">
+    <path d="M384,311 C418,313 450,319 478,328"/><path d="M386,321 C418,324 448,328 474,335"/>
+  </g>
+</g>
+<path d="M186,196 C186,212 232,225 283,225 C334,225 380,212 380,196 C381,260 385,340 386,410 C387,470 391,512 392,542 C395,566 386,582 371,587 C354,593 340,582 325,589 C309,596 296,586 282,591 C267,596 252,585 237,589 C221,595 206,587 191,583 C176,577 171,562 175,540 C178,510 180,470 180,410 C181,340 183,260 186,196 Z" fill="url(#stp-bark)" stroke="#6e4622" stroke-width="3" stroke-linejoin="round"/>
+<g clip-path="url(#stp-bodyclip)">
+  <g fill="none" stroke="#7a5028" stroke-width="2.4" opacity="0.4" stroke-linecap="round">
+    <path d="M214,236 C210,320 212,440 208,560"/><path d="M248,238 C245,320 247,450 244,566"/><path d="M356,238 C360,330 356,450 360,566"/><path d="M330,300 C333,380 330,470 333,566"/>
+  </g>
+  <g fill="none" stroke="#5a3718" stroke-width="3.4" opacity="0.55" stroke-linecap="round">
+    <path d="M300,232 C304,252 298,270 302,290"/><path d="M372,250 C376,285 370,320 374,350"/><path d="M196,300 C193,340 197,378 194,414"/>
+  </g>
+  <path d="M175,560 C230,548 340,548 392,562 L392,596 L175,592 Z" fill="#5a3a1e" opacity="0.35"/>
+  <g fill="none" stroke="#4a2f16" stroke-width="3" opacity="0.5" stroke-linecap="round">
+    <path d="M205,566 C214,578 210,586 206,590"/><path d="M258,568 C266,580 262,588 258,591"/><path d="M312,566 C320,578 316,586 312,590"/><path d="M356,566 C364,578 360,586 356,590"/>
+  </g>
+  <g fill="#8f8a82" opacity="0.75">
+    <ellipse cx="232" cy="586" rx="6" ry="3.4"/><ellipse cx="352" cy="584" rx="5" ry="3"/><ellipse cx="288" cy="590" rx="4" ry="2.6"/>
+  </g>
+</g>
+<ellipse cx="283" cy="194" rx="97" ry="29" fill="url(#stp-top)" stroke="#a2743c" stroke-width="3"/>
+<g fill="none" stroke="#b98a4e" stroke-width="2.4" opacity="0.8">
+  <ellipse cx="281" cy="190" rx="72" ry="20"/><ellipse cx="279" cy="188" rx="47" ry="13"/><ellipse cx="277" cy="187" rx="24" ry="7"/>
+</g>
+<path d="M283,187 C300,192 330,198 356,206" fill="none" stroke="#9a6c34" stroke-width="2" opacity="0.7"/>
+<ellipse cx="277" cy="187" rx="8" ry="3" fill="#a2743c" opacity="0.6"/>
+<path d="M252,190 C253,182 254,177 258,171" fill="none" stroke="#2f6a16" stroke-width="12" stroke-linecap="round"/>
+<path d="M252,190 C253,182 254,177 258,171" fill="none" stroke="#4aab29" stroke-width="6.5" stroke-linecap="round"/>
+<path d="M256,172 C216,158 182,138 162,120 C157,116 156,111 161,108 C174,102 185,99 193,97 L201,109 L210,95 C223,88 235,84 245,82 C251,80 251,86 249,94 C246,118 250,150 256,172 Z" fill="url(#stp-leaf)" stroke="#2c6714" stroke-width="4.5" stroke-linejoin="round"/>
+<path d="M262,172 C302,158 336,138 356,120 C361,116 362,111 357,108 C344,102 333,99 325,97 L317,109 L308,95 C295,88 283,84 273,82 C267,80 267,86 269,94 C272,118 268,150 262,172 Z" fill="url(#stp-leaf)" stroke="#2c6714" stroke-width="4.5" stroke-linejoin="round"/>
+<g fill="none" stroke="#2f7a18" stroke-width="1.7" opacity="0.55" stroke-linecap="round">
+  <path d="M256,170 C222,150 190,128 166,116"/><path d="M256,170 C232,146 210,120 196,102"/><path d="M256,170 C244,142 234,110 230,90"/><path d="M262,170 C296,150 328,128 352,116"/><path d="M262,170 C286,146 308,120 322,102"/><path d="M262,170 C274,142 284,110 288,90"/>
+</g>
+<g fill="#ffffff" opacity="0.13">
+  <path d="M198,104 C186,112 179,124 177,134 C191,130 205,120 213,108 Z"/><path d="M320,104 C332,112 339,124 341,134 C327,130 313,120 305,108 Z"/>
+</g>
+<ellipse cx="252" cy="316" rx="14.5" ry="20.5" fill="#141210"/>
+<ellipse cx="320" cy="312" rx="14.5" ry="20.5" fill="#141210"/>
+<ellipse cx="248" cy="308" rx="2.6" ry="3.2" fill="#ffffff" opacity="0.5"/>
+<ellipse cx="316" cy="304" rx="2.6" ry="3.2" fill="#ffffff" opacity="0.5"/>
+<ellipse cx="289" cy="374" rx="26" ry="27" fill="#7a4f28" stroke="#5f3c1c" stroke-width="2"/>
+<ellipse cx="289" cy="375" rx="19" ry="20" fill="#53341a"/>
+<circle cx="289" cy="373" r="11.5" fill="url(#stp-knob)" stroke="#5f3c1c" stroke-width="1.6"/>
+<ellipse cx="285" cy="369" rx="3.4" ry="2.6" fill="#e0bd8a" opacity="0.7"/>
+</svg>
+      </div>
+    </figure>
+
+    <!-- 오른쪽: 기후위기시계 -->
+    <figure class="exhibit">
+      <div class="stage">
+        <div class="clock-holder">
+          <div class="clock-wrapper">
+            <div class="top-section">
+              <div class="seal-scale-wrapper">
+                <div class="seal-container">
+                  <div class="seal blue-seal">
+                    <div class="hat"><div class="hat-brim"></div></div>
+                    <div class="face"><div class="eye left"></div><div class="eye right"></div><div class="nose"></div><div class="mouth"></div></div>
+                    <div class="flipper left"></div><div class="flipper right"></div>
+                  </div>
+                  <div class="seal pink-seal">
+                    <div class="hat"><div class="hat-brim"></div></div>
+                    <div class="face"><div class="eye left"></div><div class="eye right"></div><div class="nose"></div><div class="mouth"></div></div>
+                    <div class="flipper left"></div><div class="flipper right"></div><div class="spots"></div>
+                  </div>
+                  <div class="seal white-seal">
+                    <div class="hat"><div class="hat-brim"></div></div>
+                    <div class="face"><div class="eye left"></div><div class="eye right"></div><div class="nose"></div><div class="mouth"></div></div>
+                    <div class="flipper left"></div><div class="flipper right"></div><div class="spots"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="top-sign"><h1>기후위기시계</h1><p>CLIMATE CLOCK</p></div>
+            </div>
+            <div class="display-frame">
+              <div class="display-screen">
+                <div class="time-row">
+                  <span class="led-number" id="val-years">0</span><span class="led-text">Year</span>
+                  <span class="led-number" id="val-days">000</span><span class="led-text">Days</span>
+                  <span class="led-number" id="val-time">00<span class="colon">:</span>00<span class="colon">:</span>00</span>
+                </div>
+                <div class="message-row">
+                  <span class="text-red">기후위기온도입니다.</span>
+                  <span class="text-green">탄소중립 실현을 위한 기후행동에 함께해주세요.</span>
+                </div>
+              </div>
+            </div>
+            <div class="legs"><div class="leg"></div><div class="leg"></div></div>
+          </div>
+        </div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+<script>
+  let deadline = new Date("2029-07-22T16:00:00Z").getTime();
+  async function fetchApiData() {
+    try {
+      const res = await fetch("https://api.climateclock.world/v2/clock.json");
+      const json = await res.json();
+      const modules = json.data.modules;
+      for (let key in modules) {
+        if (modules[key].type === "timer" && modules[key].flavor === "deadline") {
+          deadline = new Date(modules[key].timestamp).getTime(); break;
+        }
+      }
+    } catch (e) { console.error("API 호출 에러", e); }
+  }
+  function updateDisplay() {
+    const now = new Date().getTime();
+    const diff = deadline - now;
+    if (diff <= 0) {
+      document.getElementById("val-years").innerText = "0";
+      document.getElementById("val-days").innerText = "000";
+      document.getElementById("val-time").innerHTML = "00<span class='colon'>:</span>00<span class='colon'>:</span>00";
+      return;
+    }
+    const msSec=1000, msMin=msSec*60, msHour=msMin*60, msDay=msHour*24, daysInYear=365.2425;
+    const totalDays = diff/msDay;
+    const y = Math.floor(totalDays/daysInYear);
+    const d = Math.floor(totalDays % daysInYear);
+    const h = Math.floor((diff % msDay)/msHour);
+    const m = Math.floor((diff % msHour)/msMin);
+    const s = Math.floor((diff % msMin)/msSec);
+    document.getElementById("val-years").innerText = y;
+    document.getElementById("val-days").innerText = String(d).padStart(3,'0');
+    document.getElementById("val-time").innerHTML =
+      `${String(h).padStart(2,'0')}<span class="colon">:</span>${String(m).padStart(2,'0')}<span class="colon">:</span>${String(s).padStart(2,'0')}`;
+  }
+  fetchApiData().then(() => { updateDisplay(); setInterval(updateDisplay, 1000); });
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!-- 원본 크기: 1000x500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>섬 여객선</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .oys-svg { display:block; width:100%; height:auto; }
+  .oys-bob { animation: oys-bob 5.2s ease-in-out infinite; transform-origin: 500px 380px; }
+  @keyframes oys-bob { 0%,100% { transform: translateY(0) rotate(-0.9deg);} 50% { transform: translateY(-8px) rotate(0.9deg);} }
+  .oys-smoke { animation: oys-smoke 5s ease-in-out infinite; }
+  @keyframes oys-smoke { 0% { transform: translate(0,0) scale(1); opacity:0.5; } 100% { transform: translate(-46px,-58px) scale(1.7); opacity:0; } }
+</style>
+</head>
+<body>
+<svg class="oys-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="섬 여객선">
+<title>섬 여객선</title>
+<desc>옹진군 섬을 오가는 흰색 카페리 여객선.</desc>
+<defs>
+  <linearGradient id="oysHull" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#eef2f6"/><stop offset="1" stop-color="#aebbc6"/>
+  </linearGradient>
+  <linearGradient id="oysBand" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#2f7fa8"/><stop offset="1" stop-color="#14577a"/>
+  </linearGradient>
+</defs>
+<!-- 연기 -->
+<g fill="#c8d2d8">
+  <circle class="oys-smoke" cx="352" cy="112" r="18"/>
+  <circle class="oys-smoke" cx="352" cy="112" r="14" style="animation-delay:1.7s"/>
+  <circle class="oys-smoke" cx="352" cy="112" r="16" style="animation-delay:3.4s"/>
+</g>
+<g class="oys-bob">
+  <!-- 마스트 -->
+  <line x1="640" y1="126" x2="640" y2="46" stroke="#8f9aa4" stroke-width="6" stroke-linecap="round"/>
+  <line x1="606" y1="72" x2="674" y2="72" stroke="#8f9aa4" stroke-width="4"/>
+  <circle cx="640" cy="42" r="6" fill="#e6403a"/>
+  <!-- 굴뚝 -->
+  <path d="M328,178 L378,178 L372,116 L334,116 Z" fill="url(#oysBand)" stroke="#0e3f58" stroke-width="4"/>
+  <rect x="328" y="110" width="52" height="12" rx="5" fill="#e6403a"/>
+  <!-- 조타실 -->
+  <path d="M560,178 L720,178 L706,126 L574,126 Z" fill="#f2f6f8" stroke="#7d8e9a" stroke-width="4.4"/>
+  <g fill="#8fc0d4" stroke="#4a6a7c" stroke-width="3">
+    <rect x="590" y="140" width="42" height="28" rx="4"/>
+    <rect x="646" y="140" width="42" height="28" rx="4"/>
+  </g>
+  <!-- 상부 갑판 -->
+  <rect x="240" y="178" width="540" height="76" rx="10" fill="url(#oysHull)" stroke="#7d8e9a" stroke-width="5"/>
+  <g fill="#8fc0d4" stroke="#4a6a7c" stroke-width="3.4">
+    <rect x="268" y="198" width="56" height="38" rx="5"/><rect x="344" y="198" width="56" height="38" rx="5"/>
+    <rect x="420" y="198" width="56" height="38" rx="5"/><rect x="496" y="198" width="56" height="38" rx="5"/>
+    <rect x="572" y="198" width="56" height="38" rx="5"/><rect x="648" y="198" width="56" height="38" rx="5"/>
+    <rect x="724" y="198" width="34" height="38" rx="5"/>
+  </g>
+  <!-- 하부 갑판 -->
+  <rect x="180" y="254" width="640" height="66" rx="8" fill="url(#oysHull)" stroke="#7d8e9a" stroke-width="5"/>
+  <g fill="#5f8fa8">
+    <circle cx="228" cy="288" r="13"/><circle cx="292" cy="288" r="13"/><circle cx="356" cy="288" r="13"/>
+    <circle cx="420" cy="288" r="13"/><circle cx="484" cy="288" r="13"/><circle cx="548" cy="288" r="13"/>
+    <circle cx="612" cy="288" r="13"/><circle cx="676" cy="288" r="13"/><circle cx="740" cy="288" r="13"/>
+  </g>
+  <!-- 선체 -->
+  <path d="M120,320 L890,320 C890,320 872,402 806,424 C740,448 260,448 194,424 C132,402 120,320 120,320 Z"
+        fill="url(#oysHull)" stroke="#7d8e9a" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M126,344 L884,344 L874,376 L136,376 Z" fill="url(#oysBand)"/>
+  <text x="500" y="370" text-anchor="middle" font-family="sans-serif" font-size="23" font-weight="bold" fill="#ffffff">옹진 카페리</text>
+  <!-- 뱃머리 -->
+  <path d="M890,320 C932,314 954,298 960,278 C932,282 908,296 890,320 Z" fill="#dee8ee" stroke="#7d8e9a" stroke-width="4.4"/>
+  <!-- 흘수선 -->
+  <path d="M150,406 C280,436 720,436 850,406" fill="none" stroke="#c2452e" stroke-width="7" opacity="0.85"/>
+  <!-- 구명정 -->
+  <g transform="translate(220,240)">
+    <path d="M-40,0 q40,26 80,0 Z" fill="#f2b03c" stroke="#a8781c" stroke-width="3.4"/>
+    <rect x="-42" y="-8" width="84" height="10" rx="5" fill="#e0e8ee" stroke="#8f9aa4" stroke-width="2.4"/>
+  </g>
+  <!-- 국기 -->
+  <line x1="150" y1="320" x2="150" y2="252" stroke="#8f9aa4" stroke-width="5" stroke-linecap="round"/>
+  <path d="M150,252 L212,268 L150,284 Z" fill="#e6403a" stroke="#a8241c" stroke-width="3"/>
+</g>
+<!-- 물결 -->
+<g fill="none" stroke="#7fb8cc" stroke-width="9" stroke-linecap="round" opacity="0.8">
+  <path d="M84,438 q42,-16 84,0 q42,16 84,0"/>
+  <path d="M742,442 q42,-16 84,0 q42,16 84,0"/>
+</g>
+<path d="M110,476 q66,-20 132,0 q66,20 132,0 q66,-20 132,0 q66,20 132,0 q66,-20 132,0"
+      fill="none" stroke="#2f6a86" stroke-width="14" stroke-linecap="round" opacity="0.7"/>
+</svg>
+</body>
+</html>

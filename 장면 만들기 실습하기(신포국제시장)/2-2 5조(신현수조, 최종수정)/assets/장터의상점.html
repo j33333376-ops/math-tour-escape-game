@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>왁자지껄한 고을 장터의 종자 상점</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1510;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            aspect-ratio: 16 / 9;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border-radius: 8px;
+            overflow: hidden;
+            background: #000;
+        }
+        svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">
+        <defs>
+            <linearGradient id="skyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ff9e79" />
+                <stop offset="60%" stop-color="#ffd3a5" />
+                <stop offset="100%" stop-color="#fff3e3" />
+            </linearGradient>
+
+            <linearGradient id="roofGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#2c3539" />
+                <stop offset="50%" stop-color="#4c565c" />
+                <stop offset="100%" stop-color="#1c2124" />
+            </linearGradient>
+
+            <linearGradient id="woodGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#5c3a21" />
+                <stop offset="50%" stop-color="#8b5a2b" />
+                <stop offset="100%" stop-color="#4a2e1b" />
+            </linearGradient>
+
+            <linearGradient id="wallGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#e0b084" />
+                <stop offset="100%" stop-color="#c49060" />
+            </linearGradient>
+
+            <radialGradient id="basketGrad" cx="50%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#e8c38c" />
+                <stop offset="70%" stop-color="#b08850" />
+                <stop offset="100%" stop-color="#785628" />
+            </radialGradient>
+
+            <radialGradient id="seedBrown" cx="40%" cy="40%" r="60%">
+                <stop offset="0%" stop-color="#a06030" />
+                <stop offset="100%" stop-color="#502810" />
+            </radialGradient>
+            
+            <radialGradient id="seedYellow" cx="40%" cy="40%" r="60%">
+                <stop offset="0%" stop-color="#fcd116" />
+                <stop offset="100%" stop-color="#b38600" />
+            </radialGradient>
+
+            <radialGradient id="seedGreen" cx="40%" cy="40%" r="60%">
+                <stop offset="0%" stop-color="#93c572" />
+                <stop offset="100%" stop-color="#4f7942" />
+            </radialGradient>
+
+            <radialGradient id="seedRed" cx="40%" cy="40%" r="60%">
+                <stop offset="0%" stop-color="#e2583e" />
+                <stop offset="100%" stop-color="#8b1e0f" />
+            </radialGradient>
+
+            <filter id="sunGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="40" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+
+            <filter id="dustBlur">
+                <feGaussianBlur stdDeviation="3" />
+            </filter>
+
+            <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+                <feDropShadow dx="10" dy="15" stdDeviation="8" flood-opacity="0.3"/>
+            </filter>
+            <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+                <feDropShadow dx="0" dy="20" stdDeviation="15" flood-opacity="0.4" flood-color="#3d220f"/>
+            </filter>
+
+            <pattern id="sackPattern" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 0 10 L 20 10 M 10 0 L 10 20" stroke="#966f3d" stroke-width="1.5" opacity="0.4"/>
+                <path d="M 0 0 L 20 20 M 20 0 L 0 20" stroke="#704e25" stroke-width="1" opacity="0.2"/>
+            </pattern>
+        </defs>
+
+        <rect width="1600" height="900" fill="url(#skyGrad)" />
+        
+        <path d="M-100 550 Q 150 350 400 480 T 900 380 T 1400 450 T 1800 400 L 1800 600 L -100 600 Z" fill="#dfa57a" opacity="0.6" />
+        <path d="M-100 580 Q 250 430 550 510 T 1100 450 T 1700 520 L 1700 700 L -100 700 Z" fill="#c7895e" opacity="0.8" />
+
+        <path d="M -50 650 L 120 580 L 300 660 L 300 750 L -50 750 Z" fill="#9e6e43" opacity="0.5" />
+        <path d="M 100 600 Q 250 530 400 610 L 380 750 L 80 750 Z" fill="#885b32" opacity="0.4" />
+        
+        <path d="M 1200 620 Q 1350 540 1550 590 L 1650 630 L 1650 750 L 1200 750 Z" fill="#605045" opacity="0.5" />
+
+        <line x1="250" y1="620" x2="250" y2="480" stroke="#5c3a21" stroke-width="5" opacity="0.7"/>
+        <polygon points="250,490 320,510 250,540" fill="#cc5a37" opacity="0.8" />
+        <line x1="1350" y1="590" x2="1350" y2="450" stroke="#5c3a21" stroke-width="5" opacity="0.7"/>
+        <polygon points="1350,460 1430,485 1350,515" fill="#e2a82b" opacity="0.8" />
+
+        <path d="M -100 650 Q 800 580 1700 650 L 1700 950 L -100 950 Z" fill="#d9b48f" />
+        <path d="M -100 720 Q 500 680 900 740 T 1700 710" fill="none" stroke="#be9670" stroke-width="25" opacity="0.4" />
+        <path d="M -100 810 Q 400 780 1100 820 T 1700 790" fill="none" stroke="#aa7f58" stroke-width="35" opacity="0.3" />
+
+        <rect x="750" y="250" width="800" height="450" fill="url(#wallGrad)" filter="url(#shadow)"/>
+        
+        <rect x="780" y="240" width="60" height="450" fill="url(#woodGrad)" />
+        <rect x="1150" y="240" width="55" height="450" fill="url(#woodGrad)" />
+        <rect x="1500" y="240" width="60" height="450" fill="url(#woodGrad)" />
+        <rect x="730" y="230" width="900" height="70" fill="url(#woodGrad)" filter="url(#shadow)"/>
+        
+        <path d="M 700 240 Q 1150 140 1650 210 L 1650 120 Q 1150 70 680 180 Z" fill="url(#roofGrad)" filter="url(#shadow)" />
+        <path d="M 720 235 Q 1150 135 1620 205" fill="none" stroke="#1c2124" stroke-width="12" />
+        <path d="M 730 220 C 900 170 1100 140 1300 145 C 1450 150 1550 170 1600 190" fill="none" stroke="#78848c" stroke-width="3" opacity="0.5" />
+        <rect x="770" y="200" width="80" height="35" fill="#7a4b2a" rx="5" />
+        <rect x="1140" y="200" width="75" height="35" fill="#7a4b2a" rx="5" />
+        <rect x="1490" y="200" width="80" height="35" fill="#7a4b2a" rx="5" />
+
+        <g opacity="0.85">
+            <rect x="870" y="300" width="240" height="180" fill="#fcf9f2" stroke="#5c3a21" stroke-width="12" filter="url(#shadow)"/>
+            <line x1="950" y1="300" x2="950" y2="480" stroke="#5c3a21" stroke-width="4" />
+            <line x1="1030" y1="300" x2="1030" y2="480" stroke="#5c3a21" stroke-width="4" />
+            <line x1="870" y1="360" x2="1110" y2="360" stroke="#5c3a21" stroke-width="4" />
+            <line x1="870" y1="420" x2="1110" y2="420" stroke="#5c3a21" stroke-width="4" />
+        </g>
+
+        <g filter="url(#shadow)">
+            <rect x="910" y="160" width="220" height="80" fill="#3a2312" rx="4" stroke="#d5a153" stroke-width="3"/>
+            <rect x="920" y="170" width="200" height="60" fill="#eed9b3" rx="2" />
+            <path d="M 945 185 L 945 215 M 935 195 L 955 195 M 935 205 L 955 205 M 960 185 L 960 215 M 955 190 L 970 190 M 957 200 L 968 205" stroke="#1a1008" stroke-width="4" stroke-linecap="round" fill="none" />
+            <path d="M 990 185 L 1010 185 M 1000 185 L 1000 215 C 1000 215 992 215 992 210 M 988 198 L 1012 198" stroke="#1a1008" stroke-width="4" stroke-linecap="round" fill="none" />
+            <path d="M 1030 185 L 1055 185 M 1035 185 L 1035 215 M 1040 195 L 1055 195 M 1040 205 L 1052 205 M 1040 205 L 1040 212 L 1052 212" stroke="#1a1008" stroke-width="4" stroke-linecap="round" fill="none" />
+        </g>
+
+        <g filter="url(#softShadow)">
+            <rect x="800" y="620" width="45" height="120" fill="#3a2211" />
+            <rect x="1120" y="620" width="45" height="120" fill="#3a2211" />
+            <rect x="1350" y="620" width="45" height="120" fill="#3a2211" />
+            <polygon points="740,560 1420,560 1380,630 700,630" fill="#81542f" />
+            <polygon points="700,630 1380,630 1380,645 700,645" fill="#54351d" />
+            <line x1="730" y1="575" x2="1410" y2="575" stroke="#4a2e1b" stroke-width="2" opacity="0.6"/>
+            <line x1="715" y1="600" x2="1395" y2="600" stroke="#4a2e1b" stroke-width="2" opacity="0.6"/>
+            <line x1="705" y1="620" x2="1385" y2="620" stroke="#4a2e1b" stroke-width="2" opacity="0.6"/>
+        </g>
+
+        <g filter="url(#shadow)">
+            <ellipse cx="820" cy="565" rx="60" ry="25" fill="url(#basketGrad)" />
+            <ellipse cx="820" cy="560" rx="52" ry="18" fill="url(#seedYellow)" />
+            <circle cx="790" cy="555" r="5" fill="#ffe272" />
+            <circle cx="810" cy="550" r="4.5" fill="#fcd116" />
+            <circle cx="830" cy="558" r="6" fill="#ffd530" />
+            <circle cx="850" cy="552" r="5" fill="#e5af00" />
+            <circle cx="800" cy="562" r="5.5" fill="#fff1a0" />
+            <circle cx="822" cy="563" r="5" fill="#fcd116" />
+            <circle cx="840" cy="561" r="4" fill="#cc9a00" />
+            <rect x="810" y="500" width="25" height="50" fill="#eed9b3" stroke="#5c3a21" stroke-width="2" transform="rotate(-5 810 500)" />
+            <text x="815" y="525" font-size="14" font-weight="bold" fill="#3a2211" transform="rotate(-5 810 500)">豆</text> </g>
+
+        <g filter="url(#shadow)">
+            <ellipse cx="950" cy="575" rx="55" ry="22" fill="url(#basketGrad)" />
+            <ellipse cx="950" cy="570" rx="47" ry="16" fill="url(#seedRed)" />
+            <circle cx="920" cy="568" r="5" fill="#ff7f68" />
+            <circle cx="940" cy="565" r="4" fill="#e2583e" />
+            <circle cx="960" cy="572" r="6" fill="#a82310" />
+            <circle cx="975" cy="569" r="5" fill="#ff7f68" />
+            <circle cx="935" cy="574" r="5.5" fill="#e2583e" />
+            <circle cx="952" cy="573" r="4.5" fill="#8b1e0f" />
+            <rect x="940" y="515" width="25" height="50" fill="#eed9b3" stroke="#5c3a21" stroke-width="2" transform="rotate(3 940 515)" />
+            <text x="945" y="540" font-size="14" font-weight="bold" fill="#3a2211" transform="rotate(3 940 515)">小</text> </g>
+
+        <g filter="url(#shadow)">
+            <ellipse cx="1080" cy="575" rx="65" ry="24" fill="url(#basketGrad)" />
+            <ellipse cx="1080" cy="570" rx="57" ry="18" fill="url(#seedGreen)" />
+            <circle cx="1045" cy="567" r="5" fill="#bce59d" />
+            <circle cx="1065" cy="563" r="5.5" fill="#93c572" />
+            <circle cx="1085" cy="571" r="4" fill="#609743" />
+            <circle cx="1105" cy="566" r="6" fill="#4f7942" />
+            <circle cx="1060" cy="573" r="4.5" fill="#93c572" />
+            <circle cx="1078" cy="574" r="5" fill="#bce59d" />
+            <circle cx="1095" cy="572" r="5" fill="#385e2b" />
+            <rect x="1070" y="510" width="25" height="50" fill="#eed9b3" stroke="#5c3a21" stroke-width="2" transform="rotate(-8 1070 510)" />
+            <text x="1073" y="535" font-size="14" font-weight="bold" fill="#3a2211" transform="rotate(-8 1070 510)">麥</text> </g>
+
+        <g filter="url(#shadow)">
+            <ellipse cx="1230" cy="585" rx="75" ry="28" fill="url(#basketGrad)" />
+            <ellipse cx="1230" cy="578" rx="66" ry="20" fill="url(#seedYellow)" />
+            <ellipse cx="1190" cy="575" rx="7" ry="4" fill="#ffe891" transform="rotate(-15 1190 575)" />
+            <ellipse cx="1210" cy="570" rx="8" ry="3.5" fill="#f7ca43" transform="rotate(10 1210 570)" />
+            <ellipse cx="1235" cy="578" rx="7.5" ry="4" fill="#d4a313" transform="rotate(-5 1235 578)" />
+            <ellipse cx="1260" cy="572" rx="8" ry="4.5" fill="#ffe891" transform="rotate(25 1260 572)" />
+            <ellipse cx="1200" cy="582" rx="7" ry="4" fill="#f7ca43" transform="rotate(-30 1200 582)" />
+            <ellipse cx="1225" cy="583" rx="8" ry="3.5" fill="#b88a00" transform="rotate(15 1225 583)" />
+            <ellipse cx="1245" cy="581" rx="7" ry="4" fill="#ffe891" transform="rotate(-10 1245 581)" />
+            <rect x="1220" y="515" width="25" height="55" fill="#eed9b3" stroke="#5c3a21" stroke-width="2" transform="rotate(12 1220 515)" />
+            <text x="1223" y="543" font-size="14" font-weight="bold" fill="#3a2211" transform="rotate(12 1220 515)">稻</text> </g>
+
+        <g filter="url(#softShadow)">
+            <path d="M 640 680 C 600 680 540 730 550 820 C 560 880 620 910 680 900 C 740 890 770 820 760 760 C 750 710 680 680 640 680 Z" fill="url(#basketGrad)" />
+            <path d="M 640 680 C 600 680 540 730 550 820 C 560 880 620 910 680 900 C 740 890 770 820 760 760 C 750 710 680 680 640 680 Z" fill="url(#sackPattern)" />
+            <path d="M 575 750 Q 640 780 720 730" fill="none" stroke="#54351d" stroke-width="8" />
+            <path d="M 570 758 Q 640 788 715 738" fill="none" stroke="#eed9b3" stroke-width="3" />
+        </g>
+
+        <g filter="url(#softShadow)">
+            <path d="M 1250 740 C 1200 750 1180 810 1190 870 C 1200 910 1280 920 1330 900 C 1380 880 1390 810 1370 760 C 1350 720 1300 730 1250 740 Z" fill="#d2b48c" />
+            <ellipse cx="1270" cy="750" rx="45" ry="18" fill="#a07840" />
+            <ellipse cx="1270" cy="753" rx="40" ry="14" fill="url(#seedBrown)" />
+            <circle cx="1250" cy="751" r="4" fill="#502810" />
+            <circle cx="1265" cy="749" r="4.5" fill="#a06030" />
+            <circle cx="1280" cy="753" r="4" fill="#eed9b3" />
+            <path d="M 1195 840 Q 1260 860 1345 820" fill="none" stroke="#b08850" stroke-width="4" opacity="0.6" />
+            <path d="M 1210 800 Q 1270 820 1355 770" fill="none" stroke="#b08850" stroke-width="4" opacity="0.6" />
+        </g>
+
+        <g filter="url(#shadow)">
+            <line x1="840" y1="270" x2="840" y2="340" stroke="#704e25" stroke-width="3" />
+            <rect x="820" y="340" width="40" height="60" fill="#c29153" rx="5" />
+            <line x1="820" y1="370" x2="860" y2="370" stroke="#54351d" stroke-width="4" />
+            <line x1="880" y1="270" x2="880" y2="360" stroke="#704e25" stroke-width="3" />
+            <rect x="860" y="360" width="40" height="60" fill="#a87a43" rx="5" />
+            <line x1="860" y1="390" x2="900" y2="390" stroke="#54351d" stroke-width="4" />
+
+            <line x1="1400" y1="270" x2="1400" y2="330" stroke="#54351d" stroke-width="2" />
+            <path d="M 1385 330 Q 1400 310 1415 330 L 1410 400 Q 1400 420 1390 400 Z" fill="#e2912b" />
+            <path d="M 1392 335 Q 1402 315 1412 335 L 1407 390 Q 1402 405 1397 390 Z" fill="#fcd116" />
+            
+            <line x1="1430" y1="270" x2="1430" y2="350" stroke="#54351d" stroke-width="2" />
+            <path d="M 1415 350 Q 1430 330 1445 350 L 1440 420 Q 1430 440 1420 420 Z" fill="#d85a38" />
+        </g>
+
+
+        <circle cx="1600" cy="0" r="600" fill="#ffffff" opacity="0.15" filter="url(#sunGlow)" />
+        <circle cx="1600" cy="0" r="300" fill="#ffe5b4" opacity="0.25" filter="url(#sunGlow)" />
+        
+        <polygon points="1600,0 1200,900 1450,900" fill="#ffffff" opacity="0.12" />
+        <polygon points="1600,0 800,900 1050,900" fill="#ffe5b4" opacity="0.08" />
+        <polygon points="1600,0 400,900 600,900" fill="#ffd3a5" opacity="0.05" />
+        <polygon points="1600,0 0,600 0,800" fill="#ffffff" opacity="0.07" />
+
+        <g filter="url(#dustBlur)">
+            <circle cx="200" cy="500" r="12" fill="#ffffff" opacity="0.25" />
+            <circle cx="450" cy="650" r="8" fill="#ffd530" opacity="0.3" />
+            <circle cx="750" cy="480" r="15" fill="#ffffff" opacity="0.2" />
+            <circle cx="900" cy="680" r="10" fill="#ffe5b4" opacity="0.35" />
+            <circle cx="1100" cy="400" r="6" fill="#ffffff" opacity="0.3" />
+            <circle cx="1350" cy="520" r="14" fill="#ffd3a5" opacity="0.25" />
+            <circle cx="1500" cy="700" r="9" fill="#ffffff" opacity="0.4" />
+            <circle cx="100" cy="750" r="18" fill="#ffe5b4" opacity="0.15" />
+            <circle cx="600" cy="800" r="11" fill="#ffd530" opacity="0.25" />
+        </g>
+
+        <g opacity="0.85">
+            <path d="M 500 500 C 510 490 520 495 515 505 C 505 515 495 510 500 500 Z" fill="#ffb796" transform="rotate(15 500 500)"/>
+            <path d="M 850 450 C 860 440 870 445 865 455 C 855 465 845 460 850 450 Z" fill="#ffe2b5" transform="rotate(-25 850 450)"/>
+            <path d="M 1200 630 C 1210 620 1220 625 1215 635 C 1205 645 1195 640 1200 630 Z" fill="#ffb796" transform="rotate(45 1200 630)"/>
+            <path d="M 300 700 C 310 690 320 695 315 705 C 305 715 295 710 300 700 Z" fill="#ffe2b5" transform="rotate(5 300 700)"/>
+            <path d="M 1450 380 C 1460 370 1470 375 1465 385 C 1455 395 1445 390 1450 380 Z" fill="#ffd3a5" transform="rotate(70 1450 380)"/>
+        </g>
+
+        <g filter="url(#shadow)">
+            <path d="M -10 -20 Q 80 100 50 250 T -20 450" fill="none" stroke="url(#woodGrad)" stroke-width="28" stroke-linecap="round" />
+            <path d="M 30 100 Q 120 150 180 130" fill="none" stroke="url(#woodGrad)" stroke-width="12" stroke-linecap="round" />
+            <path d="M 45 180 Q 150 240 220 250" fill="none" stroke="url(#woodGrad)" stroke-width="10" stroke-linecap="round" />
+
+            <path d="M 180 130 Q 220 220 200 350 T 150 500" fill="none" stroke="#607d3b" stroke-width="3" />
+            <path d="M 190 180 Q 215 185 200 200 Q 185 190 190 180 Z" fill="#8db600" />
+            <path d="M 210 240 Q 235 245 220 260 Q 205 250 210 240 Z" fill="#556b2f" />
+            <path d="M 205 300 Q 225 310 210 325 Q 195 315 205 300 Z" fill="#8db600" />
+            <path d="M 188 370 Q 210 380 195 395 Q 180 385 188 370 Z" fill="#556b2f" />
+            <path d="M 173 440 Q 190 455 175 470 Q 160 455 173 440 Z" fill="#8db600" />
+
+            <path d="M 220 250 Q 280 350 270 480 T 230 620" fill="none" stroke="#607d3b" stroke-width="3" />
+            <path d="M 240 310 Q 270 315 255 330 Q 240 320 240 310 Z" fill="#8db600" />
+            <path d="M 265 370 Q 295 375 280 390 Q 265 380 265 370 Z" fill="#a3c43c" />
+            <path d="M 273 440 Q 300 450 285 465 Q 270 455 273 440 Z" fill="#556b2f" />
+            <path d="M 265 510 Q 290 525 275 540 Q 260 525 265 510 Z" fill="#8db600" />
+            <path d="M 248 570 Q 268 585 253 600 Q 238 585 248 570 Z" fill="#556b2f" />
+        </g>
+    </svg>
+</div>
+
+</body>
+</html>

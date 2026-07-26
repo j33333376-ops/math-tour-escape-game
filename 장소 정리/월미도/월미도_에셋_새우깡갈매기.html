@@ -1,0 +1,95 @@
+<!-- 원본 크기: 600x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>새우깡과 갈매기</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .wsg-svg { display:block; width:100%; height:auto; }
+  .wsg-fly { animation: wsg-fly 4s ease-in-out infinite; }
+  @keyframes wsg-fly { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-16px);} }
+  .wsg-w1 { animation: wsg-w1 1.4s ease-in-out infinite; transform-origin: 178px 168px; }
+  .wsg-w2 { animation: wsg-w2 1.4s ease-in-out infinite; transform-origin: 178px 168px; }
+  @keyframes wsg-w1 { 0%,100% { transform: rotate(-14deg);} 50% { transform: rotate(16deg);} }
+  @keyframes wsg-w2 { 0%,100% { transform: rotate(14deg);} 50% { transform: rotate(-16deg);} }
+  .wsg-drop { animation: wsg-drop 3.2s ease-in-out infinite; }
+  @keyframes wsg-drop { 0% { transform: translate(0,0) rotate(0deg); opacity:1; } 100% { transform: translate(-20px,90px) rotate(120deg); opacity:0; } }
+</style>
+</head>
+<body>
+<svg class="wsg-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="새우깡과 갈매기">
+<title>새우깡과 갈매기</title>
+<desc>월미도 유람선에서 갈매기에게 던져주는 새우깡 봉지와 과자.</desc>
+<defs>
+  <linearGradient id="wsgBag" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffe27a"/><stop offset="0.5" stop-color="#f2b83c"/><stop offset="1" stop-color="#d18a1c"/>
+  </linearGradient>
+  <linearGradient id="wsgSnack" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f6dfa8"/><stop offset="1" stop-color="#d9ac5c"/>
+  </linearGradient>
+</defs>
+<!-- 갈매기 -->
+<g class="wsg-fly">
+  <g class="wsg-w1">
+    <path d="M164,164 C120,132 66,116 18,122 C56,144 92,168 120,192 C138,208 156,204 168,186 Z"
+          fill="#f4f7f9" stroke="#8f9ba4" stroke-width="4"/>
+    <g fill="#3a4650"><path d="M18,122 C36,128 52,136 66,146 L44,148 Z"/><path d="M44,148 C58,156 72,166 84,176 L64,178 Z"/></g>
+  </g>
+  <g class="wsg-w2">
+    <path d="M192,164 C236,132 290,116 338,122 C300,144 264,168 236,192 C218,208 200,204 188,186 Z"
+          fill="#f4f7f9" stroke="#8f9ba4" stroke-width="4"/>
+    <g fill="#3a4650"><path d="M338,122 C320,128 304,136 290,146 L312,148 Z"/><path d="M312,148 C298,156 284,166 272,176 L292,178 Z"/></g>
+  </g>
+  <path d="M178,132 C152,132 138,156 140,190 C142,226 160,254 178,264 C196,254 214,226 216,190 C218,156 204,132 178,132 Z"
+        fill="#ffffff" stroke="#8f9ba4" stroke-width="4.4"/>
+  <path d="M158,254 L198,254 L210,296 L178,282 L146,296 Z" fill="#f2f5f7" stroke="#8f9ba4" stroke-width="3.4"/>
+  <circle cx="178" cy="112" r="40" fill="#ffffff" stroke="#8f9ba4" stroke-width="4.4"/>
+  <path d="M178,114 C178,114 208,110 220,120 C208,132 178,128 178,128 Z" fill="#f2b03c" stroke="#b8801c" stroke-width="3.4"/>
+  <circle cx="192" cy="102" r="8" fill="#2b3138"/>
+  <circle cx="189" cy="99" r="2.8" fill="#ffffff"/>
+</g>
+<!-- 떨어지는 과자 -->
+<g class="wsg-drop">
+  <path d="M300,250 q22,-16 40,-4 q-16,20 -40,4 Z" fill="url(#wsgSnack)" stroke="#a8813c" stroke-width="2.4"/>
+</g>
+<g class="wsg-drop" style="animation-delay:1.6s">
+  <path d="M348,286 q20,-14 36,-4 q-14,18 -36,4 Z" fill="url(#wsgSnack)" stroke="#a8813c" stroke-width="2.4"/>
+</g>
+<!-- 봉지 -->
+<g transform="translate(396,420) rotate(-9)">
+  <path d="M-116,-118 L116,-118 L116,120 L-116,120 Z" fill="url(#wsgBag)" stroke="#a8681c" stroke-width="5"/>
+  <path d="M-116,-118 L116,-118 L108,-142 L-108,-142 Z" fill="#d18a1c" stroke="#a8681c" stroke-width="4"/>
+  <g stroke="#a8681c" stroke-width="3" opacity="0.6">
+    <line x1="-80" y1="-142" x2="-80" y2="-118"/><line x1="-40" y1="-142" x2="-40" y2="-118"/>
+    <line x1="0" y1="-142" x2="0" y2="-118"/><line x1="40" y1="-142" x2="40" y2="-118"/>
+    <line x1="80" y1="-142" x2="80" y2="-118"/>
+  </g>
+  <path d="M-116,120 L116,120 L108,142 L-108,142 Z" fill="#d18a1c" stroke="#a8681c" stroke-width="4"/>
+  <!-- 라벨 -->
+  <rect x="-96" y="-92" width="192" height="70" rx="10" fill="#e6403a" stroke="#a8241c" stroke-width="4"/>
+  <text x="0" y="-42" text-anchor="middle" font-family="sans-serif" font-size="46" font-weight="bold" fill="#fff2d8">새우깡</text>
+  <!-- 새우 그림 -->
+  <g transform="translate(0,26)">
+    <path d="M-50,0 C-30,-34 34,-38 56,-8 C36,10 -20,22 -50,0 Z" fill="#f08a6c" stroke="#b8543c" stroke-width="3.4"/>
+    <path d="M-50,0 C-66,6 -74,20 -66,32 C-52,28 -44,16 -44,6 Z" fill="#f08a6c" stroke="#b8543c" stroke-width="3"/>
+    <g stroke="#b8543c" stroke-width="2.4" fill="none">
+      <path d="M-28,-16 q6,20 0,30"/><path d="M-6,-24 q6,24 0,36"/><path d="M16,-26 q6,22 0,32"/>
+    </g>
+    <circle cx="44" cy="-14" r="4" fill="#7d2a18"/>
+    <g stroke="#b8543c" stroke-width="2.4" stroke-linecap="round">
+      <line x1="52" y1="-16" x2="82" y2="-32"/><line x1="52" y1="-8" x2="84" y2="-12"/>
+    </g>
+  </g>
+  <!-- 과자 몇 개 -->
+  <g fill="url(#wsgSnack)" stroke="#a8813c" stroke-width="2.4">
+    <path d="M-78,86 q22,-16 40,-4 q-16,20 -40,4 Z"/>
+    <path d="M-24,96 q22,-16 40,-4 q-16,20 -40,4 Z"/>
+    <path d="M32,86 q22,-16 40,-4 q-16,20 -40,4 Z"/>
+  </g>
+  <path d="M-104,-110 L-104,110" stroke="#ffffff" stroke-width="8" opacity="0.35"/>
+</g>
+</svg>
+</body>
+</html>

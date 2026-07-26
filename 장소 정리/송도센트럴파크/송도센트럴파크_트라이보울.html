@@ -1,0 +1,181 @@
+<!-- 원본 크기: 1200x640 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>송도 센트럴파크 트라이보울</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .tbw-svg { display:block; width:100%; height:auto; }
+  @keyframes tbw-ripple { 0%,100%{ opacity:0.2; } 50%{ opacity:0.5; } }
+  .tbw-ripple { animation: tbw-ripple 4.5s ease-in-out infinite; }
+  @keyframes tbw-shine { 0%,100%{ opacity:0.3; } 50%{ opacity:0.65; } }
+  .tbw-shine { animation: tbw-shine 5s ease-in-out infinite; }
+  @keyframes tbw-cloud { 0%,100%{ transform: translateX(0); } 50%{ transform: translateX(20px); } }
+  .tbw-cloud { animation: tbw-cloud 16s ease-in-out infinite; }
+</style>
+</head>
+<body>
+<svg class="tbw-svg" viewBox="0 0 1200 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="송도 센트럴파크 트라이보울">
+<title>송도 센트럴파크 트라이보울</title>
+<desc>뒤집힌 그릇 모양의 곡면 공연장 세 채가 수반 위에 떠 있는 트라이보울과 뒤편 송도 스카이라인</desc>
+<defs>
+ <linearGradient id="tbw-sky" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#a9d6ee"/><stop offset="0.62" stop-color="#dcf0f7"/><stop offset="1" stop-color="#f4f6ea"/>
+ </linearGradient>
+ <radialGradient id="tbw-dome1" cx="35%" cy="26%" r="78%">
+  <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#eef2f5"/><stop offset="1" stop-color="#aeb9c1"/>
+ </radialGradient>
+ <radialGradient id="tbw-dome2" cx="32%" cy="24%" r="78%">
+  <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#f2f5f7"/><stop offset="1" stop-color="#bac4cb"/>
+ </radialGradient>
+ <linearGradient id="tbw-water" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#7fabc6"/><stop offset="1" stop-color="#43708d"/>
+ </linearGradient>
+ <linearGradient id="tbw-pole" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0" stop-color="#9aa3a6"/><stop offset="0.5" stop-color="#e2e6e8"/><stop offset="1" stop-color="#8f989b"/>
+ </linearGradient>
+ <linearGradient id="tbw-tower" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#c4d6e2"/><stop offset="1" stop-color="#93a9b9"/>
+ </linearGradient>
+ <linearGradient id="tbw-deck" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#ded5bf"/><stop offset="1" stop-color="#bfb59b"/>
+ </linearGradient>
+</defs>
+
+<!-- 하늘 -->
+<rect x="0" y="0" width="1200" height="430" fill="url(#tbw-sky)"/>
+<g class="tbw-cloud" fill="#ffffff" opacity="0.85">
+ <ellipse cx="180" cy="66" rx="62" ry="20"/><ellipse cx="234" cy="58" rx="42" ry="24"/><ellipse cx="128" cy="74" rx="34" ry="15"/>
+ <ellipse cx="1000" cy="52" rx="52" ry="17"/><ellipse cx="1044" cy="46" rx="34" ry="20"/>
+</g>
+<g fill="none" stroke="#6c7c86" stroke-width="2" stroke-linecap="round" opacity="0.55">
+ <path d="M420,96 q10,-9 20,0 q10,-9 20,0"/>
+ <path d="M500,72 q8,-7 16,0 q8,-7 16,0"/>
+</g>
+
+<!-- 송도 스카이라인 -->
+<g fill="url(#tbw-tower)" opacity="0.85">
+ <rect x="40" y="230" width="60" height="200"/>
+ <rect x="112" y="180" width="46" height="250"/>
+ <polygon points="176,430 176,196 202,150 228,196 228,430"/>
+ <rect x="244" y="246" width="52" height="184"/>
+ <rect x="912" y="214" width="54" height="216"/>
+ <rect x="980" y="164" width="44" height="266"/>
+ <polygon points="1042,430 1042,186 1068,140 1094,186 1094,430"/>
+ <rect x="1112" y="238" width="56" height="192"/>
+</g>
+<g fill="#ffffff" opacity="0.45">
+ <rect x="54" y="250" width="10" height="12"/><rect x="76" y="250" width="10" height="12"/>
+ <rect x="54" y="282" width="10" height="12"/><rect x="76" y="282" width="10" height="12"/>
+ <rect x="124" y="204" width="10" height="12"/><rect x="142" y="204" width="10" height="12"/>
+ <rect x="124" y="238" width="10" height="12"/><rect x="142" y="238" width="10" height="12"/>
+ <rect x="926" y="238" width="10" height="12"/><rect x="946" y="238" width="10" height="12"/>
+ <rect x="992" y="190" width="10" height="12"/><rect x="1008" y="190" width="10" height="12"/>
+ <rect x="1126" y="264" width="10" height="12"/><rect x="1146" y="264" width="10" height="12"/>
+</g>
+
+<!-- 데크(수변 산책로) -->
+<rect x="0" y="404" width="1200" height="34" fill="url(#tbw-deck)"/>
+<g stroke="#a99f85" stroke-width="1.4" opacity="0.7">
+ <line x1="0" y1="418" x2="1200" y2="418"/>
+ <line x1="140" y1="404" x2="140" y2="438"/><line x1="320" y1="404" x2="320" y2="438"/>
+ <line x1="880" y1="404" x2="880" y2="438"/><line x1="1060" y1="404" x2="1060" y2="438"/>
+</g>
+
+<!-- 수반(반사 연못) -->
+<ellipse cx="600" cy="500" rx="580" ry="106" fill="url(#tbw-water)"/>
+<ellipse cx="600" cy="500" rx="580" ry="106" fill="none" stroke="#dfe9ee" stroke-width="3" opacity="0.5"/>
+<g class="tbw-ripple" stroke="#ffffff" stroke-width="1.8" fill="none">
+ <ellipse cx="600" cy="472" rx="490" ry="9" opacity="0.35"/>
+ <ellipse cx="600" cy="508" rx="520" ry="10" opacity="0.28"/>
+ <ellipse cx="600" cy="546" rx="430" ry="8" opacity="0.22"/>
+</g>
+
+<!-- 돔 수면 반영 -->
+<g opacity="0.2">
+ <path d="M240,458 C280,510 360,528 420,506 C470,488 500,466 508,458 Z" fill="#1f4a63"/>
+ <path d="M470,460 C520,536 660,558 748,520 C800,498 826,472 832,460 Z" fill="#1f4a63"/>
+ <path d="M812,458 C848,506 918,522 968,502 C1004,488 1024,466 1030,458 Z" fill="#1f4a63"/>
+</g>
+
+<!-- ===== 오른쪽(작은) 보울 ===== -->
+<g>
+ <path d="M900,436 L900,458 L960,458 L960,436 Z" fill="url(#tbw-pole)"/>
+ <path d="M812,306
+          Q920,362 1030,300
+          C1026,382 966,440 920,442
+          C874,440 816,384 812,306 Z" fill="url(#tbw-dome2)" stroke="#9aa6ae" stroke-width="1.6"/>
+ <path d="M812,306 Q920,362 1030,300" fill="none" stroke="#8f9ba3" stroke-width="3"/>
+ <g stroke="#c9d0d4" stroke-width="1.4" opacity="0.75" fill="none">
+  <path d="M856,332 C858,378 880,420 908,438"/>
+  <path d="M920,352 C920,394 920,424 920,442"/>
+  <path d="M986,330 C982,376 960,418 934,438"/>
+ </g>
+ <path class="tbw-shine" d="M846,330 C848,372 866,406 888,428" fill="none" stroke="#ffffff" stroke-width="7" opacity="0.5"/>
+</g>
+
+<!-- ===== 왼쪽(중간) 보울 ===== -->
+<g>
+ <path d="M330,438 L330,458 L396,458 L396,438 Z" fill="url(#tbw-pole)"/>
+ <path d="M228,278
+          Q362,344 496,272
+          C492,368 420,442 362,444
+          C304,442 232,374 228,278 Z" fill="url(#tbw-dome1)" stroke="#96a2aa" stroke-width="1.6"/>
+ <path d="M228,278 Q362,344 496,272" fill="none" stroke="#8b979f" stroke-width="3"/>
+ <g stroke="#c9d0d4" stroke-width="1.4" opacity="0.75" fill="none">
+  <path d="M280,306 C282,362 310,412 344,440"/>
+  <path d="M362,330 C362,382 362,418 362,444"/>
+  <path d="M444,304 C440,360 412,410 380,440"/>
+ </g>
+ <path class="tbw-shine" d="M266,304 C270,354 292,396 318,428" fill="none" stroke="#ffffff" stroke-width="8" opacity="0.55"/>
+</g>
+
+<!-- ===== 중앙(가장 큰) 보울 ===== -->
+<g>
+ <path d="M566,442 L566,462 L646,462 L646,442 Z" fill="url(#tbw-pole)"/>
+ <path d="M442,218
+          Q606,300 770,210
+          C766,330 678,442 606,446
+          C534,442 446,338 442,218 Z" fill="url(#tbw-dome1)" stroke="#96a2aa" stroke-width="1.8"/>
+ <path d="M442,218 Q606,300 770,210" fill="none" stroke="#8b979f" stroke-width="3.4"/>
+ <g stroke="#c9d0d4" stroke-width="1.5" opacity="0.75" fill="none">
+  <path d="M500,254 C504,326 540,404 582,442"/>
+  <path d="M606,284 C606,348 606,410 606,446"/>
+  <path d="M712,250 C708,322 672,402 630,442"/>
+ </g>
+ <path class="tbw-shine" d="M482,250 C488,314 516,372 552,420" fill="none" stroke="#ffffff" stroke-width="10" opacity="0.55"/>
+ <!-- 상부 조명 -->
+ <g fill="#ffe9a8" opacity="0.9">
+  <circle cx="500" cy="250" r="4"/><circle cx="606" cy="282" r="4"/><circle cx="712" cy="246" r="4"/>
+ </g>
+</g>
+
+<!-- 관람객 -->
+<g fill="#4a5560" opacity="0.85">
+ <g transform="translate(160,410)">
+  <circle cx="0" cy="-16" r="5"/><path d="M-5,-10 L5,-10 L4,4 L-4,4 Z"/>
+  <line x1="-3" y1="4" x2="-4" y2="14" stroke="#4a5560" stroke-width="2.6"/>
+  <line x1="3" y1="4" x2="4" y2="14" stroke="#4a5560" stroke-width="2.6"/>
+ </g>
+ <g transform="translate(184,412)">
+  <circle cx="0" cy="-14" r="4.4"/><path d="M-4.4,-9 L4.4,-9 L3.6,4 L-3.6,4 Z"/>
+  <line x1="-2.6" y1="4" x2="-3.4" y2="12" stroke="#4a5560" stroke-width="2.4"/>
+  <line x1="2.6" y1="4" x2="3.4" y2="12" stroke="#4a5560" stroke-width="2.4"/>
+ </g>
+ <g transform="translate(1040,412)">
+  <circle cx="0" cy="-15" r="4.6"/><path d="M-4.6,-9 L4.6,-9 L3.8,4 L-3.8,4 Z"/>
+  <line x1="-2.8" y1="4" x2="-3.6" y2="13" stroke="#4a5560" stroke-width="2.4"/>
+  <line x1="2.8" y1="4" x2="3.6" y2="13" stroke="#4a5560" stroke-width="2.4"/>
+ </g>
+</g>
+
+<!-- 분수 -->
+<g stroke="#ffffff" stroke-width="2.4" fill="none" opacity="0.6" stroke-linecap="round">
+ <path d="M180,500 C186,472 192,472 198,500"/>
+ <path d="M1020,512 C1026,486 1032,486 1038,512"/>
+</g>
+</svg>
+</body>
+</html>

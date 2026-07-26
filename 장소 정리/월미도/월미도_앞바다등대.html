@@ -1,0 +1,125 @@
+<!-- 원본 크기: 420x620 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>월미도 앞바다 등대</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .wml-svg { display:block; width:100%; height:auto; }
+
+  .wml-sea { fill:url(#wmlSea); }
+  .wml-wave { stroke:#e8f6f8; stroke-width:1.5; opacity:0.45; fill:none; }
+  .wml-rock { fill:url(#wmlRock); stroke:#5a5f63; stroke-width:1; }
+  .wml-tower-w { fill:#f4f1ea; stroke:#c9c2b2; stroke-width:1.5; }
+  .wml-tower-r { fill:#d7263d; }
+  .wml-rail { stroke:#3a3a3a; stroke-width:2; fill:none; }
+  .wml-door { fill:#5a3018; }
+
+  .wml-glow {
+    animation: wml-blink 3s ease-in-out infinite;
+  }
+  @keyframes wml-blink {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 1; }
+  }
+  .wml-beam {
+    animation: wml-beam 3s ease-in-out infinite;
+    transform-origin: 210px 205px;
+  }
+  @keyframes wml-beam {
+    0%, 100% { opacity: 0.05; }
+    50% { opacity: 0.4; }
+  }
+</style>
+</head>
+<body>
+<svg class="wml-svg" viewBox="0 0 420 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="월미도 앞바다 등대 일러스트">
+<title>월미도 앞바다 등대</title>
+<desc>방파제 위에 서있는 빨간 등대와 잔물결이 이는 바다.</desc>
+
+<defs>
+  <linearGradient id="wmlSea" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#7ec8d8"/>
+    <stop offset="1" stop-color="#3d84a0"/>
+  </linearGradient>
+  <linearGradient id="wmlRock" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#9aa0a4"/>
+    <stop offset="1" stop-color="#6a7075"/>
+  </linearGradient>
+  <radialGradient id="wmlLight" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#fff6c8"/>
+    <stop offset="1" stop-color="#fff6c8" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+
+<!-- ════════ 바다 ════════ -->
+<rect class="wml-sea" x="0" y="470" width="420" height="150"/>
+<g class="wml-wave">
+  <path d="M0,495 Q30,488 60,495 T120,495 T180,495 T240,495 T300,495 T360,495 T420,495"/>
+  <path d="M0,525 Q30,518 60,525 T120,525 T180,525 T240,525 T300,525 T360,525 T420,525"/>
+  <path d="M0,555 Q30,548 60,555 T120,555 T180,555 T240,555 T300,555 T360,555 T420,555"/>
+  <path d="M0,585 Q30,578 60,585 T120,585 T180,585 T240,585 T300,585 T360,585 T420,585"/>
+</g>
+
+<!-- 빛 번짐(물 위) -->
+<ellipse class="wml-glow" cx="210" cy="500" rx="60" ry="14" fill="url(#wmlLight)"/>
+
+<!-- ════════ 방파제(테트라포드/석축) ════════ -->
+<polygon class="wml-rock" points="90,478 330,478 360,540 60,540"/>
+<g fill="#7a8085">
+  <circle cx="120" cy="500" r="16"/>
+  <circle cx="170" cy="512" r="18"/>
+  <circle cx="230" cy="510" r="17"/>
+  <circle cx="290" cy="500" r="16"/>
+  <circle cx="90" cy="518" r="14"/>
+  <circle cx="320" cy="518" r="14"/>
+</g>
+<polygon class="wml-rock" points="120,478 300,478 300,455 120,455"/>
+
+<!-- ════════ 등대 몸체 ════════ -->
+<!-- 출입문 -->
+<rect class="wml-door" x="196" y="425" width="28" height="34" rx="10"/>
+<circle cx="216" cy="442" r="1.8" fill="#f4d35e"/>
+
+<!-- 하단 원통 (흰색) -->
+<path class="wml-tower-w" d="M182,455 L188,300 L232,300 L238,455 Z"/>
+<!-- 중단 원통 (빨강 띠) -->
+<path class="wml-tower-r" d="M188,300 L192,225 L228,225 L232,300 Z"/>
+<!-- 상단 원통 (흰색) -->
+<path class="wml-tower-w" d="M192,225 L195,180 L225,180 L228,225 Z"/>
+
+<!-- 갤러리(발코니) -->
+<rect x="185" y="176" width="50" height="8" fill="#3a3a3a" rx="2"/>
+<g class="wml-rail">
+  <line x1="190" y1="176" x2="190" y2="166"/>
+  <line x1="200" y1="176" x2="200" y2="166"/>
+  <line x1="210" y1="176" x2="210" y2="166"/>
+  <line x1="220" y1="176" x2="220" y2="166"/>
+  <line x1="230" y1="176" x2="230" y2="166"/>
+  <line x1="188" y1="166" x2="232" y2="166"/>
+</g>
+
+<!-- 등롱(램프실, 유리) -->
+<rect x="192" y="130" width="36" height="36" fill="#bfe3ee" stroke="#5a6a70" stroke-width="1.5" opacity="0.85"/>
+<g stroke="#5a6a70" stroke-width="1">
+  <line x1="210" y1="130" x2="210" y2="166"/>
+  <line x1="192" y1="148" x2="228" y2="148"/>
+</g>
+<circle class="wml-glow" cx="210" cy="148" r="9" fill="#fff6c8"/>
+
+<!-- 등대 지붕(빨간 돔) -->
+<path fill="#d7263d" d="M188,130 Q210,102 232,130 Z"/>
+<rect x="206" y="92" width="8" height="14" fill="#3a3a3a"/>
+<circle cx="210" cy="90" r="5" fill="#3a3a3a"/>
+
+<!-- 빛줄기 (은은한 점멸) -->
+<polygon class="wml-beam" points="210,148 40,110 40,170"/>
+<polygon class="wml-beam" points="210,148 380,110 380,170"/>
+
+<!-- 등대 하단 그림자 -->
+<ellipse cx="210" cy="480" rx="70" ry="8" fill="#1a3040" opacity="0.15"/>
+</svg>
+</body>
+</html>

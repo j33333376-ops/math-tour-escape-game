@@ -1,0 +1,213 @@
+<!-- 원본 크기: 900x520 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인천대공원 야외음악당</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .oamh-svg { display:block; width:100%; height:auto; }
+  .oamh-note { animation: oamh-float 3.5s ease-in-out infinite; }
+  @keyframes oamh-float { 0% { transform: translateY(0); opacity:0.9; } 100% { transform: translateY(-30px); opacity:0; } }
+  .oamh-leaf { animation: oamh-sway 5.4s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+  @keyframes oamh-sway { 0%,100% { transform: rotate(-1.5deg);} 50% { transform: rotate(1.5deg);} }
+  .oamh-cloud { animation: oamh-drift 17s ease-in-out infinite; }
+  @keyframes oamh-drift { 0%,100% { transform: translateX(0);} 50% { transform: translateX(20px);} }
+</style>
+</head>
+<body>
+<svg class="oamh-svg" viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="인천대공원 야외음악당">
+<title>인천대공원 야외음악당</title>
+<desc>조가비 형태의 곡면 지붕을 가진 야외 공연 무대와 부채꼴 계단식 객석, 주변 숲.</desc>
+<defs>
+  <linearGradient id="oamh-sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#bfe2f2"/>
+    <stop offset="0.7" stop-color="#e6f2f7"/>
+    <stop offset="1" stop-color="#f5f4e6"/>
+  </linearGradient>
+  <linearGradient id="oamh-shell" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fffbf0"/>
+    <stop offset="0.6" stop-color="#f0e6cd"/>
+    <stop offset="1" stop-color="#dccdaa"/>
+  </linearGradient>
+  <radialGradient id="oamh-inner" cx="0.5" cy="0.9" r="0.85">
+    <stop offset="0" stop-color="#c9b58c"/>
+    <stop offset="0.6" stop-color="#a48c62"/>
+    <stop offset="1" stop-color="#7d6844"/>
+  </radialGradient>
+  <linearGradient id="oamh-stage" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#a8663c"/>
+    <stop offset="1" stop-color="#7d4a29"/>
+  </linearGradient>
+  <linearGradient id="oamh-lawn" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#8fbf62"/>
+    <stop offset="1" stop-color="#537f3c"/>
+  </linearGradient>
+  <radialGradient id="oamh-tree" cx="0.36" cy="0.3" r="0.78">
+    <stop offset="0" stop-color="#6fa855"/>
+    <stop offset="1" stop-color="#376a32"/>
+  </radialGradient>
+</defs>
+
+<!-- 하늘 -->
+<rect x="0" y="0" width="900" height="330" fill="url(#oamh-sky)"/>
+<g class="oamh-cloud" fill="#ffffff" opacity="0.85">
+  <ellipse cx="140" cy="52" rx="50" ry="17"/>
+  <ellipse cx="182" cy="46" rx="32" ry="19"/>
+  <ellipse cx="98" cy="60" rx="26" ry="12"/>
+  <ellipse cx="760" cy="44" rx="44" ry="15"/>
+  <ellipse cx="796" cy="38" rx="28" ry="17"/>
+</g>
+<g fill="none" stroke="#66757d" stroke-width="2" stroke-linecap="round" opacity="0.55">
+  <path d="M310,74 q9,-8 18,0 q9,-8 18,0"/>
+  <path d="M600,58 q7,-6 14,0 q7,-6 14,0"/>
+</g>
+
+<!-- 뒤편 숲 -->
+<path d="M0,300 C60,262 120,254 180,272 C240,290 280,262 340,276 L340,330 L0,330 Z" fill="#4c7a3c" opacity="0.65"/>
+<path d="M900,300 C840,262 780,254 720,272 C660,290 620,262 560,276 L560,330 L900,330 Z" fill="#4c7a3c" opacity="0.65"/>
+
+<!-- 잔디 -->
+<rect x="0" y="322" width="900" height="198" fill="url(#oamh-lawn)"/>
+<rect x="0" y="322" width="900" height="8" fill="#a6d47c" opacity="0.55"/>
+
+<!-- 주변 나무 -->
+<g class="oamh-leaf">
+  <rect x="66" y="278" width="12" height="50" rx="3" fill="#6a4a2c"/>
+  <circle cx="72" cy="264" r="32" fill="url(#oamh-tree)"/>
+  <circle cx="50" cy="280" r="20" fill="url(#oamh-tree)"/>
+  <circle cx="94" cy="280" r="20" fill="url(#oamh-tree)"/>
+</g>
+<g class="oamh-leaf" style="animation-delay:.8s">
+  <rect x="824" y="284" width="11" height="44" rx="3" fill="#6a4a2c"/>
+  <circle cx="829" cy="272" r="28" fill="url(#oamh-tree)"/>
+  <circle cx="810" cy="286" r="17" fill="url(#oamh-tree)"/>
+  <circle cx="848" cy="286" r="17" fill="url(#oamh-tree)"/>
+</g>
+
+<!-- ===== 조가비형 셸 지붕 ===== -->
+<!-- 그림자 -->
+<ellipse cx="450" cy="344" rx="230" ry="22" fill="#3f5f2c" opacity="0.25"/>
+
+<!-- 셸 바깥 껍질 -->
+<path d="M228,340 C228,168 340,88 450,88 C560,88 672,168 672,340 Z" fill="url(#oamh-shell)" stroke="#c9b98a" stroke-width="2.5"/>
+<!-- 셸 내부(공명면) -->
+<path d="M262,340 C262,190 356,120 450,120 C544,120 638,190 638,340 Z" fill="url(#oamh-inner)"/>
+<!-- 내부 리브(부채꼴 곡선) -->
+<g fill="none" stroke="#e7d9b8" stroke-width="2" opacity="0.55">
+  <path d="M296,340 C296,208 368,148 450,148 C532,148 604,208 604,340"/>
+  <path d="M332,340 C332,226 382,176 450,176 C518,176 568,226 568,340"/>
+  <path d="M370,340 C370,246 400,206 450,206 C500,206 530,246 530,340"/>
+  <path d="M408,340 C408,266 420,236 450,236 C480,236 492,266 492,340"/>
+</g>
+<g fill="none" stroke="#e7d9b8" stroke-width="1.6" opacity="0.4">
+  <path d="M450,120 L450,340"/>
+  <path d="M356,132 L410,340"/>
+  <path d="M544,132 L490,340"/>
+  <path d="M290,196 L376,340"/>
+  <path d="M610,196 L524,340"/>
+</g>
+<!-- 껍질 테두리 밴드 -->
+<g fill="none" stroke="#d8c9a4" stroke-width="6" opacity="0.85">
+  <path d="M244,340 C244,178 348,102 450,102 C552,102 656,178 656,340"/>
+</g>
+<path d="M300,150 C348,116 400,102 448,102" fill="none" stroke="#fffdf5" stroke-width="5" opacity="0.7"/>
+
+<!-- 무대 바닥 -->
+<path d="M230,330 Q450,300 670,330 L670,354 Q450,324 230,354 Z" fill="url(#oamh-stage)" stroke="#5f351d" stroke-width="1.5"/>
+<g stroke="#5f351d" stroke-width="1" opacity="0.45">
+  <line x1="280" y1="332" x2="280" y2="352"/>
+  <line x1="340" y1="326" x2="340" y2="348"/>
+  <line x1="400" y1="322" x2="400" y2="345"/>
+  <line x1="460" y1="320" x2="460" y2="343"/>
+  <line x1="520" y1="322" x2="520" y2="345"/>
+  <line x1="580" y1="326" x2="580" y2="348"/>
+  <line x1="620" y1="332" x2="620" y2="352"/>
+</g>
+
+<!-- 무대 위 연주자 -->
+<g fill="#3a4650">
+  <g transform="translate(410,318)">
+    <circle cx="0" cy="-18" r="6"/><path d="M-6,-11 L6,-11 L5,6 L-5,6 Z"/>
+    <line x1="-4" y1="6" x2="-5" y2="14" stroke="#3a4650" stroke-width="3"/>
+    <line x1="4" y1="6" x2="5" y2="14" stroke="#3a4650" stroke-width="3"/>
+  </g>
+  <g transform="translate(450,314)">
+    <circle cx="0" cy="-18" r="6"/><path d="M-6,-11 L6,-11 L5,6 L-5,6 Z"/>
+    <line x1="-4" y1="6" x2="-5" y2="14" stroke="#3a4650" stroke-width="3"/>
+    <line x1="4" y1="6" x2="5" y2="14" stroke="#3a4650" stroke-width="3"/>
+  </g>
+  <g transform="translate(490,318)">
+    <circle cx="0" cy="-18" r="6"/><path d="M-6,-11 L6,-11 L5,6 L-5,6 Z"/>
+    <line x1="-4" y1="6" x2="-5" y2="14" stroke="#3a4650" stroke-width="3"/>
+    <line x1="4" y1="6" x2="5" y2="14" stroke="#3a4650" stroke-width="3"/>
+  </g>
+</g>
+<!-- 마이크 스탠드 -->
+<g stroke="#4a4a4a" stroke-width="2.4" stroke-linecap="round">
+  <line x1="372" y1="330" x2="372" y2="296"/>
+  <line x1="528" y1="330" x2="528" y2="296"/>
+</g>
+<circle cx="372" cy="292" r="4" fill="#4a4a4a"/>
+<circle cx="528" cy="292" r="4" fill="#4a4a4a"/>
+
+<!-- 무대 지지 기둥 -->
+<rect x="284" y="334" width="10" height="26" fill="#6a685f"/>
+<rect x="606" y="334" width="10" height="26" fill="#6a685f"/>
+
+<!-- 음표 장식 -->
+<g class="oamh-note" fill="#c94b5a">
+  <circle cx="330" cy="290" r="6"/>
+  <rect x="334" y="260" width="3" height="32"/>
+</g>
+<g class="oamh-note" fill="#2d6b3f" style="animation-delay:1.2s;">
+  <circle cx="570" cy="286" r="6"/>
+  <rect x="574" y="256" width="3" height="32"/>
+</g>
+<g class="oamh-note" fill="#e8b830" style="animation-delay:2.1s;">
+  <circle cx="450" cy="272" r="6"/>
+  <rect x="454" y="240" width="3" height="34"/>
+</g>
+
+<!-- 계단식 객석 -->
+<g>
+  <path d="M185,352 Q450,312 715,352 L715,372 Q450,334 185,372 Z" fill="#bab3a2"/>
+  <path d="M150,380 Q450,336 750,380 L750,402 Q450,358 150,402 Z" fill="#a9a293"/>
+  <path d="M120,410 Q450,362 780,410 L780,432 Q450,384 120,432 Z" fill="#bab3a2"/>
+  <path d="M90,442 Q450,388 810,442 L810,464 Q450,410 90,464 Z" fill="#a9a293"/>
+  <path d="M60,474 Q450,414 840,474 L840,498 Q450,440 60,498 Z" fill="#bab3a2"/>
+</g>
+<g stroke="#8f8878" stroke-width="1" opacity="0.5" fill="none">
+  <path d="M185,372 Q450,330 715,372"/>
+  <path d="M150,402 Q450,358 750,402"/>
+  <path d="M120,432 Q450,384 780,432"/>
+  <path d="M90,464 Q450,410 810,464"/>
+</g>
+
+<!-- 관객 -->
+<g fill="#5a6470" opacity="0.9">
+  <circle cx="250" cy="366" r="7"/><circle cx="330" cy="352" r="7"/><circle cx="430" cy="344" r="7"/>
+  <circle cx="530" cy="348" r="7"/><circle cx="620" cy="360" r="7"/>
+  <circle cx="210" cy="396" r="7"/><circle cx="300" cy="378" r="7"/><circle cx="400" cy="370" r="7"/>
+  <circle cx="500" cy="372" r="7"/><circle cx="600" cy="382" r="7"/><circle cx="690" cy="398" r="7"/>
+  <circle cx="176" cy="428" r="7"/><circle cx="280" cy="406" r="7"/><circle cx="380" cy="396" r="7"/>
+  <circle cx="480" cy="396" r="7"/><circle cx="580" cy="404" r="7"/><circle cx="700" cy="426" r="7"/>
+  <circle cx="150" cy="460" r="7"/><circle cx="260" cy="436" r="7"/><circle cx="360" cy="424" r="7"/>
+  <circle cx="470" cy="422" r="7"/><circle cx="590" cy="434" r="7"/><circle cx="740" cy="458" r="7"/>
+</g>
+<g fill="#c94b5a" opacity="0.8">
+  <circle cx="430" cy="344" r="7"/><circle cx="300" cy="378" r="7"/><circle cx="580" cy="404" r="7"/>
+</g>
+<g fill="#3f7fa8" opacity="0.8">
+  <circle cx="530" cy="348" r="7"/><circle cx="380" cy="396" r="7"/><circle cx="260" cy="436" r="7"/>
+</g>
+
+<!-- 잔디 들꽃 -->
+<g fill="#f4e05a" opacity="0.8">
+  <circle cx="40" cy="380" r="3.2"/><circle cx="864" cy="392" r="3.2"/>
+  <circle cx="70" cy="500" r="3.2"/><circle cx="856" cy="506" r="3.2"/>
+</g>
+</svg>
+</body>
+</html>

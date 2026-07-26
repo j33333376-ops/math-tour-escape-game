@@ -1,0 +1,261 @@
+<!-- ===================================================
+     [독립 컴포넌트 소스] 교복 민우 (Minwoo) - 구조 최종 수정본
+     =================================================== -->
+<div class="kyobok-minwoo-component" style="display: inline-block; overflow: visible !important;">
+    
+    <style>
+        .kmw-stage {
+            position: relative;
+            width: 260px;
+            height: 320px;
+            margin: 0 auto;
+            animation: kmw-breatheHuman 4s ease-in-out infinite;
+            overflow: visible !important;
+        }
+
+        @keyframes kmw-breatheHuman {
+            0%, 100% { transform: scale(1) translateY(0px); }
+            50% { transform: scale(1.01) translateY(-3px); }
+        }
+
+        /* 두상 기본 상자 */
+        .kmw-head-wrapper {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 130px;
+            overflow: visible !important;
+        }
+
+        /* 귀 */
+        .kmw-ear-l, .kmw-ear-r {
+            position: absolute;
+            top: 52px;
+            width: 16px;
+            height: 26px;
+            background-color: #ffdbb5;
+            border: 3.5px solid #8d5b4c;
+            z-index: 2;
+        }
+        .kmw-ear-l { left: -11px; border-radius: 50% 0 0 50%; transform: rotate(-10deg); }
+        .kmw-ear-r { right: -11px; border-radius: 0 50% 50% 0; transform: rotate(10deg); }
+
+        /* 뒷머리 베이스 */
+        .kmw-hair-back {
+            position: absolute;
+            top: -8px;
+            left: -4px;
+            width: 128px;
+            height: 80px;
+            background-color: #242424;
+            border: 3.5px solid #141414;
+            border-radius: 60px 60px 20px 20px;
+            z-index: 1;
+        }
+
+        /* [구조 변경] 목 조인트 - 머리통 내부 레이어로 편입하여 턱 밑으로 완벽 격리 */
+        .kmw-neck {
+            position: absolute;
+            top: 105px; /* 머리통 wrapper 기준 내부 좌표로 변경 */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 40px;
+            background-color: #ffdbb5;
+            border-left: 3.5px solid #8d5b4c;
+            border-right: 3.5px solid #8d5b4c;
+            z-index: 3; /* 얼굴 피부(4)보다 아래에 위치하게 되어 절대 선이 위로 못 올라옴 */
+        }
+
+        /* 얼굴 피부 컨테이너 (앞머리 마스킹) */
+        .kmw-face-skin {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffdbb5;
+            border: 3.5px solid #8d5b4c;
+            border-radius: 50px 50px 60px 60px;
+            z-index: 4; /* 목을 덮어버리는 레이어 */
+            overflow: hidden;
+        }
+
+        /* 앞머리 스타일 */
+        .kmw-front-hair {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 42px;
+            background-color: #242424;
+            border-bottom: 3.5px solid #141414;
+            z-index: 10;
+        }
+        .kmw-hair-point {
+            position: absolute;
+            top: 36px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 10px solid #141414;
+            z-index: 11;
+        }
+
+        /* 눈썹 & 눈 */
+        .kmw-eyebrow-l, .kmw-eyebrow-r {
+            position: absolute;
+            top: 50px;
+            width: 18px;
+            height: 4px;
+            background-color: #221a15;
+            border-radius: 2px;
+            z-index: 6;
+        }
+        .kmw-eyebrow-l { left: 22px; transform: rotate(5deg); }
+        .kmw-eyebrow-r { right: 22px; transform: rotate(-5deg); }
+
+        .kmw-eye-l, .kmw-eye-r {
+            position: absolute;
+            top: 62px;
+            width: 15px;
+            height: 15px;
+            background-color: #221a15;
+            border-radius: 50%;
+            z-index: 6;
+        }
+        .kmw-eye-l::after, .kmw-eye-r::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 4px;
+            height: 4px;
+            background-color: #fff;
+            border-radius: 50%;
+        }
+        .kmw-eye-l { left: 24px; }
+        .kmw-eye-r { right: 24px; }
+
+        /* 볼터치 & 입 */
+        .kmw-blush-l, .kmw-blush-r {
+            position: absolute;
+            top: 78px;
+            width: 18px;
+            height: 9px;
+            background-color: rgba(244, 63, 94, 0.4);
+            border-radius: 50%;
+            filter: blur(0.5px);
+            z-index: 6;
+        }
+        .kmw-blush-l { left: 16px; }
+        .kmw-blush-r { right: 16px; }
+
+        .kmw-mouth {
+            position: absolute;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 22px;
+            height: 11px;
+            background-color: #e11d48;
+            border-radius: 2px 2px 12px 12px;
+            border: 1.5px solid #9f1239;
+            z-index: 6;
+        }
+
+        /* 남색 교복 상의 */
+        .kmw-uniform-top {
+            position: absolute;
+            top: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 124px;
+            height: 110px;
+            background-color: #1e293b;
+            border: 3.5px solid #475569;
+            border-radius: 24px 24px 10px 10px;
+            z-index: 7;
+            overflow: hidden;
+        }
+        .kmw-collar-l {
+            position: absolute;
+            top: -2px;
+            left: 32px;
+            width: 30px;
+            height: 26px;
+            background-color: #ffffff;
+            border: 3px solid #475569;
+            transform: rotate(-30deg);
+            border-radius: 0 0 5px 0;
+        }
+        .kmw-collar-r {
+            position: absolute;
+            top: -2px;
+            right: 32px;
+            width: 30px;
+            height: 26px;
+            background-color: #ffffff;
+            border: 3px solid #475569;
+            transform: rotate(30deg);
+            border-radius: 0 0 0 5px;
+        }
+
+        /* 빨간 넥타이 */
+        .kmw-tie {
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 50px;
+            background-color: #b91c1c;
+            border: 2px solid #7f1d1d;
+            border-radius: 2px 2px 6px 6px;
+            z-index: 10;
+        }
+        .kmw-tie::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 10px;
+            background-color: #b91c1c;
+            border: 2px solid #7f1d1d;
+            border-radius: 3px;
+        }
+    </style>
+
+    <div class="kmw-stage">
+        <div class="kmw-head-wrapper">
+            <div class="kmw-hair-back"></div>
+            <div class="kmw-ear-l"></div>
+            <div class="kmw-ear-r"></div>
+            <!-- 목을 얼굴피부 아래, 뒷머리 위에 완벽하게 샌드위치 배치 -->
+            <div class="kmw-neck"></div>
+            <div class="kmw-face-skin">
+                <div class="kmw-front-hair"></div>
+                <div class="kmw-hair-point" style="left: 15px;"></div>
+                <div class="kmw-hair-point" style="left: 45px;"></div>
+                <div class="kmw-hair-point" style="right: 25px;"></div>
+                <div class="kmw-eyebrow-l"></div>
+                <div class="kmw-eyebrow-r"></div>
+                <div class="kmw-eye-l"></div>
+                <div class="kmw-eye-r"></div>
+                <div class="kmw-blush-l"></div>
+                <div class="kmw-blush-r"></div>
+                <div class="kmw-mouth"></div>
+            </div>
+        </div>
+        <div class="kmw-uniform-top">
+            <div class="kmw-collar-l"></div>
+            <div class="kmw-collar-r"></div>
+            <div class="kmw-tie"></div>
+        </div>
+    </div>
+</div>

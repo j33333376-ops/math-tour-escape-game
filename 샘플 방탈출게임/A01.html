@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차이나타운 체험학습앱 - 패루</title>
+    <style>
+        /* 폰트 설정 */
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* 기본 초기화 */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #1a1a1a;
+        }
+
+        /* 게임 컨테이너 (16:9 비율 유지) */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f5f0e6; /* 따뜻한 연베이지 (양피지 느낌) */
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            cursor: pointer; /* 대화 진행을 위한 클릭 유도 */
+        }
+
+        /* 상단 표시바 */
+        .top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(45, 55, 72, 0.85); /* 반투명한 어두운 배경 */
+            color: #ffffff;
+            border-bottom: 2px solid #d4af37; /* 앤틱 골드 테두리 */
+            padding: 12px 24px;
+            font-family: 'Nanum Myeongjo', serif; /* 진중한 폰트 */
+            font-size: 1.25rem;
+            font-weight: bold;
+            box-sizing: border-box;
+            z-index: 50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            background-color: #8c3030; /* 다크 레드 */
+            color: white;
+            border: 1px solid #d4af37; /* 앤틱 골드 */
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 60;
+            display: none; /* 초기에는 숨김 처리 */
+            transition: background-color 0.2s;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        #btn-prev { left: 20px; bottom: 20px; }
+        #btn-next { right: 20px; bottom: 20px; }
+        
+        #btn-skip {
+            right: 20px;
+            bottom: 20px; /* 대화 중에는 다음 버튼 위치에 건너뛰기 배치 */
+            display: block; /* 대화 중 보이게 설정 */
+            padding: 8px 20px;
+            font-size: 0.95rem;
+        }
+
+        /* 캐릭터 래퍼 */
+        .character-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            z-index: 20;
+            transition: filter 0.4s ease;
+        }
+
+        /* 말하지 않는 캐릭터 어둡게 처리 */
+        .character-wrapper.inactive {
+            filter: brightness(0.4);
+        }
+
+        #char-minwoo {
+            left: 80px;
+            bottom: 30px;
+        }
+
+        #char-seoyeon {
+            right: 80px;
+            bottom: 30px;
+            transform: scaleX(-1); /* 민우를 바라보도록 좌우 반전 */
+        }
+
+        /* 말풍선 공통 스타일 */
+        #speech-bubble {
+            position: absolute;
+            background-color: #f5f0e6;
+            border: 3px solid #d4af37; /* 앤틱 골드 테두리 */
+            border-radius: 12px;
+            padding: 20px 25px;
+            max-width: 450px;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.3);
+            z-index: 40;
+            display: none; /* 초기 숨김 */
+        }
+
+        /* 화자 이름 (말풍선 내부) */
+        .speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-weight: bold;
+            color: #8c3030;
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed #d4af37;
+            display: inline-block;
+            padding-bottom: 3px;
+        }
+
+        /* 말풍선 꼬리 (외곽선) */
+        #speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -18px;
+            border-width: 18px 15px 0;
+            border-style: solid;
+            border-color: #d4af37 transparent transparent transparent;
+            display: block;
+            width: 0;
+        }
+
+        /* 말풍선 꼬리 (내부 채우기) */
+        #speech-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -13px;
+            border-width: 14px 11px 0;
+            border-style: solid;
+            border-color: #f5f0e6 transparent transparent transparent;
+            display: block;
+            width: 0;
+            z-index: 1;
+        }
+
+        /* 왼쪽 화자(민우) 말풍선 위치 및 꼬리 */
+        .bubble-left {
+            left: 170px;
+            bottom: 350px;
+        }
+        .bubble-left::after { left: 40px; }
+        .bubble-left::before { left: 44px; }
+
+        /* 오른쪽 화자(서연) 말풍선 위치 및 꼬리 */
+        .bubble-right {
+            right: 170px;
+            bottom: 350px;
+        }
+        .bubble-right::after { right: 40px; }
+        .bubble-right::before { right: 44px; }
+
+        /* 배경 장식용 흐린 텍스처 (선택) */
+        .vignette {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
+            pointer-events: none;
+            z-index: 30;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container" onclick="advanceDialogue(event)">
+    <div class="top-bar">
+        <span>차이나타운 체험학습앱</span>
+        <span style="font-size: 1.05rem; opacity: 0.8;">패루 앞</span>
+    </div>
+
+    <div style="position:absolute; left:50%; transform:translateX(-50%); bottom:110px; width:585px; height:422.5px; overflow:hidden; z-index: 10;">
+        <iframe src="A_패루.html" scrolling="no" style="border:0; width:900px; height:650px; transform:scale(0.65); transform-origin:top left;"></iframe>
+    </div>
+
+    <div id="char-minwoo" class="character-wrapper inactive">
+        <iframe src="민우.html" scrolling="no" style="border:0; width:260px; height:320px; overflow:hidden;"></iframe>
+    </div>
+
+    <div id="char-seoyeon" class="character-wrapper inactive">
+        <iframe src="서연.html" scrolling="no" style="border:0; width:260px; height:320px; overflow:hidden;"></iframe>
+    </div>
+
+    <div id="speech-bubble">
+        <div class="speaker-name" id="speaker-name"></div>
+        <div class="dialogue-text" id="dialogue-text"></div>
+    </div>
+
+    <div class="vignette"></div>
+
+    <button id="btn-prev" class="btn-nav" onclick="goUrl(event, 'index.html')">이전</button>
+    <button id="btn-next" class="btn-nav" onclick="goUrl(event, 'A02.html')">다음</button>
+    <button id="btn-skip" class="btn-nav" onclick="skipDialogue(event)">건너뛰기</button>
+</div>
+
+<script>
+    // 대화 스크립트 데이터
+    const dialogues = [
+        { speaker: "민우", target: "char-minwoo", text: "세계 어디를 가도 중국인들이 모여 사는 차이나타운에는 패루가 세워져 있다는 것을 알고 있었어?" },
+        { speaker: "서연", target: "char-seoyeon", text: "그럼 알고 있지. 붉은 기둥 위에 지붕을 얹은 중국식 전통 대문이잖아. 기념할 일이 있을 때나 마을의 입구라는 의미로 동네 입구에 세웠지." },
+        { speaker: "민우", target: "char-minwoo", text: "맞아 인천 중구의 차이나타운에는 총 4개의 패루를 볼 수 있어." },
+        { speaker: "서연", target: "char-seoyeon", text: "첫번째 패루인 중화가가 처음 세워진 것은 2000년이야." },
+        { speaker: "민우", target: "char-minwoo", text: "두번째 패루인 인화문 다른 문들과 달리 문만 있고 처마가 없다는 점도 잊지마." },
+        { speaker: "서연", target: "char-seoyeon", text: "세번째 패루인 선린문은 어디에 위치해 있는지 혹시 알아?" },
+        { speaker: "민우", target: "char-minwoo", text: "그럼 당연하지~ 초한지벽화거리에 세워져 있잖아." },
+        { speaker: "서연", target: "char-seoyeon", text: "네번째 패루의 이름은 한중문이야. 이렇게 4개의 패루가 만들어져 있어." },
+        { speaker: "민우", target: "char-minwoo", text: "맞아~ 그 한중문 주변에는 관우상이 세워져 있는데, 중국인들이 재물의 신으로 모시는 상이야." },
+        { speaker: "서연", target: "char-seoyeon", text: "우리 둘 다 패루에 대해 이렇게 잘 알고 있다니... 패루 척척박사들이라고 할 수 있겠지?" }
+    ];
+
+    let currentIndex = 0;
+    let isDialogueActive = true;
+
+    // 대화 진행 함수
+    function advanceDialogue(e) {
+        if (!isDialogueActive) return;
+        
+        // 버튼 클릭 시에는 컨테이너 이벤트 무시
+        if (e && e.target.tagName === 'BUTTON') return;
+
+        // 대화가 모두 끝났을 경우
+        if (currentIndex >= dialogues.length) {
+            endDialogue();
+            return;
+        }
+
+        const dialog = dialogues[currentIndex];
+        const bubble = document.getElementById('speech-bubble');
+        const minwoo = document.getElementById('char-minwoo');
+        const seoyeon = document.getElementById('char-seoyeon');
+
+        // 캐릭터 상태 초기화 (모두 어둡게)
+        minwoo.classList.add('inactive');
+        seoyeon.classList.add('inactive');
+
+        // 대사 텍스트 업데이트
+        document.getElementById('speaker-name').innerText = dialog.speaker;
+        document.getElementById('dialogue-text').innerText = dialog.text;
+        
+        // 말풍선 위치 및 활성 캐릭터 설정
+        bubble.className = ''; // 클래스 초기화
+        bubble.style.display = 'block';
+
+        if (dialog.target === 'char-minwoo') {
+            minwoo.classList.remove('inactive'); // 말하는 캐릭터 밝게
+            bubble.classList.add('bubble-left');
+        } else {
+            seoyeon.classList.remove('inactive'); // 말하는 캐릭터 밝게
+            bubble.classList.add('bubble-right');
+        }
+
+        currentIndex++;
+    }
+
+    // 대화 종료 후 화면 처리
+    function endDialogue() {
+        isDialogueActive = false;
+        
+        // 말풍선 숨김
+        document.getElementById('speech-bubble').style.display = 'none';
+        
+        // 모든 캐릭터 밝기 원상복구
+        document.getElementById('char-minwoo').classList.remove('inactive');
+        document.getElementById('char-seoyeon').classList.remove('inactive');
+        
+        // 버튼 표시 상태 변경
+        document.getElementById('btn-skip').style.display = 'none';
+        document.getElementById('btn-prev').style.display = 'block';
+        document.getElementById('btn-next').style.display = 'block';
+        
+        // 클릭 커서 제거
+        document.getElementById('game-container').style.cursor = 'default';
+    }
+
+    // 건너뛰기 버튼 액션
+    function skipDialogue(e) {
+        e.stopPropagation(); // 컨테이너 클릭 이벤트 방지
+        endDialogue();
+    }
+
+    // URL 이동 함수
+    function goUrl(e, url) {
+        e.stopPropagation();
+        if (url) {
+            window.location.href = url;
+        }
+    }
+
+    // 페이지 로드 시 첫 대화 시작
+    window.onload = () => {
+        advanceDialogue();
+    };
+</script>
+
+</body>
+</html>

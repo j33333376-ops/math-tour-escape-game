@@ -1,0 +1,91 @@
+<!-- 원본 크기: 340x430 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>프레리독</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .pd-svg { display:block; width:100%; height:auto; }
+  .pd-eye { animation: pd-blink 4.6s ease-in-out infinite; transform-box:fill-box; transform-origin:50% 50%; }
+  @keyframes pd-blink { 0%,93%,100%{transform:scaleY(1);} 96.5%{transform:scaleY(0.12);} }
+  .pd-nibble { animation: pd-nibble 0.9s ease-in-out infinite; transform-box:fill-box; transform-origin:50% 100%; }
+  @keyframes pd-nibble { 0%,100%{transform:translateY(0);} 50%{transform:translateY(2.4px);} }
+  .pd-ear { animation: pd-ear 5s ease-in-out infinite; transform-box:fill-box; transform-origin:50% 100%; }
+  @keyframes pd-ear { 0%,86%,100%{transform:rotate(0);} 92%{transform:rotate(-7deg);} }
+</style>
+</head>
+<body>
+<svg class="pd-svg" viewBox="0 0 340 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="프레리독">
+<title>프레리독</title>
+<desc>땅속 굴 앞에서 뒷발로 서서 앞발로 먹이를 쥐고 갉아먹는 통통하고 귀여운 프레리독.</desc>
+<defs>
+  <linearGradient id="pd-fur" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#d8b483"/><stop offset="0.55" stop-color="#c49c66"/><stop offset="1" stop-color="#a67e48"/>
+  </linearGradient>
+  <linearGradient id="pd-belly" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ecdcbe"/><stop offset="1" stop-color="#d8c193"/>
+  </linearGradient>
+  <radialGradient id="pd-mound" cx="0.5" cy="0.2" r="0.9">
+    <stop offset="0" stop-color="#a97f4e"/><stop offset="1" stop-color="#7c5a30"/>
+  </radialGradient>
+  <linearGradient id="pd-head" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ddba88"/><stop offset="1" stop-color="#c19a5f"/>
+  </linearGradient>
+</defs>
+
+<!-- 굴 흙더미 -->
+<ellipse cx="170" cy="404" rx="150" ry="26" fill="#6a4f2c" opacity="0.22"/>
+<path d="M40,404 C48,372 96,356 170,356 C244,356 292,372 300,404 C270,416 210,420 170,420 C130,420 70,416 40,404 Z" fill="url(#pd-mound)"/>
+<ellipse cx="238" cy="392" rx="34" ry="14" fill="#3f2c16" opacity="0.8"/>
+<g fill="#8a6636" opacity="0.6"><ellipse cx="80" cy="392" rx="10" ry="4"/><ellipse cx="130" cy="400" rx="12" ry="4.5"/><ellipse cx="300" cy="396" rx="10" ry="4"/></g>
+
+<!-- 몸통(통통) -->
+<path d="M104,240 C98,196 128,168 170,168 C212,168 242,196 236,240
+         C246,286 246,330 224,360 C210,378 130,378 116,360 C94,330 94,286 104,240 Z"
+      fill="url(#pd-fur)" stroke="#916c3c" stroke-width="3" stroke-linejoin="round"/>
+<!-- 배 -->
+<path d="M170,206 C146,232 142,318 158,356 C166,368 174,368 182,356 C198,318 194,232 170,206 Z" fill="url(#pd-belly)"/>
+<!-- 뒷발 -->
+<ellipse cx="140" cy="360" rx="20" ry="9" fill="#c9a468" stroke="#916c3c" stroke-width="2"/>
+<ellipse cx="200" cy="360" rx="20" ry="9" fill="#c9a468" stroke="#916c3c" stroke-width="2"/>
+
+<!-- ===== 머리 ===== -->
+<!-- 귀 -->
+<g class="pd-ear"><ellipse cx="120" cy="112" rx="15" ry="13" fill="#b98f56" stroke="#916c3c" stroke-width="2"/><ellipse cx="121" cy="114" rx="8" ry="7" fill="#8a6636"/></g>
+<g class="pd-ear" style="animation-delay:.4s"><ellipse cx="220" cy="112" rx="15" ry="13" fill="#b98f56" stroke="#916c3c" stroke-width="2"/><ellipse cx="219" cy="114" rx="8" ry="7" fill="#8a6636"/></g>
+<!-- 머리통 -->
+<path d="M170,64 C122,64 98,102 98,140 C98,182 130,210 170,210 C210,210 242,182 242,140 C242,102 218,64 170,64 Z"
+      fill="url(#pd-head)" stroke="#916c3c" stroke-width="3"/>
+<!-- 볼/입 주변 밝은 털 -->
+<path d="M170,120 C144,132 138,172 152,200 C160,210 180,210 188,200 C202,172 196,132 170,120 Z" fill="#ecdcbe"/>
+<!-- 눈 -->
+<g class="pd-eye"><ellipse cx="142" cy="132" rx="12" ry="14" fill="#241a10"/><circle cx="138" cy="126" r="3.6" fill="#ffffff" opacity="0.9"/></g>
+<g class="pd-eye" style="animation-delay:.08s"><ellipse cx="198" cy="132" rx="12" ry="14" fill="#241a10"/><circle cx="194" cy="126" r="3.6" fill="#ffffff" opacity="0.9"/></g>
+<!-- 코 -->
+<ellipse cx="170" cy="166" rx="11" ry="8" fill="#8a5238"/>
+<ellipse cx="166" cy="163" rx="3.4" ry="2.6" fill="#c98a70" opacity="0.7"/>
+<!-- 앞니 -->
+<rect x="164" y="184" width="12" height="12" rx="3" fill="#fbf3df" stroke="#cbb98a" stroke-width="1.2"/>
+<line x1="170" y1="184" x2="170" y2="196" stroke="#cbb98a" stroke-width="1"/>
+<!-- 볼 -->
+<circle cx="132" cy="160" r="8" fill="#e79a86" opacity="0.35"/><circle cx="208" cy="160" r="8" fill="#e79a86" opacity="0.35"/>
+
+<!-- ===== 앞발 + 먹이(갉작) ===== -->
+<g class="pd-nibble">
+  <!-- 먹이(도토리) -->
+  <ellipse cx="170" cy="196" rx="15" ry="13" fill="#b5763e" stroke="#7c4d24" stroke-width="2"/>
+  <path d="M155,190 C160,182 180,182 185,190 Z" fill="#7c4d24"/>
+  <circle cx="170" cy="180" r="3" fill="#7c4d24"/>
+  <!-- 앞발 -->
+  <path d="M150,214 C142,204 146,192 156,190 C162,196 166,200 170,202 C160,208 154,214 150,214 Z" fill="url(#pd-fur)" stroke="#916c3c" stroke-width="2.2"/>
+  <path d="M190,214 C198,204 194,192 184,190 C178,196 174,200 170,202 C180,208 186,214 190,214 Z" fill="url(#pd-fur)" stroke="#916c3c" stroke-width="2.2"/>
+  <g stroke="#916c3c" stroke-width="1.4" opacity="0.6"><path d="M150,206 l-4,4 M155,210 l-4,4 M190,206 l4,4 M185,210 l4,4"/></g>
+</g>
+<!-- 팔(몸에서 먹이로) -->
+<path d="M132,244 C124,224 132,206 150,204 C154,214 150,226 146,238 Z" fill="url(#pd-fur)" stroke="#916c3c" stroke-width="2.4"/>
+<path d="M208,244 C216,224 208,206 190,204 C186,214 190,226 194,238 Z" fill="url(#pd-fur)" stroke="#916c3c" stroke-width="2.4"/>
+</svg>
+</body>
+</html>

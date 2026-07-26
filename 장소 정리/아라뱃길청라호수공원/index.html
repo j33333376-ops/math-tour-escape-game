@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>아라뱃길 · 청라호수공원 MATHTOUR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&family=Nanum+Myeongjo:wght@700;800&family=Noto+Sans+KR:wght@700;900&display=swap');
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Jua', 'Noto Sans KR', sans-serif;
+            background: #c8d4e4;
+            background-image: radial-gradient(circle at 50% 38%, #f6f9ff 0%, #c8d4e4 72%, #c8d4e4 100%);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .map-container {
+            width: 95vw; max-width: 1400px; max-height: 90vh;
+            aspect-ratio: 16 / 9;
+            background-color: #eef3fa;
+            border-radius: 26px;
+            box-shadow: 0 14px 34px rgba(20,20,30,0.30), inset 0 0 0 6px rgba(255,255,255,0.85);
+            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+        svg { width: 100%; height: 100%; display: block; }
+
+        .point-scale {
+            transition: transform 0.25s ease;
+            transform-box: fill-box; transform-origin: center;
+        }
+        .point-link { outline: none; cursor: pointer; text-decoration: none; }
+        .point-link:hover .point-scale { transform: scale(1.1); }
+
+        .tile-frame { position: relative; overflow: hidden; pointer-events: none; background: transparent; }
+        .tile-iframe { position: absolute; border: 0; display: block; background: transparent; transform-origin: top left; pointer-events: none; }
+        .tile-badge {
+            position: absolute; top: 2px; left: 2px;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #2c5f9c; border: 2px solid #ffffff; color: #ffffff;
+            font-family: 'Black Han Sans', 'Jua', sans-serif; font-size: 12px; line-height: 1;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2; box-shadow: 0 1px 3px rgba(0,0,0,0.45); pointer-events: none;
+        }
+
+        .map-title {
+            font-family: 'Black Han Sans','Jua',sans-serif; font-size: 40px;
+            fill: url(#titleGrad); stroke: #101f44; stroke-width: 7px;
+            paint-order: stroke; stroke-linejoin: round; filter: url(#titleShadow);
+        }
+        .label-wrap {
+            width: 200px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            pointer-events: none;
+        }
+        .place-tag {
+            background: rgba(250,252,255,0.94);
+            color: #1f3355;
+            font-family: 'Jua', 'Noto Sans KR', sans-serif;
+            font-size: 12px; font-weight: 700; line-height: 1.1;
+            padding: 2px 8px; border-radius: 9px; white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            border: 1px solid #9db6d8;
+        }
+        .no-select { user-select: none; }
+    </style>
+</head>
+<body>
+    <div class="map-container">
+        <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <defs>
+                <radialGradient id="bgGrad" cx="50%" cy="42%" r="75%">
+                    <stop offset="0%" stop-color="#f6f9ff"/>
+                    <stop offset="60%" stop-color="#dbe6f6"/>
+                    <stop offset="100%" stop-color="#b6c9e6"/>
+                </radialGradient>
+                <pattern id="pt" width="44" height="22" patternUnits="userSpaceOnUse">
+    <path d="M0,11 q11,-6 22,0 q11,6 22,0" fill="none" stroke="#b4c8e4" stroke-width="1.5" opacity="0.6"/>
+  </pattern>
+                <linearGradient id="titleGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#fff6c8"/>
+                    <stop offset="45%" stop-color="#8fc0f0"/>
+                    <stop offset="100%" stop-color="#1f3f7c"/>
+                </linearGradient>
+                <filter id="titleShadow" x="-20%" y="-20%" width="140%" height="160%">
+                    <feDropShadow dx="0" dy="4" stdDeviation="2" flood-color="#101f44" flood-opacity="0.45"/>
+                </filter>
+            </defs>
+
+            <rect x="0" y="0" width="800" height="450" fill="url(#bgGrad)"/>
+            <rect x="0" y="0" width="800" height="450" fill="url(#pt)"/>
+
+            <!-- 아치 교량 -->
+              <g fill="none" stroke="#8fa8cc" stroke-width="5" opacity="0.55">
+                <path d="M110,64 q86,-42 172,0"/>
+                <path d="M518,416 q86,42 172,0"/>
+              </g>
+              <g stroke="#8fa8cc" stroke-width="2" opacity="0.45">
+                <line x1="150" y1="52" x2="150" y2="66"/><line x1="196" y1="44" x2="196" y2="66"/><line x1="242" y1="52" x2="242" y2="66"/>
+                <line x1="558" y1="428" x2="558" y2="414"/><line x1="604" y1="436" x2="604" y2="414"/><line x1="650" y1="428" x2="650" y2="414"/>
+              </g>
+              <!-- 야간 조명 -->
+              <g fill="#ffe9a8" opacity="0.85">
+                <circle cx="46" cy="150" r="5"/><circle cx="46" cy="300" r="5"/>
+                <circle cx="754" cy="150" r="5"/><circle cx="754" cy="300" r="5"/>
+              </g>
+              <!-- 유람선 -->
+              <g transform="translate(400,406)">
+                <path d="M-30,0 h60 l-9,13 h-42 Z" fill="#f4f7fc" stroke="#4a6a96" stroke-width="1.6"/>
+                <rect x="-14" y="-14" width="28" height="14" rx="3" fill="#dce8f6" stroke="#4a6a96" stroke-width="1.4"/>
+                <line x1="0" y1="-14" x2="0" y2="-26" stroke="#4a6a96" stroke-width="2"/>
+                <path d="M0,-26 l14,5 l-14,5 Z" fill="#d8604e"/>
+              </g>
+
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#2c4a72" stroke-width="24" />
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#5f8fc4" stroke-width="16" />
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#ffe9a8" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 12" opacity="0.9" />
+
+            <text x="400" y="225" dy="0.35em" text-anchor="middle" class="map-title no-select">아라뱃길 · 청라호수공원 MATHTOUR</text>
+
+            <a href="A01.html" class="point-link" aria-label="아라타워 전망대">
+                <g transform="translate(94, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-24.555" y="-65.0" width="49.11" height="130.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:49.11px;height:130.0px;">
+                                <iframe class="tile-iframe" src="아라뱃길_아라타워.html" scrolling="no" style="width:340px;height:900px;left:0px;top:0px;transform:scale(0.14444);"></iframe>
+                                <div class="tile-badge">A</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-24.555" y="-65.0" width="49.11" height="130.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="B01.html" class="point-link" aria-label="아라폭포">
+                <g transform="translate(400, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-45.11" width="140.0" height="90.22" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:90.22px;">
+                                <iframe class="tile-iframe" src="아라뱃길_아라폭포.html" scrolling="no" style="width:900px;height:580px;left:0px;top:0px;transform:scale(0.15556);"></iframe>
+                                <div class="tile-badge">B</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-45.11" width="140.0" height="90.22" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="C01.html" class="point-link" aria-label="수향루">
+                <g transform="translate(706, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-54.735" y="-65.0" width="109.47" height="130.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:109.47px;height:130.0px;">
+                                <iframe class="tile-iframe" src="아라뱃길_수향루.html" scrolling="no" style="width:640px;height:760px;left:0px;top:0px;transform:scale(0.17105);"></iframe>
+                                <div class="tile-badge">C</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-54.735" y="-65.0" width="109.47" height="130.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="D01.html" class="point-link" aria-label="음악분수">
+                <g transform="translate(706, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-29.4" width="140.0" height="58.8" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:58.8px;">
+                                <iframe class="tile-iframe" src="청라호수공원_음악분수.html" scrolling="no" style="width:1000px;height:420px;left:0px;top:0px;transform:scale(0.14);"></iframe>
+                                <div class="tile-badge">D</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-29.4" width="140.0" height="58.8" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="E01.html" class="point-link" aria-label="호수 횡단교량">
+                <g transform="translate(400, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-26.6" width="140.0" height="53.2" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:53.2px;">
+                                <iframe class="tile-iframe" src="청라호수공원_횡단교량.html" scrolling="no" style="width:1000px;height:380px;left:0px;top:0px;transform:scale(0.14);"></iframe>
+                                <div class="tile-badge">E</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-26.6" width="140.0" height="53.2" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="F01.html" class="point-link" aria-label="청라루">
+                <g transform="translate(94, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-63.44" width="140.0" height="126.88" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:126.88px;">
+                                <iframe class="tile-iframe" src="청라호수공원_청라루.html" scrolling="no" style="width:640px;height:580px;left:0px;top:0px;transform:scale(0.21875);"></iframe>
+                                <div class="tile-badge">F</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-63.44" width="140.0" height="126.88" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+
+            <foreignObject x="-6" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">A. 아라타워 전망대</span></div>
+            </foreignObject>
+            <foreignObject x="300" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">B. 아라폭포</span></div>
+            </foreignObject>
+            <foreignObject x="606" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">C. 수향루</span></div>
+            </foreignObject>
+            <foreignObject x="606" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">D. 음악분수</span></div>
+            </foreignObject>
+            <foreignObject x="300" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">E. 호수 횡단교량</span></div>
+            </foreignObject>
+            <foreignObject x="-6" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">F. 청라루</span></div>
+            </foreignObject>
+
+        </svg>
+    </div>
+</body>
+</html>

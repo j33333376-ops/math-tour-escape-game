@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 중등 수학과 1급 정교사 · 분임 장소/코스 배정</title>
+<style>
+  :root{
+    --mid:#3f6ea5; --mid-bg:#e9f1fa; --mid-bd:#b9d2ec;
+    --high:#4a8a52; --high-bg:#eaf4ec; --high-bd:#bfe0c5;
+    --ink:#243244; --sub:#5f6b7a; --line:#e3e7ee; --paper:#f4f6fa;
+    --gold:#e6a417; --accent:#2d6cc0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Pretendard','Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;
+    background:var(--paper); color:var(--ink); line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 18px 60px}
+  header.top{
+    background:linear-gradient(135deg,#3a5f95,#4a8a72); color:#fff;
+    padding:22px 0 18px; margin-bottom:0;
+  }
+  header.top .wrap{padding-bottom:0}
+  header.top h1{margin:0;font-size:26px;font-weight:800;letter-spacing:-0.02em}
+  header.top p{margin:6px 0 0;font-size:14px;opacity:.92}
+  /* 진행 요약 */
+  .statusbar{
+    position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line);
+    box-shadow:0 2px 10px rgba(20,30,50,.05);
+  }
+  .statusbar .wrap{display:flex;align-items:center;gap:10px;padding-top:10px;padding-bottom:10px;flex-wrap:wrap}
+  .tabs{display:flex;gap:6px;flex:1;flex-wrap:wrap}
+  .tab{
+    border:1.5px solid var(--line);background:#fff;color:var(--sub);font-weight:700;
+    padding:9px 16px;border-radius:999px;cursor:pointer;font-size:14px;transition:.15s;font-family:inherit;
+  }
+  .tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .tab:hover:not(.active){background:#f0f4fa}
+  .prog{font-size:13px;color:var(--sub);white-space:nowrap;font-weight:700}
+  .prog b{color:var(--accent)}
+  .btn{
+    border:1.5px solid var(--line);background:#fff;color:var(--ink);font-weight:700;
+    padding:9px 14px;border-radius:10px;cursor:pointer;font-size:13.5px;transition:.15s;font-family:inherit;
+  }
+  .btn:hover{background:#f0f4fa}
+  .btn.ghost{color:var(--sub)}
+  .btn.danger{color:#c0392b;border-color:#ecc9c5}
+  .btn.danger:hover{background:#fbeeec}
+  section.view{display:none;padding-top:22px}
+  section.view.active{display:block}
+
+  /* ===== 장소 배정 ===== */
+  .draw-card{
+    background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px 22px 24px;
+    box-shadow:0 6px 20px rgba(30,45,70,.06);text-align:center;margin-bottom:20px;
+  }
+  .draw-title{font-size:15px;color:var(--sub);font-weight:700;margin-bottom:8px}
+  .draw-display{
+    font-size:46px;font-weight:800;letter-spacing:-0.02em;color:var(--ink);
+    min-height:64px;display:flex;align-items:center;justify-content:center;gap:12px;
+  }
+  .draw-display .num{
+    display:inline-flex;align-items:center;justify-content:center;min-width:56px;height:56px;padding:0 10px;
+    border-radius:14px;background:var(--mid-bg);color:var(--mid);border:2px solid var(--mid-bd);
+  }
+  .draw-display.high .num{background:var(--high-bg);color:var(--high);border-color:var(--high-bd)}
+  .draw-display.rolling{opacity:.85}
+  .draw-display.landed{animation:pop .4s ease}
+  @keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+  .draw-msg{font-size:14.5px;color:var(--sub);margin-top:6px;min-height:22px}
+  .draw-msg b{color:var(--gold)}
+  .draw-btn{
+    margin-top:16px;background:var(--accent);color:#fff;border:none;border-radius:12px;
+    padding:14px 30px;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit;
+    box-shadow:0 4px 12px rgba(45,108,192,.28);transition:.15s;
+  }
+  .draw-btn:hover{filter:brightness(1.05)}
+  .draw-btn:disabled{background:#c3ccd8;box-shadow:none;cursor:not-allowed}
+
+  .grid-head{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 10px}
+  .grid-head h2{font-size:17px;margin:0;font-weight:800}
+  .hint{font-size:13px;color:var(--sub)}
+  .loc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+  .loc{
+    border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:14px 14px 12px;
+    cursor:default;transition:.15s;position:relative;min-height:78px;
+  }
+  .loc .lname{font-weight:800;font-size:16px;padding-right:52px;min-height:22px}
+  .loc .lc{font-size:11.5px;color:var(--sub);margin-top:3px;line-height:1.4}
+  .loc.selectable{cursor:pointer;border-color:var(--gold);box-shadow:0 0 0 3px rgba(230,164,23,.14)}
+  .loc.selectable:hover{background:#fffdf3;transform:translateY(-2px)}
+  .loc.taken{background:#f6f8fb;border-style:dashed;opacity:.92}
+  .loc.taken .lname{color:var(--sub)}
+  .loc .badge{
+    position:absolute;top:10px;right:10px;font-size:12px;font-weight:800;padding:3px 9px;border-radius:999px;
+  }
+  .b-mid{background:var(--mid-bg);color:var(--mid);border:1px solid var(--mid-bd)}
+  .b-high{background:var(--high-bg);color:var(--high);border:1px solid var(--high-bd)}
+
+  .result-wrap{margin-top:22px}
+  .res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+  .res-row{
+    display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;
+    padding:10px 12px;background:#fff;
+  }
+  .res-row .bnum{
+    flex:none;width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:15px;
+  }
+  .res-row .rl{font-weight:800;font-size:15px}
+  .res-row .rs{font-size:12px;color:var(--sub)}
+  .empty{color:var(--sub);font-size:14px;padding:16px;text-align:center;border:1.5px dashed var(--line);border-radius:12px}
+
+  /* ===== 코스 배정 ===== */
+  .panel{
+    border:1px solid var(--line);border-radius:16px;background:#fff;margin-bottom:16px;overflow:hidden;
+    box-shadow:0 4px 14px rgba(30,45,70,.05);
+  }
+  .panel.locked{opacity:.6}
+  .p-head{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .p-head .bnum{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-weight:800;flex:none}
+  .p-head .ploc{font-weight:800;font-size:17px}
+  .p-head .pmeta{font-size:12.5px;color:var(--sub)}
+  .p-head .pdone{margin-left:auto;font-size:13px;font-weight:800;color:var(--sub)}
+  .p-head .pdone.ok{color:var(--high)}
+  .mem{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;border-top:1px dashed var(--line);flex-wrap:wrap}
+  .mem:first-of-type{border-top:none}
+  .mem .who{flex:none;width:150px}
+  .mem .who .mn{font-weight:800;font-size:15px}
+  .mem .who .ms{font-size:11.5px;color:var(--sub)}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;flex:1}
+  .chip{
+    border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:7px 11px;font-size:13px;font-weight:700;
+    cursor:pointer;transition:.12s;color:var(--ink);font-family:inherit;
+  }
+  .chip .ck{font-weight:800;color:var(--accent);margin-right:5px}
+  .chip:hover:not(.disabled):not(.on){background:#f0f4fa}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .chip.on .ck{color:#fff}
+  .chip.disabled{opacity:.4;cursor:not-allowed;text-decoration:line-through}
+  .lock-note{padding:16px;color:var(--sub);font-size:14px}
+
+  /* ===== 결과 ===== */
+  #view-sum .sum-block{border:1px solid var(--line);border-radius:14px;background:#fff;margin-bottom:14px;padding:14px 16px}
+  #view-sum .sh{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  #view-sum .sh .bnum{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;flex:none}
+  #view-sum .sh .sl{font-weight:800;font-size:16px}
+  #view-sum table{width:100%;border-collapse:collapse;font-size:13.5px}
+  #view-sum td{padding:6px 8px;border-bottom:1px solid var(--line)}
+  #view-sum td.cc{font-weight:800;color:var(--accent);width:34px}
+  #view-sum td.mm{width:90px;font-weight:700}
+  #view-sum td.ss{color:var(--sub)}
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);opacity:0;
+    background:#243244;color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:700;
+    box-shadow:0 8px 24px rgba(0,0,0,.3);pointer-events:none;transition:.25s;z-index:100;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .credit{text-align:center;color:var(--sub);font-size:12px;margin-top:26px}
+
+  @media print{
+    .statusbar,header.top,.draw-card,.grid-head,.loc-grid,#view-loc,#view-course,.btn,.tab,.credit{display:none!important}
+    #view-sum{display:block!important;padding:0}
+    body{background:#fff}
+    .sum-block{break-inside:avoid;box-shadow:none}
+    .print-title{display:block!important}
+  }
+  .print-title{display:none;text-align:center;font-size:20px;font-weight:800;margin:0 0 14px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>2026 중등 수학과 1급 정교사 · 분임 장소/코스 배정</h1>
+    <p>① 분임을 랜덤으로 추첨 → 뽑힌 분임이 희망 장소 선택 &nbsp;·&nbsp; ② 분임원이 장소 내 코스를 직접 선택 &nbsp;(총 8개 분임 · 42명)</p>
+  </div>
+</header>
+
+<div class="statusbar">
+  <div class="wrap">
+    <div class="tabs">
+      <button class="tab active" data-view="loc">① 장소 배정</button>
+      <button class="tab" data-view="course">② 코스 배정</button>
+      <button class="tab" data-view="sum">📋 결과</button>
+    </div>
+    <span class="prog" id="prog"></span>
+    <button class="btn ghost" onclick="window.print()">🖨️ 인쇄</button>
+    <button class="btn ghost" id="btnCsv">⬇️ CSV</button>
+    <button class="btn danger" id="btnReset">전체 초기화</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- ① 장소 배정 -->
+  <section class="view active" id="view-loc">
+    <div class="draw-card">
+      <div class="draw-title">다음 차례 분임 추첨</div>
+      <div class="draw-display" id="drawDisp"><span style="color:#aab4c2;font-size:26px;font-weight:700">아래 버튼을 눌러 시작</span></div>
+      <div class="draw-msg" id="drawMsg"></div>
+      <button class="draw-btn" id="drawBtn">🎲 다음 분임 뽑기</button>
+    </div>
+
+    <div class="grid-head">
+      <h2>희망 장소 선택 <span class="hint" id="locHint"></span></h2>
+      <button class="btn ghost" id="btnUndo">↩ 직전 배정 취소</button>
+    </div>
+    <div class="loc-grid" id="locGrid"></div>
+
+    <div class="result-wrap">
+      <div class="grid-head"><h2>분임별 장소 배정 현황</h2></div>
+      <div class="res-grid" id="locRes"></div>
+    </div>
+  </section>
+
+  <!-- ② 코스 배정 -->
+  <section class="view" id="view-course">
+    <div class="grid-head" style="margin-top:4px">
+      <h2>분임원 코스 배정 <span class="hint">각 분임원이 희망 코스를 클릭하세요 (분임 내 중복 불가)</span></h2>
+    </div>
+    <div id="coursePanels"></div>
+  </section>
+
+  <!-- 결과 -->
+  <section class="view" id="view-sum">
+    <div class="print-title">2026 중등 수학과 1급 정교사 · 분임 장소/코스 배정 결과</div>
+    <div id="sumBody"></div>
+  </section>
+
+  <div class="credit">2026 중등 수학과 1급 정교사 자격연수 · 분임 배정 도우미</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= 데이터 ================= */
+const BUNIM = [
+ {id:1, lv:'중', m:[['강진성','인천당하중학교'],['박소연','인천은송중학교'],['손민성','인천검단가온중학교'],['안지수','인천공항중학교'],['이재현','인천논현중학교']]},
+ {id:2, lv:'중', m:[['권희석','제물포중학교'],['김승진','인하대학교사범대학부속중학교'],['이한결','백령중학교'],['조아림','인천검단가온중학교'],['홍준표','인천하늘중학교']]},
+ {id:3, lv:'중', m:[['고재준','신흥중학교'],['박건웅','진산중학교'],['오수빈','인천검단가온중학교'],['조승민','옥련중학교'],['차수현','인천중산중학교']]},
+ {id:4, lv:'중', m:[['강민구','동인천중학교'],['김경화','인천논현중학교'],['김유창','계양중학교'],['남궁환','인천미송중학교'],['한미란','강남중학교']]},
+ {id:5, lv:'고', m:[['김다영','인천신현고등학교'],['오정규','인천해송고등학교'],['이재빈','학익고등학교'],['조성율','인천진산과학고등학교'],['조유나','숭덕여자고등학교'],['황인엽','서운고등학교']]},
+ {id:6, lv:'고', m:[['강경희','신명여자고등학교'],['김경환','연평고등학교'],['김승민','인천포스코고등학교'],['오은미','강남영상미디어고등학교'],['이미선','인천문남고등학교'],['이정아','인천영종고등학교']]},
+ {id:7, lv:'고', m:[['김가연','인천해사고등학교'],['김경옥','인일여자고등학교'],['서효원','강화고등학교'],['송현태','인천청라고등학교'],['장세원','인화여자고등학교']]},
+ {id:8, lv:'고', m:[['강병진','인성여자고등학교'],['권희선','계산고등학교'],['김범수','안남고등학교'],['서유란','인항고등학교'],['안소현','인천청라고등학교']]},
+];
+const LOCATIONS = [
+ {n:'강화도', c:['용흥궁','성공회 강화성당','고려궁지','강화산성 북문','북산길','갑곶돈대']},
+ {n:'문학경기장', c:['인천SSG랜더스필드','인천문학경기장(월드컵주경기장)','인천어린이박물관','체육공원','박태환수영장','인공암벽장']},
+ {n:'부평', c:['부평지하상가','종합시장 점포거리','깡시장 과일가게','부평 평리단길','평화의 소녀상','굴포천 생태하천']},
+ {n:'소래포구', c:['소래포구 어시장','염전체험장','소래습지공원 전시관','새우타워','풍차','소염교']},
+ {n:'송도센트럴파크', c:['국립세계문자박물관','송도한옥마을','동북아무역센터','수상택시','인천도시역사관','트라이보울']},
+ {n:'아라뱃길·청라호수공원', c:['아라타워 전망대','아라폭포','수향루','음악분수','호수 횡단교량','청라루']},
+ {n:'영종도', c:['인천대교 기념관','왕산마리나','을왕리해수욕장','레일바이크','공항 전망대','영종진공원']},
+ {n:'옹진군', c:['덕적도 해안','영흥대교','십리포 해안','백령도 두무진','사곶사빈','콩돌해안']},
+ {n:'월미도', c:['월미전통정원','월미전망대','월미산 산책로','디스코팡팡','바이킹','월미도 앞바다']},
+ {n:'인천대공원', c:['장미원','조각원','호수정원','백범광장','야외음악당','환경미래관']},
+ {n:'인천도호부청사·인천향교', c:['동헌 및 객사','옥사(감옥)','동재·서재','향교 대성전','명륜당','투호 놀이장']},
+ {n:'인천차이나타운', c:['삼국지 벽화거리','짜장면 박물관','대불호텔','인천개항박물관','인천제물포구청','맥아더장군 동상']},
+ {n:'인하대', c:['수준원점','인경호','궁합나무','비룡탑','해오름동산','우남호']},
+];
+const LETTERS='ABCDEFGHIJ';
+const totalMembers = BUNIM.reduce((a,b)=>a+b.m.length,0);
+
+/* ================= 상태 ================= */
+const KEY='bunim_assign_2026_v1';
+function blank(){ return { loc:{}, pending:null, order:[], course:{} }; }
+function load(){ try{ const s=localStorage.getItem(KEY); if(s) return JSON.parse(s);}catch(e){} return null; }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+let state = load() || blank();
+
+/* ================= 유틸 ================= */
+const $=s=>document.querySelector(s);
+const bunimById=id=>BUNIM.find(b=>b.id===id);
+function takenLocSet(){ const s={}; for(const id in state.loc){ s[state.loc[id]]=Number(id); } return s; }
+function levelClass(lv){ return lv==='중'?'mid':'high'; }
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),1900); }
+
+/* ================= 렌더 ================= */
+function renderAll(){ renderDraw(); renderLocGrid(); renderLocRes(); renderCourse(); renderSum(); renderProg(); }
+
+function renderProg(){
+  const locDone=Object.keys(state.loc).length;
+  let cDone=0; for(const id in state.course){ cDone+=Object.keys(state.course[id]).length; }
+  $('#prog').innerHTML=`장소 <b>${locDone}/8</b> · 코스 <b>${cDone}/${totalMembers}</b>`;
+}
+
+function renderDraw(){
+  const disp=$('#drawDisp'), msg=$('#drawMsg'), btn=$('#drawBtn'), hint=$('#locHint');
+  const assigned=Object.keys(state.loc).length;
+  if(state.pending){
+    const b=bunimById(state.pending);
+    disp.className='draw-display '+levelClass(b.lv)+' landed';
+    disp.innerHTML=`<span class="num">${b.id}</span><span>${b.id}분임 (${b.lv==='중'?'중학교':'고등학교'})</span>`;
+    msg.innerHTML=`<b>${b.id}분임</b> 당첨! 아래에서 희망 장소를 클릭하세요.`;
+    btn.disabled=true; btn.textContent='장소 선택 대기 중…';
+    hint.textContent='— 노란 테두리 장소 중 선택';
+  }else if(assigned>=8){
+    disp.className='draw-display';
+    disp.innerHTML=`<span style="color:var(--high);font-size:30px;font-weight:800">✓ 8개 분임 장소 배정 완료</span>`;
+    msg.innerHTML='이제 <b>② 코스 배정</b> 탭에서 분임원 코스를 정하세요.';
+    btn.disabled=true; btn.textContent='장소 배정 완료';
+    hint.textContent='';
+  }else{
+    disp.className='draw-display';
+    disp.innerHTML=`<span style="color:#aab4c2;font-size:26px;font-weight:700">남은 분임 ${8-assigned}개</span>`;
+    msg.textContent='';
+    btn.disabled=false; btn.textContent='🎲 다음 분임 뽑기';
+    hint.textContent='';
+  }
+}
+
+function renderLocGrid(){
+  const taken=takenLocSet(); const g=$('#locGrid'); g.innerHTML='';
+  LOCATIONS.forEach((L,i)=>{
+    const el=document.createElement('div'); el.className='loc';
+    let badge='';
+    if(i in taken){
+      const b=bunimById(taken[i]); el.classList.add('taken');
+      badge=`<span class="badge b-${levelClass(b.lv)}">${b.id}분임</span>`;
+    }else if(state.pending){
+      el.classList.add('selectable');
+      el.onclick=()=>pickLocation(i);
+    }
+    el.innerHTML=`${badge}<div class="lname">${L.n}</div><div class="lc">${L.c.map((c,j)=>LETTERS[j]+'.'+c).join(' · ')}</div>`;
+    g.appendChild(el);
+  });
+}
+
+function renderLocRes(){
+  const box=$('#locRes');
+  if(!state.order.length){ box.innerHTML='<div class="empty" style="grid-column:1/-1">아직 배정된 분임이 없습니다.</div>'; return; }
+  box.innerHTML='';
+  state.order.forEach((id,idx)=>{
+    const b=bunimById(id), li=state.loc[id], L=LOCATIONS[li];
+    const row=document.createElement('div'); row.className='res-row';
+    const lc=levelClass(b.lv);
+    row.innerHTML=`<div class="bnum b-${lc}">${b.id}분임</div>
+      <div><div class="rl">${L.n}</div><div class="rs">추첨 ${idx+1}번째 · ${b.lv==='중'?'중학교':'고등학교'} · ${b.m.length}명</div></div>`;
+    box.appendChild(row);
+  });
+}
+
+function renderCourse(){
+  const wrap=$('#coursePanels'); wrap.innerHTML='';
+  // 배정된 분임 먼저(추첨순), 그다음 미배정
+  const orderIds=[...state.order, ...BUNIM.map(b=>b.id).filter(id=>!(id in state.loc))];
+  orderIds.forEach(id=>{
+    const b=bunimById(id); const lc=levelClass(b.lv);
+    const p=document.createElement('div'); p.className='panel';
+    if(!(id in state.loc)){
+      p.classList.add('locked');
+      p.innerHTML=`<div class="p-head"><div class="bnum b-${lc}">${b.id}</div><div><div class="ploc">${b.id}분임</div><div class="pmeta">장소 미배정</div></div></div>
+        <div class="lock-note">① 장소 배정에서 이 분임의 장소가 정해지면 코스를 선택할 수 있습니다.</div>`;
+      wrap.appendChild(p); return;
+    }
+    const L=LOCATIONS[state.loc[id]];
+    const cmap=state.course[id]||{};
+    const usedCourses=new Set(Object.values(cmap));
+    const doneN=Object.keys(cmap).length;
+    let html=`<div class="p-head"><div class="bnum b-${lc}">${b.id}</div>
+      <div><div class="ploc">${b.id}분임 — ${L.n}</div><div class="pmeta">${b.lv==='중'?'중학교':'고등학교'} · ${b.m.length}명</div></div>
+      <div class="pdone ${doneN===b.m.length?'ok':''}">${doneN}/${b.m.length} 배정${doneN===b.m.length?' ✓':''}</div></div>`;
+    b.m.forEach((mem,mi)=>{
+      const cur=cmap[mi];
+      let chips='';
+      L.c.forEach((cn,ci)=>{
+        let cls='chip';
+        if(cur===ci) cls+=' on';
+        else if(usedCourses.has(ci)) cls+=' disabled';
+        chips+=`<button class="${cls}" onclick="pickCourse(${id},${mi},${ci})"><span class="ck">${LETTERS[ci]}</span>${cn}</button>`;
+      });
+      html+=`<div class="mem"><div class="who"><div class="mn">${mem[0]}</div><div class="ms">${mem[1]}</div></div><div class="chips">${chips}</div></div>`;
+    });
+    p.innerHTML=html; wrap.appendChild(p);
+  });
+}
+
+function renderSum(){
+  const box=$('#sumBody');
+  if(!state.order.length){ box.innerHTML='<div class="empty">아직 배정 결과가 없습니다.</div>'; return; }
+  box.innerHTML='';
+  state.order.forEach(id=>{
+    const b=bunimById(id), L=LOCATIONS[state.loc[id]], cmap=state.course[id]||{}, lc=levelClass(b.lv);
+    const blk=document.createElement('div'); blk.className='sum-block';
+    let rows='';
+    b.m.forEach((mem,mi)=>{
+      const ci=cmap[mi];
+      rows+=`<tr><td class="cc">${ci!=null?LETTERS[ci]:'-'}</td><td class="mm">${mem[0]}</td><td class="ss">${mem[1]}</td><td>${ci!=null?L.c[ci]:'<span style="color:#c0392b">미정</span>'}</td></tr>`;
+    });
+    blk.innerHTML=`<div class="sh"><div class="bnum b-${lc}">${b.id}</div><div class="sl">${b.id}분임 — ${L.n}</div></div><table>${rows}</table>`;
+    box.appendChild(blk);
+  });
+}
+
+/* ================= 동작 ================= */
+let rolling=false;
+function drawBunim(){
+  if(rolling || state.pending) return;
+  const remain=BUNIM.filter(b=>!(b.id in state.loc));
+  if(!remain.length) return;
+  rolling=true; $('#drawBtn').disabled=true;
+  const winner=remain[Math.floor(Math.random()*remain.length)];
+  const disp=$('#drawDisp'); let t=0, delay=55;
+  function tick(){
+    const r=BUNIM.filter(b=>!(b.id in state.loc));
+    const s=r[Math.floor(Math.random()*r.length)];
+    disp.className='draw-display '+levelClass(s.lv)+' rolling';
+    disp.innerHTML=`<span class="num">${s.id}</span><span>${s.id}분임</span>`;
+    t+=delay;
+    if(t<1500){ delay*=1.09; setTimeout(tick,delay); }
+    else{ rolling=false; state.pending=winner.id; save(); renderAll();
+      $('#locGrid').scrollIntoView({behavior:'smooth',block:'nearest'}); }
+  }
+  tick();
+}
+function pickLocation(i){
+  if(!state.pending) return;
+  if(takenLocSet()[i]!=null) return;
+  const id=state.pending;
+  state.loc[id]=i; state.order.push(id); state.pending=null; save();
+  renderAll();
+  toast(`${id}분임 → ${LOCATIONS[i].n} 배정 완료`);
+}
+function undoLast(){
+  if(state.pending){ state.pending=null; save(); renderAll(); toast('추첨 취소'); return; }
+  if(!state.order.length){ toast('취소할 배정이 없습니다'); return; }
+  const id=state.order.pop(); delete state.loc[id]; delete state.course[id]; save(); renderAll();
+  toast(`${id}분임 장소 배정 취소`);
+}
+function pickCourse(id,mi,ci){
+  const cmap=state.course[id]||(state.course[id]={});
+  if(cmap[mi]===ci){ delete cmap[mi]; }               // 다시 클릭 → 해제
+  else{
+    // 같은 분임 내 다른 사람이 쓰면 무시
+    for(const k in cmap){ if(Number(k)!==mi && cmap[k]===ci) return; }
+    cmap[mi]=ci;
+  }
+  if(!Object.keys(cmap).length) delete state.course[id];
+  save(); renderCourse(); renderSum(); renderProg();
+}
+
+/* CSV */
+function exportCsv(){
+  let rows=[['분임','과정','장소','코스기호','코스명','성명','학교']];
+  state.order.forEach(id=>{
+    const b=bunimById(id), L=LOCATIONS[state.loc[id]], cmap=state.course[id]||{};
+    b.m.forEach((mem,mi)=>{
+      const ci=cmap[mi];
+      rows.push([b.id+'분임', b.lv==='중'?'중학교':'고등학교', L.n, ci!=null?LETTERS[ci]:'', ci!=null?L.c[ci]:'', mem[0], mem[1]]);
+    });
+  });
+  const csv='﻿'+rows.map(r=>r.map(x=>`"${(''+x).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='분임_장소코스_배정.csv'; a.click(); URL.revokeObjectURL(a.href);
+  toast('CSV 다운로드');
+}
+
+/* 탭 */
+function switchView(v){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===v));
+  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id==='view-'+v));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* 이벤트 */
+$('#drawBtn').onclick=drawBunim;
+$('#btnUndo').onclick=undoLast;
+$('#btnCsv').onclick=exportCsv;
+$('#btnReset').onclick=()=>{ if(confirm('모든 장소·코스 배정을 초기화할까요?')){ state=blank(); save(); renderAll(); switchView('loc'); toast('초기화 완료'); } };
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>switchView(t.dataset.view));
+
+renderAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>소래포구 · 소래습지생태공원 MATHTOUR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&family=Nanum+Myeongjo:wght@700;800&family=Noto+Sans+KR:wght@700;900&display=swap');
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Jua', 'Noto Sans KR', sans-serif;
+            background: #cfdfe2;
+            background-image: radial-gradient(circle at 50% 38%, #f8fcf8 0%, #cfdfe2 72%, #cfdfe2 100%);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .map-container {
+            width: 95vw; max-width: 1400px; max-height: 90vh;
+            aspect-ratio: 16 / 9;
+            background-color: #f0f6f2;
+            border-radius: 26px;
+            box-shadow: 0 14px 34px rgba(20,20,30,0.30), inset 0 0 0 6px rgba(255,255,255,0.85);
+            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+        svg { width: 100%; height: 100%; display: block; }
+
+        .point-scale {
+            transition: transform 0.25s ease;
+            transform-box: fill-box; transform-origin: center;
+        }
+        .point-link { outline: none; cursor: pointer; text-decoration: none; }
+        .point-link:hover .point-scale { transform: scale(1.1); }
+
+        .tile-frame { position: relative; overflow: hidden; pointer-events: none; background: transparent; }
+        .tile-iframe { position: absolute; border: 0; display: block; background: transparent; transform-origin: top left; pointer-events: none; }
+        .tile-badge {
+            position: absolute; top: 2px; left: 2px;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #1f6a8c; border: 2px solid #ffffff; color: #ffffff;
+            font-family: 'Black Han Sans', 'Jua', sans-serif; font-size: 12px; line-height: 1;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2; box-shadow: 0 1px 3px rgba(0,0,0,0.45); pointer-events: none;
+        }
+
+        .map-title {
+            font-family: 'Jua','Noto Sans KR',sans-serif; font-size: 34px;
+            fill: url(#titleGrad); stroke: #0e3a52; stroke-width: 7px;
+            paint-order: stroke; stroke-linejoin: round; filter: url(#titleShadow);
+        }
+        .label-wrap {
+            width: 200px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            pointer-events: none;
+        }
+        .place-tag {
+            background: rgba(248,253,252,0.94);
+            color: #1f4450;
+            font-family: 'Jua', 'Noto Sans KR', sans-serif;
+            font-size: 12px; font-weight: 700; line-height: 1.1;
+            padding: 2px 8px; border-radius: 9px; white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            border: 1px solid #8fbcc4;
+        }
+        .no-select { user-select: none; }
+    </style>
+</head>
+<body>
+    <div class="map-container">
+        <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <defs>
+                <radialGradient id="bgGrad" cx="50%" cy="42%" r="75%">
+                    <stop offset="0%" stop-color="#f8fcf8"/>
+                    <stop offset="60%" stop-color="#dcecec"/>
+                    <stop offset="100%" stop-color="#bcd8dc"/>
+                </radialGradient>
+                <pattern id="pt" width="48" height="24" patternUnits="userSpaceOnUse">
+    <path d="M0,12 q12,-7 24,0 q12,7 24,0" fill="none" stroke="#a8ccd2" stroke-width="1.6" opacity="0.55"/>
+  </pattern>
+                <linearGradient id="titleGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#fff6d8"/>
+                    <stop offset="45%" stop-color="#7fd0e0"/>
+                    <stop offset="100%" stop-color="#1f6a8c"/>
+                </linearGradient>
+                <filter id="titleShadow" x="-20%" y="-20%" width="140%" height="160%">
+                    <feDropShadow dx="0" dy="4" stdDeviation="2" flood-color="#0e3a52" flood-opacity="0.45"/>
+                </filter>
+            </defs>
+
+            <rect x="0" y="0" width="800" height="450" fill="url(#bgGrad)"/>
+            <rect x="0" y="0" width="800" height="450" fill="url(#pt)"/>
+
+            <!-- 소금 결정 -->
+              <g fill="none" stroke="#7fb4c4" stroke-width="2" opacity="0.6">
+                <g transform="translate(46,120)"><rect x="-9" y="-9" width="18" height="18" transform="rotate(45)"/></g>
+                <g transform="translate(754,150)"><rect x="-7" y="-7" width="14" height="14" transform="rotate(45)"/></g>
+                <g transform="translate(48,320)"><rect x="-7" y="-7" width="14" height="14" transform="rotate(45)"/></g>
+                <g transform="translate(752,300)"><rect x="-9" y="-9" width="18" height="18" transform="rotate(45)"/></g>
+              </g>
+              <!-- 갈매기 -->
+              <g fill="none" stroke="#4a6a72" stroke-width="2.4" stroke-linecap="round" opacity="0.75">
+                <path d="M300,36 q10,-9 20,0 q10,-9 20,0"/>
+                <path d="M470,30 q8,-7 16,0 q8,-7 16,0"/>
+              </g>
+              <!-- 나무 데크 말뚝 -->
+              <g fill="#8a6a3a" opacity="0.7">
+                <rect x="196" y="404" width="10" height="26" rx="3"/><rect x="392" y="404" width="10" height="26" rx="3"/>
+                <rect x="592" y="404" width="10" height="26" rx="3"/>
+              </g>
+              <!-- 물고기 -->
+              <g transform="translate(400,414)" opacity="0.85">
+                <path d="M-20,0 q20,-13 40,0 q-20,13 -40,0 Z" fill="#7fb4c4" stroke="#3f7f94" stroke-width="1.6"/>
+                <path d="M20,0 l14,-8 l0,16 Z" fill="#7fb4c4" stroke="#3f7f94" stroke-width="1.6"/>
+                <circle cx="-8" cy="-2" r="2" fill="#1f4450"/>
+              </g>
+
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#6b4a2c" stroke-width="24" />
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#a97c4a" stroke-width="16" />
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#e8d8b8" stroke-width="3" stroke-linecap="round" stroke-dasharray="22 8" opacity="0.9" />
+
+            <text x="400" y="225" dy="0.35em" text-anchor="middle" class="map-title no-select">소래포구 · 소래습지생태공원 MATHTOUR</text>
+
+            <a href="A01.html" class="point-link" aria-label="소래포구 어시장">
+                <g transform="translate(94, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-26.25" width="140.0" height="52.5" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:52.5px;">
+                                <iframe class="tile-iframe" src="소래포구_어시장.html" scrolling="no" style="width:1200px;height:450px;left:0px;top:0px;transform:scale(0.11667);"></iframe>
+                                <div class="tile-badge">A</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-26.25" width="140.0" height="52.5" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="B01.html" class="point-link" aria-label="염전체험장">
+                <g transform="translate(400, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-32.2" width="140.0" height="64.4" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:64.4px;">
+                                <iframe class="tile-iframe" src="소래포구_염전1.html" scrolling="no" style="width:1000px;height:460px;left:0px;top:0px;transform:scale(0.14);"></iframe>
+                                <div class="tile-badge">B</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-32.2" width="140.0" height="64.4" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="C01.html" class="point-link" aria-label="소래습지공원 전시관">
+                <g transform="translate(706, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-42.0" width="140.0" height="84.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:84.0px;">
+                                <iframe class="tile-iframe" src="소래포구_소래습지공원전시관.html" scrolling="no" style="width:1200px;height:720px;left:0px;top:0px;transform:scale(0.116667);"></iframe>
+                                <div class="tile-badge">C</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-42.0" width="140.0" height="84.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="D01.html" class="point-link" aria-label="새우타워">
+                <g transform="translate(706, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-42.0" width="140.0" height="84.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:84.0px;">
+                                <iframe class="tile-iframe" src="소래포구_새우타워.html" scrolling="no" style="width:1200px;height:720px;left:0px;top:0px;transform:scale(0.116667);"></iframe>
+                                <div class="tile-badge">D</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-42.0" width="140.0" height="84.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="E01.html" class="point-link" aria-label="풍차">
+                <g transform="translate(400, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-41.165" y="-65.0" width="82.33" height="130.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:82.33px;height:130.0px;">
+                                <iframe class="tile-iframe" src="소래포구_풍차.html" scrolling="no" style="width:380px;height:600px;left:0px;top:0px;transform:scale(0.21667);"></iframe>
+                                <div class="tile-badge">E</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-41.165" y="-65.0" width="82.33" height="130.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="F01.html" class="point-link" aria-label="소염교">
+                <g transform="translate(94, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-15.0" width="140.0" height="30.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:30.0px;">
+                                <iframe class="tile-iframe" src="소래포구_소염교.html" scrolling="no" style="width:1400px;height:300px;left:0px;top:0px;transform:scale(0.1);"></iframe>
+                                <div class="tile-badge">F</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-15.0" width="140.0" height="30.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+
+            <foreignObject x="-6" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">A. 소래포구 어시장</span></div>
+            </foreignObject>
+            <foreignObject x="300" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">B. 염전체험장</span></div>
+            </foreignObject>
+            <foreignObject x="606" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">C. 소래습지공원 전시관</span></div>
+            </foreignObject>
+            <foreignObject x="606" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">D. 새우타워</span></div>
+            </foreignObject>
+            <foreignObject x="300" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">E. 풍차</span></div>
+            </foreignObject>
+            <foreignObject x="-6" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">F. 소염교</span></div>
+            </foreignObject>
+
+        </svg>
+    </div>
+</body>
+</html>

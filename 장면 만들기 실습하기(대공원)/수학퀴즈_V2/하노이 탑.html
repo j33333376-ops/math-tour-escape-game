@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>하노이 탑</title>
+  <style>
+    :root {
+      /* ===== 공통 디자인 토큰 (전체 퀴즈 공용) ===== */
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #ea580c;
+      --accent-soft: #fff7ed;
+      --border-color: #e2e8f0;
+      --success: #10b981;
+      --error: #ef4444;
+      --radius-card: 16px;
+      --radius-ctrl: 10px;
+      --shadow-card: 0 10px 25px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+    }
+
+    .app-layout {
+      display: flex;
+      width: 100%; height: 100%;
+      padding: 2vh 2vw;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-side {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      width: 38vw;
+      max-width: 440px;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-block h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+
+    .header-block p {
+      margin: 0 0 20px 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .control-group {
+      background: var(--primary-soft);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .control-header label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .col-badge {
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .col-badge.accent { background: var(--accent); }
+    .col-badge.muted  { background: #94a3b8; }
+
+    input[type=range] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+
+    .stat-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .btn-row { display: flex; gap: 8px; }
+
+    .btn-check, .btn-ghost {
+      border-radius: var(--radius-ctrl);
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .btn-check { background: var(--primary); color: #fff; border: none; }
+    .btn-check:hover:not(:disabled) { background: var(--primary-dark); }
+    .btn-check:active:not(:disabled) { transform: translateY(1px); }
+    .btn-ghost { background: var(--card-bg); color: var(--primary-dark); border: 1px solid var(--border-color); }
+    .btn-ghost:hover:not(:disabled) { background: var(--primary-soft); }
+    .btn-ghost:active:not(:disabled) { transform: translateY(1px); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .answer-group { padding-top: 16px; border-top: 2px dashed var(--border-color); }
+
+    .feedback {
+      margin-top: 10px;
+      font-weight: 700;
+      text-align: center;
+      min-height: 20px;
+      font-size: 0.95rem;
+      word-break: keep-all;
+      line-height: 1.45;
+    }
+    .feedback.success { color: var(--success); }
+    .feedback.error   { color: var(--error); }
+    .feedback.info    { color: var(--text-muted); }
+
+    .board-side {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      padding: 10px;
+    }
+
+    .board-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      border: 4px solid var(--border-color);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    @media (orientation: portrait) {
+      .app-layout { flex-direction: column; justify-content: flex-start; padding-top: 2vh; gap: 12px; }
+      .panel-side { width: 96vw; max-width: none; padding: 16px; }
+      .board-side { width: 96vw; flex: 1; padding: 0 0 2vh 0; }
+      .header-block p { margin-bottom: 12px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 520px) {
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.2rem; }
+      .header-block p { display: none; }
+      .control-group { padding: 8px 12px; margin-bottom: 10px; }
+      .stat-row { margin-bottom: 8px; }
+    }
+
+    /* ===== 하노이 탑 전용 =====
+       받침대가 항상 같은 높이에 오도록, 보드가 세로를 꽉 채우고
+       원반은 "바닥에서부터" 쌓인다. (원반 개수를 바꿔도 받침대는 고정) */
+    .board-side { align-self: stretch; padding: 4px 0; }
+    .board-wrapper {
+      width: 100%; height: 100%;
+      min-height: min(300px, 100%);
+      padding: 20px 20px 0;
+      align-items: flex-end;
+    }
+
+    .hanoi {
+      --disk-h: 28px;
+      --peg-h: 190px;
+      position: relative;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .rod {
+      position: relative;
+      flex: 1;
+      height: 100%;                    /* 모든 기둥의 높이가 동일 → 받침대 위치 고정 */
+      display: flex;
+      flex-direction: column-reverse;  /* 아래에서 위로 쌓임 */
+      align-items: center;
+      justify-content: flex-start;
+      padding-bottom: 26px;            /* 받침대 두께만큼 띄움 */
+      cursor: pointer;
+      border-radius: 14px;
+      transition: background 0.15s;
+    }
+
+    .rod::before {                     /* 기둥 */
+      content: '';
+      position: absolute;
+      bottom: 26px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: var(--peg-h);
+      background: linear-gradient(180deg, #cbd5e1, #94a3b8);
+      border-radius: 6px 6px 0 0;
+      z-index: 0;
+    }
+    .rod::after {                      /* 받침대 (항상 같은 높이) */
+      content: '';
+      position: absolute;
+      bottom: 8px;
+      left: 3%;
+      width: 94%;
+      height: 14px;
+      background: linear-gradient(180deg, #94a3b8, #64748b);
+      border-radius: 7px;
+      box-shadow: 0 3px 6px rgba(15,23,42,.18);
+    }
+    .rod:hover { background: rgba(37, 99, 235, 0.06); }
+    .rod.target  { background: rgba(16, 185, 129, 0.14); }
+    .rod.invalid { background: rgba(239, 68, 68, 0.12); }
+
+    .rod-label {
+      position: absolute;
+      bottom: 9px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #fff;
+      z-index: 2;
+      pointer-events: none;
+      letter-spacing: .06em;
+    }
+
+    /* ---------- 무지개 원반 ---------- */
+    .disk {
+      position: relative;
+      z-index: 1;
+      height: var(--disk-h);
+      border-radius: calc(var(--disk-h) / 2.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      text-shadow: 0 1px 2px rgba(0,0,0,.35);
+      background: linear-gradient(180deg, var(--c1) 0%, var(--c2) 100%);
+      box-shadow:
+        inset 0 2px 3px rgba(255,255,255,.55),
+        inset 0 -3px 5px rgba(0,0,0,.18),
+        0 3px 6px rgba(15,23,42,.22);
+      border: 1px solid rgba(255,255,255,.35);
+      margin-bottom: 3px;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+    }
+    .disk::after {                     /* 유리 하이라이트 */
+      content: '';
+      position: absolute;
+      top: 12%; left: 6%; right: 6%;
+      height: 26%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(255,255,255,.42), rgba(255,255,255,.06));
+      pointer-events: none;
+    }
+
+    .disk.lifted {
+      transform: translateY(-12px) scale(1.05);
+      box-shadow:
+        inset 0 2px 3px rgba(255,255,255,.55),
+        0 12px 20px -6px var(--c2);
+      outline: 3px solid #fff;
+      outline-offset: 2px;
+      filter: saturate(1.15);
+      z-index: 3;
+    }
+    .rod:hover .disk:last-child:not(.lifted) { transform: translateY(-3px); }
+
+    @media (orientation: portrait) {
+      .board-side { align-self: auto; }
+      .board-wrapper { min-height: 260px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .disk { transition: none; }
+    }
+
+    /* ===================================================================
+       반응형 안전장치 — PC/모바일, 가로/세로 어디서도 잘리지 않게
+       =================================================================== */
+    .app-layout { min-height: 0; min-width: 0; }
+    .board-side { min-height: 0; min-width: 0; }
+
+    /* 패널이 화면보다 길어지면 화면을 밀지 않고 패널 안에서만 스크롤 */
+    .panel-side {
+      max-height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    @media (orientation: portrait) {
+      .panel-side { max-height: 54%; flex: 0 0 auto; }
+      .board-side { flex: 1 1 auto; }
+    }
+
+    /* 폰 가로처럼 세로가 짧은 화면 */
+    @media (orientation: landscape) and (max-height: 560px) {
+      .app-layout { padding: 8px; gap: 10px; }
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.12rem; margin-bottom: 4px; }
+      .header-block p  { display: none; }
+      .stat-row { margin-bottom: 8px; }
+      .answer-group { padding-top: 10px; margin-top: 10px !important; }
+      .feedback { font-size: 0.82rem; margin-top: 6px; min-height: 16px; }
+      .btn-row button { padding: 8px 12px; font-size: 0.85rem; }
+    }
+    @media (orientation: landscape) and (max-height: 430px) {
+      .rule-note, .note { font-size: 0.7rem; padding: 6px 8px; margin-bottom: 8px; line-height: 1.4; }
+      .control-group { padding: 7px 10px; margin-bottom: 8px; }
+      .col-badge { font-size: 0.72rem; padding: 3px 9px; }
+    }
+
+    /* ===== 목록(index.html)으로 돌아가는 버튼 ===== */
+    .home-btn {
+      position: fixed;
+      top: max(10px, env(safe-area-inset-top, 0px));
+      left: max(10px, env(safe-area-inset-left, 0px));
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px 8px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+      color: #1e293b;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: transform .18s, box-shadow .18s, color .18s, border-color .18s, background .18s;
+    }
+    .home-btn:hover {
+      background: #fff;
+      color: #1d4ed8;
+      border-color: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px -6px rgba(37, 99, 235, 0.5);
+    }
+    .home-btn:active { transform: translateY(0); }
+    .home-btn:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+    .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* 좁거나 납작한 화면에서는 아이콘만 */
+    @media (max-width: 560px), (orientation: landscape) and (max-height: 430px) {
+      .home-btn { padding: 8px; gap: 0; }
+      .home-btn .label { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="home-btn" href="index.html" title="게임 목록으로 돌아가기" aria-label="게임 목록으로 돌아가기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.2V20h13v-9.8"/>
+    </svg>
+    <span class="label">목록</span>
+  </a>
+
+
+  <div class="app-layout">
+    <div class="panel-side">
+      <div class="header-block">
+        <h2>하노이 탑</h2>
+        <p>원반을 클릭해서 집고, 다른 기둥을 클릭해 옮기세요.<br>큰 원반은 작은 원반 위에 놓을 수 없습니다.</p>
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <label>원반 개수</label>
+          <span class="col-badge" id="diskBadge">3개</span>
+        </div>
+        <input type="range" id="diskSlider" min="3" max="6" value="3" step="1">
+      </div>
+
+      <div class="stat-row">
+        <span class="col-badge muted" id="moveBadge">이동 0회</span>
+        <span class="col-badge accent" id="minBadge">최소 7회</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-ghost" id="undoBtn">↶ 되돌리기</button>
+        <button class="btn-check" id="resetBtn">🔄 다시 시작</button>
+      </div>
+
+      <div class="answer-group" style="margin-top:16px">
+        <div class="feedback info" id="feedback">모든 원반을 오른쪽 기둥(C)으로 옮기세요.</div>
+      </div>
+    </div>
+
+    <div class="board-side">
+      <div class="board-wrapper">
+        <div class="hanoi" id="hanoi"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // ==========================================================
+    //  하노이 탑 — 재귀와 지수 (최소 이동 횟수 = 2^n - 1)
+    // ==========================================================
+    const ROD_NAMES = ['A', 'B', 'C'];
+    const MAX_DISKS = 6;
+
+    // 작은 원반 → 큰 원반 순서의 무지개 (빨강 → 보라)
+    const RAINBOW = [
+      ['#fb7185', '#e11d48'],  // 1
+      ['#fb923c', '#ea580c'],  // 2
+      ['#fbbf24', '#d97706'],  // 3
+      ['#4ade80', '#16a34a'],  // 4
+      ['#38bdf8', '#0284c7'],  // 5
+      ['#a78bfa', '#7c3aed']   // 6
+    ];
+
+    const hanoiEl    = document.getElementById('hanoi');
+    const diskSlider = document.getElementById('diskSlider');
+    const diskBadge  = document.getElementById('diskBadge');
+    const moveBadge  = document.getElementById('moveBadge');
+    const minBadge   = document.getElementById('minBadge');
+    const undoBtn    = document.getElementById('undoBtn');
+    const resetBtn   = document.getElementById('resetBtn');
+    const feedback   = document.getElementById('feedback');
+
+    let n = 3;
+    let rods = [[], [], []];   // 각 기둥의 원반 (아래 → 위), 숫자는 원반 크기
+    let selected = null;       // 집어 든 원반이 있는 기둥
+    let moves = 0;
+    let history = [];
+    let finished = false;
+
+    function minMoves(k) { return Math.pow(2, k) - 1; }
+
+    function reset() {
+      rods = [[], [], []];
+      for (let s = n; s >= 1; s--) rods[0].push(s);   // 큰 것이 맨 아래
+      selected = null;
+      moves = 0;
+      history = [];
+      finished = false;
+      minBadge.textContent = '최소 ' + minMoves(n) + '회';
+      setFeedback('모든 원반을 오른쪽 기둥(C)으로 옮기세요.', 'info');
+      render();
+    }
+
+    function setFeedback(text, kind) {
+      feedback.textContent = text;
+      feedback.className = 'feedback ' + kind;
+    }
+
+    function canPlace(size, toRod) {
+      const stack = rods[toRod];
+      return stack.length === 0 || stack[stack.length - 1] > size;
+    }
+
+    function render() {
+      moveBadge.textContent = '이동 ' + moves + '회';
+      undoBtn.disabled = history.length === 0 || finished;
+
+      // 원반 높이는 "최대 개수" 기준으로 고정 → 개수를 바꿔도 원반 크기가 그대로
+      const boardH = hanoiEl.clientHeight || 300;
+      const usable = boardH - 46;                       // 받침대 + 여유
+      const diskH  = Math.max(12, Math.min(32, usable / (MAX_DISKS + 1)));
+      hanoiEl.style.setProperty('--disk-h', diskH + 'px');
+      hanoiEl.style.setProperty('--peg-h', (diskH * MAX_DISKS + 14) + 'px');
+
+      hanoiEl.innerHTML = '';
+
+      rods.forEach((stack, r) => {
+        const rod = document.createElement('div');
+        rod.className = 'rod';
+        rod.dataset.rod = r;
+
+        // 집어 든 원반이 있으면 놓을 수 있는 기둥을 미리 표시
+        if (selected !== null && selected !== r) {
+          const moving = rods[selected][rods[selected].length - 1];
+          rod.classList.add(canPlace(moving, r) ? 'target' : 'invalid');
+        }
+
+        stack.forEach((size, i) => {
+          const isTop = (i === stack.length - 1);
+          const [c1, c2] = RAINBOW[size - 1];
+          const disk = document.createElement('div');
+          disk.className = 'disk' + (isTop && selected === r ? ' lifted' : '');
+          disk.style.setProperty('--c1', c1);
+          disk.style.setProperty('--c2', c2);
+          disk.style.width = (28 + (size / MAX_DISKS) * 64) + '%';
+          disk.style.fontSize = Math.max(10, diskH * 0.44) + 'px';
+          disk.textContent = size;
+          rod.appendChild(disk);
+        });
+
+        const label = document.createElement('span');
+        label.className = 'rod-label';
+        label.textContent = ROD_NAMES[r];
+        rod.appendChild(label);
+
+        hanoiEl.appendChild(rod);
+      });
+    }
+
+    function onRodClick(r) {
+      if (finished) return;
+
+      if (selected === null) {
+        if (rods[r].length === 0) {
+          setFeedback('빈 기둥입니다. 원반이 있는 기둥을 먼저 클릭하세요.', 'info');
+          return;
+        }
+        selected = r;
+        setFeedback(ROD_NAMES[r] + '기둥의 ' + rods[r][rods[r].length - 1] + '번 원반을 집었습니다.', 'info');
+        render();
+        return;
+      }
+
+      if (selected === r) {          // 같은 기둥 → 내려놓기(취소)
+        selected = null;
+        setFeedback('원반을 내려놓았습니다.', 'info');
+        render();
+        return;
+      }
+
+      const size = rods[selected][rods[selected].length - 1];
+      if (!canPlace(size, r)) {
+        setFeedback('❌ 큰 원반(' + size + ')을 작은 원반(' + rods[r][rods[r].length - 1] + ') 위에 놓을 수 없어요.', 'error');
+        selected = null;
+        render();
+        return;
+      }
+
+      history.push({ from: selected, to: r });
+      rods[r].push(rods[selected].pop());
+      moves++;
+      const fromName = ROD_NAMES[selected];
+      selected = null;
+
+      if (rods[2].length === n) {
+        finished = true;
+        const best = minMoves(n);
+        setFeedback(moves === best
+          ? '🎉 완성! ' + moves + '회 — 최소 횟수(2^' + n + ' − 1 = ' + best + ')로 성공했습니다!'
+          : '🎉 완성! ' + moves + '회 (최소는 2^' + n + ' − 1 = ' + best + '회)', 'success');
+      } else {
+        setFeedback(fromName + ' → ' + ROD_NAMES[r] + ' 이동 (' + moves + '회)', 'info');
+      }
+      render();
+    }
+
+    function undo() {
+      if (finished || history.length === 0) return;
+      const last = history.pop();
+      rods[last.from].push(rods[last.to].pop());
+      moves--;
+      selected = null;
+      setFeedback('되돌렸습니다. (' + moves + '회)', 'info');
+      render();
+    }
+
+    hanoiEl.addEventListener('click', (e) => {
+      const rod = e.target.closest('.rod');
+      if (rod) onRodClick(parseInt(rod.dataset.rod, 10));
+    });
+
+    diskSlider.addEventListener('input', (e) => {
+      n = parseInt(e.target.value, 10);
+      diskBadge.textContent = n + '개';
+      reset();
+    });
+
+    undoBtn.addEventListener('click', undo);
+    resetBtn.addEventListener('click', reset);
+
+    let rt;
+    new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(render, 50); }).observe(hanoiEl);
+
+    reset();
+
+  </script>
+</body>
+</html>

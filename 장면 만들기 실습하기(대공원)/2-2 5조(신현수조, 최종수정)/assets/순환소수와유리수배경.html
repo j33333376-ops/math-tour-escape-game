@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>아침 안개 속 뚜렷한 황금빛 벼밭</title>
+  <style>
+    /* 기본 초기화 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 액자 역할을 하는 캔버스 */
+    .canvas {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 1200px;
+      max-height: 700px;
+      background: linear-gradient(to bottom, #778899, #b0c4de);
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    }
+
+    /* 1. 아침 하늘 (동틀 녘의 은은한 여명) */
+    .sky {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: linear-gradient(to bottom, #4b5966 0%, #7d90a6 40%, #cca07a 80%, #e6be8a 100%);
+    }
+
+    /* 은은한 아침 햇살 */
+    .sun-glow {
+      position: absolute;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 200px;
+      background: radial-gradient(ellipse at bottom, rgba(255,235,180,0.8) 0%, rgba(230,170,110,0.3) 50%, rgba(255,255,255,0) 80%);
+      filter: blur(15px);
+      pointer-events: none;
+    }
+
+    /* 2. 먼 산 (실루엣) */
+    .mountains {
+      position: absolute;
+      bottom: 50%;
+      width: 100%;
+      height: 15%;
+      pointer-events: none;
+    }
+
+    .mountain {
+      position: absolute;
+      bottom: 0;
+      background: #5d6d7e;
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      filter: blur(3px);
+      opacity: 0.6;
+    }
+
+    .mountain-left { left: -10%; width: 60%; height: 100%; }
+    .mountain-right { right: -5%; width: 55%; height: 80%; }
+
+    /* 3. 넓고 평평한 황토색 논밭 (베이스) */
+    .field-ground {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: linear-gradient(to bottom, #947146 0%, #73512a 100%);
+      overflow: hidden;
+    }
+
+    /* 원근감이 느껴지는 논둑길 경계선들 */
+    .paddy-lines {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: 
+        /* 멀어질수록 좁아지는 가로 논둑선 */
+        linear-gradient(to bottom, 
+          transparent 0%, 
+          rgba(54, 38, 20, 0.4) 15%, 
+          transparent 16%,
+          transparent 35%, 
+          rgba(54, 38, 20, 0.4) 36%, 
+          transparent 37.5%,
+          transparent 60%, 
+          rgba(54, 38, 20, 0.5) 61.5%, 
+          transparent 63%
+        ),
+        /* 방사형으로 퍼지는 세로 논길 (원근법) */
+        trigger-lines;
+    }
+
+    /* 방사형 세로 논둑 레이아웃 */
+    .paddy-lines::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 200%;
+      height: 100%;
+      transform: translateX(-50%);
+      background: repeating-linear-gradient(
+        75deg,
+        transparent 0px,
+        transparent 180px,
+        rgba(40, 28, 14, 0.5) 181px,
+        rgba(105, 82, 53, 0.6) 185px,
+        transparent 188px
+      );
+    }
+
+    /* 4. 자욱한 아침 안개 레이어 (벼 뒤쪽과 중간에 배치되어 깊이감 제공) */
+    .fog {
+      position: absolute;
+      width: 100%;
+      pointer-events: none;
+    }
+
+    .fog-deep {
+      bottom: 45%;
+      height: 15%;
+      background: linear-gradient(to bottom, rgba(230, 235, 240, 0.95) 0%, rgba(215, 220, 225, 0.7) 60%, rgba(148, 113, 70, 0) 100%);
+      filter: blur(5px);
+      z-index: 2;
+    }
+
+    .fog-low {
+      bottom: 10%;
+      height: 25%;
+      background: radial-gradient(ellipse at 50% 20%, rgba(240, 245, 245, 0.6) 0%, rgba(210, 215, 220, 0.3) 60%, rgba(255,255,255,0) 100%);
+      filter: blur(15px);
+      animation: drift 20s ease-in-out infinite alternate;
+      z-index: 4;
+    }
+
+    /* 5. 벼 (Paddy Crops) - 앞쪽에 배치되어 아주 뚜렷하게 드러남 */
+    .crops-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 45%;
+      z-index: 5; /* 안개 앞쪽에서 뚜렷하게 보이도록 레이어 위로 설정 */
+    }
+
+    /* 개별 벼 포기 (정밀 제작) */
+    .rice-bunch {
+      position: absolute;
+      bottom: -10px;
+      width: 80px;
+      height: 160px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      transform-origin: bottom center;
+      animation: sway 6s ease-in-out infinite alternate;
+    }
+
+    /* 바람에 흔들리는 벼 애니메이션 시간 편차 부여 */
+    .rb-1 { left: 5%; transform: scale(1.1); animation-delay: 0s; }
+    .rb-2 { left: 20%; transform: scale(0.95); animation-delay: -1.5s; }
+    .rb-3 { left: 38%; transform: scale(1.05); animation-delay: -0.7s; }
+    .rb-4 { left: 55%; transform: scale(0.9); animation-delay: -2.1s; }
+    .rb-5 { left: 72%; transform: scale(1.15); animation-delay: -1.2s; }
+    .rb-6 { left: 88%; transform: scale(1); animation-delay: -0.3s; }
+
+    /* 벼의 줄기와 잎사귀 */
+    .leaf {
+      position: absolute;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(to top, #6e4e27, #ad8743, #d9b15b);
+      border-radius: 50% 50% 0 0;
+      transform-origin: bottom center;
+    }
+
+    /* 사방으로 뻗친 벼잎들의 각도 조절 */
+    .l-1 { height: 110px; left: 35px; transform: rotate(-15deg); }
+    .l-2 { height: 130px; left: 38px; transform: rotate(-5deg); }
+    .l-3 { height: 140px; left: 41px; transform: rotate(5deg); }
+    .l-4 { height: 115px; left: 44px; transform: rotate(18deg); }
+    .l-5 { height: 90px;  left: 30px; transform: rotate(-28deg); }
+    .l-6 { height: 95px;  left: 48px; transform: rotate(30deg); }
+
+    /* 이삭 낱알들이 맺힌 줄기 (곡선 형태) */
+    .ear-stem {
+      position: absolute;
+      bottom: 50px;
+      width: 40px;
+      height: 90px;
+      border: 2px solid #bda05e;
+      border-left: none;
+      border-bottom: none;
+      transform-origin: bottom left;
+    }
+
+    /* 이삭이 고개를 숙이는 방향 설정 */
+    .es-left {
+      left: 10px;
+      border-radius: 0 100% 0 0;
+      transform: rotate(-35deg);
+    }
+
+    .es-right {
+      right: 10px;
+      border-radius: 100% 0 0 0;
+      border-right: none;
+      border-left: 2px solid #bda05e;
+      transform: rotate(35deg);
+    }
+
+    /* 잘 익어 고개 숙인 황금색 벼 이삭 낱알 무리 */
+    .grains {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 알알이 맺힌 개별 벼 낱알들 */
+    .grain {
+      position: absolute;
+      width: 6px;
+      height: 10px;
+      background: radial-gradient(circle at 30% 30%, #ffd066 0%, #c99324 100%);
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    /* 왼쪽 숙인 이삭의 알알이 배치 */
+    .es-left .g1 { top: -5px; right: 0px; transform: rotate(45deg); }
+    .es-left .g2 { top: 10px; right: -5px; transform: rotate(30deg); }
+    .es-left .g3 { top: 25px; right: -3px; transform: rotate(20deg); }
+    .es-left .g4 { top: 40px; right: 5px; transform: rotate(10deg); }
+    .es-left .g5 { top: 5px; right: 10px; transform: rotate(50deg); }
+    .es-left .g6 { top: 20px; right: 12px; transform: rotate(40deg); }
+
+    /* 오른쪽 숙인 이삭의 알알이 배치 */
+    .es-right .g1 { top: -5px; left: 0px; transform: rotate(-45deg); }
+    .es-right .g2 { top: 10px; left: -5px; transform: rotate(-30deg); }
+    .es-right .g3 { top: 25px; left: -3px; transform: rotate(-20deg); }
+    .es-right .g4 { top: 40px; left: 5px; transform: rotate(-10deg); }
+    .es-right .g5 { top: 5px; left: 10px; transform: rotate(-50deg); }
+    .es-right .g6 { top: 20px; left: 12px; transform: rotate(-40deg); }
+
+    /* 6. 중간 거리의 벼들 (실루엣 효과로 풍성함과 원근감 강화) */
+    .mid-crops {
+      position: absolute;
+      bottom: 25%;
+      width: 100%;
+      height: 20%;
+      z-index: 3;
+      opacity: 0.75;
+      display: flex;
+      justify-content: space-around;
+      pointer-events: none;
+    }
+
+    .mid-crop-bunch {
+      width: 30px;
+      height: 60px;
+      background: linear-gradient(to top, #73512a, #ad8743);
+      clip-path: polygon(50% 0%, 70% 30%, 90% 70%, 100% 100%, 0% 100%, 10% 70%, 30% 30%);
+      transform-origin: bottom center;
+      animation: sway 7s ease-in-out infinite alternate;
+    }
+    .mcb-1 { animation-delay: -0.5s; }
+    .mcb-2 { animation-delay: -1.8s; }
+    .mcb-3 { animation-delay: -1.0s; }
+    .mcb-4 { animation-delay: -2.5s; }
+    .mcb-5 { animation-delay: -0.2s; }
+
+    /* 애니메이션 정의 */
+    @keyframes sway {
+      0% { transform: rotate(-2deg); }
+      100% { transform: rotate(4deg); }
+    }
+
+    @keyframes drift {
+      0% { transform: translateX(-4%) translateY(0); }
+      100% { transform: translateX(4%) translateY(-3px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="canvas">
+    <div class="sky"></div>
+    <div class="sun-glow"></div>
+
+    <div class="mountains">
+      <div class="mountain mountain-left"></div>
+      <div class="mountain mountain-right"></div>
+    </div>
+
+    <div class="field-ground">
+      <div class="paddy-lines"></div>
+    </div>
+
+    <div class="fog fog-deep"></div>
+
+    <div class="mid-crops">
+      <div class="mid-crop-bunch mcb-1"></div>
+      <div class="mid-crop-bunch mcb-2"></div>
+      <div class="mid-crop-bunch mcb-3"></div>
+      <div class="mid-crop-bunch mcb-4"></div>
+      <div class="mid-crop-bunch mcb-5"></div>
+    </div>
+
+    <div class="fog fog-low"></div>
+
+    <div class="crops-container">
+      
+      <div class="rice-bunch rb-1">
+        <div class="leaf l-1"></div>
+        <div class="leaf l-2"></div>
+        <div class="leaf l-3"></div>
+        <div class="leaf l-4"></div>
+        <div class="leaf l-5"></div>
+        <div class="leaf l-6"></div>
+        <div class="ear-stem es-left">
+          <div class="grains">
+            <div class="grain g1"></div><div class="grain g2"></div>
+            <div class="grain g3"></div><div class="grain g4"></div>
+            <div class="grain g5"></div><div class="grain g6"></div>
+          </div>
+        </div>
+        <div class="ear-stem es-right">
+          <div class="grains">
+            <div class="grain g1"></div><div class="grain g2"></div>
+            <div class="grain g3"></div><div class="grain g4"></div>
+            <div class="grain g5"></div><div class="grain g6"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rice-bunch rb-2">
+        <div class="leaf l-2"></div>
+        <div class="leaf l-3"></div>
+        <div class="leaf l-4"></div>
+        <div class="leaf l-5"></div>
+        <div class="ear-stem es-right">
+          <div class="grains">
+            <div class="grain g1"></div><div class="grain g2"></div>
+            <div class="grain g3"></div><div class="grain g4"></div>
+            <div class="grain g5"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rice-bunch rb-3">
+        <div class="leaf l-1"></div>
+        <div class="leaf l-2"></div>
+        <div class="leaf l-3"></div>
+        <div class="leaf l-4"></div>
+        <div class="leaf l-6"></div>
+        <div class="ear-stem es-left">
+          <div class="grains">
+            <div class="grain g1"></div><div class="grain g2"></div>
+            <div class="grain g3"></div><div class="grain g4"></div>
+            <div class="grain g5"></div><div class="grain g6"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rice-bunch rb-4">
+        <div class="leaf l-1"></div>
+        <div class="leaf l-3"></div>
+        <div class="leaf l-4"></div>
+        <div class="leaf l-5"></div>
+        <div class="ear-stem es-right">
+          <div class="grains">
+            <div class="grain g1"></div><div class="grain g2"></div>
+            <div class="grain g3"></div><div class="grain g4"></div>
+            <div class="grain g5"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rice-bunch rb-5">
+        <div class="leaf l-1"></div>
+        <div class="leaf l-2"></div>
+        <div class="leaf l-3"></div>
+        <div class="leaf l-4"></div>
+        <div class="leaf l-5"></div>
+        <div class="leaf l-6"></div>
+        <div class="ear-stem es-left">
+          <div class="grains">
+            <div class="grain g1"></div><div class="grain g2"></div>
+            <div class="grain g3"></div><div class="grain g4"></div>
+            <div class="grain g5"></div><div class="grain g6"></div>
+          </div>
+        </div>
+        <div class="ear-stem es-right">
+          <div class="grains">
+            <div class="grain g1"></div><div class="grain g2"></div>
+            <div class="grain g3"></div><div class="grain g4"></div>
+            <div class="grain g5"></div><div class="grain g6"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rice-bunch rb-6">
+        <div class="leaf l-2"></div>
+        <div class="leaf l-3"></div>
+        <div class="leaf l-4"></div>
+        <div class="leaf l-6"></div>
+        <div class="ear-stem es-left">
+          <div class="grains">
+            <div class="grain g1"></div><div class="grain g2"></div>
+            <div class="grain g3"></div><div class="grain g4"></div>
+            <div class="grain g5"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>조선시대 전통 수로와 저수지 배경</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0b1d12;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        svg {
+            width: 100%;
+            height: 100%;
+            max-width: 100vw;
+            max-height: 56.25vw; /* 16:9 비율 유지 */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8fd3eb"/>
+      <stop offset="60%" stop-color="#caeef9"/>
+      <stop offset="100%" stop-color="#e6f7ff"/>
+    </linearGradient>
+
+    <linearGradient id="reservoirWater" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14647a"/>
+      <stop offset="50%" stop-color="#2494ab"/>
+      <stop offset="100%" stop-color="#42b9d0"/>
+    </linearGradient>
+
+    <linearGradient id="earthGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#91673d"/>
+      <stop offset="50%" stop-color="#735230"/>
+      <stop offset="100%" stop-color="#523920"/>
+    </linearGradient>
+
+    <linearGradient id="streamWater" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3faec4"/>
+      <stop offset="50%" stop-color="#6dddf2"/>
+      <stop offset="100%" stop-color="#279cb3"/>
+    </linearGradient>
+
+    <filter id="blurFilter">
+      <feGaussianBlur stdDeviation="4" />
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <path d="M-100,340 Q150,210 400,270 T900,190 T1400,250 T1800,210 L1800,450 L-100,450 Z" fill="#467555" opacity="0.6"/>
+  <path d="M-100,370 Q250,270 600,310 T1200,260 T1800,320 L1800,500 L-100,500 Z" fill="#31593e"/>
+
+  <path d="M-50,340 L850,340 L800,460 L-50,500 Z" fill="url(#reservoirWater)"/>
+  <path d="M-50,390 Q200,385 400,390 T840,385" fill="none" stroke="#6be0f7" stroke-width="2" opacity="0.4"/>
+
+  <polygon points="780,340 860,340 800,510 690,510" fill="#615b55" stroke="#423e3a" stroke-width="2"/>
+  <g fill="none" stroke="#4d4742" stroke-width="2">
+    <path d="M770,360 L845,360 M755,390 L835,390 M740,420 L825,420 M725,450 L815,450 M710,480 L805,480"/>
+    <line x1="790" y1="340" x2="740" y2="510"/>
+    <line x1="820" y1="340" x2="770" y2="510"/>
+  </g>
+  
+  <path d="M-50,490 L790,455 L1650,480 L1650,950 L-50,950 Z" fill="url(#earthGrad)"/>
+  <path d="M790,455 Q1100,430 1650,480 L1650,720 Q1200,650 630,560 Z" fill="#24422c"/>
+
+  <g id="waterfall">
+    <polygon points="785,415 700,520 755,525 825,415" fill="#beeef7" opacity="0.85"/>
+    
+    <path d="M788,415 L705,520 M798,415 L718,520 M808,415 L732,520 M818,415 L748,520" 
+          stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-dasharray="25 15">
+      <animate attributeName="stroke-dashoffset" values="0;80" dur="0.5s" repeatCount="indefinite" />
+    </path>
+
+    <ellipse cx="725" cy="525" rx="40" ry="12" fill="#ffffff" filter="url(#blurFilter)" opacity="0.8"/>
+  </g>
+
+  <path d="M725,525 Q640,570 665,640 T860,700 T710,950 L570,950 Q760,770 735,720 T540,650 T590,525 Z" fill="#423224"/>
+  
+  <path d="M725,525 Q640,570 665,640 T860,700 T710,950" fill="none" stroke="#544639" stroke-width="8" stroke-dasharray="15 10"/>
+  <path d="M590,525 Q540,650 735,720 T570,950" fill="none" stroke="#544639" stroke-width="8" stroke-dasharray="15 10"/>
+
+  <path id="mainStream" d="M720,525 Q635,575 660,645 T850,705 T700,950" 
+        fill="none" stroke="url(#streamWater)" stroke-width="105" stroke-linecap="round"/>
+
+  <g fill="none" stroke-linecap="round" opacity="0.75">
+    <path d="M720,525 Q635,575 660,645 T850,705 T700,950" stroke="#ffffff" stroke-width="5" stroke-dasharray="35 65">
+      <animate attributeName="stroke-dashoffset" values="0;-500" dur="1.5s" repeatCount="indefinite" />
+    </path>
+    
+    <path d="M710,530 Q625,580 650,645 T835,705 T680,950" stroke="#a3efff" stroke-width="3" stroke-dasharray="20 80">
+      <animate attributeName="stroke-dashoffset" values="0;-600" dur="1.1s" repeatCount="indefinite" />
+    </path>
+    
+    <path d="M730,520 Q645,570 670,645 T860,705 T720,950" stroke="#1d869c" stroke-width="4" stroke-dasharray="50 50">
+      <animate attributeName="stroke-dashoffset" values="0;-400" dur="2s" repeatCount="indefinite" />
+    </path>
+  </g>
+
+  <circle cx="535" cy="590" r="14" fill="#544e47" stroke="#36322e" stroke-width="2"/>
+  <circle cx="790" cy="650" r="16" fill="#544e47" stroke="#36322e" stroke-width="2"/>
+  <path d="M 880,720 Q900,710 910,730 T890,750 Z" fill="#423d38"/>
+
+  <path d="M-50,730 Q100,680 180,950 L-50,950 Z" fill="#1b3323"/>
+  <path d="M-50,800 Q150,760 280,950 L-50,950 Z" fill="#112116"/>
+
+  <path d="M1300,950 Q1450,730 1650,780 L1650,950 Z" fill="#1b3323"/>
+  <path d="M1400,950 Q1520,810 1660,850 L1660,950 Z" fill="#112116"/>
+
+  <g fill="#ffffff" opacity="0.7">
+    <circle cx="690" cy="550" r="2.5"><animate attributeName="cy" values="550;535;555" dur="0.6s" repeatCount="indefinite"/></circle>
+    <circle cx="740" cy="540" r="3"><animate attributeName="cy" values="540;525;545" dur="0.4s" repeatCount="indefinite"/></circle>
+    <circle cx="660" cy="580" r="2"><animate attributeName="cy" values="580;570;585" dur="0.7s" repeatCount="indefinite"/></circle>
+  </g>
+
+  <linearGradient id="vignette" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#000" stop-opacity="0.1"/>
+    <stop offset="85%" stop-color="#000" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#000" stop-opacity="0.35"/>
+  </linearGradient>
+  <rect width="1600" height="900" fill="url(#vignette)" pointer-events="none"/>
+</svg>
+
+</body>
+</html>

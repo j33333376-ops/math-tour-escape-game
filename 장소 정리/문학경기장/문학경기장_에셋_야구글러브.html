@@ -1,0 +1,83 @@
+<!-- 원본 크기: 1000x500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>야구 글러브와 배트</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .mbg-svg { display:block; width:100%; height:auto; }
+
+</style>
+</head>
+<body>
+<svg class="mbg-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="야구 글러브와 배트">
+<title>야구 글러브와 배트</title>
+<desc>가죽 야구 글러브와 야구공, 나무 배트.</desc>
+<defs>
+  <linearGradient id="mbgLeather" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#c98a4a"/><stop offset="0.55" stop-color="#a3672e"/><stop offset="1" stop-color="#71441b"/>
+  </linearGradient>
+  <linearGradient id="mbgWood" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#e0bb84"/><stop offset="0.45" stop-color="#c49a5c"/><stop offset="1" stop-color="#8f6a34"/>
+  </linearGradient>
+</defs>
+<ellipse cx="500" cy="452" rx="400" ry="34" fill="#4a3a24" opacity="0.18"/>
+<!-- 배트 -->
+<g transform="rotate(-18 640 300)">
+  <rect x="430" y="286" width="440" height="56" rx="28" fill="url(#mbgWood)" stroke="#6e4f26" stroke-width="4"/>
+  <rect x="430" y="292" width="120" height="44" rx="22" fill="#a87c40" stroke="#6e4f26" stroke-width="3.4"/>
+  <rect x="424" y="286" width="26" height="56" rx="12" fill="#8f6a34" stroke="#6e4f26" stroke-width="3.4"/>
+  <g stroke="#8f6a34" stroke-width="2.4" opacity="0.6">
+    <line x1="580" y1="292" x2="580" y2="336"/><line x1="680" y1="290" x2="680" y2="338"/>
+    <line x1="780" y1="290" x2="780" y2="338"/>
+  </g>
+  <path d="M470,300 L850,300" stroke="#ffffff" stroke-width="7" opacity="0.3" stroke-linecap="round"/>
+</g>
+<!-- 글러브 -->
+<g transform="translate(300,270)">
+  <path d="M-190,110
+           C-230,60 -226,-30 -170,-78
+           C-130,-112 -60,-124 0,-116
+           C70,-108 140,-72 170,-14
+           C196,36 186,102 140,132
+           C86,166 -30,172 -110,156
+           C-152,148 -172,132 -190,110 Z"
+        fill="url(#mbgLeather)" stroke="#5e360f" stroke-width="6"/>
+  <!-- 손가락 -->
+  <g fill="none" stroke="#5e360f" stroke-width="5" opacity="0.85">
+    <path d="M-118,-96 C-118,-30 -118,60 -108,146"/>
+    <path d="M-50,-118 C-50,-40 -46,60 -40,160"/>
+    <path d="M20,-112 C24,-36 30,64 36,158"/>
+    <path d="M92,-88 C100,-24 108,66 112,142"/>
+  </g>
+  <!-- 웨빙 -->
+  <g stroke="#e0bb84" stroke-width="7" stroke-linecap="round">
+    <path d="M-176,-46 L-116,-72"/><path d="M-176,-16 L-116,-42"/>
+    <path d="M120,-56 L166,-22"/><path d="M112,-26 L158,8"/>
+  </g>
+  <!-- 포켓 -->
+  <ellipse cx="10" cy="30" rx="98" ry="66" fill="#8a5624" opacity="0.55"/>
+  <!-- 스티치 -->
+  <g stroke="#f2e0c0" stroke-width="3" stroke-dasharray="9 9" fill="none" opacity="0.8">
+    <path d="M-180,96 C-212,44 -206,-24 -158,-66"/>
+    <path d="M160,-6 C182,38 174,92 136,120"/>
+  </g>
+</g>
+<!-- 야구공 -->
+<g transform="translate(736,392)">
+  <circle r="62" fill="#f8f5ee" stroke="#c4bba8" stroke-width="4"/>
+  <path d="M-40,-46 C-16,-14 -16,14 -40,46" fill="none" stroke="#c2452e" stroke-width="4"/>
+  <path d="M40,-46 C16,-14 16,14 40,46" fill="none" stroke="#c2452e" stroke-width="4"/>
+  <g stroke="#c2452e" stroke-width="3" stroke-linecap="round">
+    <line x1="-46" y1="-32" x2="-32" y2="-26"/><line x1="-48" y1="-12" x2="-33" y2="-9"/>
+    <line x1="-48" y1="10" x2="-33" y2="7"/><line x1="-46" y1="30" x2="-32" y2="24"/>
+    <line x1="46" y1="-32" x2="32" y2="-26"/><line x1="48" y1="-12" x2="33" y2="-9"/>
+    <line x1="48" y1="10" x2="33" y2="7"/><line x1="46" y1="30" x2="32" y2="24"/>
+  </g>
+  <ellipse cx="-20" cy="-26" rx="20" ry="13" transform="rotate(-30 -20 -26)" fill="#ffffff" opacity="0.7"/>
+</g>
+</svg>
+</body>
+</html>

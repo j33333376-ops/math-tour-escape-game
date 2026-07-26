@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차이나타운 체험학습앱 - B02</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* Reset & Base */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #f5f0e6;
+            font-family: 'Noto Sans KR', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Game Container (16:9 Aspect Ratio) */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f3ebd9;
+            background-image: linear-gradient(rgba(245, 240, 230, 0.85), rgba(245, 240, 230, 0.85)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none"/><path d="M0 0h100v100H0z" fill="%238c3030" fill-opacity=".015"/></svg>');
+            border: 4px double #8c3030;
+            outline: 2px solid #d4af37;
+            outline-offset: -8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        /* UI Upper Bar */
+        .stage-header {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(45, 55, 72, 0.85);
+            border: 1px solid #d4af37;
+            padding: 8px 32px;
+            border-radius: 4px;
+            color: #d4af37;
+            font-family: 'Nanum Myeongjo', serif;
+            font-weight: bold;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Scenery Stage Viewport */
+        #stage-viewport {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Asset Wrapper Dimensions & Alignment */
+        .character-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            overflow: visible;
+            bottom: 120px;
+            z-index: 5;
+            transition: filter 0.3s ease;
+        }
+        .character-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            overflow: hidden;
+        }
+
+        /* Inactive Character Darkening */
+        .character-wrapper.inactive {
+            filter: brightness(0.35) grayscale(0.3);
+        }
+
+        /* Character Placements */
+        #char-seoyeon { left: 60px; }
+        #char-sangsang { left: 403px; }
+        #char-minwoo { left: 746px; transform: scaleX(-1); }
+        #char-minwoo.inactive { transform: scaleX(-1) brightness(0.35) grayscale(0.3); }
+
+        /* Dialogue Box (Type 2 UI) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 95%;
+            height: 115px;
+            background-color: rgba(0, 0, 0, 0.75);
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 14px 24px;
+            color: #ffffff;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #d4af37;
+            margin-bottom: 6px;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+        }
+
+        /* Click blinking prompt */
+        .click-notice {
+            position: absolute;
+            bottom: 8px;
+            right: 20px;
+            font-size: 0.75rem;
+            color: rgba(212, 175, 55, 0.7);
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* Navigation Controllers */
+        .btn-nav {
+            position: absolute;
+            background-color: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-weight: bold;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            z-index: 25;
+            text-decoration: none;
+        }
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+        #btn-prev { left: 20px; bottom: 20px; display: none; }
+        #btn-next { right: 20px; bottom: 20px; display: none; }
+        #btn-skip { right: 20px; top: 20px; padding: 6px 16px; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- Stage Title -->
+        <div class="stage-header">인천항 옛 곡물창고의 역사</div>
+
+        <div id="stage-viewport">
+            <!-- Building Asset: 원본 1280x460px -> s=0.6 적용 (768x276px) -->
+            <div style="position: absolute; left: 149px; bottom: 190px; width: 768px; height: 276px; overflow: hidden; z-index: 1; border-bottom: 3px solid #8c3030;">
+                <iframe src="B_상상플랫폼.html" scrolling="no" style="border: 0; width: 1280px; height: 460px; transform: scale(0.6); transform-origin: top left; opacity: 0.95;"></iframe>
+            </div>
+
+            <!-- Character Wrappers -->
+            <div id="char-seoyeon" class="character-wrapper">
+                <iframe src="서연.html" scrolling="no"></iframe>
+            </div>
+
+            <div id="char-sangsang" class="character-wrapper">
+                <iframe src="상상.html" scrolling="no"></iframe>
+            </div>
+
+            <!-- Minwoo Component Framework -->
+            <div id="char-minwoo" class="character-wrapper">
+                <iframe src="민우.html" scrolling="no"></iframe>
+            </div>
+        </div>
+
+        <!-- Dialogue Arena -->
+        <div id="dialogue-box" onclick="advanceDialogue()">
+            <div id="speaker-name">상상</div>
+            <div id="dialogue-text">이 상상플랫폼 건물은 1978년 인천항 무역이 활발해지면서 지어진 아시아 최대 규모의 '곡물 창고'였단다.</div>
+            <div class="click-notice">클릭하여 계속</div>
+        </div>
+
+        <!-- System Controls -->
+        <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+        <button id="btn-prev" class="btn-nav" onclick="navigateTo('B01.html')">이전으로</button>
+        <button id="btn-next" class="btn-nav" onclick="navigateTo('B03.html')">다음으로</button>
+    </div>
+
+    <script>
+        // Dialogue Sequence Script - 5턴으로 단축 및 역사적 사실 강화
+        const dialogues = [
+            { speaker: "상상", text: "이 상상플랫폼 건물은 1978년 인천항 무역이 활발해지면서 지어진 아시아 최대 규모의 '곡물 창고'였단다.", target: "char-sangsang" },
+            { speaker: "서연", text: "창고가 정말 거대해요! 그럼 언제까지 창고로 쓰인 건가요?", target: "char-seoyeon" },
+            { speaker: "상상", text: "인천항 물동량이 옮겨 가면서 폐창고로 남았다가, 최근 리모델링을 거쳐 '복합문화공간'으로 다시 태어난 거지.", target: "char-sangsang" },
+            { speaker: "minwoo", speakerName: "민우", text: "아하! '개항, 무역, 곡물창고, 복합문화공간'으로 이어지는 역사가 이 장소에 그대로 담겨 있군요.", target: "char-minwoo" },
+            { speaker: "상상", text: "정확해! 그런데 리모델링 과정에서 1905년 개항기 중국 상인이 숨겨둔 암호 기록이 발견됐어. 차이나타운을 조사해 단서를 찾아보자!", target: "char-sangsang" }
+        ];
+
+        let currentIndex = 0;
+
+        function advanceDialogue() {
+            currentIndex++;
+            if (currentIndex < dialogues.length) {
+                updateDialogueView();
+            } else {
+                endDialogueStage();
+            }
+        }
+
+        function updateDialogueView() {
+            const currentData = dialogues[currentIndex];
+            
+            document.getElementById("speaker-name").innerText = currentData.speakerName || currentData.speaker;
+            document.getElementById("dialogue-text").innerText = currentData.text;
+
+            document.querySelectorAll(".character-wrapper").forEach(el => {
+                if (el.id === currentData.target) {
+                    el.classList.remove("inactive");
+                } else {
+                    el.classList.add("inactive");
+                }
+            });
+        }
+
+        function skipDialogue() {
+            endDialogueStage();
+        }
+
+        function endDialogueStage() {
+            document.getElementById("dialogue-box").style.display = "none";
+            document.getElementById("btn-skip").style.display = "none";
+
+            document.querySelectorAll(".character-wrapper").forEach(el => {
+                el.classList.remove("inactive");
+            });
+
+            document.getElementById("btn-prev").style.display = "block";
+            document.getElementById("btn-next").style.display = "block";
+        }
+
+        function navigateTo(url) {
+            if (url && url.trim() !== "") {
+                window.location.href = url;
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll(".character-wrapper").forEach(el => {
+                if (el.id !== dialogues[0].target) el.classList.add("inactive");
+            });
+        });
+    </script>
+</body>
+</html>

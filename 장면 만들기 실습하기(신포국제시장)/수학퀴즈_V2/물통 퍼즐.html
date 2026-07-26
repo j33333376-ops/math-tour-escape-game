@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>물통 퍼즐</title>
+  <style>
+    :root {
+      /* ===== 공통 디자인 토큰 (전체 퀴즈 공용) ===== */
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #ea580c;
+      --accent-soft: #fff7ed;
+      --border-color: #e2e8f0;
+      --success: #10b981;
+      --error: #ef4444;
+      --radius-card: 16px;
+      --radius-ctrl: 10px;
+      --shadow-card: 0 10px 25px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+    }
+
+    .app-layout {
+      display: flex;
+      width: 100%; height: 100%;
+      padding: 2vh 2vw;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-side {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      width: 38vw;
+      max-width: 440px;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-block h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+
+    .header-block p {
+      margin: 0 0 20px 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .control-group {
+      background: var(--primary-soft);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .control-header label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .col-badge {
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .col-badge.accent { background: var(--accent); }
+    .col-badge.muted  { background: #94a3b8; }
+
+    input[type=range] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+
+    .stat-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .btn-row { display: flex; gap: 8px; }
+
+    .btn-check, .btn-ghost {
+      border-radius: var(--radius-ctrl);
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .btn-check { background: var(--primary); color: #fff; border: none; }
+    .btn-check:hover:not(:disabled) { background: var(--primary-dark); }
+    .btn-check:active:not(:disabled) { transform: translateY(1px); }
+    .btn-ghost { background: var(--card-bg); color: var(--primary-dark); border: 1px solid var(--border-color); }
+    .btn-ghost:hover:not(:disabled) { background: var(--primary-soft); }
+    .btn-ghost:active:not(:disabled) { transform: translateY(1px); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .answer-group { padding-top: 16px; border-top: 2px dashed var(--border-color); }
+
+    .feedback {
+      margin-top: 10px;
+      font-weight: 700;
+      text-align: center;
+      min-height: 20px;
+      font-size: 0.95rem;
+      word-break: keep-all;
+      line-height: 1.45;
+    }
+    .feedback.success { color: var(--success); }
+    .feedback.error   { color: var(--error); }
+    .feedback.info    { color: var(--text-muted); }
+
+    .board-side {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      padding: 10px;
+    }
+
+    .board-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      border: 4px solid var(--border-color);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    @media (orientation: portrait) {
+      .app-layout { flex-direction: column; justify-content: flex-start; padding-top: 2vh; gap: 12px; }
+      .panel-side { width: 96vw; max-width: none; padding: 16px; }
+      .board-side { width: 96vw; flex: 1; padding: 0 0 2vh 0; }
+      .header-block p { margin-bottom: 12px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 520px) {
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.2rem; }
+      .header-block p { display: none; }
+      .control-group { padding: 8px 12px; margin-bottom: 10px; }
+      .stat-row { margin-bottom: 8px; }
+    }
+
+    /* ===================================================================
+       반응형 안전장치 — PC/모바일, 가로/세로 어디서도 잘리지 않게
+       =================================================================== */
+    .app-layout { min-height: 0; min-width: 0; }
+    .board-side { min-height: 0; min-width: 0; }
+
+    /* 패널이 화면보다 길어지면 화면을 밀지 않고 패널 안에서만 스크롤 */
+    .panel-side {
+      max-height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    @media (orientation: portrait) {
+      .panel-side { max-height: 54%; flex: 0 0 auto; }
+      .board-side { flex: 1 1 auto; }
+    }
+
+    /* 폰 가로처럼 세로가 짧은 화면 */
+    @media (orientation: landscape) and (max-height: 560px) {
+      .app-layout { padding: 8px; gap: 10px; }
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.12rem; margin-bottom: 4px; }
+      .header-block p  { display: none; }
+      .stat-row { margin-bottom: 8px; }
+      .answer-group { padding-top: 10px; margin-top: 10px !important; }
+      .feedback { font-size: 0.82rem; margin-top: 6px; min-height: 16px; }
+      .btn-row button { padding: 8px 12px; font-size: 0.85rem; }
+    }
+    @media (orientation: landscape) and (max-height: 430px) {
+      .rule-note, .note { font-size: 0.7rem; padding: 6px 8px; margin-bottom: 8px; line-height: 1.4; }
+      .control-group { padding: 7px 10px; margin-bottom: 8px; }
+      .col-badge { font-size: 0.72rem; padding: 3px 9px; }
+    }
+
+    /* 부가 공통 유틸 (일부 퍼즐에서 사용) */
+    .note {
+      background: var(--accent-soft);
+      border: 1px solid #fed7aa;
+      border-radius: var(--radius-ctrl);
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      color: #9a3412;
+      line-height: 1.5;
+      word-break: keep-all;
+      margin-bottom: 14px;
+    }
+
+    /* ===== 목록(index.html)으로 돌아가는 버튼 ===== */
+    .home-btn {
+      position: fixed;
+      top: max(10px, env(safe-area-inset-top, 0px));
+      left: max(10px, env(safe-area-inset-left, 0px));
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px 8px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+      color: #1e293b;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: transform .18s, box-shadow .18s, color .18s, border-color .18s, background .18s;
+    }
+    .home-btn:hover {
+      background: #fff;
+      color: #1d4ed8;
+      border-color: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px -6px rgba(37, 99, 235, 0.5);
+    }
+    .home-btn:active { transform: translateY(0); }
+    .home-btn:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+    .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* 좁거나 납작한 화면에서는 아이콘만 */
+    @media (max-width: 560px), (orientation: landscape) and (max-height: 430px) {
+      .home-btn { padding: 8px; gap: 0; }
+      .home-btn .label { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+
+
+    /* ===== 물통 퍼즐 전용 ===== */
+    .board-wrapper {
+      width: min(78vmin, 560px);
+      aspect-ratio: 1 / 1;
+      padding: 5% 6% 4.5%;
+      flex-direction: column;
+      gap: 3%;
+    }
+
+    .jug-stage {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 10%;
+      width: 100%;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .jug-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      width: 40%;
+      min-width: 0;
+    }
+
+    .jug-tag {
+      flex: 0 0 auto;
+      width: clamp(22px, 6vmin, 34px);
+      height: clamp(22px, 6vmin, 34px);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 900;
+      font-size: clamp(.72rem, 2.4vmin, 1.05rem);
+      margin-bottom: 4px;
+      box-shadow: 0 3px 8px -3px rgba(15,23,42,.4);
+    }
+    .jug-col.a .jug-tag { background: linear-gradient(140deg, #3b82f6, #2563eb); }
+    .jug-col.b .jug-tag { background: linear-gradient(140deg, #6366f1, #4f46e5); }
+
+    .jug-holder {
+      position: relative;
+      flex: 1 1 auto;
+      width: 100%;
+      min-height: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    /* 물통 유리병 (높이는 용량 비율로 JS가 지정 → 두 병의 1L 높이가 같음) */
+    .jug {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(226,232,240,.30), rgba(203,213,225,.5));
+      border: 3px solid #94a3b8;
+      border-top: 3px dashed #cbd5e1;
+      border-radius: 5px 5px 16px 16px;
+      overflow: hidden;
+      box-shadow: inset 0 3px 6px rgba(255,255,255,.6),
+                  inset 0 -8px 16px rgba(15,23,42,.07),
+                  0 6px 16px -8px rgba(15,23,42,.28);
+      transition: box-shadow .3s, border-color .3s;
+    }
+    .jug.hit {
+      border-color: var(--success);
+      box-shadow: inset 0 3px 6px rgba(255,255,255,.6),
+                  0 0 0 3px rgba(16,185,129,.28),
+                  0 6px 18px -6px rgba(16,185,129,.6);
+    }
+
+    /* 물 */
+    .water {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 0%;
+      background: linear-gradient(180deg, #7dd3fc 0%, #38bdf8 35%, #2563eb 100%);
+      transition: height .55s cubic-bezier(.45,.05,.25,1);
+      z-index: 1;
+    }
+    .water::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 6px;
+      background: linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,0));
+    }
+
+    /* 눈금 */
+    .ticks { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+    .tick {
+      position: absolute; left: 0; right: 0; height: 0;
+      border-top: 1px solid rgba(71,85,105,.28);
+    }
+    .tick span {
+      position: absolute; right: 4px; top: -0.62em;
+      font-size: clamp(.5rem, 1.5vmin, .72rem);
+      color: #64748b; font-weight: 700;
+    }
+
+    /* 목표선 */
+    .target-line {
+      position: absolute; left: -3px; right: -3px; height: 0;
+      border-top: 2.5px dashed var(--accent);
+      z-index: 3; pointer-events: none;
+    }
+    .target-line span {
+      position: absolute; left: 1px; top: -0.72em;
+      font-size: clamp(.5rem, 1.5vmin, .72rem);
+      font-weight: 800; color: var(--accent);
+      background: var(--card-bg); padding: 0 3px; border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .jug-cap {
+      flex: 0 0 auto;
+      margin-top: 7px;
+      font-size: clamp(.66rem, 2vmin, .95rem);
+      font-weight: 700; color: var(--text-muted);
+      text-align: center; word-break: keep-all; line-height: 1.2;
+    }
+    .jug-cap .cur { font-weight: 900; color: var(--primary-dark); font-size: 1.18em; }
+    .jug-cap.hit .cur { color: var(--success); }
+
+    /* 행동 버튼 (보드 하단) */
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.6%;
+      width: 100%;
+      flex: 0 0 auto;
+    }
+    .act-btn {
+      border: none;
+      border-radius: 11px;
+      padding: 3.2% 2%;
+      font-weight: 800;
+      font-size: clamp(.66rem, 2vmin, .96rem);
+      cursor: pointer;
+      color: #fff;
+      transition: transform .1s, filter .15s, opacity .15s;
+      white-space: nowrap;
+      user-select: none;
+      box-shadow: 0 3px 8px -4px rgba(15,23,42,.5);
+    }
+    .act-btn:hover:not(:disabled) { filter: brightness(1.08); }
+    .act-btn:active:not(:disabled) { transform: translateY(1px) scale(.985); }
+    .act-btn:disabled { opacity: .38; cursor: not-allowed; box-shadow: none; }
+    .act-fill  { background: linear-gradient(180deg, #3b82f6, #2563eb); }
+    .act-empty { background: linear-gradient(180deg, #94a3b8, #64748b); }
+    .act-pour  { background: linear-gradient(180deg, #fb923c, #ea580c); }
+
+    /* 프리셋 버튼 */
+    .preset-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .preset-btn {
+      flex: 1 1 calc(50% - 7px);
+      min-width: calc(50% - 7px);
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-main);
+      border-radius: 10px;
+      padding: 9px 6px;
+      font-weight: 800;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+    .preset-btn:hover { background: var(--primary-soft); border-color: var(--primary); }
+    .preset-btn.active {
+      background: var(--primary); color: #fff; border-color: var(--primary-dark);
+      box-shadow: 0 4px 10px -4px var(--primary);
+    }
+
+    @media (orientation: landscape) and (max-height: 560px) {
+      .board-wrapper { padding: 3.5% 4.5% 3.5%; }
+      .act-btn { padding: 2.4% 2%; border-radius: 9px; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="home-btn" href="index.html" title="게임 목록으로 돌아가기" aria-label="게임 목록으로 돌아가기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.2V20h13v-9.8"/>
+    </svg>
+    <span class="label">목록</span>
+  </a>
+
+  <div class="app-layout">
+    <div class="panel-side">
+      <div class="header-block">
+        <h2>물통 퍼즐</h2>
+        <p>두 물통으로 목표량을 정확히 만드세요.<br>채우기·비우기·붓기만 사용합니다.</p>
+      </div>
+
+      <div class="note">
+        💡 목표량은 두 용량의 <b>최대공약수(gcd)의 배수</b>일 때만 만들 수 있어요. 붓기는 <b>한쪽이 비거나 다른 쪽이 가득 찰 때까지</b> 계속됩니다.
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <label>물통 조합 (용량 → 목표)</label>
+        </div>
+        <div class="preset-row" id="presetRow"></div>
+      </div>
+
+      <div class="stat-row">
+        <span class="col-badge" id="targetBadge">목표 4L</span>
+        <span class="col-badge muted" id="moveBadge">이동 0수</span>
+        <span class="col-badge accent" id="minBadge">최소 6수</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-ghost" id="undoBtn">↶ 되돌리기</button>
+        <button class="btn-check" id="resetBtn">🔄 다시 시작</button>
+      </div>
+
+      <div class="answer-group" style="margin-top:16px">
+        <div class="feedback info" id="feedback">물통을 채우고, 붓고, 비워서 목표량을 만들어 보세요.</div>
+      </div>
+    </div>
+
+    <div class="board-side">
+      <div class="board-wrapper">
+        <div class="jug-stage">
+          <div class="jug-col a">
+            <div class="jug-tag">A</div>
+            <div class="jug-holder">
+              <div class="jug" id="jugA">
+                <div class="ticks" id="ticksA"></div>
+                <div class="target-line" id="tgtA"><span>목표</span></div>
+                <div class="water" id="waterA"></div>
+              </div>
+            </div>
+            <div class="jug-cap" id="capBoxA"><span class="cur" id="curA">0</span> / <span id="capAlbl">5</span> L</div>
+          </div>
+
+          <div class="jug-col b">
+            <div class="jug-tag">B</div>
+            <div class="jug-holder">
+              <div class="jug" id="jugB">
+                <div class="ticks" id="ticksB"></div>
+                <div class="target-line" id="tgtB"><span>목표</span></div>
+                <div class="water" id="waterB"></div>
+              </div>
+            </div>
+            <div class="jug-cap" id="capBoxB"><span class="cur" id="curB">0</span> / <span id="capBlbl">3</span> L</div>
+          </div>
+        </div>
+
+        <div class="action-grid" id="actionGrid">
+          <button class="act-btn act-fill"  data-act="fillA">A 채우기</button>
+          <button class="act-btn act-fill"  data-act="fillB">B 채우기</button>
+          <button class="act-btn act-empty" data-act="emptyA">A 비우기</button>
+          <button class="act-btn act-empty" data-act="emptyB">B 비우기</button>
+          <button class="act-btn act-pour"  data-act="AtoB">A → B 붓기</button>
+          <button class="act-btn act-pour"  data-act="BtoA">B → A 붓기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // ==========================================================
+    //  물통 퍼즐 — 두 물통(정수 용량)으로 목표량 만들기
+    //  * 붓기: 출발이 비거나 도착이 찰 때까지
+    //  * 승리: 어느 물통이든 현재량 == 목표량
+    //  * 최소 이동수는 BFS로 계산 (모든 프리셋은 gcd 조건을 만족 → 반드시 풀림)
+    // ==========================================================
+
+    const PRESETS = [
+      { capA: 5, capB: 3, target: 4 },
+      { capA: 8, capB: 5, target: 4 },
+      { capA: 9, capB: 4, target: 6 },
+      { capA: 7, capB: 5, target: 1 },
+    ];
+
+    const ACTIONS = ['fillA', 'fillB', 'emptyA', 'emptyB', 'AtoB', 'BtoA'];
+    const ACT_LABEL = {
+      fillA: 'A 물통을 가득 채웠어요',
+      fillB: 'B 물통을 가득 채웠어요',
+      emptyA: 'A 물통을 비웠어요',
+      emptyB: 'B 물통을 비웠어요',
+      AtoB: 'A → B 로 물을 부었어요',
+      BtoA: 'B → A 로 물을 부었어요',
+    };
+
+    // --- DOM ---
+    const presetRow  = document.getElementById('presetRow');
+    const targetBadge = document.getElementById('targetBadge');
+    const moveBadge  = document.getElementById('moveBadge');
+    const minBadge   = document.getElementById('minBadge');
+    const undoBtn    = document.getElementById('undoBtn');
+    const resetBtn   = document.getElementById('resetBtn');
+    const feedback   = document.getElementById('feedback');
+    const actionGrid = document.getElementById('actionGrid');
+
+    const jugA = document.getElementById('jugA'), jugB = document.getElementById('jugB');
+    const waterA = document.getElementById('waterA'), waterB = document.getElementById('waterB');
+    const ticksA = document.getElementById('ticksA'), ticksB = document.getElementById('ticksB');
+    const tgtA = document.getElementById('tgtA'), tgtB = document.getElementById('tgtB');
+    const curA = document.getElementById('curA'), curB = document.getElementById('curB');
+    const capAlbl = document.getElementById('capAlbl'), capBlbl = document.getElementById('capBlbl');
+    const capBoxA = document.getElementById('capBoxA'), capBoxB = document.getElementById('capBoxB');
+    const actBtns = Array.from(actionGrid.querySelectorAll('.act-btn'));
+
+    // --- 상태 ---
+    let cur = { ...PRESETS[0] };
+    let a = 0, b = 0, moves = 0, history = [], finished = false, minMoves = 0, presetIdx = 0;
+
+    // --- 로직 (node 검증 완료) ---
+    function apply(state, action) {
+      let [x, y] = state;
+      const { capA, capB } = cur;
+      switch (action) {
+        case 'fillA':  x = capA; break;
+        case 'fillB':  y = capB; break;
+        case 'emptyA': x = 0; break;
+        case 'emptyB': y = 0; break;
+        case 'AtoB': { const t = Math.min(x, capB - y); x -= t; y += t; break; }
+        case 'BtoA': { const t = Math.min(y, capA - x); y -= t; x += t; break; }
+      }
+      return [x, y];
+    }
+
+    function bfsMin(capA, capB, target) {
+      const key = s => s[0] + ',' + s[1];
+      const q = [[0, 0]];
+      const dist = new Map(); dist.set('0,0', 0);
+      const saveCur = cur; cur = { capA, capB };   // apply()가 cur 사용 → 임시 교체
+      let ans = -1;
+      while (q.length) {
+        const s = q.shift();
+        if (s[0] === target || s[1] === target) { ans = dist.get(key(s)); break; }
+        for (const act of ACTIONS) {
+          const ns = apply(s, act);
+          const k = key(ns);
+          if (!dist.has(k)) { dist.set(k, dist.get(key(s)) + 1); q.push(ns); }
+        }
+      }
+      cur = saveCur;
+      return ans;
+    }
+
+    function setFeedback(t, k) { feedback.textContent = t; feedback.className = 'feedback ' + k; }
+
+    function buildTicks(container, cap) {
+      container.innerHTML = '';
+      for (let i = 1; i < cap; i++) {
+        const t = document.createElement('div');
+        t.className = 'tick';
+        t.style.bottom = (i / cap * 100) + '%';
+        const s = document.createElement('span');
+        s.textContent = i;
+        t.appendChild(s);
+        container.appendChild(t);
+      }
+    }
+
+    function setTarget(el, cap) {
+      if (cur.target <= cap) {
+        el.style.display = 'block';
+        el.style.bottom = (cur.target / cap * 100) + '%';
+        el.querySelector('span').textContent = '목표 ' + cur.target;
+      } else {
+        el.style.display = 'none';
+      }
+    }
+
+    function buildPresets() {
+      presetRow.innerHTML = '';
+      PRESETS.forEach((p, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'preset-btn' + (i === presetIdx ? ' active' : '');
+        btn.textContent = 'A' + p.capA + ' · B' + p.capB + ' → ' + p.target + 'L';
+        btn.addEventListener('click', () => selectPreset(i));
+        presetRow.appendChild(btn);
+      });
+    }
+
+    function buildJugs() {
+      const maxCap = Math.max(cur.capA, cur.capB);
+      jugA.style.height = (cur.capA / maxCap * 100) + '%';
+      jugB.style.height = (cur.capB / maxCap * 100) + '%';
+      buildTicks(ticksA, cur.capA);
+      buildTicks(ticksB, cur.capB);
+      setTarget(tgtA, cur.capA);
+      setTarget(tgtB, cur.capB);
+      capAlbl.textContent = cur.capA;
+      capBlbl.textContent = cur.capB;
+    }
+
+    function selectPreset(i) {
+      presetIdx = i;
+      cur = { ...PRESETS[i] };
+      minMoves = bfsMin(cur.capA, cur.capB, cur.target);
+      buildPresets();
+      buildJugs();
+      resetState();
+    }
+
+    function resetState() {
+      a = 0; b = 0; moves = 0; history = []; finished = false;
+      setFeedback('물통을 채우고, 붓고, 비워서 목표 ' + cur.target + 'L를 만들어 보세요.', 'info');
+      render();
+    }
+
+    function render() {
+      waterA.style.height = (a / cur.capA * 100) + '%';
+      waterB.style.height = (b / cur.capB * 100) + '%';
+      curA.textContent = a;
+      curB.textContent = b;
+
+      const hitA = (a === cur.target), hitB = (b === cur.target);
+      jugA.classList.toggle('hit', hitA);
+      jugB.classList.toggle('hit', hitB);
+      capBoxA.classList.toggle('hit', hitA);
+      capBoxB.classList.toggle('hit', hitB);
+
+      targetBadge.textContent = '목표 ' + cur.target + 'L';
+      moveBadge.textContent = '이동 ' + moves + '수';
+      minBadge.textContent = '최소 ' + minMoves + '수';
+
+      undoBtn.disabled = history.length === 0 || finished;
+
+      // 아무 변화도 없는(무의미한) 행동 버튼은 비활성
+      const noop = {
+        fillA: a === cur.capA,
+        fillB: b === cur.capB,
+        emptyA: a === 0,
+        emptyB: b === 0,
+        AtoB: a === 0 || b === cur.capB,
+        BtoA: b === 0 || a === cur.capA,
+      };
+      actBtns.forEach(btn => {
+        const act = btn.dataset.act;
+        btn.disabled = finished || noop[act];
+      });
+    }
+
+    function doAction(name) {
+      if (finished) return;
+      const [na, nb] = apply([a, b], name);
+      if (na === a && nb === b) return;
+      history.push([a, b]);
+      a = na; b = nb; moves++;
+
+      if (a === cur.target || b === cur.target) {
+        finished = true;
+        const which = (a === cur.target) ? 'A' : 'B';
+        let msg = '🎉 성공! ' + which + ' 물통에 ' + cur.target + 'L를 만들었어요 · ' + moves + '수';
+        msg += (moves === minMoves) ? ' — 최소 이동으로 성공!' : ' (최소 ' + minMoves + '수)';
+        setFeedback(msg, 'success');
+      } else {
+        setFeedback(ACT_LABEL[name] + ' · 이동 ' + moves + '수', 'info');
+      }
+      render();
+    }
+
+    function undo() {
+      if (finished || history.length === 0) return;
+      [a, b] = history.pop();
+      moves--;
+      setFeedback('되돌렸습니다 · 이동 ' + moves + '수', 'info');
+      render();
+    }
+
+    // --- 이벤트 ---
+    actionGrid.addEventListener('click', (e) => {
+      const btn = e.target.closest('.act-btn');
+      if (btn && !btn.disabled) doAction(btn.dataset.act);
+    });
+    undoBtn.addEventListener('click', undo);
+    resetBtn.addEventListener('click', resetState);
+
+    // --- 시작 ---
+    buildPresets();
+    selectPreset(0);
+
+  </script>
+</body>
+</html>

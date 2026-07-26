@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>매쓰투어 장면 테스트기 - A01</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* 공통 스타일 및 게임 컨테이너 */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #1a130f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Gowun+Dodum', sans-serif;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #2c2019; /* 다크 브라운 무대 배경 */
+            border: 4px solid #4a3b32;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8), inset 0 0 100px rgba(0,0,0,0.6);
+            overflow: hidden;
+        }
+
+        /* 상단 표시바 */
+        #stage-header {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #3a2b21, #2c2019);
+            border: 2px solid #b87333;
+            padding: 8px 30px;
+            color: #f4ecd8;
+            font-weight: bold;
+            font-size: 16px;
+            letter-spacing: 2px;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            border-radius: 4px;
+        }
+        #stage-header::before, #stage-header::after {
+            content: '⚙';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b87333;
+            font-size: 14px;
+        }
+        #stage-header::before { left: 8px; }
+        #stage-header::after { right: 8px; }
+
+        /* 무대 요소 배치 레이어 */
+        #stage-canvas {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        /* 건물 배치 스타일 */
+        .building-wrapper {
+            position: absolute;
+            left: 50%;
+            bottom: 120px;
+            transform: translateX(-50%);
+            width: 650px;
+            height: 420px;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .building-wrapper iframe {
+            border: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* 인물 배치 공통 스타일 */
+        .character-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            bottom: 60px;
+            overflow: visible;
+            z-index: 3;
+            transition: filter 0.4s ease, transform 0.4s ease;
+        }
+        .character-wrapper.inactive {
+            filter: brightness(0.4) grayscale(0.3);
+        }
+
+        /* 개별 캐릭터 위치 정의 */
+        #char-nambo { left: 80px; transform: scale(1.1); z-index: 4; }
+        #char-minwoo { left: 340px; transform: scaleX(-1); } /* 마주보기 반전 */
+        #char-seoyeon { left: 48px; transform: scale(1.05); } 
+        #char-okgeum { right: 40px; bottom: 150px; transform: scale(0.85); z-index: 2; } /* 건물 뒤에 숨은 느낌 */
+
+        /* 대화창 UI (스팀펑크 스타일) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            height: 140px;
+            background: linear-gradient(to bottom, #1f1612, #2c2019);
+            border: 3px solid #4a3b32;
+            border-top: 4px solid #b87333;
+            border-bottom: 4px solid #b87333;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.5);
+            padding: 20px 30px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        /* 파이프 데코레이션 효과 */
+        #dialogue-box::before {
+            content: '';
+            position: absolute;
+            top: -6px; left: 10px; right: 10px;
+            height: 2px; background: #b87333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        #speaker-name {
+            font-family: 'Gowun Dodum', sans-serif;
+            color: #b87333;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Serif KR', serif;
+            color: #f4ecd8;
+            font-size: 16px;
+            line-height: 1.6;
+            word-break: keep-all;
+        }
+
+        #click-indicator {
+            position: absolute;
+            bottom: 12px;
+            right: 20px;
+            color: #b87333;
+            font-size: 12px;
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes blink {
+            from { opacity: 0.3; } to { opacity: 1; }
+        }
+
+        /* 이동 네비게이션 버튼 공통 */
+        .btn-nav {
+            position: absolute;
+            padding: 10px 24px;
+            background-color: #b87333;
+            border: 2px solid #4a3b32;
+            color: #1a130f;
+            font-family: 'Gowun Dodum', sans-serif;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px #4a3b32, inset 1px 1px 3px rgba(255,255,255,0.3);
+            z-index: 15;
+            transition: all 0.1s ease;
+        }
+        .btn-nav:hover {
+            background-color: #c98444;
+        }
+        .btn-nav:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #4a3b32;
+        }
+
+        #btn-prev { left: 20px; bottom: 20px; }
+        #btn-next, #btn-skip { right: 20px; bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="stage-header">백령도 - 심청각 앞</div>
+
+    <div id="stage-canvas">
+        <div class="building-wrapper">
+            <iframe src="백령도_심청각.html" scrolling="no"></iframe>
+        </div>
+
+        <div id="char-okgeum" class="character-wrapper inactive"></div>
+        <div id="char-nambo" class="character-wrapper inactive"></div>
+        <div id="char-seoyeon" class="character-wrapper inactive"></div>
+        <div id="char-minwoo" class="character-wrapper inactive"></div>
+    </div>
+
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-name">남보</div>
+        <div id="dialogue-text">로딩 중...</div>
+        <div id="click-indicator">▼ 클릭하여 계속</div>
+    </div>
+
+    <button id="btn-prev" class="btn-nav" style="display: none;" onclick="navigate('S03.html')">이전</button>
+    <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+    <button id="btn-next" class="btn-nav" style="display: none;" onclick="navigate('A02.html')">다음</button>
+</div>
+
+<script>
+    // 대화 스크립트 데이터셋
+    const dialogues = [
+        {
+            speaker: "남보",
+            text: "자, 모두 고개를 들어 저기 보이는 멋진 건물을 보아라! 저곳이 바로 백령도의 명소인 '심청각'이란다.",
+            target: "char-nambo"
+        },
+        {
+            speaker: "서연",
+            text: "우와... 바다가 한눈에 내려다보이는 높은 곳에 있네요! 정말 아름다워요, 선생님.",
+            target: "char-seoyeon"
+        },
+        {
+            speaker: "민우",
+            text: "근데 왜 하필 이름이 '심청각'이에요? 우리가 아는 그 효녀 심청이 이야기와 관련이 있는 건가요?",
+            target: "char-minwoo"
+        },
+        {
+            speaker: "남보",
+            text: "하하, 예리하구나 민우야! 맞아. 심청이가 아버지를 위해 몸을 던졌던 인당수가 바로 이 앞바다에 있단다. 그걸 기리기 위해 세워진 곳이지.",
+            target: "char-nambo"
+        },
+        {
+            speaker: "옥금",
+            text: "(저 멀리 심청각 뒤편에서 힐끔거리며) '어라, 저기 모여서 무슨 재밌는 이야기를 하는 거지...? 나도 가서 슬쩍 인사를 건네볼까... 고민되네...'",
+            target: "char-okgeum"
+        }
+    ];
+
+    let currentIndex = 0;
+
+    // 비동기 캐릭터 에셋 조각 로드 (로컬 보안 정책에 대응하여 iframe 대체 예외처리 포함)
+    function loadCharacter(id, filename) {
+        const wrapper = document.getElementById(id);
+        fetch(filename)
+            .then(response => {
+                if (!response.ok) throw new Error('Network response error');
+                return response.text();
+            })
+            .then(html => {
+                wrapper.innerHTML = html;
+            })
+            .catch(error => {
+                // 로컬 환경 등으로 fetch가 제한될 시 투명 iframe 구조로 안전하게 폴백
+                wrapper.innerHTML = `<iframe src="${filename}" scrolling="no" style="border:0; width:260px; height:320px; background:transparent; overflow:hidden;"></iframe>`;
+            });
+    }
+
+    // 초기화 및 로드 실행
+    window.addEventListener('DOMContentLoaded', () => {
+        loadCharacter('char-minwoo', '민우.html');
+        loadCharacter('char-seoyeon', '서연.html');
+        loadCharacter('char-nambo', '남보.html');
+        loadCharacter('char-okgeum', '옥금.html');
+        
+        // 첫 번째 대사 출력
+        updateDialogue();
+    });
+
+    // 대화 업데이트 시스템
+    function updateDialogue() {
+        if (currentIndex < dialogues.length) {
+            const current = dialogues[currentIndex];
+            
+            // 텍스트 및 화자 갱신
+            document.getElementById('speaker-name').innerText = current.speaker;
+            document.getElementById('dialogue-text').innerText = current.text;
+
+            // 캐릭터 포커싱 라이팅 연출 (현재 말하는 대상 활성화)
+            document.querySelectorAll('.character-wrapper').forEach(el => {
+                el.classList.add('inactive');
+            });
+            const activeTarget = document.getElementById(current.target);
+            if (activeTarget) {
+                activeTarget.classList.remove('inactive');
+            }
+        } else {
+            // 모든 대화 스크립트 종료 시
+            endDialoguePhase();
+        }
+    }
+
+    // 대화창 클릭 시 다음 진행
+    function advanceDialogue() {
+        currentIndex++;
+        if (currentIndex < dialogues.length) {
+            updateDialogue();
+        } else {
+            endDialoguePhase();
+        }
+    }
+
+    // 건너뛰기 처리
+    function skipDialogue() {
+        endDialoguePhase();
+    }
+
+    // 대화 페이즈 완전히 종료 후 이동 인터페이스 노출
+    function endDialoguePhase() {
+        // 대화창 및 건너뛰기 제거
+        document.getElementById('dialogue-box').style.display = 'none';
+        document.getElementById('btn-skip').style.display = 'none';
+
+        // 모든 캐릭터 원래 밝기로 원복
+        document.querySelectorAll('.character-wrapper').forEach(el => {
+            el.classList.remove('inactive');
+        });
+
+        // 네비게이션 활성화
+        document.getElementById('btn-prev').style.display = 'block';
+        document.getElementById('btn-next').style.display = 'block';
+    }
+
+    // 페이지 이동 처리 전용 유틸리티 함수
+    function navigate(url) {
+        if (url) {
+            window.location.href = url;
+        } else {
+            alert("End of Stage");
+        }
+    }
+</script>
+
+</body>
+</html>

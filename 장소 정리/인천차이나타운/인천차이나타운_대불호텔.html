@@ -1,0 +1,279 @@
+<!-- 원본 크기: 500x500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  html,body{margin:0;padding:0;width:500px;height:500px;background:transparent;overflow:hidden;}
+  body>div{display:block!important;margin:0!important;}
+</style>
+</head>
+<body>
+<div class="daebul-hotel-component" style="display: inline-block; overflow: visible !important;">
+    
+    <style>
+        .dbh-stage {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            margin: 0 auto;
+            background-color: #d32f24; /* 강렬한 붉은 벽돌 베이스 */
+            
+            /* CSS 마법: Conic Gradient를 이용한 정교한 엇갈린 벽돌 패턴 */
+            background-image:
+                conic-gradient(at 2px 2px, transparent 90deg, rgba(0, 0, 0, 0.15) 0),
+                conic-gradient(at 2px 2px, transparent 90deg, rgba(0, 0, 0, 0.15) 0);
+            background-size: 36px 16px;
+            background-position: 0 0, 18px 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* =========================================
+           1. 코니스 (가로선 몰딩 / 층간 구분)
+           ========================================= */
+        /* 최상단 지붕 장식 */
+        .dbh-roof-trim {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 15px;
+            background: linear-gradient(to bottom, #2a2a2a 30%, #f4f4f5 30%, #d4d4d8 100%);
+            z-index: 10;
+        }
+
+        /* 3층-2층 사이 몰딩 */
+        .dbh-cornice-3-2 {
+            position: absolute;
+            top: 160px; left: -10px;
+            width: 520px; height: 16px;
+            background: linear-gradient(to bottom, #ffffff, #d4d4d8);
+            clip-path: polygon(0 0, 100% 0, 97% 100%, 3% 100%);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        /* 2층-1층 사이 몰딩 */
+        .dbh-cornice-2-1 {
+            position: absolute;
+            top: 320px; left: -10px;
+            width: 520px; height: 16px;
+            background: linear-gradient(to bottom, #ffffff, #d4d4d8);
+            clip-path: polygon(0 0, 100% 0, 97% 100%, 3% 100%);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        /* 1층 상단 넓은 하얀색 띠 */
+        .dbh-f1-strip {
+            position: absolute;
+            top: 336px; left: 0;
+            width: 100%; height: 30px;
+            background: #ffffff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 5;
+        }
+
+
+        /* =========================================
+           2. 공통 창문 스타일 (Windows)
+           ========================================= */
+        .dbh-win {
+            position: absolute;
+            width: 48px;
+            height: 95px;
+            background-color: #d1d5db; /* 유리 베이스 */
+            border: 4px solid #ffffff;
+            box-sizing: border-box;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.15), 3px 3px 6px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+        
+        /* 창문 내부 격자(Panes) - 2열 3행 */
+        .dbh-win-glass {
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.4), transparent);
+            background-image:
+                linear-gradient(to right, transparent 18px, #ffffff 18px, #ffffff 22px, transparent 22px),
+                linear-gradient(to bottom, transparent 26px, #ffffff 26px, #ffffff 30px, transparent 30px, transparent 56px, #ffffff 56px, #ffffff 60px, transparent 60px);
+        }
+
+        /* 상단 창틀 장식 (Lintel) */
+        .dbh-win::before {
+            content: '';
+            position: absolute;
+            top: -12px; left: -10px;
+            width: calc(100% + 20px); height: 10px;
+            background: linear-gradient(to bottom, #ffffff, #e4e4e7);
+            clip-path: polygon(5% 0, 95% 0, 100% 100%, 0 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* 하단 창틀 받침 (Sill) */
+        .dbh-win::after {
+            content: '';
+            position: absolute;
+            bottom: -8px; left: -8px;
+            width: calc(100% + 16px); height: 6px;
+            background: #ffffff;
+            box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+        }
+
+        /* X축 컬럼 위치 (Column 1~5) */
+        .dbh-col-1 { left: 26px; }
+        .dbh-col-2 { left: 126px; }
+        .dbh-col-3 { left: 226px; } /* Center */
+        .dbh-col-4 { left: 326px; }
+        .dbh-col-5 { left: 426px; }
+
+
+        /* =========================================
+           3. 2층 중앙 포인트 (Center Pediment & Balcony)
+           ========================================= */
+        /* 페디먼트 (삼각 지붕) */
+        .dbh-pediment-tri {
+            position: absolute;
+            top: 170px; left: 210px;
+            width: 80px; height: 25px;
+            background: #ffffff;
+            clip-path: polygon(50% 0, 100% 100%, 0 100%);
+            z-index: 12;
+        }
+        /* 페디먼트 하단 바 */
+        .dbh-pediment-base {
+            position: absolute;
+            top: 195px; left: 205px;
+            width: 90px; height: 5px;
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 11;
+        }
+        /* 페디먼트 지지 기둥 (Pillars) */
+        .dbh-ped-pillar {
+            position: absolute;
+            top: 200px;
+            width: 8px; height: 35px;
+            background: #ffffff;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            z-index: 11;
+        }
+        .dbh-ped-pillar.left { left: 216px; }
+        .dbh-ped-pillar.right { left: 276px; }
+
+        /* 2층 중앙 프렌치 도어 */
+        .dbh-door-f2 {
+            position: absolute;
+            top: 210px; left: 218px;
+            width: 64px; height: 110px;
+            background-color: #d1d5db;
+            border: 5px solid #ffffff;
+            border-radius: 25px 25px 0 0;
+            box-sizing: border-box;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.15), 3px 3px 6px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+        .dbh-door-f2-glass {
+            width: 100%; height: 100%;
+            background-image:
+                linear-gradient(to right, transparent 23px, #ffffff 23px, #ffffff 27px, transparent 27px),
+                linear-gradient(to bottom, transparent 30px, #ffffff 30px, #ffffff 34px, transparent 34px, transparent 65px, #ffffff 65px, #ffffff 69px, transparent 69px);
+        }
+
+        /* 2층 전체 폭 발코니 난간 */
+        .dbh-balcony-f2 {
+            position: absolute;
+            top: 290px; left: 0;
+            width: 100%; height: 30px;
+            background-image: repeating-linear-gradient(90deg, #ffffff 0, #ffffff 6px, transparent 6px, transparent 16px);
+            border-top: 5px solid #ffffff;
+            border-bottom: 6px solid #ffffff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            z-index: 15; /* 창문과 문 앞을 가리도록 설정 */
+        }
+
+
+        /* =========================================
+           4. 1층 특수 요소 (F1 Door & Balcony)
+           ========================================= */
+        /* 1층 아치형 메인 출입구 */
+        .dbh-door-f1 {
+            position: absolute;
+            top: 375px; left: 320px; /* Col 4 영역 */
+            width: 60px; height: 125px;
+            background-color: #d1d5db;
+            border: 5px solid #ffffff;
+            border-radius: 30px 30px 0 0;
+            box-sizing: border-box;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.15), 3px 3px 6px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+        .dbh-door-f1-glass {
+            position: relative;
+            width: 100%; height: 100%;
+        }
+        .dbh-door-f1-glass::before {
+            content: ''; position: absolute;
+            top: 35px; left: 0; width: 100%; height: 5px; background: #ffffff;
+        }
+        .dbh-door-f1-glass::after {
+            content: ''; position: absolute;
+            top: 40px; left: 22px; width: 5px; height: 85px; background: #ffffff;
+        }
+
+        /* 1층 좌측 발코니 난간 (창문 3개 가림) */
+        .dbh-balcony-f1 {
+            position: absolute;
+            top: 470px; left: 10px;
+            width: 280px; height: 30px;
+            background-image: repeating-linear-gradient(90deg, #ffffff 0, #ffffff 6px, transparent 6px, transparent 16px);
+            border-top: 5px solid #ffffff;
+            border-bottom: 6px solid #ffffff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            z-index: 15;
+        }
+
+    </style>
+
+    <div class="dbh-stage">
+        
+        <div class="dbh-roof-trim"></div>
+
+        <div class="dbh-win dbh-col-1" style="top: 40px;"><div class="dbh-win-glass"></div></div>
+        <div class="dbh-win dbh-col-2" style="top: 40px;"><div class="dbh-win-glass"></div></div>
+        <div class="dbh-win dbh-col-3" style="top: 40px;"><div class="dbh-win-glass"></div></div>
+        <div class="dbh-win dbh-col-4" style="top: 40px;"><div class="dbh-win-glass"></div></div>
+        <div class="dbh-win dbh-col-5" style="top: 40px;"><div class="dbh-win-glass"></div></div>
+
+        <div class="dbh-cornice-3-2"></div>
+
+
+        <div class="dbh-win dbh-col-1" style="top: 200px;"><div class="dbh-win-glass"></div></div>
+        <div class="dbh-win dbh-col-2" style="top: 200px;"><div class="dbh-win-glass"></div></div>
+        <div class="dbh-win dbh-col-4" style="top: 200px;"><div class="dbh-win-glass"></div></div>
+        <div class="dbh-win dbh-col-5" style="top: 200px;"><div class="dbh-win-glass"></div></div>
+
+        <div class="dbh-pediment-tri"></div>
+        <div class="dbh-pediment-base"></div>
+        <div class="dbh-ped-pillar left"></div>
+        <div class="dbh-ped-pillar right"></div>
+        <div class="dbh-door-f2"><div class="dbh-door-f2-glass"></div></div>
+
+        <div class="dbh-balcony-f2"></div>
+
+        <div class="dbh-cornice-2-1"></div>
+
+
+        <div class="dbh-f1-strip"></div>
+
+        <div class="dbh-win dbh-col-1" style="top: 385px;"><div class="dbh-win-glass"></div></div>
+        <div class="dbh-win dbh-col-2" style="top: 385px;"><div class="dbh-win-glass"></div></div>
+        <div class="dbh-win dbh-col-3" style="top: 385px;"><div class="dbh-win-glass"></div></div>
+        <div class="dbh-win dbh-col-5" style="top: 385px;"><div class="dbh-win-glass"></div></div>
+
+        <div class="dbh-door-f1"><div class="dbh-door-f1-glass"></div></div>
+
+        <div class="dbh-balcony-f1"></div>
+
+    </div>
+</div>
+</body>
+</html>

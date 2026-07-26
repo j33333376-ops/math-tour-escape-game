@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>수학 개념 어드벤처 - 순환소수와 유리수</title>
+  <style>
+    /* 1. 기본 스타일 및 레이아웃 초기화 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+    }
+
+    /* 16:9 비율 고정 화면계 설계 */
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 1200px;
+      max-height: 675px;
+      aspect-ratio: 16 / 9;
+      background: #2a1b0c;
+      overflow: hidden;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* 2. 배경 로딩 및 기본/대체 생성 스타일 */
+    #background-wrapper {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    /* 배경 파일 부재 시 자체 생성하는 조선의 정취 황토색 논밭+기와 풍경 CSS 배경 */
+    .field-css-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, #1a1c2e 0%, #393e46 50%, #cca07a 80%, #8c6d48 100%);
+    }
+
+    /* 은은한 보름달 */
+    .field-css-bg .moon {
+      position: absolute;
+      top: 10%;
+      right: 12%;
+      width: 110px;
+      height: 110px;
+      background: radial-gradient(circle, #fffde7 40%, #fbc02d 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 40px rgba(253, 253, 231, 0.6);
+      opacity: 0.8;
+    }
+
+    /* 전통 산수화 느낌 산맥 */
+    .field-css-bg .mountain-far {
+      position: absolute;
+      bottom: 25%;
+      width: 120%;
+      height: 35%;
+      background: #4a4e69;
+      left: -10%;
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      transform: scaleY(0.4);
+      opacity: 0.35;
+      filter: blur(2px);
+    }
+
+    .field-css-bg .mountain-near {
+      position: absolute;
+      bottom: 18%;
+      width: 140%;
+      height: 40%;
+      background: #222831;
+      left: -20%;
+      border-radius: 60% 40% 0 0 / 100% 100% 0 0;
+      transform: scaleY(0.3) rotate(-1deg);
+      opacity: 0.6;
+    }
+
+    /* 전통 기와지붕 구조물 */
+    .field-css-bg .roof-container {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 32%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      opacity: 0.85;
+    }
+
+    .field-css-bg .roof-top {
+      width: 85%;
+      height: 45px;
+      background: #111;
+      border-radius: 50% 50% 0 0 / 30px 30px 0 0;
+      position: relative;
+      bottom: -15px;
+    }
+
+    .field-css-bg .roof-top::before, .field-css-bg .roof-top::after {
+      content: '';
+      position: absolute;
+      bottom: 10px;
+      width: 60px;
+      height: 40px;
+      background: #111;
+    }
+
+    .field-css-bg .roof-top::before {
+      left: -30px;
+      border-radius: 0 0 100% 0 / 0 0 100% 0;
+      transform: rotate(-25deg);
+    }
+
+    .field-css-bg .roof-top::after {
+      right: -30px;
+      border-radius: 0 0 0 100% / 0 0 0 100%;
+      transform: rotate(25deg);
+    }
+
+    .field-css-bg .dancheong {
+      width: 80%;
+      height: 25px;
+      background: repeating-linear-gradient(
+        90deg,
+        #b23b3b 0px, #b23b3b 15px,
+        #2e6b52 15px, #2e6b52 30px,
+        #d4a373 30px, #d4a373 40px
+      );
+      border-bottom: 6px solid #1a1a1a;
+      z-index: 2;
+    }
+
+    .field-css-bg .rafters {
+      width: 78%;
+      height: 15px;
+      background: repeating-linear-gradient(
+        90deg,
+        #1a1a1a 0px, #1a1a1a 10px,
+        #4a3728 10px, #4a3728 20px
+      );
+      z-index: 1;
+    }
+
+    .field-css-bg .wall {
+      width: 75%;
+      height: 45%;
+      background: #e8d8c8;
+      border-left: 15px solid #3e2723;
+      border-right: 15px solid #3e2723;
+      position: relative;
+      z-index: 0;
+    }
+
+    .field-css-bg .window-frame {
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: 80%;
+      border: 5px solid #3e2723;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .field-css-bg .window-frame::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: 
+        linear-gradient(to right, transparent 46%, #3e2723 46%, #3e2723 54%, transparent 54%),
+        linear-gradient(to bottom, transparent 46%, #3e2723 46%, #3e2723 54%, transparent 54%);
+      background-size: 30px 30px;
+    }
+
+    /* 3. 캐릭터 컨테이너 및 강화 규칙 */
+    .character-container {
+      position: absolute;
+      bottom: 155px;
+      width: 100%;
+      height: 320px;
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      padding: 0 12%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .character-wrapper {
+      width: 260px;
+      height: 320px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      transition: filter .25s ease, opacity .25s ease, transform .25s ease;
+      transform-origin: bottom center;
+    }
+
+    .character-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    /* 대화 캐릭터 활성화/비활성화 효과 */
+    .active-speaker {
+      filter: brightness(1.12) saturate(1.08);
+      opacity: 1;
+      transform: scale(1.04);
+    }
+
+    .inactive-speaker {
+      filter: brightness(0.48) saturate(0.7);
+      opacity: 0.72;
+    }
+
+    /* 캐릭터 내부 불필요 설명 레이블 차단 */
+    .character-wrapper p, 
+    .character-wrapper small, 
+    .character-wrapper figcaption, 
+    .character-wrapper .caption, 
+    .character-wrapper .description, 
+    .character-wrapper .hint, 
+    .character-wrapper .label {
+      display: none !important;
+    }
+
+    /* 4. 상단 HUD 정보 표시부 */
+    #hud {
+      position: relative;
+      width: 100%;
+      height: 50px;
+      background: rgba(30, 18, 8, 0.9);
+      border-bottom: 3px solid #b38659;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 25px;
+      color: #fff;
+      font-weight: bold;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .hud-title {
+      font-size: 1.1rem;
+      color: #ffd166;
+    }
+
+    .hud-progress {
+      font-size: 0.95rem;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 5px 15px;
+      border-radius: 20px;
+      border: 1px solid #b38659;
+    }
+
+    /* 5. 인터랙션 및 대화창 */
+    #interaction-area {
+      position: relative;
+      width: 100%;
+      height: calc(100% - 50px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      z-index: 5;
+    }
+
+    #dialogue-box {
+      width: 96%;
+      height: 135px;
+      background: rgba(22, 13, 5, 0.95);
+      border: 4px solid #b38659;
+      border-radius: 12px;
+      margin: 0 auto 15px auto;
+      padding: 18px 25px;
+      color: #fff;
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 10;
+      pointer-events: auto;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    }
+
+    #dialogue-box::after {
+      content: '▼';
+      position: absolute;
+      bottom: 12px;
+      right: 25px;
+      color: #ffd166;
+      font-size: 0.85rem;
+      animation: indicator-bounce 0.8s infinite alternate;
+    }
+
+    .speaker-name {
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: #ffa62b;
+      margin-bottom: 6px;
+      border-left: 5px solid #b38659;
+      padding-left: 10px;
+    }
+
+    .dialogue-text {
+      font-size: 1.05rem;
+      line-height: 1.5;
+      height: 62px;
+      overflow-y: auto;
+    }
+
+    /* 6. 문제 카드 레이아웃 규격 */
+    #quiz-container {
+      position: absolute;
+      top: 65px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 850px;
+      max-height: 335px;
+      background: rgba(254, 252, 247, 0.98);
+      border: 5px double #73512a;
+      border-radius: 16px;
+      padding: 22px;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 20;
+      pointer-events: auto;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+      overflow-y: auto;
+    }
+
+    .quiz-question {
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: #1a0f05;
+      margin-bottom: 14px;
+      line-height: 1.6;
+    }
+
+    .choices-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 650px) {
+      .choices-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .choice-btn {
+      background: #fffdfa;
+      border: 2px solid #c7b097;
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      min-height: 52px;
+      transition: all 0.2s ease;
+    }
+
+    .choice-btn:hover {
+      background: #fbf3e6;
+      border-color: #8c6d48;
+    }
+
+    .choice-text {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: #3d2a17;
+      white-space: normal;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+
+    /* 피드백 출력창 규격 */
+    #feedback-panel {
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+      display: none;
+      margin-top: 5px;
+      font-size: 1.05rem;
+    }
+
+    .feedback-success {
+      background: linear-gradient(135deg, #fffaf0, #f3e4bd);
+      color: #3d2a17;
+      border: 2px solid #b38b3d;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(61, 42, 23, 0.25);
+      animation: gateUnlock 0.55s ease-out;
+    }
+    .success-stage { display: flex; align-items: center; justify-content: center; gap: 14px; }
+    .answer-seal { flex: 0 0 auto; width: 58px; height: 58px; display: grid; place-items: center; border: 4px double #a51f1f; color: #a51f1f; border-radius: 10px; font-family: serif; font-size: 1.25rem; font-weight: 900; transform: rotate(-7deg); animation: sealStamp .42s cubic-bezier(.2,.9,.25,1.35); }
+    .unlock-copy { text-align: left; line-height: 1.45; }
+    .unlock-title { display: block; color: #8a5a12; font-size: 1.08rem; }
+    .unlock-hint { display: block; margin-top: 3px; color: #6f5a3f; font-size: .82rem; }
+    @keyframes sealStamp { from { opacity: 0; transform: scale(2.1) rotate(-14deg); } to { opacity: 1; transform: scale(1) rotate(-7deg); } }
+    @keyframes gateUnlock { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .answer-seal, .feedback-success { animation: none; } }
+
+    .feedback-fail {
+      background: #ffebee;
+      color: #b71c1c;
+      border: 1px solid #ef9a9a;
+      white-space: pre-line;
+    }
+
+    /* 7. 정밀 수학 표기식 (CSS 기반 수식 구성) */
+    .math {
+      display: inline-flex;
+      align-items: center;
+      font-family: 'Times New Roman', serif;
+      font-style: italic;
+      font-weight: bold;
+      padding: 0 4px;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .choice-text .math {
+      display: inline-flex;
+    }
+
+    /* 분수 */
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      font-size: 0.85em;
+      padding: 0 4px;
+      line-height: 1.1;
+    }
+
+    .frac span:first-child {
+      border-bottom: 1.5px solid #222;
+      padding-bottom: 1px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .frac span:last-child {
+      padding-top: 1px;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* 단일 순환마디 점 */
+    .repeat {
+      position: relative;
+      display: inline-block;
+    }
+
+    .repeat::before {
+      content: '•';
+      position: absolute;
+      top: -0.65em;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.85em;
+      color: #e53935;
+    }
+
+    /* 여러 마디를 아우르는 선 */
+    .repeat-line {
+      position: relative;
+      display: inline-block;
+      border-top: 2px solid #e53935;
+      padding-top: 1px;
+    }
+
+    /* 8. 배움 완료 체크리스트 패널 */
+    #checklist-panel {
+      position: absolute;
+      inset: 65px 40px 15px 40px;
+      background: rgba(254, 252, 247, 0.98);
+      border: 6px double #73512a;
+      border-radius: 16px;
+      padding: 30px;
+      display: none;
+      flex-direction: column;
+      z-index: 30;
+      color: #2a1b0c;
+      overflow-y: auto;
+    }
+
+    .checklist-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 25px;
+      color: #5c3a21;
+      border-bottom: 3px double #b38659;
+      padding-bottom: 12px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 18px;
+      font-size: 1.12rem;
+      line-height: 1.5;
+    }
+
+    .check-icon {
+      font-size: 1.4rem;
+      color: #2e7d32;
+      margin-right: 15px;
+      line-height: 1;
+    }
+
+    .next-btn {
+      align-self: center;
+      margin-top: 20px;
+      background: #73512a;
+      color: white;
+      border: none;
+      padding: 14px 45px;
+      font-size: 1.15rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: background 0.2s;
+    }
+
+    .next-btn:hover {
+      background: #543a1e;
+    }
+
+    @keyframes indicator-bounce {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-5px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <div id="hud">
+      <span class="hud-title">🌾 수학 개념 어드벤처 - 제1단원</span>
+      <span id="progress-indicator" class="hud-progress">진행도: 0%</span>
+    </div>
+
+    <div id="background-wrapper"></div>
+
+    <div class="character-container">
+      <div id="char-dolsoe" class="character-wrapper"></div>
+      <div id="char-park" class="character-wrapper"></div>
+    </div>
+
+    <div id="quiz-container">
+      <div id="quiz-question" class="quiz-question"></div>
+      <div id="quiz-choices" class="choices-grid"></div>
+      <div id="feedback-panel"></div>
+    </div>
+
+    <div id="checklist-panel">
+      <h2 class="checklist-title">🌾 순환소수와 유리수 배움 체크리스트 🌾</h2>
+      <div class="check-item">
+        <span class="check-icon">✓</span>
+        <span><strong>유리수의 정의</strong>: 분수 <span class="math"><span class="frac"><span>b</span><span>a</span></span></span> (단, <span class="math">a, b</span>는 정수이며 <span class="math">a ≠ 0</span>) 형태의 유리 구조로 나타낼 수 있는 수의 체계를 완벽히 이해했습니다.</span>
+      </div>
+      <div class="check-item">
+        <span class="check-icon">✓</span>
+        <span><strong>소수의 구별</strong>: 소수점 아래가 한계가 있는 <strong>유한소수</strong>와 한계가 없이 끝없이 계속되는 <strong>무한소수(순환소수)</strong>의 성질을 명확히 정의했습니다.</span>
+      </div>
+      <div class="check-item">
+        <span class="check-icon">✓</span>
+        <span><strong>순환마디의 변환</strong>: <span class="math">10</span>의 거듭제곱배 법칙을 조절하여 소수 자리를 삭제함으로써 모든 순환소수를 정수의 비율인 분수로 깔끔히 복구해 냈습니다.</span>
+      </div>
+      <button class="next-btn" onclick="goToNextUnit()">다음 단원으로 이동 (지수법칙)</button>
+    </div>
+
+    <div id="interaction-area">
+      <div id="dialogue-box" onclick="advanceStep()">
+        <div id="speaker-name" class="speaker-name">시스템</div>
+        <div id="dialogue-text" class="dialogue-text">초기화 중...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 시나리오 정의 및 상태 흐름 제어
+    const dialogueData = [
+      {
+        speaker: "시스템",
+        text: "쿵-! 철컥! 오프닝 성문을 지나 첫 번째 구역의 거대한 철문이 서서히 열렸습니다. 눈앞에는 은은한 물안개가 깔린 고요하고 평평한 황토색 논밭이 아득하게 펼쳐집니다."
+      },
+      {
+        speaker: "돌쇠",
+        text: "드디어 첫 번째 농사 구역에 도착했어유! 이 넓은 논밭을 일정한 비율로 나누어야 농사를 시작할 수 있겠어유."
+      },
+      {
+        speaker: "박서방",
+        text: "어이 돌쇠! 내 소와 쟁기를 흔쾌히 빌려줄 수는 있다네만, 우리 조상님 대대로 전해져 온 엄격한 규칙에 맞춰서 논밭을 일정한 비율로 나눠 갈아야 한다네. 그래야 소의 동선도 꼬이지 않고 힘도 덜 들거든!"
+      },
+      {
+        speaker: "돌쇠",
+        text: "밭의 비율이 나누어떨어지지 않고 소수점 아래 숫자가 계속 반복되면 어떻게 계산하면 좋을까유?"
+      },
+      {
+        speaker: "박서방",
+        text: "허허! 소수 아래에 특정한 마디가 영원히 반복해서 나타나는 '순환소수'의 개념을 쓰면 아무리 끝없는 소수라 해도 완벽한 비율로 다룰 수 있네. 자, 퀴즈를 풀며 비율을 확인해 봄세!"
+      },
+      {
+        type: "quiz",
+        quizId: 1
+      },
+      {
+        speaker: "박서방",
+        text: "역시 대단하구먼! 소수 아래에서 영원히 반복되는 핵심 구간, 즉 순환마디의 정체를 시각적으로 완벽히 찾아내었군!"
+      },
+      {
+        speaker: "돌쇠",
+        text: "순환마디만 정확히 짚어내면 끝도 없는 무한소수라도 한눈에 파악할 수 있겠어유! 그런데 이 밭을 딱 나누어떨어지게 깔끔한 경계선으로만 구획을 짜는 건 불가능한가유?"
+      },
+      {
+        speaker: "박서방",
+        text: "그것이 바로 분수로 나타낼 수 있는 수의 체계인 '유리수'와 연결된다네. 어떤 비율이 유한소수가 되고, 어떤 비율이 끝없는 순환소수가 되는지 결정하는 기준을 확인해 보세나."
+      },
+      {
+        type: "quiz",
+        quizId: 2
+      },
+      {
+        speaker: "돌쇠",
+        text: "오호라! 기약분수로 나타냈을 때, 밑천인 분모에 소인수가 <span class='math'>2</span>나 <span class='math'>5</span>뿐이어야 유한소수로 깔끔하게 밭을 구획할 수 있구먼유!"
+      },
+      {
+        speaker: "박서방",
+        text: "정답일세! 기약분수 분모에 <span class='math'>2</span>나 <span class='math'>5</span> 이외의 다른 소인수가 섞여 있다면 끝없이 이어지는 순환소수가 되지. 이제 이 영겁의 순환소수를 완벽한 분수 비율로 뒤바꾸어 밭의 동선 비율을 확정 지을 차례네!"
+      },
+      {
+        type: "quiz",
+        quizId: 3
+      },
+      {
+        speaker: "돌쇠",
+        text: "대박이구먼유! 양변에 <span class='math'>10</span>의 거듭제곱을 곱해서 소수점 아래 자리를 완전히 일치시킨 뒤 통째로 빼버리니, 무한히 길던 밭의 수치가 정밀한 비율의 분수로 뚝딱 고쳐져유!"
+      },
+      {
+        speaker: "박서방",
+        text: "장하군, 돌쇠! 자, 이제 이 모든 소수와 정수 비율 지식을 합쳐서 논밭 전체의 효율적인 밭갈이 동선을 완벽히 설계하는 '최종 미션'에 도전해보세!"
+      },
+      {
+        type: "quiz",
+        quizId: "final"
+      },
+      {
+        speaker: "돌쇠",
+        text: "해냈어유! 순환소수와 유리수를 이용해 논밭을 알맞은 비율로 나누었어유!"
+      },
+      {
+        speaker: "박서방",
+        text: "허허허, 정말 대견하이. 순환소수와 유리수의 완벽한 질서를 찾았으니, 우리 조상님들도 이 풍요로운 가을걷이를 흐뭇하게 지켜보실 게야!"
+      },
+      {
+        speaker: "시스템",
+        text: "논밭의 비율을 정한 돌쇠는 다음 단서를 얻기 위해 씨앗을 파는 장터로 향합니다. 그곳에서는 거듭제곱과 지수법칙이 기다리고 있습니다."
+      },
+      {
+        type: "checklist"
+      }
+    ];
+
+    let currentStep = 0;
+
+    // 리소스 선언부
+    const assetConfig = {
+      dolsoe: 'assets/돌쇠.html',
+      park: 'assets/박서방.html',
+      bg: 'assets/순환소수와유리수배경.html'
+    };
+
+    // 퀴즈 문제셋 및 HTML/CSS 수식 데이터
+    const quizDatabase = {
+      1: {
+        question: "1번 퀴즈: 소수점 아래 무한히 반복되는 순환소수 <span class='math'>0.3181818...</span>의 올바른 순환마디와 올바른 점 표현 기호를 골라보세요.",
+        choices: [
+          { text: "<span class='choice-text'>순환마디는 <span class='math'>318</span>이며, 표기는 <span class='math'>0.<span class='repeat'>3</span>1<span class='repeat'>8</span></span>이다.</span>", correct: false },
+          { text: "<span class='choice-text'>순환마디는 <span class='math'>18</span>이며, 표기는 <span class='math'>0.3<span class='repeat'>1</span><span class='repeat'>8</span></span>이다.</span>", correct: true },
+          { text: "<span class='choice-text'>순환마디는 <span class='math'>18</span>이며, 표기는 <span class='math'>0.31<span class='repeat'>8</span></span>이다.</span>", correct: false },
+          { text: "<span class='choice-text'>순환마디는 <span class='math'>81</span>이며, 표기는 <span class='math'>0.3<span class='repeat'>1</span>8</span>이다.</span>", correct: false }
+        ]
+      },
+      2: {
+        question: "2번 퀴즈: 다음 분수 중에서 소수로 고쳤을 때 끝도 없이 가지 않고 소수점 아래가 딱 떨어지는 '유한소수'를 골라보세요.",
+        choices: [
+          { text: "<span class='choice-text'>기약분수 <span class='math'><span class='frac'><span>11</span><span>15</span></span></span></span>", correct: false },
+          { text: "<span class='choice-text'>기약분수 <span class='math'><span class='frac'><span>3</span><span>28</span></span></span></span>", correct: false },
+          { text: "<span class='choice-text'>기약분수 <span class='math'><span class='frac'><span>9</span><span>40</span></span></span> (분모의 소인수: <span class='math'>2<sup>3</sup> × 5</span>)</span>", correct: true },
+          { text: "<span class='choice-text'>기약분수 <span class='math'><span class='frac'><span>7</span><span>30</span></span></span></span>", correct: false }
+        ]
+      },
+      3: {
+        question: "3번 퀴즈: 순환소수 <span class='math'>x = 0.<span class='repeat-line'>427</span></span> (순환마디 427)을 가장 간결하게 분수로 고치기 위해, 복잡한 소수점 아래 무한 부분을 소거해 줄 알맞은 식을 선택해 주세요.",
+        choices: [
+          { text: "<span class='choice-text'><span class='math'>10x - x</span></span>", correct: false },
+          { text: "<span class='choice-text'><span class='math'>100x - x</span></span>", correct: false },
+          { text: "<span class='choice-text'><span class='math'>1000x - x</span></span></span>", correct: true },
+          { text: "<span class='choice-text'><span class='math'>1000x - 10x</span></span>", correct: false }
+        ]
+      },
+      "final": {
+        question: "최종 미션! 유리수와 순환소수의 관계에 대한 다음 명제 중 '올바른 참인 명제'를 골라 논밭의 올바른 밭갈이 동선을 최종 확정해 주세요.",
+        choices: [
+          { text: "<span class='choice-text'>모든 무한소수는 예외 없이 유리수가 아니야.</span>", correct: false },
+          { text: "<span class='choice-text'>정수가 아닌 유리수는 언제나 유한소수로만 나타낼 수 있어.</span>", correct: false },
+          { text: "<span class='choice-text'>모든 순환소수는 분수로 나타낼 수 있으므로 '유리수'란다.</span>", correct: true },
+          { text: "<span class='choice-text'>순환소수 중에는 분수로 도저히 고칠 수 없는 신비로운 수도 존재해.</span>", correct: false }
+        ]
+      }
+    };
+
+    // 초기 로드 시퀀스
+    window.addEventListener("DOMContentLoaded", () => {
+      initBackground();
+      initCharacters();
+      renderStep();
+
+      // 키보드 엔터 조작 핸들러 등록
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const type = dialogueData[currentStep]?.type;
+          if (type !== "quiz" && type !== "checklist") {
+            advanceStep();
+          }
+        }
+      });
+    });
+
+    // 배경 fetch 및 안전 폴백 생성 제어
+    function initBackground() {
+      const wrapper = document.getElementById("background-wrapper");
+
+      fetch(assetConfig.bg)
+        .then(res => {
+          if (!res.ok) throw new Error();
+          return res.text();
+        })
+        .then(html => {
+          wrapper.innerHTML = html;
+          const bgEl = wrapper.firstElementChild;
+          if (bgEl) {
+            bgEl.style.position = "absolute";
+            bgEl.style.inset = "0";
+            bgEl.style.width = "100%";
+            bgEl.style.height = "100%";
+            bgEl.style.overflow = "hidden";
+          }
+        })
+        .catch(() => {
+          // iframe 연결 시도 후 1초 지연 감시하여 CSS 대체 배경 적용
+          const iframe = document.createElement("iframe");
+          iframe.src = assetConfig.bg;
+          iframe.setAttribute("scrolling", "no");
+          iframe.style.position = "absolute";
+          iframe.style.inset = "0";
+          iframe.style.width = "100%";
+          iframe.style.height = "100%";
+          iframe.style.border = "0";
+          iframe.style.overflow = "hidden";
+          wrapper.appendChild(iframe);
+
+          let checkSuccess = false;
+          iframe.onload = () => { checkSuccess = true; };
+
+          setTimeout(() => {
+            if (!checkSuccess) {
+              iframe.remove();
+              // 'gemini-code-1784089640807.html'에서 가져온 전통 기와/달밤 디자인 적용
+              wrapper.innerHTML = `
+                <div class="field-css-bg">
+                  <div class="moon"></div>
+                  <div class="mountain-far"></div>
+                  <div class="mountain-near"></div>
+                  <div class="roof-container">
+                    <div class="roof-top"></div>
+                    <div class="dancheong"></div>
+                    <div class="rafters"></div>
+                    <div class="wall">
+                      <div class="window-frame"></div>
+                    </div>
+                  </div>
+                </div>`;
+            }
+          }, 1000);
+        });
+    }
+
+    // 캐릭터 불러오기 및 규칙 조율
+    function initCharacters() {
+      loadSingleCharacter('char-dolsoe', assetConfig.dolsoe);
+      loadSingleCharacter('char-park', assetConfig.park);
+    }
+
+    function loadSingleCharacter(elementId, srcFile) {
+      const container = document.getElementById(elementId);
+
+      fetch(srcFile)
+        .then(res => {
+          if (!res.ok) throw new Error();
+          return res.text();
+        })
+        .then(html => {
+          container.innerHTML = html;
+          cleanUpLabelElements(container);
+        })
+        .catch(() => {
+          // fetch 실패 대비 iframe 대체 로드
+          const iframe = document.createElement("iframe");
+          iframe.src = srcFile;
+          iframe.setAttribute("scrolling", "no");
+          iframe.style.width = "100%";
+          iframe.style.height = "100%";
+          iframe.style.border = "0";
+          iframe.style.overflow = "hidden";
+          iframe.onload = () => {
+            try {
+              const doc = iframe.contentDocument || iframe.contentWindow.document;
+              const style = doc.createElement('style');
+              style.innerHTML = 'p, small, figcaption, .caption, .description, .hint, .label { display: none !important; }';
+              doc.head.appendChild(style);
+            } catch (e) {}
+          };
+          container.appendChild(iframe);
+        });
+    }
+
+    // 설명용 텍스트 비노출 처리 규정 강제
+    function cleanUpLabelElements(container) {
+      const selectors = ['p', 'small', 'figcaption', '.caption', '.description', '.hint', '.label'];
+      selectors.forEach(selector => {
+        container.querySelectorAll(selector).forEach(el => {
+          el.style.setProperty('display', 'none', 'important');
+        });
+      });
+    }
+
+    // 단계별 진행 분기 관리자
+    function renderStep() {
+      const data = dialogueData[currentStep];
+      if (!data) return;
+
+      // HUD 진행 게이지 동적 변화
+      const percentage = Math.round((currentStep / dialogueData.length) * 100);
+      document.getElementById("progress-indicator").innerText = `진행도: ${percentage}%`;
+
+      // 퀴즈 및 피드백 패널 기본 상태 초기화
+      document.getElementById("quiz-container").style.display = "none";
+      document.getElementById("feedback-panel").style.display = "none";
+
+      if (data.type === "quiz") {
+        displayQuiz(data.quizId);
+      } else if (data.type === "checklist") {
+        displayChecklist();
+      } else {
+        document.getElementById("dialogue-box").style.display = "flex";
+        document.getElementById("speaker-name").innerText = data.speaker;
+        document.getElementById("dialogue-text").innerHTML = data.text;
+        updateSpeakers(data.speaker);
+      }
+    }
+
+    function advanceStep() {
+      if (currentStep < dialogueData.length - 1) {
+        currentStep++;
+        renderStep();
+      }
+    }
+
+    // 발화자 강조 스키마 적용
+    function updateSpeakers(speaker) {
+      const dolsoeWrapper = document.getElementById("char-dolsoe");
+      const parkWrapper = document.getElementById("char-park");
+
+      if (speaker === "돌쇠") {
+        dolsoeWrapper.className = "character-wrapper active-speaker";
+        parkWrapper.className = "character-wrapper inactive-speaker";
+      } else if (speaker === "박서방") {
+        dolsoeWrapper.className = "character-wrapper inactive-speaker";
+        parkWrapper.className = "character-wrapper active-speaker";
+      } else {
+        dolsoeWrapper.className = "character-wrapper";
+        parkWrapper.className = "character-wrapper";
+      }
+    }
+
+    // 퀴즈 렌더링 엔진
+    function displayQuiz(quizId) {
+      // 대화창 가림 방지를 위해 숨김 처리 규칙 이행
+      document.getElementById("dialogue-box").style.display = "none";
+
+      const quizData = quizDatabase[quizId];
+      const quizContainer = document.getElementById("quiz-container");
+      const questionEl = document.getElementById("quiz-question");
+      const choicesEl = document.getElementById("quiz-choices");
+      const feedbackEl = document.getElementById("feedback-panel");
+
+      questionEl.innerHTML = quizData.question;
+      choicesEl.innerHTML = "";
+      feedbackEl.style.display = "none";
+
+      quizData.choices.forEach(choice => {
+        const button = document.createElement("button");
+        button.className = "choice-btn";
+        button.innerHTML = choice.text;
+        button.onclick = () => verifyChoice(choice.correct, quizId);
+        choicesEl.appendChild(button);
+      });
+
+      quizContainer.style.display = "flex";
+    }
+
+    // 정답/오답 확인 모듈 (피드백 요구사항 완전 부합)
+    function verifyChoice(isCorrect, quizId) {
+      const feedbackEl = document.getElementById("feedback-panel");
+      feedbackEl.style.display = "block";
+
+      if (isCorrect) {
+        feedbackEl.className = "feedback-success";
+        const successText = quizId === "final" ? "미션 완료! 단원 클리어!" : "아주 멋진 추론이에요!";
+        feedbackEl.innerHTML = `<div class="success-stage"><span class="answer-seal">정답</span><span class="unlock-copy"><strong class="unlock-title">🔓 다음 관문 잠금 해제</strong>${successText}<small class="unlock-hint">이 상자를 클릭해 계속하기</small></span></div>`;
+        feedbackEl.onclick = () => {
+          feedbackEl.onclick = null;
+          advanceStep();
+        };
+      } else {
+        feedbackEl.className = "feedback-fail";
+        feedbackEl.innerHTML = "아쉽습니다.\n다시 한번 생각해보세요.";
+        feedbackEl.onclick = null;
+      }
+    }
+
+    // 최종 결과 정리 패널 활성화
+    function displayChecklist() {
+      document.getElementById("dialogue-box").style.display = "none";
+      document.getElementById("checklist-panel").style.display = "flex";
+    }
+
+    // 다음 단원 이동 핸들러
+    function goToNextUnit() {
+      window.location.href = "A02.html";
+    }
+  </script>
+</body>
+</html>

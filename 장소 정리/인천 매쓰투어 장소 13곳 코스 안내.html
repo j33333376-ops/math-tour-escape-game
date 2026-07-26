@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATHTOUR 추천 장소 13선</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-muted: #666666;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            text-align: center;
+            padding: 3rem 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        header p {
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
+            color: #bdc3c7;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem 3rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            background-color: var(--secondary-color);
+            color: #ffffff;
+            padding: 1.2rem 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .course-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .course-item {
+            margin-bottom: 1.2rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+
+        .course-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .course-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+
+        .course-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8rem; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>MATHTOUR 추천 장소 13선</h1>
+        <p>수학의 원리를 직접 체험하고 발견하는 특별한 여행</p>
+    </header>
+
+    <div class="container">
+        <div class="grid">
+            
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge">01</span> 인천대공원
+                </div>
+                <div class="card-body">
+                    <ul class="course-list">
+                        <li class="course-item">
+                            <span class="course-title">코스 1 (공원 입구)</span>
+                            <span class="course-desc">위치를 표현하는 정확한 방법, 좌표평면 탐구하기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 2 (수석원)</span>
+                            <span class="course-desc">기이한 돌의 형태를 통한 입체도형의 비밀과 오일러 정리 탐구</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 3 (인천수목원)</span>
+                            <span class="course-desc">나뭇잎의 배열과 꽃잎 수 등 식물 속에 숨겨진 피보나치 수열 찾기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 4 (백범광장)</span>
+                            <span class="course-desc">보도블럭과 바닥 패턴에서 발견하는 평면도형의 테셀레이션</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 5 (야외음악당)</span>
+                            <span class="course-desc">"도레미파솔라시" 음계를 만드는 주파수와 수학적 비례 원리</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 6 (궁도장)</span>
+                            <span class="course-desc">화살이 날아가는 포물선 궤적을 이용한 피칭 앵그리버드 게임</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge">02</span> 차이나타운 및 자유공원 일대
+                </div>
+                <div class="card-body">
+                    <ul class="course-list">
+                        <li class="course-item">
+                            <span class="course-title">코스 1 (차이나타운 입구/패루)</span>
+                            <span class="course-desc">화려한 전통 건축물의 좌우 대칭성과 수학적 비례 탐구</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 2 (거리 바닥)</span>
+                            <span class="course-desc">맨홀 뚜껑의 재탄생 및 보도블럭 바닥 패턴의 테셀레이션</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 3 (짜장면 박물관)</span>
+                            <span class="course-desc">과거부터 현재까지 짜장면 가격 변천사를 통한 물가 상승률과 통계</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 4 (개항장 거리)</span>
+                            <span class="course-desc">6개의 점으로 통하는 세상 및 근대 화폐 환율 계산</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 5 (아트플랫폼)</span>
+                            <span class="course-desc">붉은 벽돌 건축물 외관의 평면도형 분류 및 부피 계산</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 6 (자유공원 광장)</span>
+                            <span class="course-desc">맥아더 장군 동상의 그림자를 이용한 삼각비 높이 측정</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge">03</span> 소래포구 및 소래습지생태공원
+                </div>
+                <div class="card-body">
+                    <ul class="course-list">
+                        <li class="course-item">
+                            <span class="course-title">코스 1 (소래포구역/어시장)</span>
+                            <span class="course-desc">역 앞 착시 도형 관찰 및 수산물 상점 번호에서 소수와 완전수 찾기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 2 (염전체험장 1)</span>
+                            <span class="course-desc">소금 결정이 만들어지는 다면체 구조 탐구</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 3 (염전체험장 2)</span>
+                            <span class="course-desc">소금이 남긴 흔적을 이용해 삼각형의 외심과 내심 찾기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 4 (갯벌체험장)</span>
+                            <span class="course-desc">갯벌 위에서 직접 도형을 그려보는 도형 작도 활동</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 5 (풍차)</span>
+                            <span class="course-desc">돌아가는 풍차 날개와 함께 평면도형과 회전체의 원리 이해하기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 6 (소염교)</span>
+                            <span class="course-desc">다리의 하중을 견디는 삼각형 트러스 구조의 안정성 탐구</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge">04</span> 강화도
+                </div>
+                <div class="card-body">
+                    <ul class="course-list">
+                        <li class="course-item">
+                            <span class="course-title">코스 1 (용흥궁)</span>
+                            <span class="course-desc">강화도령 안내판 속에 숨겨진 다양한 도형 찾기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 2 (성공회 강화성당)</span>
+                            <span class="course-desc">동서양 건축 양식이 융합된 건축물의 황금비율 및 대칭성 탐구</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 3 (고려궁지)</span>
+                            <span class="course-desc">넓은 궁터의 면적 어림하기 및 평면도 작도</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 4 (강화산성 북문/진송루)</span>
+                            <span class="course-desc">성문 아치의 곡률 및 반원 구조가 하중을 견디는 원리 분석</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 5 (북산길)</span>
+                            <span class="course-desc">앙리 쥐베르의 북산 그림 비례를 활용한 수학 퍼즐 만들기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 6 (갑곶돈대)</span>
+                            <span class="course-desc">대포 발사 시 각도에 따른 포물선 궤적과 사거리의 이차함수 계산</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge">05</span> 옹진군 섬 일대
+                </div>
+                <div class="card-body">
+                    <ul class="course-list">
+                        <li class="course-item">
+                            <span class="course-title">코스 1 (덕적도 해안)</span>
+                            <span class="course-desc">실시간 조석 데이터를 해석하여 밀물과 썰물을 나타내는 삼각함수 파동 그래프 분석</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 2 (영흥도 영흥대교)</span>
+                            <span class="course-desc">바다를 가로지르는 거대한 현수교의 케이블 장력과 현수선 방정식 탐구</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 3 (영흥도 십리포)</span>
+                            <span class="course-desc">해안선의 길이를 프랙탈 차원으로 접근하여 측정해보기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 4 (백령도 두무진)</span>
+                            <span class="course-desc">해상에서 배의 이동 거리와 기암괴석의 각도를 이용한 삼각비 높이 계산</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 5 (백령도 사곶사빈)</span>
+                            <span class="course-desc">천연 비행장으로 쓰인 넓은 모래사장의 거대한 면적과 둘레 길이 산출</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 6 (백령도 콩돌해안)</span>
+                            <span class="course-desc">파도에 마모된 자갈의 둥근 정도(곡률) 분류 및 분포 확률 통계 내기</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge">06</span> 영종도
+                </div>
+                <div class="card-body">
+                    <ul class="course-list">
+                        <li class="course-item">
+                            <span class="course-title">코스 1 (영종대교/인천대교 기념관)</span>
+                            <span class="course-desc">거대 교량 주탑의 높이와 케이블의 기하학적 각도 계산</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 2 (왕산마리나)</span>
+                            <span class="course-desc">정박된 요트 돛의 삼각형 형태 분류 및 직각삼각형 빗면 길이 구하기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 3 (을왕리해수욕장)</span>
+                            <span class="course-desc">초당 걸음 수를 이용해 700m 백사장 길이 측정 및 면적 어림하기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 4 (씨사이드파크 레일바이크)</span>
+                            <span class="course-desc">이동 거리, 시간, 속력의 관계를 나타내는 일차함수 그래프 작성</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 5 (인천국제공항 전망대)</span>
+                            <span class="course-desc">비행기 이륙 시 고도 상승률에 따른 삼각비 계산</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 6 (영종진공원)</span>
+                            <span class="course-desc">방어 시설인 성곽의 다각형 구조와 둘레 측정</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge">07</span> 송도 센트럴파크
+                </div>
+                <div class="card-body">
+                    <ul class="course-list">
+                        <li class="course-item">
+                            <span class="course-title">코스 1 (공원 입구)</span>
+                            <span class="course-desc">넓은 공원 전체를 좌표평면으로 모델링하여 나의 위치 나타내기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 2 (산책로 지압길)</span>
+                            <span class="course-desc">바닥에 깔린 조약돌의 다양한 기하학적 형태 관찰 및 분류</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 3 (공원 다리 및 빌딩)</span>
+                            <span class="course-desc">호수에 비친 동북아무역센터 빌딩 높이를 삼각비로 측정하기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 4 (어린이 공원)</span>
+                            <span class="course-desc">놀이기구의 경사각 및 미끄럼틀 빗면의 길이 탐구</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 5 (잔디광장)</span>
+                            <span class="course-desc">일정한 간격으로 심어진 수목 배열을 통한 수열의 규칙성</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 6 (3큐브 및 트라이보울)</span>
+                            <span class="course-desc">착시를 일으키는 조형물과 3차원 곡면 입체도형 탐구</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge">08</span> 아라뱃길, 청라호수공원 일대
+                </div>
+                <div class="card-body">
+                    <ul class="course-list">
+                        <li class="course-item">
+                            <span class="course-title">코스 1 (아라타워 전망대)</span>
+                            <span class="course-desc">전망대 높이에서 지평선까지의 시야 확보 거리 측정하기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 2 (아라폭포 및 원형 광장)</span>
+                            <span class="course-desc">거대한 원형 광장의 둘레, 넓이, 호의 길이 및 중심각 계산</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 3 (수향루)</span>
+                            <span class="course-desc">전통 누각 건축물 단청에 사용된 대칭 이동과 평행 이동 패턴 찾기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 4 (청라호수공원 음악분수)</span>
+                            <span class="course-desc">음악에 맞춰 솟아오르는 물줄기가 그리는 포물선 궤적의 이차함수 모델링</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 5 (호수 횡단 교량)</span>
+                            <span class="course-desc">다리의 하중을 분산시키는 다양한 건축 공학적 비례 탐구</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 6 (청라루)</span>
+                            <span class="course-desc">물에 반사된 누각의 모습을 통한 선대칭 도형과 빛의 반사 원리</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge">09</span> 부평공원, 부평종합시장
+                </div>
+                <div class="card-body">
+                    <ul class="course-list">
+                        <li class="course-item">
+                            <span class="course-title">코스 1 (부평공원 산책로)</span>
+                            <span class="course-desc">올바른 걷기 안내판을 활용한 소요 시간과 이동 거리의 일차함수 식 세우기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 2 (부평공원 수목)</span>
+                            <span class="course-desc">잎맥이나 솔방울 나선 배열에 숨겨진 피보나치 수열과 황금각 발견하기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 3 (부평공원 조형물)</span>
+                            <span class="course-desc">태양 고도에 따른 나무와 조형물의 그림자 길이를 이용한 높이 측정</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 4 (부평깡시장 과일가게)</span>
+                            <span class="course-desc">과일, 채소, 포장 상자를 구, 원기둥, 직육면체 등 입체도형으로 분류하기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 5 (종합시장 점포 통계)</span>
+                            <span class="course-desc">시장 내 업종별 점포 수를 조사하여 비율 그래프로 나타내기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 6 (부평 지하상가)</span>
+                            <span class="course-desc">복잡한 미로형 지하상가 지도를 보고 특정 점포까지 가는 최단 경로 구하기</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge">10</span> 인천도호부청사 및 인천향교
+                </div>
+                <div class="card-body">
+                    <ul class="course-list">
+                        <li class="course-item">
+                            <span class="course-title">코스 1 (동헌 및 객사)</span>
+                            <span class="course-desc">주요 전통 건물의 용도를 파악하고 건물의 평면도(축척) 그려보기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 2 (지붕 처마)</span>
+                            <span class="course-desc">기와지붕 처마 선에 적용된 사이클로이드 곡선의 원리와 빗물 낙하 속도</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 3 (전통 창살)</span>
+                            <span class="course-desc">문고리와 창살 문양에 숨겨진 반복적인 테셀레이션 기법 찾기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 4 (향교 대성전)</span>
+                            <span class="course-desc">향교 마당의 공간 비례와 동재/서재 건물의 선대칭 배치도 탐구</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 5 (명륜당 산학 체험)</span>
+                            <span class="course-desc">옛 조상들의 수학 교육 방식과 전통 측정 단위 이해 및 환산</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 6 (투호 놀이장)</span>
+                            <span class="course-desc">화살을 던져 통에 들어갈 확률과 투호가 날아가는 이차함수 포물선 궤적 체험</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge">11</span> 문학경기장
+                </div>
+                <div class="card-body">
+                    <ul class="course-list">
+                        <li class="course-item">
+                            <span class="course-title">코스 1 (스타디움 외관)</span>
+                            <span class="course-desc">돛단배 형상의 거대한 지붕 구조물에서 타원 방정식의 초점과 장축 찾기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 2 (육상 트랙)</span>
+                            <span class="course-desc">직선 구간과 곡선(반원) 구간의 길이를 조합하여 육상 트랙의 전체 길이 계산하기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 3 (관중석)</span>
+                            <span class="course-desc">구역별로 배열된 관중석 의자 수의 규칙성을 파악하고 등차수열의 합 구하기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 4 (축구장 잔디)</span>
+                            <span class="course-desc">국제 규격 축구장의 가로세로 비례와 대각선 길이(피타고라스 정리) 산출</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 5 (전광판 및 스크린)</span>
+                            <span class="course-desc">거대한 전광판의 가로세로 화면비율(16:9 등)에 담긴 수학적 비례 분석</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 6 (광장 진입로)</span>
+                            <span class="course-desc">광장의 원형 패턴 넓이와 진입로 경사로의 기울기 측정</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge">12</span> 인하대학교 캠퍼스
+                </div>
+                <div class="card-body">
+                    <ul class="course-list">
+                        <li class="course-item">
+                            <span class="course-title">코스 1 (캠퍼스 맵)</span>
+                            <span class="course-desc">안내 지도의 축척을 이용하여 단과대학 건물 간의 실제 직선거리 계산하기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 2 (본관 건물)</span>
+                            <span class="course-desc">클리노미터(각도기)와 삼각비를 이용해 높은 단과대 건물의 전체 높이 측정하기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 3 (인경호)</span>
+                            <span class="course-desc">비정형 형태인 학교 호수의 둘레 길이를 어림하고 모눈종이를 이용해 넓이 구하기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 4 (대운동장)</span>
+                            <span class="course-desc">운동장 바닥에 그어진 선분들의 기하학적 형태 및 넓이 산출</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 5 (비룡탑 조형물)</span>
+                            <span class="course-desc">대학의 상징인 비룡 조각상의 무게중심과 조형적 비례(황금비) 찾기</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 6 (단과대 간 이동 경로)</span>
+                            <span class="course-desc">A동에서 B동으로 지각하지 않고 갈 수 있는 최단 거리(경우의 수) 탐구</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="badge">13</span> 월미공원 및 월미도 일대
+                </div>
+                <div class="card-body">
+                    <ul class="course-list">
+                        <li class="course-item">
+                            <span class="course-title">코스 1 (월미전통정원)</span>
+                            <span class="course-desc">부용지(연못)와 정자의 기하학적 공간 배치 및 선대칭/점대칭 탐구</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 2 (월미전망대)</span>
+                            <span class="course-desc">나선형 계단을 오르며 원기둥의 겉넓이와 나선 곡선의 수학적 의미 파악</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 3 (월미산 산책로)</span>
+                            <span class="course-desc">둘레길 경사로의 각도 측정 및 산책 시 소모되는 칼로리 일차함수 계산</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 4 (월미테마파크 디스코팡팡)</span>
+                            <span class="course-desc">원판형 놀이기구가 회전할 때 발생하는 원운동, 각속도, 원심력 이해</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 5 (테마파크 바이킹)</span>
+                            <span class="course-desc">바이킹의 진자운동을 통한 사인/코사인 곡선과 도달하는 최대 높이 탐구</span>
+                        </li>
+                        <li class="course-item">
+                            <span class="course-title">코스 6 (월미도 앞바다)</span>
+                            <span class="course-desc">방파제에서 멀리 보이는 등대까지의 삼각측량 및 해수면 높이 변화 관찰</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

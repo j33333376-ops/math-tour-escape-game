@@ -1,0 +1,100 @@
+<!-- 원본 크기: 600x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>공유 자전거</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .sgc-svg { display:block; width:100%; height:auto; }
+  .sgc-spin { animation: sgc-spin 6s linear infinite; }
+  @keyframes sgc-spin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
+</style>
+</head>
+<body>
+<svg class="sgc-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="공유 자전거">
+<title>공유 자전거</title>
+<desc>공원 산책로에 세워진 민트색 공유 자전거.</desc>
+<defs>
+  <linearGradient id="sgcFrame" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#4fd0c4"/><stop offset="1" stop-color="#1f8f88"/>
+  </linearGradient>
+  <radialGradient id="sgcTire" cx="0.4" cy="0.35" r="0.75">
+    <stop offset="0" stop-color="#5a626a"/><stop offset="1" stop-color="#2b3138"/>
+  </radialGradient>
+</defs>
+<ellipse cx="300" cy="546" rx="240" ry="26" fill="#3a4a3a" opacity="0.2"/>
+<!-- 뒷바퀴 -->
+<g transform="translate(140,410)">
+  <circle r="118" fill="none" stroke="url(#sgcTire)" stroke-width="22"/>
+  <circle r="102" fill="none" stroke="#8f9aa4" stroke-width="4"/>
+  <g class="sgc-spin" style="transform-origin:0 0">
+    <g stroke="#c4ccd4" stroke-width="3.4">
+      <line x1="0" y1="-102" x2="0" y2="102"/><line x1="-102" y1="0" x2="102" y2="0"/>
+      <line x1="-72" y1="-72" x2="72" y2="72"/><line x1="-72" y1="72" x2="72" y2="-72"/>
+      <line x1="-39" y1="-94" x2="39" y2="94"/><line x1="39" y1="-94" x2="-39" y2="94"/>
+      <line x1="-94" y1="-39" x2="94" y2="39"/><line x1="94" y1="-39" x2="-94" y2="39"/>
+    </g>
+  </g>
+  <circle r="16" fill="#8f9aa4" stroke="#5a626a" stroke-width="3"/>
+</g>
+<!-- 앞바퀴 -->
+<g transform="translate(460,410)">
+  <circle r="118" fill="none" stroke="url(#sgcTire)" stroke-width="22"/>
+  <circle r="102" fill="none" stroke="#8f9aa4" stroke-width="4"/>
+  <g class="sgc-spin" style="transform-origin:0 0; animation-delay:-1s">
+    <g stroke="#c4ccd4" stroke-width="3.4">
+      <line x1="0" y1="-102" x2="0" y2="102"/><line x1="-102" y1="0" x2="102" y2="0"/>
+      <line x1="-72" y1="-72" x2="72" y2="72"/><line x1="-72" y1="72" x2="72" y2="-72"/>
+      <line x1="-39" y1="-94" x2="39" y2="94"/><line x1="39" y1="-94" x2="-39" y2="94"/>
+      <line x1="-94" y1="-39" x2="94" y2="39"/><line x1="94" y1="-39" x2="-94" y2="39"/>
+    </g>
+  </g>
+  <circle r="16" fill="#8f9aa4" stroke="#5a626a" stroke-width="3"/>
+</g>
+<!-- 프레임 -->
+<g stroke="url(#sgcFrame)" stroke-width="22" fill="none" stroke-linecap="round">
+  <path d="M140,410 L262,410"/>
+  <path d="M262,410 L318,242"/>
+  <path d="M140,410 L292,236"/>
+  <path d="M292,236 L318,242"/>
+  <path d="M318,242 L460,410"/>
+  <path d="M292,236 L268,168"/>
+</g>
+<g stroke="#0f6b66" stroke-width="3" fill="none" opacity="0.45" stroke-linecap="round">
+  <path d="M262,410 L318,242"/><path d="M140,410 L292,236"/><path d="M318,242 L460,410"/>
+</g>
+<!-- 안장 -->
+<path d="M232,150 C266,140 306,146 312,164 C316,180 288,190 256,186 C232,182 216,168 232,150 Z"
+      fill="#2b3138" stroke="#141a20" stroke-width="4"/>
+<!-- 핸들 -->
+<line x1="460" y1="410" x2="404" y2="196" stroke="url(#sgcFrame)" stroke-width="18" stroke-linecap="round"/>
+<path d="M404,196 L340,178" stroke="#2b3138" stroke-width="17" stroke-linecap="round"/>
+<path d="M404,196 L468,178" stroke="#2b3138" stroke-width="17" stroke-linecap="round"/>
+<rect x="330" y="164" width="34" height="20" rx="9" fill="#4fd0c4" stroke="#0f6b66" stroke-width="3"/>
+<rect x="452" y="164" width="34" height="20" rx="9" fill="#4fd0c4" stroke="#0f6b66" stroke-width="3"/>
+<!-- 바구니 -->
+<g transform="translate(432,236)">
+  <path d="M-52,-30 L56,-30 L44,34 L-40,34 Z" fill="none" stroke="#c4ccd4" stroke-width="5"/>
+  <g stroke="#c4ccd4" stroke-width="3">
+    <line x1="-46" y1="-6" x2="50" y2="-6"/><line x1="-43" y1="12" x2="47" y2="12"/>
+    <line x1="-26" y1="-30" x2="-20" y2="34"/><line x1="2" y1="-30" x2="2" y2="34"/>
+    <line x1="30" y1="-30" x2="24" y2="34"/>
+  </g>
+</g>
+<!-- 체인링 -->
+<circle cx="262" cy="410" r="44" fill="none" stroke="#8f9aa4" stroke-width="8"/>
+<circle cx="262" cy="410" r="30" fill="none" stroke="#c4ccd4" stroke-width="4"/>
+<path d="M262,410 L306,438" stroke="#5a626a" stroke-width="10" stroke-linecap="round"/>
+<rect x="298" y="432" width="30" height="14" rx="6" fill="#2b3138"/>
+<path d="M262,454 C300,470 372,442 460,410" fill="none" stroke="#5a626a" stroke-width="5"/>
+<!-- 잠금 단말기 -->
+<g transform="translate(268,168)">
+  <rect x="-26" y="-34" width="52" height="46" rx="8" fill="#f2f6f8" stroke="#5a626a" stroke-width="4"/>
+  <rect x="-17" y="-26" width="34" height="20" rx="3" fill="#1f8f88"/>
+  <circle cy="4" r="5" fill="#5a626a"/>
+</g>
+</svg>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!-- 원본 크기: 500x750 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>회전목마 목마</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .wmm-svg { display:block; width:100%; height:auto; }
+  .wmm-bob { animation: wmm-bob 3.6s ease-in-out infinite; }
+  @keyframes wmm-bob { 0%,100% { transform: translateY(0) rotate(-1.5deg);} 50% { transform: translateY(-22px) rotate(1.5deg);} }
+  .wmm-blink { animation: wmm-blink 1.6s ease-in-out infinite; }
+  @keyframes wmm-blink { 0%,100% { opacity:0.4; } 50% { opacity:1; } }
+</style>
+</head>
+<body>
+<svg class="wmm-svg" viewBox="0 0 500 750" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="회전목마 목마">
+<title>회전목마 목마</title>
+<desc>월미테마파크 회전목마의 백마. 황금 봉에 꿰어진 장식 목마.</desc>
+<defs>
+  <linearGradient id="wmmPole" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#8a5f18"/><stop offset="0.3" stop-color="#f2d78a"/>
+    <stop offset="0.55" stop-color="#d9a52c"/><stop offset="1" stop-color="#7a5214"/>
+  </linearGradient>
+  <linearGradient id="wmmHorse" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffffff"/><stop offset="0.6" stop-color="#f4f0e8"/><stop offset="1" stop-color="#d4cec2"/>
+  </linearGradient>
+  <linearGradient id="wmmSaddle" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#e0537c"/><stop offset="1" stop-color="#a82850"/>
+  </linearGradient>
+</defs>
+<!-- 봉 -->
+<rect x="238" y="24" width="24" height="700" rx="12" fill="url(#wmmPole)" stroke="#6e4a10" stroke-width="4"/>
+<g stroke="#8a5f18" stroke-width="3" opacity="0.6">
+  <path d="M238,60 q24,16 24,32 M238,124 q24,16 24,32 M238,188 q24,16 24,32
+           M238,540 q24,16 24,32 M238,604 q24,16 24,32 M238,668 q24,16 24,32"/>
+</g>
+<ellipse cx="250" cy="24" rx="34" ry="12" fill="#f2d78a" stroke="#6e4a10" stroke-width="4"/>
+<ellipse cx="250" cy="726" rx="76" ry="18" fill="#d9a52c" stroke="#6e4a10" stroke-width="4"/>
+<ellipse cx="250" cy="716" rx="60" ry="13" fill="#f2d78a"/>
+
+<g class="wmm-bob" style="transform-origin:250px 400px">
+  <!-- 뒷다리 -->
+  <path d="M170,470 C142,510 130,556 138,600 L176,600 C176,558 190,520 208,492 Z" fill="url(#wmmHorse)" stroke="#a89f90" stroke-width="4"/>
+  <path d="M214,486 C202,528 200,566 208,604 L244,604 C240,566 246,528 258,498 Z" fill="#eae5da" stroke="#a89f90" stroke-width="4"/>
+  <!-- 몸통 -->
+  <path d="M148,392 C142,338 194,300 268,296 C338,292 388,318 396,368 C404,420 372,468 306,480 C232,494 156,452 148,392 Z"
+        fill="url(#wmmHorse)" stroke="#a89f90" stroke-width="5"/>
+  <!-- 앞다리 -->
+  <path d="M340,462 C348,506 344,556 330,596 L366,600 C378,556 386,512 380,470 Z" fill="url(#wmmHorse)" stroke="#a89f90" stroke-width="4"/>
+  <path d="M290,478 C286,522 284,562 292,600 L326,600 C320,562 322,522 330,486 Z" fill="#eae5da" stroke="#a89f90" stroke-width="4"/>
+  <g fill="#c9b08a">
+    <rect x="136" y="594" width="44" height="16" rx="6"/><rect x="206" y="598" width="42" height="16" rx="6"/>
+    <rect x="290" y="594" width="42" height="16" rx="6"/><rect x="330" y="592" width="44" height="16" rx="6"/>
+  </g>
+  <!-- 목과 머리 -->
+  <path d="M356,330 C378,290 392,254 396,220 C426,214 452,232 452,262 C452,300 424,340 392,364 Z"
+        fill="url(#wmmHorse)" stroke="#a89f90" stroke-width="5"/>
+  <path d="M394,222 C392,186 412,162 444,158 C478,154 500,176 498,208 C496,240 476,258 448,262 C418,266 396,250 394,222 Z"
+        fill="url(#wmmHorse)" stroke="#a89f90" stroke-width="5"/>
+  <path d="M478,196 C506,192 522,206 518,226 C514,246 492,254 470,246 Z" fill="#eae5da" stroke="#a89f90" stroke-width="4"/>
+  <ellipse cx="508" cy="216" rx="8" ry="6" fill="#7d7466"/>
+  <!-- 귀 -->
+  <path d="M424,158 C416,132 420,112 434,110 C448,110 456,132 452,156 Z" fill="url(#wmmHorse)" stroke="#a89f90" stroke-width="3.4"/>
+  <!-- 눈 -->
+  <circle cx="462" cy="192" r="12" fill="#2b2318"/>
+  <circle cx="458" cy="187" r="4" fill="#ffffff"/>
+  <!-- 갈기 -->
+  <path d="M420,150 C398,168 384,196 382,226 C376,196 380,166 396,144 Z" fill="#f2c14e" stroke="#a8781c" stroke-width="3.4"/>
+  <path d="M400,168 C378,192 366,226 366,258 C356,226 360,192 378,164 Z" fill="#e8b03c" stroke="#a8781c" stroke-width="3.4"/>
+  <path d="M378,200 C356,228 346,264 348,296 C338,262 344,226 360,196 Z" fill="#f2c14e" stroke="#a8781c" stroke-width="3.4"/>
+  <!-- 굴레 -->
+  <g stroke="#e0537c" stroke-width="7" fill="none" stroke-linecap="round">
+    <path d="M436,166 C462,176 486,192 496,212"/>
+    <path d="M414,204 C438,220 466,232 494,236"/>
+  </g>
+  <circle cx="472" cy="224" r="7" fill="#f2d78a" stroke="#a8781c" stroke-width="2.4"/>
+  <!-- 안장 -->
+  <path d="M212,308 C244,296 300,294 336,308 C346,346 336,384 306,398 C266,414 220,400 206,368 C198,346 200,322 212,308 Z"
+        fill="url(#wmmSaddle)" stroke="#7d1c3c" stroke-width="4.4"/>
+  <path d="M212,308 C244,296 300,294 336,308" fill="none" stroke="#ffd94f" stroke-width="6"/>
+  <path d="M206,368 C246,392 296,392 328,372" fill="none" stroke="#ffd94f" stroke-width="5"/>
+  <g fill="#ffd94f">
+    <circle cx="240" cy="340" r="8"/><circle cx="278" cy="336" r="8"/><circle cx="314" cy="344" r="8"/>
+  </g>
+  <!-- 등자 -->
+  <path d="M258,398 L252,442" stroke="#c9a35c" stroke-width="5"/>
+  <rect x="234" y="440" width="36" height="20" rx="7" fill="none" stroke="#c9a35c" stroke-width="5"/>
+  <!-- 꼬리 -->
+  <path d="M150,388 C112,384 84,406 78,442 C104,436 128,442 148,456 C160,436 158,410 150,388 Z"
+        fill="#f2c14e" stroke="#a8781c" stroke-width="4"/>
+</g>
+<!-- 전구 -->
+<g class="wmm-blink" fill="#ffd94f">
+  <circle cx="196" cy="700" r="7"/><circle cx="304" cy="700" r="7"/>
+  <circle cx="250" cy="40" r="7"/>
+</g>
+<g class="wmm-blink" fill="#ff8fc4" style="animation-delay:.8s">
+  <circle cx="224" cy="710" r="6"/><circle cx="276" cy="710" r="6"/>
+</g>
+</svg>
+</body>
+</html>

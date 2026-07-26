@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>인천도호부청사 · 인천향교 MATHTOUR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&family=Nanum+Myeongjo:wght@700;800&family=Noto+Sans+KR:wght@700;900&display=swap');
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Jua', 'Noto Sans KR', sans-serif;
+            background: #e4dac6;
+            background-image: radial-gradient(circle at 50% 38%, #fdf7e8 0%, #e4dac6 72%, #e4dac6 100%);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .map-container {
+            width: 95vw; max-width: 1400px; max-height: 90vh;
+            aspect-ratio: 16 / 9;
+            background-color: #f8f0dc;
+            border-radius: 26px;
+            box-shadow: 0 14px 34px rgba(20,20,30,0.30), inset 0 0 0 6px rgba(255,255,255,0.85);
+            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+        svg { width: 100%; height: 100%; display: block; }
+
+        .point-scale {
+            transition: transform 0.25s ease;
+            transform-box: fill-box; transform-origin: center;
+        }
+        .point-link { outline: none; cursor: pointer; text-decoration: none; }
+        .point-link:hover .point-scale { transform: scale(1.1); }
+
+        .tile-frame { position: relative; overflow: hidden; pointer-events: none; background: transparent; }
+        .tile-iframe { position: absolute; border: 0; display: block; background: transparent; transform-origin: top left; pointer-events: none; }
+        .tile-badge {
+            position: absolute; top: 2px; left: 2px;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #8c3520; border: 2px solid #ffffff; color: #ffffff;
+            font-family: 'Black Han Sans', 'Jua', sans-serif; font-size: 12px; line-height: 1;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2; box-shadow: 0 1px 3px rgba(0,0,0,0.45); pointer-events: none;
+        }
+
+        .map-title {
+            font-family: 'Nanum Myeongjo','Black Han Sans',serif; font-size: 40px;
+            fill: url(#titleGrad); stroke: #40190c; stroke-width: 7px;
+            paint-order: stroke; stroke-linejoin: round; filter: url(#titleShadow);
+        }
+        .label-wrap {
+            width: 200px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            pointer-events: none;
+        }
+        .place-tag {
+            background: rgba(253,247,234,0.94);
+            color: #4a3418;
+            font-family: 'Jua', 'Noto Sans KR', sans-serif;
+            font-size: 12px; font-weight: 700; line-height: 1.1;
+            padding: 2px 8px; border-radius: 9px; white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            border: 1px solid #c4a875;
+        }
+        .tile-badge.b-gwana { background: #8c3520; }
+        .tile-badge.b-hyanggyo { background: #2f6b4e; }
+        .place-tag.t-gwana { border-color:#c98a5a; box-shadow: inset 3.5px 0 0 #8c3520, 0 1px 3px rgba(0,0,0,0.3); }
+        .place-tag.t-hyanggyo { border-color:#7bb894; box-shadow: inset 3.5px 0 0 #2f6b4e, 0 1px 3px rgba(0,0,0,0.3); }
+        .no-select { user-select: none; }
+    </style>
+</head>
+<body>
+    <div class="map-container">
+        <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <defs>
+                <radialGradient id="bgGrad" cx="50%" cy="42%" r="75%">
+                    <stop offset="0%" stop-color="#fdf7e8"/>
+                    <stop offset="60%" stop-color="#efe0c2"/>
+                    <stop offset="100%" stop-color="#dcc79c"/>
+                </radialGradient>
+                <pattern id="pt" width="44" height="44" patternUnits="userSpaceOnUse">
+    <rect x="0" y="0" width="44" height="44" fill="none" stroke="#d4bd92" stroke-width="1.4" opacity="0.6"/>
+    <line x1="22" y1="0" x2="22" y2="44" stroke="#d4bd92" stroke-width="1" opacity="0.45"/>
+    <line x1="0" y1="22" x2="44" y2="22" stroke="#d4bd92" stroke-width="1" opacity="0.45"/>
+  </pattern>
+                <linearGradient id="titleGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#fff2c8"/>
+                    <stop offset="45%" stop-color="#d9a94e"/>
+                    <stop offset="100%" stop-color="#8c3520"/>
+                </linearGradient>
+                <filter id="titleShadow" x="-20%" y="-20%" width="140%" height="160%">
+                    <feDropShadow dx="0" dy="4" stdDeviation="2" flood-color="#40190c" flood-opacity="0.45"/>
+                </filter>
+            </defs>
+
+            <rect x="0" y="0" width="800" height="450" fill="url(#bgGrad)"/>
+            <rect x="0" y="0" width="800" height="450" fill="url(#pt)"/>
+
+            <!-- 기와 -->
+              <g fill="#4a5460" opacity="0.7">
+                <ellipse cx="90" cy="46" rx="14" ry="7"/><ellipse cx="126" cy="46" rx="14" ry="7"/><ellipse cx="162" cy="46" rx="14" ry="7"/>
+                <ellipse cx="638" cy="46" rx="14" ry="7"/><ellipse cx="674" cy="46" rx="14" ry="7"/><ellipse cx="710" cy="46" rx="14" ry="7"/>
+                <ellipse cx="90" cy="404" rx="14" ry="7"/><ellipse cx="126" cy="404" rx="14" ry="7"/><ellipse cx="162" cy="404" rx="14" ry="7"/>
+                <ellipse cx="638" cy="404" rx="14" ry="7"/><ellipse cx="674" cy="404" rx="14" ry="7"/><ellipse cx="710" cy="404" rx="14" ry="7"/>
+              </g>
+              <!-- 문살 창 -->
+              <g opacity="0.5">
+                <g transform="translate(400,60)">
+                  <rect x="-46" y="-16" width="92" height="32" rx="3" fill="#f2e6cc" stroke="#8a6a3a" stroke-width="2.4"/>
+                  <g stroke="#8a6a3a" stroke-width="1.6">
+                    <line x1="-23" y1="-16" x2="-23" y2="16"/><line x1="0" y1="-16" x2="0" y2="16"/><line x1="23" y1="-16" x2="23" y2="16"/>
+                    <line x1="-46" y1="0" x2="46" y2="0"/>
+                  </g>
+                </g>
+              </g>
+              <!-- 투호 항아리 -->
+              <g transform="translate(400,406)" opacity="0.9">
+                <path d="M-13,-12 l0,-8 l26,0 l0,8 q9,10 9,20 q0,10 -9,14 l-26,0 q-9,-4 -9,-14 q0,-10 9,-20 Z" fill="#c9922e" stroke="#6e4e15" stroke-width="1.6"/>
+                <line x1="-4" y1="-20" x2="-8" y2="-36" stroke="#c9a05a" stroke-width="2.4"/>
+                <line x1="4" y1="-20" x2="8" y2="-36" stroke="#c9a05a" stroke-width="2.4"/>
+              </g>
+
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#3e4854" stroke-width="26" />
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#8a9098" stroke-width="18" />
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#f2e8d0" stroke-width="3" stroke-linecap="round" stroke-dasharray="0.5 18" opacity="0.9" />
+
+            <text x="400" y="225" dy="0.35em" text-anchor="middle" class="map-title no-select">인천도호부청사 · 인천향교 MATHTOUR</text>
+
+            <a href="A01.html" class="point-link" aria-label="동헌 및 객사">
+                <g transform="translate(94, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-46.665" width="140.0" height="93.33" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:93.33px;">
+                                <iframe class="tile-iframe" src="인천도호부청사_동헌.html" scrolling="no" style="width:900px;height:600px;left:0px;top:0px;transform:scale(0.15556);"></iframe>
+                                <div class="tile-badge b-gwana">A</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-46.665" width="140.0" height="93.33" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="B01.html" class="point-link" aria-label="옥사(감옥)">
+                <g transform="translate(400, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-42.0" width="140.0" height="84.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:84.0px;">
+                                <iframe class="tile-iframe" src="인천도호부청사_옥사.html" scrolling="no" style="width:1200px;height:720px;left:0px;top:0px;transform:scale(0.116667);"></iframe>
+                                <div class="tile-badge b-gwana">B</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-42.0" width="140.0" height="84.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="C01.html" class="point-link" aria-label="동재·서재">
+                <g transform="translate(706, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-40.835" width="140.0" height="81.67" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:81.67px;">
+                                <iframe class="tile-iframe" src="인천향교_동재서재.html" scrolling="no" style="width:1200px;height:700px;left:0px;top:0px;transform:scale(0.116667);"></iframe>
+                                <div class="tile-badge b-hyanggyo">C</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-40.835" width="140.0" height="81.67" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="D01.html" class="point-link" aria-label="향교 대성전">
+                <g transform="translate(706, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-44.21" width="140.0" height="88.42" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:88.42px;">
+                                <iframe class="tile-iframe" src="인천향교_대성전.html" scrolling="no" style="width:950px;height:600px;left:0px;top:0px;transform:scale(0.14737);"></iframe>
+                                <div class="tile-badge b-hyanggyo">D</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-44.21" width="140.0" height="88.42" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="E01.html" class="point-link" aria-label="명륜당">
+                <g transform="translate(400, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-46.665" width="140.0" height="93.33" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:93.33px;">
+                                <iframe class="tile-iframe" src="인천향교_명륜당.html" scrolling="no" style="width:900px;height:600px;left:0px;top:0px;transform:scale(0.15556);"></iframe>
+                                <div class="tile-badge b-hyanggyo">E</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-46.665" width="140.0" height="93.33" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="F01.html" class="point-link" aria-label="투호 놀이장">
+                <g transform="translate(94, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-56.875" y="-65.0" width="113.75" height="130.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:113.75px;height:130.0px;">
+                                <iframe class="tile-iframe" src="인천도호부청사_투호놀이장.html" scrolling="no" style="width:560px;height:640px;left:0px;top:0px;transform:scale(0.20312);"></iframe>
+                                <div class="tile-badge b-gwana">F</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-56.875" y="-65.0" width="113.75" height="130.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+
+            <foreignObject x="-6" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag t-gwana">A. 동헌 및 객사</span></div>
+            </foreignObject>
+            <foreignObject x="300" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag t-gwana">B. 옥사(감옥)</span></div>
+            </foreignObject>
+            <foreignObject x="606" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag t-hyanggyo">C. 동재·서재</span></div>
+            </foreignObject>
+            <foreignObject x="606" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag t-hyanggyo">D. 향교 대성전</span></div>
+            </foreignObject>
+            <foreignObject x="300" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag t-hyanggyo">E. 명륜당</span></div>
+            </foreignObject>
+            <foreignObject x="-6" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag t-gwana">F. 투호 놀이장</span></div>
+            </foreignObject>
+
+            <foreignObject x="220" y="252" width="360" height="30" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display:flex;gap:8px;justify-content:center;align-items:center;">
+                    <span style="background:#8c3520;color:#fff;font-family:'Jua','Noto Sans KR',sans-serif;font-size:11.5px;font-weight:700;padding:3px 11px;border-radius:9px;box-shadow:0 1px 3px rgba(0,0,0,0.35);white-space:nowrap;">🏯 인천도호부청사 · 관아</span>
+                    <span style="background:#2f6b4e;color:#fff;font-family:'Jua','Noto Sans KR',sans-serif;font-size:11.5px;font-weight:700;padding:3px 11px;border-radius:9px;box-shadow:0 1px 3px rgba(0,0,0,0.35);white-space:nowrap;">🎓 인천향교</span>
+                </div>
+            </foreignObject>
+
+        </svg>
+    </div>
+</body>
+</html>

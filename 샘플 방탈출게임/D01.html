@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차이나타운 체험학습앱 - 인천개항박물관</title>
+    <style>
+        /* 폰트 임포트 */
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* 기본 초기화 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f5f0e6; /* 따뜻한 연베이지 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 게임 컨테이너 (16:9 비율 고정) */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #e2d9c8;
+            border: 4px solid #d4af37; /* 앤틱 골드 테두리 */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        /* 상단 표시바 */
+        #top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 45px;
+            background: rgba(45, 55, 72, 0.85);
+            border-bottom: 2px solid #d4af37;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 10;
+        }
+
+        #top-bar .stage-title {
+            font-family: 'Nanum Myeongjo', serif;
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* 무대 영역 */
+        #stage {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #fbf9f5 0%, #e8e0d0 100%);
+        }
+
+        /* 건물 로딩 프레임 (원본 크기 유지형 iframe 구조) */
+        .building-wrapper {
+            position: absolute;
+            left: 283px; /* 중앙 정렬 배치 계산 */
+            bottom: 140px;
+            width: 500px; /* 원본 W(500) * s(1.0) */
+            height: 380px; /* 원본 H(380) * s(1.0) */
+            overflow: hidden;
+            z-index: 1;
+        }
+        .building-wrapper iframe {
+            border: 0;
+            width: 500px;
+            height: 380px;
+            transform: scale(1.0);
+            transform-origin: top left;
+            overflow: hidden;
+        }
+
+        /* 캐릭터 배치 규격 고정 (260x320) */
+        .character-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            bottom: 130px;
+            transition: all 0.3s ease;
+            z-index: 5;
+            overflow: visible; /* 애니메이션 여백 확보용 */
+        }
+        .character-wrapper iframe {
+            border: 0;
+            width: 260px;
+            height: 320px;
+            overflow: hidden;
+        }
+
+        /* 캐릭터별 위치 포지셔닝 */
+        #char-minwoo { left: 40px; }
+        #char-seoyeon { right: 240px; transform: scaleX(-1); } /* 마주보기 반전 */
+        #char-sangsang { right: 40px; transform: scaleX(-1); } /* 마주보기 반전 */
+
+        /* 대화 비활성화 상태 캐릭터 필터 */
+        .character-wrapper.inactive {
+            filter: brightness(0.4) grayscale(0.2);
+        }
+
+        /* 대화창 UI (유형 2 규칙 준수) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 95%;
+            height: 140px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 2px solid #d4af37;
+            border-radius: 6px;
+            padding: 20px 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            color: #d4af37;
+            font-size: 1.15rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #ffffff;
+            font-size: 1rem;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+        }
+
+        /* 대화창 클릭 유도 화살표 */
+        .next-arrow {
+            position: absolute;
+            right: 25px;
+            bottom: 15px;
+            color: #d4af37;
+            font-size: 0.9rem;
+            animation: blink 1s infinite alternate;
+        }
+
+        /* 공통 이동 네비게이션 버튼 */
+        .btn-nav {
+            position: absolute;
+            background: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 12;
+            transition: all 0.2s ease;
+            display: none; /* 대화 종료 전까지 기본 숨김 */
+        }
+        .btn-nav:hover {
+            background: #661f1f;
+        }
+        
+        /* 고정 위치 규칙 준수 */
+        #btn-prev { left: 20px; bottom: 20px; }
+        #btn-next { right: 20px; bottom: 20px; }
+
+        /* 건너뛰기 버튼 스타일 수정 (말풍선 겹침 해소: 우측 상단 배치) */
+        #btn-skip {
+            display: block;
+            top: 60px;
+            right: 20px;
+            bottom: auto; /* 하단 고정 해제 */
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            padding: 6px 16px;
+            font-size: 0.85rem;
+        }
+        #btn-skip:hover {
+            background: rgba(140, 48, 48, 0.8);
+            border-color: #d4af37;
+        }
+
+        @keyframes blink {
+            from { opacity: 0.4; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="top-bar">
+        <span class="stage-title">인천개항장 거리 - 인천개항박물관 앞</span>
+    </div>
+
+    <button id="btn-skip" class="btn-nav" onclick="endDialogue()">건너뛰기 ≫</button>
+
+    <div id="stage">
+        <div class="building-wrapper">
+            <iframe src="D_인천개항박물관.html" scrolling="no"></iframe>
+        </div>
+
+        <div id="char-minwoo" class="character-wrapper">
+            <iframe src="민우.html" scrolling="no"></iframe>
+        </div>
+        <div id="char-seoyeon" class="character-wrapper">
+            <iframe src="서연.html" scrolling="no"></iframe>
+        </div>
+        <div id="char-sangsang" class="character-wrapper">
+            <iframe src="상상.html" scrolling="no"></iframe>
+        </div>
+    </div>
+
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-name">시스템</div>
+        <div id="dialogue-text">세 친구는 인천 개항장 거리를 걷다 웅장한 근대 건축물 앞에 멈춰 섭니다.</div>
+        <div class="next-arrow">▼ 클릭하여 계속</div>
+    </div>
+
+    <button id="btn-prev" class="btn-nav" onclick="goPrev()">이전</button>
+    <button id="btn-next" class="btn-nav" onclick="goNext()">다음</button>
+</div>
+
+<script>
+    // 대사 스크립트 데이터 구조화
+    const dialogues = [
+        { speaker: "상황 설명", text: "세 친구는 인천 개항장 거리를 걷다 웅장한 근대 건축물 앞에 멈춰 섭니다.", target: null },
+        { speaker: "민우", text: "와... 건물 진짜 멋지다. 무슨 유럽 성 같아! 여기가 인천개항박물관이지?", target: "char-minwoo" },
+        { speaker: "서연", text: "맞아. 근데 민우야, 이 건물이 원래는 1899년에 지어진 '일본 제1은행 인천지점'이었다는 거 알아? 모래랑 자갈 빼고 자재를 다 일본에서 가져와서 지었대.", target: "char-seoyeon" },
+        { speaker: "상상", text: "설계는 니이노미 다카마사가 맡았고 르네상스 양식이지! 하지만 멋진 외관 뒤에는 조선의 금을 매입해서 일본으로 빼돌리던 수탈의 아픈 역사가 숨어있어.", target: "char-sangsang" },
+        { speaker: "민우", text: "아... 그냥 예쁜 건물인 줄만 알았는데, 그런 슬픈 시작이 있었구나. 지금은 우리 역사를 배우는 박물관이 되었다니 다행이야. 얼른 들어가 보자!", target: "char-minwoo" }
+    ];
+
+    let currentIndex = 0;
+
+    // 대화 전개 프로세스
+    function advanceDialogue() {
+        currentIndex++;
+        if (currentIndex < dialogues.length) {
+            updateDialogueScreen();
+        } else {
+            endDialogue();
+        }
+    }
+
+    // 화면 갱신 및 포커스 싱크 연출
+    function updateDialogueScreen() {
+        const currentData = dialogues[currentIndex];
+        
+        // 텍스트 출력
+        document.getElementById("speaker-name").innerText = currentData.speaker;
+        document.getElementById("dialogue-text").innerText = currentData.text;
+
+        // 전원 비활성화 후 화자만 하이라이트
+        document.querySelectorAll('.character-wrapper').forEach(char => {
+            char.classList.add('inactive');
+        });
+
+        if (currentData.target) {
+            document.getElementById(currentData.target).classList.remove('inactive');
+        } else {
+            // 전체 상황 묘사 시 전원 기본 밝기로 복귀
+            document.querySelectorAll('.character-wrapper').forEach(char => {
+                char.classList.remove('inactive');
+            });
+        }
+    }
+
+    // 대화가 끝나거나 스킵되었을 때 처리
+    function endDialogue() {
+        // 대화상자 및 스킵 버튼 제거
+        document.getElementById("dialogue-box").style.display = "none";
+        document.getElementById("btn-skip").style.display = "none";
+
+        // 모든 캐릭터 원래 밝기로 복구
+        document.querySelectorAll('.character-wrapper').forEach(char => {
+            char.classList.remove('inactive');
+        });
+
+        // 네비게이션 이동 버튼 출력
+        document.getElementById("btn-prev").style.display = "block";
+        document.getElementById("btn-next").style.display = "block";
+    }
+
+    // 네비게이션 함수 (주어진 URL로 이동)
+    function goPrev() {
+        window.location.href = "index.html";
+    }
+
+    function goNext() {
+        window.location.href = "D02.html";
+    }
+
+    // 초기 실행 화면 밸런스 설정
+    window.onload = function() {
+        // 첫 화면(상황 설명)에서는 모든 인물이 동일한 톤으로 보이도록 초기화
+        document.querySelectorAll('.character-wrapper').forEach(char => {
+            char.classList.remove('inactive');
+        });
+    };
+</script>
+
+</body>
+</html>

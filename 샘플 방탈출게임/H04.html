@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차이나타운 체험학습앱 - H04</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        :root {
+            --color-dark-red: #8c3030;
+            --color-dark-red-hover: #661f1f;
+            --color-antique-gold: #d4af37;
+            --color-text-dark: #2d3748;
+            --color-text-light: #ffffff;
+            --color-bg-base: #f5f0e6;
+            
+            --font-title: 'Nanum Myeongjo', serif;
+            --font-name: 'Nanum Gothic Coding', monospace;
+            --font-body: 'Noto Sans KR', sans-serif;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #1a1a1a;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: var(--color-bg-base);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 2px solid var(--color-antique-gold);
+        }
+
+        /* 어둠에서 빛으로 들어오는 연출 오버레이 */
+        #fade-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000;
+            z-index: 100;
+            pointer-events: none;
+            animation: lightFadeIn 3s forwards ease-in-out;
+        }
+
+        @keyframes lightFadeIn {
+            0% { background-color: #000; opacity: 1; }
+            40% { background-color: #fff; opacity: 1; }
+            100% { background-color: #fff; opacity: 0; visibility: hidden; }
+        }
+
+        /* 상단 스테이지 바 */
+        #stage-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--color-antique-gold);
+            color: var(--color-antique-gold);
+            font-family: var(--font-title);
+            font-size: 1.2rem;
+            padding: 8px 30px;
+            border-radius: 4px;
+            z-index: 20;
+            text-align: center;
+        }
+
+        /* 등장인물 래퍼 */
+        .char-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            z-index: 10;
+            transition: filter 0.4s ease;
+        }
+
+        /* 화자가 아닐 때 어둡게 처리 */
+        .char-wrapper.inactive {
+            filter: brightness(0.35);
+        }
+
+        /* 대화창 UI */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            height: 160px;
+            background-color: rgba(0, 0, 0, 0.75);
+            border: 2px solid var(--color-antique-gold);
+            border-radius: 8px;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 30px;
+            box-sizing: border-box;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        #dialogue-box:hover {
+            background-color: rgba(0, 0, 0, 0.85);
+        }
+
+        #speaker-name {
+            font-family: var(--font-name);
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--color-antique-gold);
+            margin-bottom: 12px;
+        }
+
+        #dialogue-text {
+            font-family: var(--font-body);
+            font-size: 1.15rem;
+            color: var(--color-text-light);
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+        }
+
+        .click-indicator {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            color: var(--color-antique-gold);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* 공통 버튼 */
+        .btn-nav {
+            position: absolute;
+            background-color: var(--color-dark-red);
+            color: var(--color-text-light);
+            border: 1px solid var(--color-antique-gold);
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 60;
+            transition: background-color 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .btn-nav:hover {
+            background-color: var(--color-dark-red-hover);
+        }
+
+        #btn-prev { left: 20px; bottom: 20px; display: none; }
+        #btn-next { right: 20px; bottom: 20px; display: none; }
+        #btn-skip { right: 20px; bottom: 190px; } 
+
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="fade-overlay"></div>
+
+    <div id="stage-bar">무사 탈출 - 한중문화관 앞</div>
+
+    <div style="position:absolute; left:50%; transform:translateX(-50%); bottom:110px; width:558px; height:441px; overflow:hidden; z-index:1;">
+        <div style="width: 620px; height: 490px; transform: scale(0.9); transform-origin: top left;">
+            <svg style="display:block; width:100%; height:auto;" viewBox="0 108 620 490" role="img" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="rf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a5a5a"/><stop offset="0.5" stop-color="#4a4a4a"/><stop offset="1" stop-color="#3a3a3a"/></linearGradient>
+                    <linearGradient id="wl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c4b8b4"/><stop offset="1" stop-color="#b8aaa8"/></linearGradient>
+                    <linearGradient id="db" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e8c840"/><stop offset="0.5" stop-color="#d4a830"/><stop offset="1" stop-color="#c49820"/></linearGradient>
+                    <g id="win"><rect width="42" height="26" rx="10" fill="#e8d888" stroke="#c4a830" stroke-width="2.5"/><rect x="5" y="4" width="32" height="18" rx="7" fill="#f0e8c8"/></g>
+                    <g id="wing">
+                        <rect x="0" y="0" width="220" height="340" fill="url(#wl)"/>
+                        <rect x="0" y="60" width="220" height="8" fill="#d8d0c8"/>
+                        <rect x="0" y="150" width="220" height="8" fill="#d8d0c8"/>
+                        <rect x="0" y="240" width="220" height="8" fill="#d8d0c8"/>
+                        <rect x="-8" y="-10" width="22" height="350" fill="#cc3030"/>
+                        <rect x="206" y="-10" width="22" height="350" fill="#cc3030"/>
+                        <rect x="70" y="0" width="14" height="340" fill="#5a3a5a"/>
+                        <rect x="140" y="0" width="14" height="340" fill="#5a3a5a"/>
+                        <use href="#win" x="22" y="70"/><use href="#win" x="92" y="70"/>
+                        <use href="#win" x="22" y="165"/><use href="#win" x="92" y="165"/>
+                        <use href="#win" x="22" y="255"/><use href="#win" x="92" y="255"/>
+                    </g>
+                    <g id="dragon">
+                        <ellipse cx="0" cy="56" rx="85" ry="14" fill="#000" opacity="0.1"/>
+                        <path d="M-82 12 Q-70 -14 -54 -4 Q-42 6 -32 -6 Q-22 -16 -10 -8" stroke="#c49820" stroke-width="7" fill="none" stroke-linecap="round"/>
+                        <path d="M-86 16 Q-92 8 -84 4" stroke="#c49820" stroke-width="4" fill="none" stroke-linecap="round"/>
+                        <path d="M-90 12 Q-96 8 -94 2" stroke="#c49820" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M-10 -8 Q4 -24 18 -18 Q34 -12 42 -24 Q50 -36 38 -42 Q24 -44 16 -34 Q10 -26 22 -20 Q36 -14 46 -22 Q58 -32 62 -18 Q66 -6 56 4 Q46 12 32 8 Q18 2 10 14 Q2 26 16 36 Q26 42 40 36 Q50 30 46 18" fill="none" stroke="url(#db)" stroke-width="12" stroke-linecap="round"/>
+                        <path d="M-4 -14 Q10 -22 24 -16 Q36 -10 44 -20" fill="none" stroke="#e8d060" stroke-width="4" opacity="0.4"/>
+                        <path d="M50 -8 Q54 0 48 8 Q38 14 26 10" fill="none" stroke="#e8d060" stroke-width="4" opacity="0.4"/>
+                        <g fill="#b89018" opacity="0.5"><path d="M-6 -10 q5 -6 10 0 q-5 3 -10 0"/><path d="M10 -20 q5 -6 10 0 q-5 3 -10 0"/><path d="M28 -16 q5 -6 10 0 q-5 3 -10 0"/><path d="M42 -30 q5 -5 10 0 q-5 3 -10 0"/><path d="M28 -40 q5 -5 10 0 q-5 3 -10 0"/><path d="M54 -12 q5 -5 10 0 q-5 3 -10 0"/><path d="M40 4 q5 -5 10 0 q-5 3 -10 0"/><path d="M18 8 q5 -5 10 0 q-5 3 -10 0"/><path d="M8 24 q5 -5 10 0 q-5 3 -10 0"/><path d="M28 34 q5 -5 10 0 q-5 3 -10 0"/><path d="M42 24 q5 -5 10 0 q-5 3 -10 0"/></g>
+                        <path d="M48 18 L58 36 L62 48" stroke="#d4a830" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+                        <g fill="#c49820"><path d="M58 48 l7 -3 l-1 5 l-5 2 Z"/><path d="M60 46 l5 2 l-2 5 Z"/><path d="M64 48 l3 1 l-1 4 Z"/></g>
+                        <path d="M32 8 L24 30 L20 42" stroke="#d4a830" stroke-width="4" fill="none" stroke-linecap="round"/>
+                        <g fill="#c49820"><path d="M16 42 l7 -3 l-1 5 l-5 2 Z"/><path d="M18 40 l5 2 l-2 5 Z"/><path d="M22 42 l3 1 l-1 4 Z"/></g>
+                        <ellipse cx="56" cy="-18" rx="18" ry="14" fill="#e0b840"/><ellipse cx="56" cy="-18" rx="16" ry="12" fill="#e8c848"/>
+                        <path d="M70 -20 Q84 -22 88 -16 Q86 -10 72 -14 Z" fill="#e0b840"/>
+                        <path d="M70 -14 Q82 -8 84 -16" fill="none" stroke="#c49820" stroke-width="1.2"/>
+                        <circle cx="84" cy="-18" r="1.8" fill="#8a6a18"/>
+                        <path d="M70 -14 Q82 -6 86 -12" fill="#d4a430" stroke="#c49820" stroke-width="1"/>
+                        <g fill="#f8f0d0"><path d="M76 -14 l2 4 l2.5 -2.5"/><path d="M80 -14 l2 3.5 l2 -2"/></g>
+                        <ellipse cx="62" cy="-22" rx="5" ry="4" fill="#fff8e0"/><circle cx="63" cy="-22" r="3" fill="#2a1a08"/><circle cx="64" cy="-23" r="1.2" fill="#fff"/>
+                        <path d="M57 -28 Q62 -32 68 -28" stroke="#c49820" stroke-width="2.5" fill="none"/>
+                        <path d="M48 -30 Q42 -48 38 -56" stroke="#b88818" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                        <path d="M54 -30 Q52 -46 54 -54" stroke="#b88818" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M44 -24 Q34 -32 30 -22 Q28 -14 36 -12" fill="#d4a020" opacity="0.7"/>
+                        <path d="M40 -18 Q30 -24 28 -14 Q26 -6 34 -4" fill="#c49018" opacity="0.6"/>
+                        <path d="M46 -8 Q36 -14 34 -4 Q34 4 42 6" fill="#c49018" opacity="0.5"/>
+                        <path d="M82 -22 Q94 -32 102 -34" stroke="#c49820" stroke-width="1.5" fill="none"/>
+                        <path d="M84 -16 Q96 -20 104 -18" stroke="#c49820" stroke-width="1.5" fill="none"/>
+                        <circle cx="96" cy="-28" r="6" fill="#f0e060" stroke="#d4a830" stroke-width="1.8"/><circle cx="94" cy="-30" r="2.5" fill="#fff8c0" opacity="0.8"/>
+                    </g>
+                </defs>
+                <use href="#wing" x="30" y="190"/>
+                <polygon points="10,190 22,168 258,168 270,190" fill="url(#rf)"/><polygon points="6,190 14,184 266,184 274,190" fill="#6a6a6a"/><path d="M6 190 Q0 188 -4 182" stroke="#4a4a4a" stroke-width="3" fill="none"/><path d="M274 190 Q280 188 284 182" stroke="#4a4a4a" stroke-width="3" fill="none"/>
+                <g transform="translate(620,0) scale(-1,1)">
+                    <use href="#wing" x="30" y="190"/>
+                    <polygon points="10,190 22,168 258,168 270,190" fill="url(#rf)"/><polygon points="6,190 14,184 266,184 274,190" fill="#6a6a6a"/><path d="M6 190 Q0 188 -4 182" stroke="#4a4a4a" stroke-width="3" fill="none"/><path d="M274 190 Q280 188 284 182" stroke="#4a4a4a" stroke-width="3" fill="none"/>
+                </g>
+                <rect x="230" y="150" width="160" height="380" fill="url(#wl)"/>
+                <rect x="236" y="140" width="22" height="390" fill="#cc3030"/><rect x="362" y="140" width="22" height="390" fill="#cc3030"/>
+                <rect x="258" y="210" width="104" height="6" fill="#d8d0c8"/>
+                <rect x="275" y="160" width="70" height="30" rx="3" fill="#7a5070" stroke="#5a3a5a" stroke-width="2"/>
+                <path d="M268 530 L268 300 Q268 230 310 230 Q352 230 352 300 L352 530 Z" fill="#cc3030"/>
+                <path d="M276 530 L276 305 Q276 244 310 244 Q344 244 344 305 L344 530 Z" fill="#4a7a3a"/>
+                <g stroke="#c4a830" stroke-width="1.2"><line x1="276" y1="270" x2="344" y2="270"/><line x1="276" y1="290" x2="344" y2="290"/><line x1="276" y1="310" x2="344" y2="310"/><line x1="276" y1="330" x2="344" y2="330"/><line x1="276" y1="350" x2="344" y2="350"/><line x1="276" y1="370" x2="344" y2="370"/><line x1="276" y1="390" x2="344" y2="390"/><line x1="276" y1="410" x2="344" y2="410"/><line x1="276" y1="430" x2="344" y2="430"/><line x1="276" y1="450" x2="344" y2="450"/><line x1="276" y1="470" x2="344" y2="470"/><line x1="276" y1="490" x2="344" y2="490"/><line x1="276" y1="510" x2="344" y2="510"/><line x1="288" y1="244" x2="288" y2="530"/><line x1="300" y1="244" x2="300" y2="530"/><line x1="310" y1="244" x2="310" y2="530"/><line x1="320" y1="244" x2="320" y2="530"/><line x1="332" y1="244" x2="332" y2="530"/></g>
+                <rect x="266" y="490" width="88" height="14" fill="#8a8480"/><rect x="262" y="500" width="96" height="10" fill="#7a7470"/><rect x="258" y="508" width="104" height="8" fill="#6a6460"/>
+                <rect x="280" y="510" width="60" height="22" fill="#2a2a28"/>
+                <polygon points="210,150 236,110 384,110 410,150" fill="url(#rf)"/><polygon points="206,150 218,140 402,140 414,150" fill="#6a6a6a"/><path d="M206 150 Q198 148 192 138" stroke="#4a4a4a" stroke-width="3.5" fill="none"/><path d="M414 150 Q422 148 428 138" stroke="#4a4a4a" stroke-width="3.5" fill="none"/>
+                <rect x="230" y="530" width="160" height="12" fill="#c4a830"/><rect x="22" y="530" width="576" height="6" fill="#a09088"/>
+                <rect x="252" y="530" width="12" height="26" fill="#cc3030"/><rect x="356" y="530" width="12" height="26" fill="#cc3030"/>
+                <use href="#dragon" transform="translate(130,540)"/>
+                <use href="#dragon" transform="translate(490,540) scale(-1,1)"/>
+            </svg>
+        </div>
+    </div>
+
+    <div id="char-minwoo" class="char-wrapper inactive" style="left: 10%; bottom: 20px;">
+        <div style="transform: scaleX(-1); width: 100%; height: 100%;">
+            <div class="kyobok-minwoo-component" style="display: inline-block; overflow: visible !important;">
+                <style>
+                    .kmw-stage { position: relative; width: 260px; height: 320px; margin: 0 auto; animation: kmw-breatheHuman 4s ease-in-out infinite; overflow: visible !important; }
+                    @keyframes kmw-breatheHuman { 0%, 100% { transform: scale(1) translateY(0px); } 50% { transform: scale(1.01) translateY(-3px); } }
+                    .kmw-head-wrapper { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 120px; height: 130px; overflow: visible !important; }
+                    .kmw-ear-l, .kmw-ear-r { position: absolute; top: 52px; width: 16px; height: 26px; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; z-index: 2; }
+                    .kmw-ear-l { left: -11px; border-radius: 50% 0 0 50%; transform: rotate(-10deg); }
+                    .kmw-ear-r { right: -11px; border-radius: 0 50% 50% 0; transform: rotate(10deg); }
+                    .kmw-hair-back { position: absolute; top: -8px; left: -4px; width: 128px; height: 80px; background-color: #242424; border: 3.5px solid #141414; border-radius: 60px 60px 20px 20px; z-index: 1; }
+                    .kmw-neck { position: absolute; top: 105px; left: 50%; transform: translateX(-50%); width: 28px; height: 40px; background-color: #ffdbb5; border-left: 3.5px solid #8d5b4c; border-right: 3.5px solid #8d5b4c; z-index: 3; }
+                    .kmw-face-skin { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; border-radius: 50px 50px 60px 60px; z-index: 4; overflow: hidden; }
+                    .kmw-front-hair { position: absolute; top: 0; left: 0; width: 100%; height: 42px; background-color: #242424; border-bottom: 3.5px solid #141414; z-index: 10; }
+                    .kmw-hair-point { position: absolute; top: 36px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 10px solid #141414; z-index: 11; }
+                    .kmw-eyebrow-l, .kmw-eyebrow-r { position: absolute; top: 50px; width: 18px; height: 4px; background-color: #221a15; border-radius: 2px; z-index: 6; }
+                    .kmw-eyebrow-l { left: 22px; transform: rotate(5deg); }
+                    .kmw-eyebrow-r { right: 22px; transform: rotate(-5deg); }
+                    .kmw-eye-l, .kmw-eye-r { position: absolute; top: 62px; width: 15px; height: 15px; background-color: #221a15; border-radius: 50%; z-index: 6; }
+                    .kmw-eye-l::after, .kmw-eye-r::after { content: ''; position: absolute; top: 2px; left: 2px; width: 4px; height: 4px; background-color: #fff; border-radius: 50%; }
+                    .kmw-eye-l { left: 24px; }
+                    .kmw-eye-r { right: 24px; }
+                    .kmw-blush-l, .kmw-blush-r { position: absolute; top: 78px; width: 18px; height: 9px; background-color: rgba(244, 63, 94, 0.4); border-radius: 50%; filter: blur(0.5px); z-index: 6; }
+                    .kmw-blush-l { left: 16px; }
+                    .kmw-blush-r { right: 16px; }
+                    .kmw-mouth { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); width: 22px; height: 11px; background-color: #e11d48; border-radius: 2px 2px 12px 12px; border: 1.5px solid #9f1239; z-index: 6; }
+                    .kmw-uniform-top { position: absolute; top: 180px; left: 50%; transform: translateX(-50%); width: 124px; height: 110px; background-color: #1e293b; border: 3.5px solid #475569; border-radius: 24px 24px 10px 10px; z-index: 7; overflow: hidden; }
+                    .kmw-collar-l { position: absolute; top: -2px; left: 32px; width: 30px; height: 26px; background-color: #ffffff; border: 3px solid #475569; transform: rotate(-30deg); border-radius: 0 0 5px 0; }
+                    .kmw-collar-r { position: absolute; top: -2px; right: 32px; width: 30px; height: 26px; background-color: #ffffff; border: 3px solid #475569; transform: rotate(30deg); border-radius: 0 0 0 5px; }
+                    .kmw-tie { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 12px; height: 50px; background-color: #b91c1c; border: 2px solid #7f1d1d; border-radius: 2px 2px 6px 6px; z-index: 10; }
+                    .kmw-tie::after { content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 16px; height: 10px; background-color: #b91c1c; border: 2px solid #7f1d1d; border-radius: 3px; }
+                </style>
+                <div class="kmw-stage">
+                    <div class="kmw-head-wrapper">
+                        <div class="kmw-hair-back"></div>
+                        <div class="kmw-ear-l"></div>
+                        <div class="kmw-ear-r"></div>
+                        <div class="kmw-neck"></div>
+                        <div class="kmw-face-skin">
+                            <div class="kmw-front-hair"></div>
+                            <div class="kmw-hair-point" style="left: 15px;"></div>
+                            <div class="kmw-hair-point" style="left: 45px;"></div>
+                            <div class="kmw-hair-point" style="right: 25px;"></div>
+                            <div class="kmw-eyebrow-l"></div>
+                            <div class="kmw-eyebrow-r"></div>
+                            <div class="kmw-eye-l"></div>
+                            <div class="kmw-eye-r"></div>
+                            <div class="kmw-blush-l"></div>
+                            <div class="kmw-blush-r"></div>
+                            <div class="kmw-mouth"></div>
+                        </div>
+                    </div>
+                    <div class="kmw-uniform-top">
+                        <div class="kmw-collar-l"></div>
+                        <div class="kmw-collar-r"></div>
+                        <div class="kmw-tie"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="char-seoyeon" class="char-wrapper inactive" style="left: 31%; bottom: 20px;">
+        <div style="transform: scaleX(-1); width: 100%; height: 100%;">
+            <div class="kyobok-seoyeon-component" style="display: inline-block; overflow: visible !important;">
+                <style>
+                    .ksy-stage { position: relative; width: 260px; height: 320px; margin: 0 auto; animation: ksy-breatheHuman 4s ease-in-out infinite; overflow: visible !important; }
+                    @keyframes ksy-breatheHuman { 0%, 100% { transform: scale(1) translateY(0px); } 50% { transform: scale(1.01) translateY(-3px); } }
+                    .ksy-head-wrapper { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 120px; height: 130px; overflow: visible !important; }
+                    .ksy-ponytail { position: absolute; top: 15px; right: -36px; width: 44px; height: 85px; background-color: #4a3728; border: 3.5px solid #2d1f10; border-radius: 0 40px 15px 40px; transform: rotate(15deg); z-index: 1; }
+                    .ksy-hair-elastic { position: absolute; top: 28px; right: -6px; width: 14px; height: 14px; background-color: #fb7185; border: 2px solid #e11d48; border-radius: 50%; z-index: 2; }
+                    .ksy-hair-back { position: absolute; top: -8px; left: -4px; width: 128px; height: 85px; background-color: #4a3728; border: 3.5px solid #2d1f10; border-radius: 60px 60px 20px 20px; z-index: 1; }
+                    .ksy-ear-l, .ksy-ear-r { position: absolute; top: 52px; width: 16px; height: 26px; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; z-index: 2; }
+                    .ksy-ear-l { left: -11px; border-radius: 50% 0 0 50%; transform: rotate(-10deg); }
+                    .ksy-ear-r { right: -11px; border-radius: 0 50% 50% 0; transform: rotate(10deg); }
+                    .ksy-neck { position: absolute; top: 105px; left: 50%; transform: translateX(-50%); width: 28px; height: 40px; background-color: #ffdbb5; border-left: 3.5px solid #8d5b4c; border-right: 3.5px solid #8d5b4c; z-index: 3; }
+                    .ksy-face-skin { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; border-radius: 50px 50px 60px 60px; z-index: 4; overflow: hidden; }
+                    .ksy-front-hair { position: absolute; top: 0; left: 0; width: 100%; height: 45px; background-color: #4a3728; border-bottom: 3.5px solid #2d1f10; z-index: 10; }
+                    .ksy-hair-point { position: absolute; top: 39px; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 9px solid #2d1f10; z-index: 11; }
+                    .ksy-eye-l, .ksy-eye-r { position: absolute; top: 62px; width: 15px; height: 15px; background-color: #221a15; border-radius: 50%; z-index: 6; }
+                    .ksy-eye-l::after, .ksy-eye-r::after { content: ''; position: absolute; top: 2px; left: 2px; width: 4px; height: 4px; background-color: #fff; border-radius: 50%; }
+                    .ksy-eye-l { left: 24px; }
+                    .ksy-eye-r { right: 24px; }
+                    .ksy-blush-l, .ksy-blush-r { position: absolute; top: 78px; width: 18px; height: 9px; background-color: rgba(244, 63, 94, 0.4); border-radius: 50%; filter: blur(0.5px); z-index: 6; }
+                    .ksy-blush-l { left: 16px; }
+                    .ksy-blush-r { right: 16px; }
+                    .ksy-mouth-surprise { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); width: 14px; height: 14px; background-color: #f43f5e; border-radius: 50%; border: 2px solid #be123c; z-index: 6; }
+                    .ksy-uniform-top { position: absolute; top: 180px; left: 50%; transform: translateX(-50%); width: 124px; height: 110px; background-color: #1e293b; border: 3.5px solid #475569; border-radius: 24px 24px 10px 10px; z-index: 7; overflow: hidden; }
+                    .ksy-collar-l { position: absolute; top: -2px; left: 32px; width: 30px; height: 26px; background-color: #ffffff; border: 3px solid #475569; transform: rotate(-30deg); border-radius: 0 0 5px 0; }
+                    .ksy-collar-r { position: absolute; top: -2px; right: 32px; width: 30px; height: 26px; background-color: #ffffff; border: 3px solid #475569; transform: rotate(30deg); border-radius: 0 0 0 5px; }
+                    .ksy-ribbon { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 32px; height: 14px; background-color: #e11d48; border: 2px solid #9f1239; border-radius: 4px; z-index: 10; }
+                    .ksy-ribbon::before { content: ''; position: absolute; top: -4px; left: -14px; width: 18px; height: 20px; background-color: #e11d48; border: 2px solid #9f1239; border-radius: 6px 2px 2px 6px; transform: rotate(-15deg); }
+                    .ksy-ribbon::after { content: ''; position: absolute; top: -4px; right: -14px; width: 18px; height: 20px; background-color: #e11d48; border: 2px solid #9f1239; border-radius: 2px 6px 6px 2px; transform: rotate(15deg); }
+                    .ksy-skirt { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 126px; height: 35px; background: repeating-linear-gradient(90deg, #64748b, #64748b 10px, #475569 10px, #475569 20px); border: 3px solid #334155; border-radius: 5px 5px 12px 12px; z-index: 8; }
+                </style>
+                <div class="ksy-stage">
+                    <div class="ksy-head-wrapper">
+                        <div class="ksy-ponytail"></div>
+                        <div class="ksy-hair-elastic"></div>
+                        <div class="ksy-hair-back"></div>
+                        <div class="ksy-ear-l"></div>
+                        <div class="ksy-ear-r"></div>
+                        <div class="ksy-neck"></div>
+                        <div class="ksy-face-skin">
+                            <div class="ksy-front-hair"></div>
+                            <div class="ksy-hair-point" style="left: 20px;"></div>
+                            <div class="ksy-hair-point" style="left: 50px;"></div>
+                            <div class="ksy-hair-point" style="right: 30px;"></div>
+                            <div class="ksy-eye-l"></div>
+                            <div class="ksy-eye-r"></div>
+                            <div class="ksy-blush-l"></div>
+                            <div class="ksy-blush-r"></div>
+                            <div class="ksy-mouth-surprise"></div>
+                        </div>
+                    </div>
+                    <div class="ksy-uniform-top">
+                        <div class="ksy-collar-l"></div>
+                        <div class="ksy-collar-r"></div>
+                        <div class="ksy-ribbon"></div>
+                        <div class="ksy-skirt"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="char-chen" class="char-wrapper inactive" style="right: 15%; bottom: 20px;">
+        <div class="merchant-chen-component" style="display: inline-block; overflow: visible !important;">
+            <style>
+                .mrc-stage { position: relative; width: 260px; height: 320px; margin: 0 auto; animation: mrc-breatheHuman 4s ease-in-out infinite; overflow: visible !important; }
+                @keyframes mrc-breatheHuman { 0%, 100% { transform: scale(1) translateY(0px); } 50% { transform: scale(1.01) translateY(-3px); } }
+                .mrc-head-wrapper { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 120px; height: 130px; overflow: visible !important; }
+                .mrc-ear-l, .mrc-ear-r { position: absolute; top: 52px; width: 16px; height: 26px; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; z-index: 2; }
+                .mrc-ear-l { left: -11px; border-radius: 50% 0 0 50%; transform: rotate(-10deg); }
+                .mrc-ear-r { right: -11px; border-radius: 0 50% 50% 0; transform: rotate(10deg); }
+                .mrc-hat { position: absolute; top: -20px; left: -6px; width: 132px; height: 55px; background-color: #171717; border: 3.5px solid #0a0a0a; border-radius: 40px 40px 10px 10px; z-index: 10; }
+                .mrc-hat-brim { position: absolute; bottom: -3px; left: -3px; width: 132px; height: 12px; background-color: #b45309; border: 3px solid #78350f; border-radius: 4px; }
+                .mrc-hat-button { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 18px; height: 18px; background-color: #dc2626; border: 2px solid #991b1b; border-radius: 50%; }
+                .mrc-neck { position: absolute; top: 105px; left: 50%; transform: translateX(-50%); width: 28px; height: 40px; background-color: #ffdbb5; border-left: 3.5px solid #8d5b4c; border-right: 3.5px solid #8d5b4c; z-index: 3; }
+                .mrc-face-skin { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; border-radius: 50px 50px 60px 60px; z-index: 4; overflow: hidden; }
+                .mrc-eyebrow-l, .mrc-eyebrow-r { position: absolute; top: 50px; width: 22px; height: 4.5px; background-color: #27272a; border-radius: 2px; z-index: 6; }
+                .mrc-eyebrow-l { left: 20px; transform: rotate(15deg); }
+                .mrc-eyebrow-r { right: 20px; transform: rotate(-15deg); }
+                .mrc-eye-l, .mrc-eye-r { position: absolute; top: 62px; width: 14px; height: 14px; background-color: #221a15; border-radius: 50%; z-index: 6; }
+                .mrc-eye-l::after, .mrc-eye-r::after { content: ''; position: absolute; top: 2px; left: 2px; width: 4px; height: 4px; background-color: #fff; border-radius: 50%; }
+                .mrc-eye-l { left: 24px; }
+                .mrc-eye-r { right: 24px; }
+                .mrc-monocle { position: absolute; top: 57px; right: 19px; width: 24px; height: 24px; border: 2.5px solid #fbbf24; background-color: rgba(251, 191, 36, 0.2); border-radius: 50%; z-index: 7; box-shadow: inset 0 0 4px rgba(251, 191, 36, 0.5); }
+                .mrc-monocle-chain { position: absolute; top: 68px; right: 8px; width: 15px; height: 20px; border-right: 2px dotted #fbbf24; border-bottom: 2px dotted #fbbf24; border-radius: 0 0 10px 0; z-index: 7; }
+                .mrc-mustache-l, .mrc-mustache-r { position: absolute; top: 88px; width: 22px; height: 12px; border-top: 4px solid #27272a; border-radius: 50%; z-index: 8; }
+                .mrc-mustache-l { left: 28px; transform: rotate(-25deg); }
+                .mrc-mustache-r { right: 28px; transform: rotate(25deg); }
+                .mrc-mouth { position: absolute; bottom: 20px; left: 45%; transform: translateX(-50%) rotate(-10deg); width: 18px; height: 8px; border-bottom: 2.5px solid #9f1239; border-left: 2.5px solid #9f1239; border-radius: 0 0 0 10px; z-index: 6; }
+                .mrc-uniform-top { position: absolute; top: 180px; left: 50%; transform: translateX(-50%); width: 124px; height: 110px; background-color: #064e3b; border: 3.5px solid #022c22; border-radius: 20px 20px 10px 10px; z-index: 7; overflow: hidden; }
+                .mrc-collar-l, .mrc-collar-r { position: absolute; top: -2px; width: 25px; height: 22px; background-color: #064e3b; border: 3px solid #fbbf24; z-index: 8; }
+                .mrc-collar-l { left: 35px; border-radius: 0 0 6px 0; transform: rotate(-15deg); }
+                .mrc-collar-r { right: 35px; border-radius: 0 0 0 6px; transform: rotate(15deg); }
+                .mrc-center-seam { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); width: 4px; height: 100%; background-color: #022c22; z-index: 8; }
+                .mrc-frog-button { position: absolute; left: 50%; transform: translateX(-50%); width: 24px; height: 6px; border: 2px solid #fbbf24; border-radius: 6px; background-color: #064e3b; z-index: 9; }
+                .mrc-frog-button::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 6px; height: 6px; background-color: #fbbf24; border-radius: 50%; }
+            </style>
+            <div class="mrc-stage">
+                <div class="mrc-head-wrapper">
+                    <div class="mrc-ear-l"></div>
+                    <div class="mrc-ear-r"></div>
+                    <div class="mrc-neck"></div>
+                    <div class="mrc-face-skin">
+                        <div class="mrc-eyebrow-l"></div>
+                        <div class="mrc-eyebrow-r"></div>
+                        <div class="mrc-eye-l"></div>
+                        <div class="mrc-eye-r"></div>
+                        <div class="mrc-mustache-l"></div>
+                        <div class="mrc-mustache-r"></div>
+                        <div class="mrc-mouth"></div>
+                        <div class="mrc-monocle"></div>
+                    </div>
+                    <div class="mrc-hat">
+                        <div class="mrc-hat-brim"></div>
+                        <div class="mrc-hat-button"></div>
+                    </div>
+                    <div class="mrc-monocle-chain"></div>
+                </div>
+                <div class="mrc-uniform-top">
+                    <div class="mrc-collar-l"></div>
+                    <div class="mrc-collar-r"></div>
+                    <div class="mrc-center-seam"></div>
+                    <div class="mrc-frog-button" style="top: 30px;"></div>
+                    <div class="mrc-frog-button" style="top: 55px;"></div>
+                    <div class="mrc-frog-button" style="top: 80px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-name">이름</div>
+        <div id="dialogue-text">대사가 이곳에 표시됩니다.</div>
+        <div class="click-indicator">▼ 클릭하여 다음</div>
+    </div>
+
+    <button id="btn-skip" class="btn-nav" onclick="endDialogue()">건너뛰기</button>
+    <button id="btn-prev" class="btn-nav" onclick="location.href='H03.html'">이전</button>
+    <button id="btn-next" class="btn-nav" onclick="location.href='index.html'">다시 시작하기</button>
+</div>
+
+<script>
+    // 대화 스크립트 데이터
+    const dialogues = [
+        { speaker: "미스터 첸", text: "하하하! 훌륭합니다. 드디어 어두운 비밀통로를 뚫고 밖으로 나오셨군요. 무사히 탈출하신 것을 축하합니다.", target: "char-chen" },
+        { speaker: "서연", text: "휴, 정말 다행이에요! 어두운 곳에 계속 있다가 밖으로 나오니 눈이 다 부시네요.", target: "char-seoyeon" },
+        { speaker: "미스터 첸", text: "여러분 뒤에 있는 이곳 '한중문화관'은 한국과 중국의 문화가 교류하는 아주 상징적인 장소랍니다. 두 나라의 깊은 역사가 깃든 곳에서 여러분의 이번 여정이 뜻깊은 결실을 맺었군요.", target: "char-chen" },
+        { speaker: "민우", text: "정말 재밌고 뜻깊은 시간이었어요! 어려운 퀴즈도 많았지만 미스터 첸의 도움 덕분에 탈출할 수 있었습니다. 감사합니다!", target: "char-minwoo" },
+        { speaker: "서연", text: "민우야, 우리 이제 다음 장소로 이동해볼까?", target: "char-seoyeon" },
+        { speaker: "민우", text: "응! 다음엔 또 어떤 모험이 우릴 기다리고 있을지 기대돼. 가자!", target: "char-minwoo" }
+    ];
+
+    let currentIndex = 0;
+
+    function updateCharacterBrightness(activeTargetId) {
+        // 모든 캐릭터를 어둡게 처리
+        document.querySelectorAll('.char-wrapper').forEach(el => el.classList.add('inactive'));
+        // 말하는 캐릭터만 밝게(필터 제거)
+        if(activeTargetId) {
+            document.getElementById(activeTargetId).classList.remove('inactive');
+        }
+    }
+
+    function advanceDialogue() {
+        if (currentIndex < dialogues.length) {
+            const current = dialogues[currentIndex];
+            document.getElementById('speaker-name').innerText = current.speaker;
+            document.getElementById('dialogue-text').innerText = current.text;
+            
+            updateCharacterBrightness(current.target);
+            currentIndex++;
+        } else {
+            endDialogue();
+        }
+    }
+
+    function endDialogue() {
+        // 대화창, 건너뛰기 버튼 숨기기
+        document.getElementById('dialogue-box').style.display = 'none';
+        document.getElementById('btn-skip').style.display = 'none';
+        
+        // 모든 캐릭터를 원래 밝기로 복구
+        document.querySelectorAll('.char-wrapper').forEach(el => el.classList.remove('inactive'));
+        
+        // 이전, 다시 시작하기 버튼 표시
+        document.getElementById('btn-prev').style.display = 'block';
+        document.getElementById('btn-next').style.display = 'block';
+    }
+
+    // 화면 페이드인 이후 대화 시작 (약간의 딜레이 부여)
+    setTimeout(() => {
+        advanceDialogue();
+    }, 500);
+</script>
+
+</body>
+</html>

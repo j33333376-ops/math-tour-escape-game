@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026 중등수학 1급 정교사 연수 · MATHTOUR 개인평가 기준안 (40점 / A~E 5단계)</title>
+<style>
+  :root{
+    --navy:#1f3f6e; --navy2:#2b5a9b; --gold:#c9922b; --bg:#f2f5f9;
+    --line:#d8e0ea; --ink:#22303f; --muted:#6b7a8c; --ok:#2f855a; --warn:#c0392b;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:'Pretendard','Malgun Gothic','맑은 고딕','Noto Sans KR',sans-serif;
+    font-size:15px; line-height:1.6;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 18px 80px;}
+
+  header.top{
+    background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);
+    color:#fff;padding:26px 0 22px;margin-bottom:18px;
+    box-shadow:0 3px 14px rgba(31,63,110,.22);
+  }
+  header.top .wrap{padding-bottom:0;}
+  header.top .eyebrow{font-size:13px;letter-spacing:.06em;opacity:.85;}
+  header.top h1{margin:6px 0 4px;font-size:26px;font-weight:800;letter-spacing:-.01em;}
+  header.top .sub{font-size:14px;opacity:.9;}
+  .pillrow{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;}
+  .pill{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);
+    border-radius:999px;padding:5px 14px;font-size:13px;font-weight:600;}
+
+  nav.tabs{display:flex;gap:6px;margin:0 0 18px;flex-wrap:wrap;}
+  nav.tabs button{
+    border:1px solid var(--line);background:#fff;color:var(--muted);
+    padding:10px 20px;border-radius:10px 10px 0 0;font-size:15px;font-weight:700;
+    cursor:pointer;font-family:inherit;transition:.15s;
+  }
+  nav.tabs button:hover{color:var(--navy);}
+  nav.tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+  section.view{display:none;}
+  section.view.on{display:block;}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;
+    padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 3px rgba(31,63,110,.06);}
+  .card > h2{
+    margin:0 0 4px;font-size:19px;color:var(--navy);font-weight:800;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .card > h2 .pt{background:var(--navy);color:#fff;border-radius:8px;
+    padding:2px 12px;font-size:14px;font-weight:700;}
+  .card > .lead{color:var(--muted);font-size:13.5px;margin:0 0 14px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.6px;}
+  th,td{border:1px solid var(--line);padding:9px 11px;vertical-align:top;text-align:left;}
+  thead th{background:#eaf0f7;color:var(--navy);font-weight:700;text-align:center;white-space:nowrap;}
+  td.c,th.c{text-align:center;}
+  td.item{font-weight:700;background:#fafcfe;width:150px;}
+  td.pts{width:56px;text-align:center;font-weight:800;color:var(--navy);background:#fafcfe;}
+  td.sc{width:46px;text-align:center;font-weight:800;color:var(--gold);white-space:nowrap;}
+  tbody tr:hover td{background:#f7fbff;}
+  tbody tr:hover td.item,tbody tr:hover td.pts{background:#f0f6fc;}
+  tr.top td.sc{color:var(--ok);}
+  tr.top td:last-child{background:#f3fbf6;}
+
+  .note{background:#fff8e6;border:1px solid #f0d9a0;border-left:5px solid var(--gold);
+    border-radius:8px;padding:12px 15px;font-size:13.5px;margin-top:14px;}
+  .note b{color:#8a6512;}
+  .note.blue{background:#eef5fd;border-color:#bcd6f2;border-left-color:var(--navy2);}
+  .note.blue b{color:var(--navy);}
+  .note.red{background:#fdf1f0;border-color:#f0c4bf;border-left-color:var(--warn);}
+  .note.red b{color:var(--warn);}
+
+  .gtag{display:inline-block;min-width:26px;text-align:center;border-radius:6px;color:#fff;
+    font-weight:800;padding:1px 8px;}
+  .gA{background:#2f855a;} .gB{background:#2b5a9b;} .gC{background:#c9922b;}
+  .gD{background:#d97706;} .gE{background:#c0392b;} .gX{background:#6b7a8c;}
+
+  /* ===== 채점표 ===== */
+  .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;}
+  .meta label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:4px;}
+  .meta input,.meta select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;
+    font-size:14px;font-family:inherit;color:var(--ink);background:#fff;}
+  .meta input:focus,.meta select:focus{outline:2px solid var(--navy2);outline-offset:-1px;}
+
+  .qrow{border:1px solid var(--line);border-radius:10px;padding:13px 15px;margin-bottom:10px;background:#fff;}
+  .qrow .qh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:9px;flex-wrap:wrap;}
+  .qrow .qt{font-weight:800;font-size:14.8px;color:var(--navy);}
+  .qrow .qmax{font-size:12.5px;color:var(--muted);font-weight:700;}
+  .opts{display:flex;flex-direction:column;gap:5px;}
+  .opts label{display:flex;gap:9px;align-items:flex-start;padding:7px 10px;border-radius:8px;
+    border:1px solid transparent;cursor:pointer;font-size:13.5px;transition:.12s;}
+  .opts label:hover{background:#f3f8ff;border-color:#cfe0f5;}
+  .opts label.sel{background:#eaf3ff;border-color:var(--navy2);}
+  .opts input{margin-top:3px;flex:0 0 auto;accent-color:var(--navy2);}
+  .opts .sv{flex:0 0 34px;font-weight:800;color:var(--gold);text-align:center;}
+  .opts label.tp .sv{color:var(--ok);}
+
+  .secbar{display:flex;justify-content:space-between;align-items:center;
+    background:#eaf0f7;border-radius:10px;padding:10px 15px;margin:14px 0 6px;font-weight:800;color:var(--navy);}
+  .secbar .v{font-size:16px;}
+
+  .totalbox{position:sticky;bottom:0;z-index:20;background:#fff;border:2px solid var(--navy);
+    border-radius:14px;padding:14px 20px;margin-top:18px;display:flex;align-items:center;
+    gap:16px;flex-wrap:wrap;box-shadow:0 -3px 16px rgba(31,63,110,.14);}
+  .totalbox .big{font-size:27px;font-weight:900;color:var(--navy);line-height:1.1;}
+  .totalbox .big small{font-size:14px;color:var(--muted);font-weight:700;}
+  .totalbox .fin{font-size:27px;font-weight:900;color:var(--ok);line-height:1.1;}
+  .grade{border-radius:10px;padding:6px 18px;font-size:20px;font-weight:900;color:#fff;background:var(--muted);}
+  .brk{font-size:12.5px;color:var(--muted);font-weight:700;}
+  .brk b{color:var(--ink);}
+  .gate{font-size:12.5px;font-weight:700;border-radius:8px;padding:4px 10px;background:#f0f3f7;color:var(--muted);}
+  .gate.ok{background:#e8f6ee;color:var(--ok);}
+  .gate.no{background:#fdf1f0;color:var(--warn);}
+  .btns{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+  button.act{border:none;border-radius:9px;padding:10px 17px;font-size:14px;font-weight:700;
+    cursor:pointer;font-family:inherit;background:var(--navy);color:#fff;transition:.15s;}
+  button.act:hover{background:var(--navy2);}
+  button.act.gh{background:#fff;color:var(--navy);border:1.5px solid var(--navy);}
+  button.act.gh:hover{background:#eaf0f7;}
+  button.act.dn{background:var(--warn);}
+
+  .deduct{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:13.5px;}
+  .deduct label{display:flex;gap:7px;align-items:center;cursor:pointer;}
+
+  #saveTbl td.c{text-align:center;}
+  .empty{color:var(--muted);text-align:center;padding:22px;font-size:14px;}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+    background:var(--navy);color:#fff;padding:11px 22px;border-radius:999px;font-size:14px;
+    font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:99;}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+  .bar{height:14px;border-radius:4px;min-width:2px;}
+
+  @media print{
+    body{background:#fff;font-size:11.5px;}
+    header.top{background:var(--navy)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    nav.tabs,.btns,.totalbox .btns{display:none!important;}
+    .card{break-inside:avoid;box-shadow:none;}
+    table{font-size:10.5px;}
+    thead th,.gtag,.bar{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    section.view{display:block!important;}
+    #view-score,#view-save{page-break-before:always;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">2026년 중등 수학과 1급 정교사 자격연수 · 디지털 도구를 활용한 학생 참여 수업 설계</div>
+    <h1>MATHTOUR 개인평가 기준안 <span style="font-weight:600;opacity:.85;">(개인평가 40% · 40점)</span></h1>
+    <div class="sub">보고서 채점(30점) + HTML 채점(10점) <b>독립 수행</b> → 합산 <b>원점수 40점</b> → <b>A~E 5단계 환산</b> → 최종 점수(40·38·36·34·32 / 인정점 30 / 결시 0)</div>
+    <div class="pillrow">
+      <span class="pill">보고서 Ⅰ 10점 + Ⅱ 20점</span>
+      <span class="pill">HTML Ⅲ 10점</span>
+      <span class="pill">두 영역 독립 채점 · 상호 대조 없음</span>
+      <span class="pill">채점 2026. 8. 5.(수) · 복수 채점</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="tabs">
+    <button class="on" data-v="rubric">📋 평가기준안</button>
+    <button data-v="score">✅ 개인 채점표</button>
+    <button data-v="save">📊 채점 결과 집계</button>
+  </nav>
+
+  <!-- ================= 평가기준안 ================= -->
+  <section class="view on" id="view-rubric">
+
+    <div class="card">
+      <h2>1. 평가 개요 및 채점 절차</h2>
+      <table>
+        <thead><tr><th style="width:70px;">영역</th><th>평가 대상</th><th>세부 평가 항목</th><th style="width:80px;">원점수</th></tr></thead>
+        <tbody>
+          <tr><td class="c"><b>Ⅰ</b></td><td>개인보고서<br>「교육과정 설계 핵심 요소」</td><td>기본 정보 명시 / 핵심 아이디어 / 지식·이해 / 과정·기능 / 가치·태도</td><td class="c"><b>10</b></td></tr>
+          <tr><td class="c"><b>Ⅱ</b></td><td>개인보고서<br>「매쓰투어 설계」</td><td>디지털 도구 활용 계획 / 장소·코스 설명 / 수학활동 / 장면(페이지) 계획 / 수행평가 루브릭</td><td class="c"><b>20</b></td></tr>
+          <tr><td class="c"><b>Ⅲ</b></td><td>제출한 HTML 파일</td><td>페이지 제작 수 / 페이지 연결 구조 / 코스 안내 내용 / 수학활동 구성</td><td class="c"><b>10</b></td></tr>
+          <tr style="background:#eaf0f7;"><td class="c" colspan="3" style="text-align:right;font-weight:800;color:var(--navy);">채점 원점수 합계</td><td class="c" style="font-weight:900;color:var(--navy);font-size:16px;">40</td></tr>
+        </tbody>
+      </table>
+      <div class="note blue">
+        <b>채점 절차</b> ① <b>보고서 채점(Ⅰ+Ⅱ, 30점)</b>과 <b>HTML 채점(Ⅲ, 10점)</b>을 서로 다른 채점위원이 <b>독립적으로</b> 수행한다. → ② 두 점수를 합산하여 <b>원점수(40점 만점)</b>를 산출한다. → ③ 감점 사유가 있으면 합산 원점수에서 차감한다. → ④ 아래 「등급 환산표」에 따라 <b>A~E 등급</b>을 판정하고 대응하는 <b>최종 점수(40·38·36·34·32점)</b>를 부여한다.<br>
+        <b>복수 채점</b> 각 영역별로 채점위원 2인 이상이 독립적으로 점수를 부여한 뒤 <b>영역 내에서 평균(소수 첫째 자리에서 반올림)</b>한다. 같은 영역 채점위원 간 점수 차가 <b>보고서 4점 이상 · HTML 2점 이상</b>이면 협의 또는 제3 채점위원을 투입한다.
+      </div>
+
+      <div class="note red">
+        <b>독립 채점 원칙 — 두 영역을 서로 대조하지 않는다</b><br>
+        보고서 채점위원은 <b>제출된 보고서만</b> 보고 채점하고, HTML 채점위원은 <b>제출된 HTML 파일만</b> 실행하여 채점한다. 상대 영역의 자료나 점수는 참조하지 않는다.<br>
+        <span style="font-weight:700;">따라서 다음은 평가 대상에서 제외한다.</span> ㉠ 보고서의 장면(페이지) 계획과 실제 HTML 장면의 <b>일치 여부</b> ㉡ 보고서에 기술한 수학활동이 HTML에 <b>그대로 구현</b>되었는지 여부 ㉢ 보고서에 적은 성취기준·코스·장소가 HTML 내용과 <b>부합</b>하는지 여부 ㉣ 보고서의 루브릭이 HTML 활동에 <b>적용 가능</b>한지 여부.<br>
+        각 문항의 척도는 <b>해당 자료 하나만으로 판정할 수 있도록</b> 기술되어 있다. 예컨대 Ⅲ영역의 「코스 안내」·「수학활동 구성」은 HTML 화면에 표시된 코스명·장소 정보를 기준으로 판단하며, 보고서와 대조하지 않는다.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2. 등급 환산표 및 변별 원칙 <span class="pt">핵심</span></h2>
+      <p class="lead">절대평가이나, 요구 형식을 충실히 이행한 것만으로는 A에 도달하지 않도록 <b>각 문항의 최고 단계에 질적 요건</b>을 부과하고 <b>A 등급 진입 조건</b>을 별도로 둔다.</p>
+      <table>
+        <thead><tr><th class="c" style="width:64px;">등급</th><th class="c" style="width:110px;">채점 원점수</th><th class="c" style="width:90px;">최종 점수</th><th>판정 기준</th></tr></thead>
+        <tbody>
+          <tr class="top"><td class="c"><span class="gtag gA">A</span></td><td class="c"><b>38 ~ 40</b></td><td class="c"><b style="font-size:16px;">40</b></td><td><b>「A 등급 진입 조건」을 모두 충족</b>해야 함(아래 참조). 성취기준·핵심 아이디어 분석이 코스 전반에 논리적으로 반영되고, 장소·수학활동·장면·루브릭이 유기적으로 연결되며 HTML 산출물이 인터랙티브 수준까지 완성됨</td></tr>
+          <tr><td class="c"><span class="gtag gB">B</span></td><td class="c"><b>33 ~ 37</b></td><td class="c"><b style="font-size:16px;">38</b></td><td>요구된 설계 요소를 <b>모두 성실히 작성</b>하고 장소·수학활동 연계가 충실하며 산출물이 정상 작동함. 다만 일부 항목에서 구체성·연계의 명시성·변별성에 보완 여지가 있음 <span style="color:var(--navy2);font-weight:700;">(← 형식 요건을 빠짐없이 이행한 성실한 보고서의 기본 위치)</span></td></tr>
+          <tr><td class="c"><span class="gtag gC">C</span></td><td class="c"><b>27 ~ 32</b></td><td class="c"><b style="font-size:16px;">36</b></td><td>설계 요소와 장소·수학활동의 연결이 부분적이고 깊이가 다소 부족함. 장면 계획·루브릭 등 일부 칸이 누락되었거나 산출물이 일반적 수준에 머무름</td></tr>
+          <tr><td class="c"><span class="gtag gD">D</span></td><td class="c"><b>20 ~ 26</b></td><td class="c"><b style="font-size:16px;">34</b></td><td>교육과정 분석이 미흡하거나 연계가 형식적이며, 장면 계획이 단편적이거나 페이지 연결이 상당 부분 작동하지 않아 실행 가능성이 낮음</td></tr>
+          <tr><td class="c"><span class="gtag gE">E</span></td><td class="c"><b>0 ~ 19</b></td><td class="c"><b style="font-size:16px;">32</b></td><td>필수 요소가 누락되었거나 형식만 갖춤. 코스가 실생활 맥락 및 수학 학습 목표와 부합하지 않음</td></tr>
+          <tr style="background:#f7f9fc;"><td class="c"><span class="gtag gX">인정점</span></td><td class="c">채점 불가</td><td class="c"><b style="font-size:16px;">30</b></td><td>연수 규정상 사유가 인정되어 개인과제를 제출하지 못한 경우(공가·병가 등 기관 인정 사유)</td></tr>
+          <tr style="background:#f7f9fc;"><td class="c"><span class="gtag gX">결시</span></td><td class="c">미제출</td><td class="c"><b style="font-size:16px;">0</b></td><td>정당한 사유 없이 개인과제를 제출하지 않은 경우</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <b>A 등급 진입 조건 (원점수 38점 이상이면서 아래를 모두 충족)</b><br>
+        ㉮ 영역별 최소 득점: <b>Ⅰ 9점 이상, Ⅱ 18점 이상, Ⅲ 9점 이상</b> — 한 영역에 몰린 고득점으로 A가 나오지 않도록 함<br>
+        ㉯ 3-2「페이지 연결 구조」 <b>3점 만점</b> — index→A01→…→index 전 구간이 실제로 작동해야 함<br>
+        ㉰ 2-3「수학활동 및 교과 연계」와 3-4「수학활동 구성」이 <b>각각 최고 단계</b> — 보고서에는 성취기준 1:1 연계가 명시되고, HTML에는 <b>인터랙티브 조작 기반 활동</b>이 구현되어 있어야 함<br>
+        <span style="color:var(--warn);font-weight:700;">※ 조건 미충족 시 원점수가 38점 이상이어도 B로 판정한다.</span><br>
+        <span style="color:var(--muted);">※ ㉮·㉰는 <b>두 영역의 점수를 합산하는 단계에서 기계적으로 확인</b>하는 조건이다. 각 채점위원은 상대 영역의 점수를 알 필요도, 참조할 필요도 없다.</span>
+      </div>
+
+      <div class="note blue">
+        <b>변별 설계의 원리</b> 각 문항의 척도는 <b>「형식 이행 = 중간 단계」, 「질적 요건 추가 충족 = 최고 단계」</b>로 설계되었다. 예컨대 2-4「장면 계획」은 12칸을 모두 채우면 <b>3점</b>이고, 여기에 장면 간 인과적 연결·대사 형태의 나레이션·실제 생성 가능한 그림 가이드라는 <b>질적 요건 3가지</b>를 모두 갖추어야 5점이다. 따라서 서식을 빠짐없이 작성한 성실한 보고서는 자연스럽게 <b>B(원점수 33~37)</b>에 위치하고, A는 설계의 질이 뚜렷하게 드러난 경우에만 부여된다.
+      </div>
+
+      <div class="note red">
+        <b>문항 타당성 사후 점검(참고 지표)</b> 절대평가이므로 인원 비율을 강제로 맞추지 않는다. 다만 채점 종료 후 <b>A 비율이 40%를 넘거나 A~B 비율이 90%를 넘는 경우</b>, 최고 단계의 질적 요건(2-3, 2-4, 3-3, 3-4)이 엄격히 적용되었는지 채점위원 협의로 재확인한다. 반대로 <b>C 이하가 50%를 넘으면</b> 과제 안내의 충분성을 함께 점검한다.
+      </div>
+
+      <div class="note">
+        <b>감점 규정(원점수에서 차감, 0점 미만으로는 내리지 않음)</b><br>
+        ㉠ 제출 기한(2026. 7. 27.(월) 17:00) 초과 <b>−2점</b> &nbsp;·&nbsp; ㉡ 생성형 AI로 장면 그림을 설계하고도 프롬프트·AI 답변 URL 미제출 <b>−1점</b> &nbsp;·&nbsp; ㉢ 제시된 개인보고서 서식을 임의로 변경하여 항목 대응이 어려운 경우 <b>−1점</b><br>
+        감점은 <b>제출 사실에 관한 사항</b>이므로 채점위원이 각자 적용하지 않고, <b>합산 단계에서 운영 담당이 1회만</b> 적용한다(이중 감점 방지).<br>
+        보고서와 HTML 중 하나만 제출한 경우 제출한 영역만 채점하고, 미제출 영역은 0점으로 계산한다.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Ⅰ. 교육과정 설계 핵심 요소 작성 <span class="pt">10점</span></h2>
+      <p class="lead"><b>보고서 채점위원 담당.</b> 개인보고서 4쪽 상단 「학교급·학년·과목·영역(단원)·장소·코스·성취기준」 및 「교육과정 설계 핵심 요소」 4개 칸<b>만</b>을 대상으로 채점하며, 제출된 HTML 파일은 열람하지 않는다. <b>초록색 행이 질적 요건을 요구하는 최고 단계</b>이다.</p>
+      <table>
+        <thead><tr><th style="width:150px;">평가 항목</th><th class="c" style="width:56px;">배점</th><th class="c" style="width:46px;">점수</th><th>정량 채점 기준</th></tr></thead>
+        <tbody>
+          <tr class="top"><td class="item" rowspan="3">1-1<br>기본 정보 명시</td><td class="pts" rowspan="3">2</td><td class="sc">2</td><td>학교급·학년·과목·영역(단원)·장소·코스·성취기준 <b>7개 항목 모두 기재</b> + 성취기준을 <b>코드([9수03-05] 등)와 문장</b>으로 제시 + 코드가 기재한 <b>영역(단원)과 실제로 일치</b></td></tr>
+          <tr><td class="sc">1</td><td>7개 항목을 기재하였으나 <b>성취기준 코드가 없거나</b> 영역과 불일치함, 또는 기재 항목이 <b>5~6개</b></td></tr>
+          <tr><td class="sc">0</td><td>기재 항목이 <b>4개 이하</b>이거나 성취기준 칸이 비어 있음</td></tr>
+
+          <tr class="top"><td class="item" rowspan="3">1-2<br>핵심 아이디어</td><td class="pts" rowspan="3">2</td><td class="sc">2</td><td>2022 개정 교육과정 해당 영역의 <b>핵심 아이디어 문구를 인용·재진술</b>하여 한 문장으로 기술 + 문장 안에 <b>선정 장소·코스의 고유 소재가 드러남</b>(예: “…의 나선 구조에서 …”)</td></tr>
+          <tr><td class="sc">1</td><td>한 문장으로 기술되었으나 <b>교육과정 문구 근거가 확인되지 않거나</b>, 코스 고유 소재 없이 일반적 진술에 그침</td></tr>
+          <tr><td class="sc">0</td><td>미기재이거나 <b>차시 학습목표·활동명 나열 수준</b>으로 핵심 아이디어의 성격을 갖추지 못함</td></tr>
+
+          <tr class="top"><td class="item" rowspan="3">1-3<br>지식·이해</td><td class="pts" rowspan="3">2</td><td class="sc">2</td><td>필요한 개념·정의·정리를 <b>2개 이상</b> 명시 + <b>각 개념이 어느 수학활동에서 사용되는지 대응</b>되어 있음</td></tr>
+          <tr><td class="sc">1</td><td>개념을 <b>나열만</b> 하고 활동과의 대응이 없음, 또는 <b>1개만</b> 명시, 또는 <b>단원명·영역명 수준</b>(예: “도형”)으로 포괄 기술</td></tr>
+          <tr><td class="sc">0</td><td>미기재이거나 수학 개념이 아닌 내용을 기술함</td></tr>
+
+          <tr class="top"><td class="item" rowspan="3">1-4<br>과정·기능</td><td class="pts" rowspan="3">2</td><td class="sc">2</td><td>사고력·문제해결력·도구 활용 능력 중 <b>2가지 이상</b>을 <b>수행 동사</b>로 기술 + <b>어느 활동 장면에서 관찰되는지</b> 함께 제시</td></tr>
+          <tr><td class="sc">1</td><td>수행 동사로 기술하였으나 <b>활동 맥락 없이 일반적</b>이거나, <b>1가지만</b> 기술, 또는 명사만 나열(예: “문제해결력, 의사소통”)</td></tr>
+          <tr><td class="sc">0</td><td>미기재이거나 지식·이해 항목과 내용이 중복되어 구분되지 않음</td></tr>
+
+          <tr class="top"><td class="item" rowspan="3">1-5<br>가치·태도</td><td class="pts" rowspan="3">2</td><td class="sc">2</td><td>흥미·자신감·협력·수학의 유용성 인식 등 <b>2가지 이상</b>을 제시 + <b>코스 활동의 어느 국면에서 형성되는지</b> 명시</td></tr>
+          <tr><td class="sc">1</td><td>2가지 이상을 <b>나열만</b> 하거나 <b>1가지만</b> 기술, 또는 코스와 무관한 일반적 태도 서술</td></tr>
+          <tr><td class="sc">0</td><td>미기재</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Ⅱ. 매쓰투어 설계 작성 <span class="pt">20점</span></h2>
+      <p class="lead"><b>보고서 채점위원 담당.</b> 개인보고서 4~5쪽 「매쓰투어 설계」(디지털 도구 활용 계획·장소 및 코스 설명·수학활동), 「장면(페이지) 계획」 4개 장면 표, 「수행평가 기준표(루브릭)」<b>만</b>을 대상으로 채점한다. 2-1·2-3·2-4는 <b>보고서에 기술된 계획 자체의 완성도</b>를 보는 것이며, 그 계획이 실제 HTML로 구현되었는지는 <b>묻지 않는다</b>.</p>
+      <table>
+        <thead><tr><th style="width:150px;">평가 항목</th><th class="c" style="width:56px;">배점</th><th class="c" style="width:46px;">점수</th><th>정량 채점 기준</th></tr></thead>
+        <tbody>
+          <tr class="top"><td class="item" rowspan="4">2-1<br>디지털 도구<br>활용 계획</td><td class="pts" rowspan="4">3</td><td class="sc">3</td><td>앱·웹의 <b>구체적 기능 2가지 이상</b>(시각화, 실시간 정답 피드백, 위치 기반 탐방, 사진·측정 도구, 단계별 힌트 등) + <b>각 기능이 어느 장면·활동에서 작동하는지 대응</b> + 학습 효과 극대화 방식 설명</td></tr>
+          <tr><td class="sc">2</td><td>구체적 기능 <b>2가지 이상</b>과 학습 효과는 설명하였으나 <b>장면·활동과의 대응이 없음</b>, 또는 기능 1가지 + 효과 설명</td></tr>
+          <tr><td class="sc">1</td><td>“앱을 활용한다” 수준으로 <b>사용 사실만</b> 기술하고 기능·효과 서술이 없음</td></tr>
+          <tr><td class="sc">0</td><td>미기재</td></tr>
+
+          <tr class="top"><td class="item" rowspan="5">2-2<br>장소 및 코스 설명<br>(선정 이유 포함)</td><td class="pts" rowspan="5">4</td><td class="sc">4</td><td>㉮ 장소·코스 구체적 소개 ㉯ 선정 이유 ㉰ 코스 설계 방향(동선·스토리·난이도 배치) <b>3요소 모두 충족</b> + 선정 이유가 <b>특정 성취기준(코드)과 직접 연결</b>되어 서술됨</td></tr>
+          <tr><td class="sc">3</td><td>㉮㉯㉰ <b>3요소 모두 충족</b>하였으나 수학과의 연계가 성취기준 지목 없이 <b>일반적 서술</b>에 그침</td></tr>
+          <tr><td class="sc">2</td><td>3요소 중 <b>2요소</b>만 충족, 또는 선정 이유가 “친숙함·접근성” 등 <b>수학과 무관한 근거</b>에 머무름</td></tr>
+          <tr><td class="sc">1</td><td>장소 <b>소개만</b> 있고 선정 이유가 없음</td></tr>
+          <tr><td class="sc">0</td><td>미기재이거나 학생이 실제 탐방 불가능한 장소를 선정함</td></tr>
+
+          <tr class="top"><td class="item" rowspan="6">2-3<br>수학활동<br>(필수 1개)<br>및 교과 연계</td><td class="pts" rowspan="6">5</td><td class="sc">5</td><td>수학활동 1개가 <b>세 요건 모두</b> 충족 — <b>특정 성취기준과 1:1 연계</b> + 소재가 <b>탐방 장소의 구조물·자연현상</b>에서 도출 + <b>문제의 조건·수치·정답(또는 풀이 과정)</b>까지 제시되어 <b>그대로 수업에 사용 가능</b> <span style="color:var(--ok);font-weight:700;">(A 등급 필수 요건)</span></td></tr>
+          <tr><td class="sc">4</td><td>세 요건 중 <b>2가지</b> 충족(대개 성취기준 연계 + 장소 소재 기반이나, <b>조건·수치가 개략적</b>)</td></tr>
+          <tr><td class="sc">3</td><td>성취기준과 연계되나 <b>장소성·구체성 중 1가지만</b> 충족(장소와 무관한 일반 문제이거나 조건·수치 미흡)</td></tr>
+          <tr><td class="sc">2</td><td>수학활동은 제시되었으나 <b>성취기준 연계 서술이 없음</b></td></tr>
+          <tr><td class="sc">1</td><td>활동 <b>주제·이름만</b> 제시(풀 수 있는 수학 과제로 성립하지 않음)</td></tr>
+          <tr><td class="sc">0</td><td>미기재</td></tr>
+
+          <tr class="top"><td class="item" rowspan="6">2-4<br>장면(페이지) 계획<br>4개 장면 × 3요소<br>(=12칸)</td><td class="pts" rowspan="6">5</td><td class="sc">5</td><td><b>12칸 전부 작성</b> + 질적 요건 <b>3가지 모두 충족</b> — ㉮ 장면 간 스토리가 <b>인과적으로 연결</b>됨 ㉯ 나레이션이 <b>인물 대사 형태</b>로 구체적임 ㉰ 그림 가이드가 <b>구도·구성 요소를 지정</b>하여 실제 생성 가능한 수준임</td></tr>
+          <tr><td class="sc">4</td><td><b>12칸 전부 작성</b> + 질적 요건 <b>2가지</b> 충족</td></tr>
+          <tr><td class="sc">3</td><td><b>12칸 전부 작성</b>(형식 요건 충족) + 질적 요건 1가지 이하 <span style="color:var(--navy2);font-weight:700;">(← 서식을 다 채운 기본 수준)</span></td></tr>
+          <tr><td class="sc">2</td><td><b>9~11칸</b> 작성</td></tr>
+          <tr><td class="sc">1</td><td><b>8칸 이하</b> 작성</td></tr>
+          <tr><td class="sc">0</td><td>장면 계획표 미작성</td></tr>
+
+          <tr class="top"><td class="item" rowspan="4">2-5<br>수행평가<br>기준표(루브릭)</td><td class="pts" rowspan="4">3</td><td class="sc">3</td><td>평가 요소 <b>3개 이상</b> + 상·중·하 3단계 모두 서술 + 단계 차이가 <b>관찰 가능한 수행 수준</b>으로 진술됨 + 진술이 <b>본 코스의 실제 활동을 지칭</b>함(일반 문구가 아님)</td></tr>
+          <tr><td class="sc">2</td><td>평가 요소 3개 이상 + 3단계 서술은 되었으나, 진술이 <b>어느 수업에나 쓸 수 있는 일반 문구</b>이거나 “잘한다/보통이다/미흡하다” 식이어서 변별 근거가 약함</td></tr>
+          <tr><td class="sc">1</td><td>평가 요소가 <b>2개 이하</b>이거나 일부 단계 칸이 <b>비어 있음</b></td></tr>
+          <tr><td class="sc">0</td><td>루브릭 미작성</td></tr>
+        </tbody>
+      </table>
+      <div class="note"><b>2-4 칸 수 계산법</b> 한 칸이라도 “—”, “위와 같음”, 한 단어(예: “설명”)만 적힌 경우는 <b>미작성 칸</b>으로 계산한다. 장면 그림 가이드는 프롬프트·이미지 설명·첨부 그림 중 하나라도 확인되면 작성으로 인정하되, <b>5점의 ㉰ 요건</b>은 구도·등장 요소·색감 등이 지정된 경우에만 인정한다.</div>
+    </div>
+
+    <div class="card">
+      <h2>Ⅲ. 실제 제작한 HTML 파일 평가 <span class="pt">10점</span></h2>
+      <p class="lead"><b>HTML 채점위원 담당.</b> 제출한 폴더를 브라우저에서 직접 실행하여 <b>실행 결과만</b>으로 판정한다. 개인보고서는 <b>열람하지 않는다</b>. 코스명·장소·성취기준 등은 <b>HTML 화면에 표시된 정보</b>를 기준으로 판단하며, 화면에 없는 정보는 채점 근거로 삼지 않는다.</p>
+      <table>
+        <thead><tr><th style="width:150px;">평가 항목</th><th class="c" style="width:56px;">배점</th><th class="c" style="width:46px;">점수</th><th>정량 채점 기준</th></tr></thead>
+        <tbody>
+          <tr class="top"><td class="item" rowspan="3">3-1<br>페이지 제작 수</td><td class="pts" rowspan="3">2</td><td class="sc">2</td><td>담당 코스의 장면 페이지 <b>4개 이상</b> 제작 + 모든 페이지가 정상 표시되고 <b>장면 내용이 서로 다름</b>(복사·중복 페이지 없음)</td></tr>
+          <tr><td class="sc">1</td><td><b>4개 이상</b>이나 일부가 <b>빈 페이지·중복·미완성</b>임, 또는 <b>3개</b> 제작</td></tr>
+          <tr><td class="sc">0</td><td><b>2개 이하</b> 제작 또는 미제출</td></tr>
+
+          <tr class="top"><td class="item" rowspan="4">3-2<br>페이지 연결 구조</td><td class="pts" rowspan="4">3</td><td class="sc">3</td><td><b>index → A01 → A02 → A03 → A04 → … → index</b> 의 <b>전 구간이 정상 작동</b>(마지막 장면에서 index 복귀까지 확인) <span style="color:var(--ok);font-weight:700;">(A 등급 필수 요건)</span></td></tr>
+          <tr><td class="sc">2</td><td><b>1개 구간</b>의 링크 오류·누락(파일명 불일치, 되돌아오기 없음 등)</td></tr>
+          <tr><td class="sc">1</td><td><b>2개 이상 구간</b> 오류로 일부만 이동 가능</td></tr>
+          <tr><td class="sc">0</td><td>페이지 간 링크가 <b>구현되지 않음</b> 또는 전 구간 미작동</td></tr>
+
+          <tr class="top"><td class="item" rowspan="3">3-3<br>코스 안내 내용</td><td class="pts" rowspan="3">2</td><td class="sc">2</td><td>소개·의미·특징·역사적 사실 중 <b>2가지 이상</b>을 서술 + <b>해당 장소에만 해당하는 고유 정보</b>(연도, 규모·수치, 고유명사, 유래 등)를 포함하며 사실과 부합함</td></tr>
+          <tr><td class="sc">1</td><td>안내는 있으나 <b>어느 장소에나 통용될 일반적 문구</b>이거나 <b>1가지만</b> 단편적으로 서술함</td></tr>
+          <tr><td class="sc">0</td><td>코스 안내가 없거나 <b>사실과 다른</b> 내용을 포함함</td></tr>
+
+          <tr class="top"><td class="item" rowspan="4">3-4<br>수학활동 구성</td><td class="pts" rowspan="4">3</td><td class="sc">3</td><td>코스 연계 수학 활동 구성 <b>(2점)</b> + 단순 정답 입력식 퀴즈가 아니라 <b>학생의 인터랙티브한 조작</b>(드래그, 슬라이더, 도형 작도·회전, 화면 측정, 단계별 힌트 분기 등)으로 <b>결과가 즉시 달라지는 활동</b>을 구현 <b>(추가 1점)</b> <span style="color:var(--ok);font-weight:700;">(A 등급 필수 요건)</span></td></tr>
+          <tr><td class="sc">2</td><td>제시된 수학퀴즈 콘텐츠를 그대로 쓰지 않고 <b>코스와 관련성 있는 수학 활동을 별도로 구성</b>함(형식은 퀴즈여도 무방)</td></tr>
+          <tr><td class="sc">1</td><td>제시된 <b>수학퀴즈 콘텐츠(수학퀴즈_V2 등)를 그대로 활용</b>함</td></tr>
+          <tr><td class="sc">0</td><td>수학 활동이 <b>포함되지 않음</b></td></tr>
+        </tbody>
+      </table>
+      <div class="note"><b>3-4 판정 절차</b> ① 활동이 있는가? → 없으면 0점. ② 제공 콘텐츠를 복사해 왔는가? → 그렇다면 1점. ③ 코스 소재(구조물·거리·둘레·개수 등)를 반영해 새로 구성했는가? → 2점. ④ 그 활동에서 학생이 <b>클릭·드래그·수치 조작으로 결과가 즉시 달라지는가</b>? → 3점. (③을 만족하지 못하면 ④에 해당해도 최대 1점)</div>
+      <div class="note red"><b>채점 시 유의</b> Ⅲ영역은 <b>파일을 실제로 열어</b> 링크를 순서대로 눌러 보고 활동을 조작해 본 뒤 판정한다. 화면 캡처나 보고서 서술만으로 대체하지 않는다.</div>
+    </div>
+  </section>
+
+  <!-- ================= 채점표 ================= -->
+  <section class="view" id="view-score">
+    <div class="card">
+      <h2>대상자 정보</h2>
+      <div class="note red" style="margin:0 0 14px;">
+        <b>채점 범위를 먼저 선택하세요.</b> 보고서 채점위원은 <b>보고서(Ⅰ+Ⅱ)</b>를, HTML 채점위원은 <b>HTML(Ⅲ)</b>를 선택하면 해당 영역 문항만 표시됩니다. 두 영역은 독립적으로 채점하며, 저장한 결과는 <b>집계 탭에서 성명 기준으로 자동 합산</b>되어 원점수·등급·최종 점수가 산출됩니다.
+      </div>
+      <div class="meta">
+        <div><label>채점 범위</label>
+          <select id="mScope">
+            <option value="report">📄 보고서 채점 (Ⅰ+Ⅱ · 30점)</option>
+            <option value="html">💻 HTML 채점 (Ⅲ · 10점)</option>
+            <option value="all">📄+💻 통합 채점 (Ⅰ+Ⅱ+Ⅲ · 40점)</option>
+          </select>
+        </div>
+        <div><label>성명</label><input id="mName" placeholder="예) 홍길동"></div>
+        <div><label>소속 학교</label><input id="mSchool" placeholder="예) 구월중학교"></div>
+        <div><label>분임</label><input id="mTeam" placeholder="예) 3분임"></div>
+        <div><label>장소</label><input id="mPlace" placeholder="예) 송도센트럴파크"></div>
+        <div><label>코스</label><input id="mCourse" placeholder="예) B. 송도한옥마을"></div>
+        <div><label>채점위원</label><input id="mRater" placeholder="예) 조창현"></div>
+        <div><label>처리 구분</label>
+          <select id="mMode">
+            <option value="normal">정상 채점 (A~E)</option>
+            <option value="ack">인정점 처리 (30점)</option>
+            <option value="absent">결시 처리 (0점)</option>
+          </select>
+        </div>
+        <div><label>채점일</label><input id="mDate" placeholder="예) 2026-08-05"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>채점 문항 <span class="pt" id="scopeBadge">보고서 30점</span></h2>
+      <p class="lead">각 문항에서 해당하는 단계를 하나씩 선택하면 점수가 자동으로 계산됩니다. <span style="color:var(--ok);font-weight:700;">초록색 단계</span>는 질적 요건까지 충족해야 하는 최고 단계입니다. <b>담당 영역 밖의 자료는 참조하지 마세요.</b></p>
+      <div id="quiz"></div>
+
+      <div class="secbar" id="dedBar" style="background:#fdf3f3;color:var(--warn);">
+        <span>감점 항목 <span style="font-weight:600;font-size:12px;">(통합 채점 시에만 적용 · 분리 채점에서는 합산 담당이 적용)</span></span>
+        <div class="deduct">
+          <label><input type="checkbox" class="ded" value="2"> 기한 초과 −2</label>
+          <label><input type="checkbox" class="ded" value="1"> AI 프롬프트·URL 미제출 −1</label>
+          <label><input type="checkbox" class="ded" value="1"> 서식 임의 변경 −1</label>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <label style="display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:4px;">종합 의견 (피드백)</label>
+        <textarea id="mMemo" rows="3" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;" placeholder="강점 1가지, 보완점 1가지를 기록하면 결과 안내 시 활용할 수 있습니다."></textarea>
+      </div>
+    </div>
+
+    <div class="totalbox">
+      <div class="big"><span id="tTot">0</span><small id="tTotMax"> / 30 점</small></div>
+      <div class="grade" id="tGrade">–</div>
+      <div class="fin"><span id="tFinal">–</span><small style="color:var(--muted);"> 점 (최종)</small></div>
+      <div class="gate" id="tGate">A 조건 미판정</div>
+      <div class="brk">Ⅰ <b><span id="tS1">0</span></b>/10 · Ⅱ <b><span id="tS2">0</span></b>/20 · Ⅲ <b><span id="tS3">0</span></b>/10 · 감점 <b><span id="tDed">0</span></b></div>
+      <div class="btns">
+        <button class="act" id="btnSave">결과 저장</button>
+        <button class="act gh" id="btnClear">입력 초기화</button>
+        <button class="act gh" id="btnPrint">인쇄 / PDF</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 집계 ================= -->
+  <section class="view" id="view-save">
+    <div class="card">
+      <h2>등급 분포 <span class="pt" id="cntBadge">0명</span></h2>
+      <p class="lead">문항 설계의 타당성을 사후 점검하기 위한 참고 지표입니다. 절대평가이므로 비율을 강제로 맞추지 않습니다.</p>
+      <table>
+        <thead><tr><th class="c" style="width:70px;">등급</th><th class="c" style="width:80px;">최종점수</th><th class="c" style="width:70px;">인원</th><th class="c" style="width:80px;">비율</th><th>분포</th></tr></thead>
+        <tbody id="distBody"><tr><td colspan="5" class="empty">저장된 채점 결과가 없습니다.</td></tr></tbody>
+      </table>
+      <div id="distWarn"></div>
+    </div>
+
+    <div class="card">
+      <h2>대상자별 합산 결과 <span class="pt">보고서 + HTML</span></h2>
+      <p class="lead"><b>성명(+분임)</b>이 같은 채점 기록을 자동으로 묶습니다. 같은 영역을 2인 이상이 채점한 경우 <b>영역 내 평균</b>을 낸 뒤 합산하며, 합산 원점수는 <b>소수 첫째 자리에서 반올림</b>합니다. 한쪽 영역만 들어온 대상자는 <b>합산 대기</b>로 표시됩니다. 감점은 이 표에서 <b>1회만</b> 적용하세요.</p>
+      <div style="overflow-x:auto;">
+      <table id="mergeTbl">
+        <thead><tr>
+          <th class="c">#</th><th class="c">성명</th><th class="c">분임</th><th class="c">장소·코스</th>
+          <th class="c">보고서<br>30</th><th class="c">HTML<br>10</th><th class="c">감점</th>
+          <th class="c">원점수<br>40</th><th class="c">등급</th><th class="c">최종<br>점수</th><th class="c">상태</th>
+        </tr></thead>
+        <tbody id="mergeBody"><tr><td colspan="11" class="empty">저장된 채점 결과가 없습니다.</td></tr></tbody>
+      </table>
+      </div>
+      <div id="mergeWarn"></div>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="act" id="btnCsv">합산 결과 CSV</button>
+        <button class="act gh" id="btnPrint2">인쇄 / PDF</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>채점 기록 원장 <span class="pt" id="logBadge">0건</span></h2>
+      <p class="lead">채점위원이 「결과 저장」을 누른 개별 기록입니다. <b>새로고침하면 목록이 사라지므로</b> 채점을 마치면 반드시 CSV를 내려받아 주세요.</p>
+      <div style="overflow-x:auto;">
+      <table id="saveTbl">
+        <thead><tr>
+          <th class="c">#</th><th class="c">범위</th><th class="c">성명</th><th class="c">분임</th><th class="c">채점위원</th>
+          <th class="c">Ⅰ<br>10</th><th class="c">Ⅱ<br>20</th><th class="c">Ⅲ<br>10</th>
+          <th class="c">부분<br>점수</th><th class="c">삭제</th>
+        </tr></thead>
+        <tbody id="saveBody"><tr><td colspan="10" class="empty">저장된 채점 결과가 없습니다.</td></tr></tbody>
+      </table>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="act gh" id="btnCsvLog">채점 원장 CSV</button>
+        <button class="act dn" id="btnWipe">전체 비우기</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== 채점 문항 정의 ===================== */
+const SECTIONS = [
+  { id:'S1', title:'Ⅰ. 교육과정 설계 핵심 요소 (보고서)', max:10, items:[
+    { id:'1-1', name:'1-1. 기본 정보 명시', max:2, opts:[
+      [2,'7개 항목 모두 + 성취기준 코드·문장 제시 + 코드와 영역이 일치'],
+      [1,'7개 기재하였으나 코드 없음·불일치, 또는 5~6개 기재'],
+      [0,'4개 이하 기재 또는 성취기준 미기재']]},
+    { id:'1-2', name:'1-2. 핵심 아이디어', max:2, opts:[
+      [2,'교육과정 핵심 아이디어 문구를 인용·재진술 + 코스 고유 소재가 문장에 드러남'],
+      [1,'한 문장이나 교육과정 근거 미확인 또는 코스 소재 없이 일반적'],
+      [0,'미기재 또는 학습목표·활동명 나열 수준']]},
+    { id:'1-3', name:'1-3. 지식·이해', max:2, opts:[
+      [2,'개념 2개 이상 + 각 개념이 어느 활동에 쓰이는지 대응'],
+      [1,'개념 나열만, 또는 1개만, 또는 단원명 수준의 포괄 기술'],
+      [0,'미기재 또는 수학 개념이 아님']]},
+    { id:'1-4', name:'1-4. 과정·기능', max:2, opts:[
+      [2,'2가지 이상을 수행 동사로 기술 + 관찰되는 활동 장면 제시'],
+      [1,'활동 맥락 없이 일반적, 또는 1가지만, 또는 명사 나열'],
+      [0,'미기재 또는 지식·이해와 미분화']]},
+    { id:'1-5', name:'1-5. 가치·태도', max:2, opts:[
+      [2,'2가지 이상 + 코스 활동의 어느 국면에서 형성되는지 명시'],
+      [1,'나열만 하거나 1가지만, 또는 코스와 무관한 일반 서술'],
+      [0,'미기재']]},
+  ]},
+  { id:'S2', title:'Ⅱ. 매쓰투어 설계 (보고서)', max:20, items:[
+    { id:'2-1', name:'2-1. 디지털 도구 활용 계획', max:3, opts:[
+      [3,'기능 2가지 이상 + 각 기능이 작동하는 장면·활동 대응 + 학습효과 설명'],
+      [2,'기능 2가지 이상 + 효과 설명(장면 대응 없음), 또는 기능 1가지 + 효과'],
+      [1,'사용 사실만 기술(기능·효과 없음)'],
+      [0,'미기재']]},
+    { id:'2-2', name:'2-2. 장소 및 코스 설명(선정 이유)', max:4, opts:[
+      [4,'소개·선정이유·설계방향 3요소 + 선정 이유가 특정 성취기준과 직접 연결'],
+      [3,'3요소 모두 충족하나 수학 연계가 일반적 서술'],
+      [2,'2요소만, 또는 선정 이유가 친숙함·접근성 등 수학과 무관'],
+      [1,'장소 소개만 있고 선정 이유 없음'],
+      [0,'미기재 또는 탐방 불가능한 장소']]},
+    { id:'2-3', name:'2-3. 수학활동 및 교과 연계 (필수 1개)  ★A필수', max:5, opts:[
+      [5,'세 요건 모두 — 성취기준 1:1 연계 + 장소 소재 기반 + 조건·수치·정답까지 구체(그대로 수업 사용 가능)'],
+      [4,'세 요건 중 2가지 충족(대개 연계+장소성, 조건·수치는 개략적)'],
+      [3,'성취기준 연계되나 장소성·구체성 중 1가지만(장소 무관 일반 문제이거나 수치 미흡)'],
+      [2,'수학활동은 제시되나 성취기준 연계 서술 없음'],
+      [1,'활동 주제·이름만 제시(수학 과제로 미성립)'],
+      [0,'미기재']]},
+    { id:'2-4', name:'2-4. 장면(페이지) 계획 12칸', max:5, opts:[
+      [5,'12칸 전부 + 질적요건 3가지(인과적 연결·대사형 나레이션·구도 지정 그림가이드)'],
+      [4,'12칸 전부 + 질적요건 2가지'],
+      [3,'12칸 전부 작성(형식 충족) + 질적요건 1가지 이하'],
+      [2,'9~11칸 작성'],
+      [1,'8칸 이하 작성'],
+      [0,'장면 계획표 미작성']]},
+    { id:'2-5', name:'2-5. 수행평가 기준표(루브릭)', max:3, opts:[
+      [3,'요소 3개 이상 + 상중하 + 관찰 가능한 변별 + 본 코스의 실제 활동을 지칭'],
+      [2,'요소 3개 이상 + 3단계이나 일반 문구여서 변별 근거 약함'],
+      [1,'요소 2개 이하 또는 일부 단계 누락'],
+      [0,'루브릭 미작성']]},
+  ]},
+  { id:'S3', title:'Ⅲ. 실제 제작한 HTML 파일', max:10, items:[
+    { id:'3-1', name:'3-1. 페이지 제작 수', max:2, opts:[
+      [2,'4개 이상 + 모두 정상 표시되고 장면 내용이 서로 다름'],
+      [1,'4개 이상이나 일부 빈 페이지·중복·미완성, 또는 3개'],
+      [0,'2개 이하 또는 미제출']]},
+    { id:'3-2', name:'3-2. 페이지 연결 구조  ★A필수', max:3, opts:[
+      [3,'index→A01→…→index 전 구간 정상 작동'],
+      [2,'1개 구간 링크 오류·누락'],
+      [1,'2개 이상 구간 오류(일부만 이동)'],
+      [0,'링크 미구현 또는 전 구간 미작동']]},
+    { id:'3-3', name:'3-3. 코스 안내 내용', max:2, opts:[
+      [2,'2가지 이상 서술 + 그 장소만의 고유 정보(연도·수치·고유명사) 포함'],
+      [1,'일반적 문구이거나 1가지만 단편적으로 서술'],
+      [0,'안내 없음 또는 사실과 다름']]},
+    { id:'3-4', name:'3-4. 수학활동 구성  ★A필수', max:3, opts:[
+      [3,'코스 연계 활동(2점) + 인터랙티브 조작으로 결과가 즉시 달라짐(추가 1점)'],
+      [2,'코스와 관련성 있는 수학 활동을 별도 구성'],
+      [1,'제시된 수학퀴즈 콘텐츠를 그대로 활용'],
+      [0,'수학 활동 없음']]},
+  ]},
+];
+const FINAL={A:40,B:38,C:36,D:34,E:32};
+const GCLASS={A:'gA',B:'gB',C:'gC',D:'gD',E:'gE','인정점':'gX','결시':'gX'};
+
+/* ===================== 렌더링 ===================== */
+const quiz=document.getElementById('quiz');
+SECTIONS.forEach(sec=>{
+  const bar=document.createElement('div');
+  bar.className='secbar';
+  bar.dataset.sec=sec.id;
+  bar.innerHTML='<span>'+sec.title+'</span><span class="v"><span id="bar'+sec.id+'">0</span> / '+sec.max+'점</span>';
+  quiz.appendChild(bar);
+  sec.items.forEach(it=>{
+    const box=document.createElement('div');
+    box.className='qrow';
+    box.dataset.sec=sec.id;
+    let h='<div class="qh"><span class="qt">'+it.name+'</span><span class="qmax">배점 '+it.max+'점</span></div><div class="opts">';
+    it.opts.forEach(([v,txt],i)=>{
+      h+='<label class="'+(i===0?'tp':'')+'"><input type="radio" name="q'+it.id+'" data-sec="'+sec.id+'" value="'+v+'"><span class="sv">'+v+'점</span><span>'+txt+'</span></label>';
+    });
+    h+='</div>';
+    box.innerHTML=h;
+    quiz.appendChild(box);
+  });
+});
+
+/* ===================== 계산 ===================== */
+function detail(){
+  const d={};
+  document.querySelectorAll('#quiz input[type=radio]:checked').forEach(r=>{ d[r.name.slice(1)]=parseInt(r.value,10); });
+  return d;
+}
+function gateA(s,d){
+  return s.S1>=9 && s.S2>=18 && s.S3>=9 && d['3-2']===3 && d['2-3']===5 && d['3-4']===3;
+}
+function gradeOf(raw,s,d){
+  if(raw>=38 && gateA(s,d)) return 'A';
+  if(raw>=33) return 'B';
+  if(raw>=27) return 'C';
+  if(raw>=20) return 'D';
+  return 'E';
+}
+/* ===== 채점 범위 ===== */
+const SCOPE={
+  report:{secs:['S1','S2'], max:30, label:'보고서 30점', n:10},
+  html  :{secs:['S3'],      max:10, label:'HTML 10점',  n:4},
+  all   :{secs:['S1','S2','S3'], max:40, label:'통합 40점', n:14}
+};
+function scopeVal(){ return document.getElementById('mScope').value; }
+function applyScope(){
+  const sc=SCOPE[scopeVal()];
+  document.querySelectorAll('#quiz .qrow, #quiz .secbar').forEach(el=>{
+    el.style.display = sc.secs.includes(el.dataset.sec) ? '' : 'none';
+  });
+  document.querySelectorAll('#quiz .qrow').forEach(el=>{
+    if(el.style.display==='none'){
+      el.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+      el.querySelectorAll('label').forEach(l=>l.classList.remove('sel'));
+    }
+  });
+  document.getElementById('scopeBadge').textContent=sc.label;
+  document.getElementById('tTotMax').textContent=' / '+sc.max+' 점';
+  const dedOn = scopeVal()==='all';
+  document.getElementById('dedBar').style.display = dedOn?'':'none';
+  if(!dedOn) document.querySelectorAll('.ded').forEach(c=>c.checked=false);
+  calc();
+}
+function calc(){
+  const mode=document.getElementById('mMode').value;
+  const scope=scopeVal(), sc=SCOPE[scope];
+  const s={S1:0,S2:0,S3:0};
+  document.querySelectorAll('#quiz input[type=radio]:checked').forEach(r=>{ s[r.dataset.sec]+=parseInt(r.value,10); });
+  let ded=0;
+  document.querySelectorAll('.ded:checked').forEach(c=>ded+=parseInt(c.value,10));
+  const part=sc.secs.reduce((a,k)=>a+s[k],0);
+  const raw=Math.max(0,part-ded);
+  const d=detail();
+  const answered=document.querySelectorAll('#quiz input[type=radio]:checked').length;
+  SECTIONS.forEach(sec=>document.getElementById('bar'+sec.id).textContent=s[sec.id]);
+  document.getElementById('tS1').textContent=s.S1;
+  document.getElementById('tS2').textContent=s.S2;
+  document.getElementById('tS3').textContent=s.S3;
+  document.getElementById('tDed').textContent=ded?('-'+ded):'0';
+  document.getElementById('tTot').textContent=raw;
+
+  const gel=document.getElementById('tGrade'), fel=document.getElementById('tFinal'), gt=document.getElementById('tGate');
+  let g=null,fin=null;
+  if(mode==='ack'){ g='인정점'; fin=30; }
+  else if(mode==='absent'){ g='결시'; fin=0; }
+  else if(scope==='all'){ g=gradeOf(raw,s,d); fin=FINAL[g]; }
+
+  if(mode==='normal' && scope!=='all'){
+    /* 부분 채점 — 등급은 합산 단계에서 판정 */
+    gel.textContent='합산'; gel.style.background='#6b7a8c';
+    fel.textContent='–';
+    gt.className='gate'; gt.textContent=(scope==='report'?'보고서':'HTML')+' 부분 채점 · 등급은 집계 탭에서 산출';
+  } else if(mode==='normal' && answered===0){
+    gel.textContent='–'; gel.style.background='#6b7a8c'; fel.textContent='–';
+    gt.className='gate'; gt.textContent='A 조건 미판정';
+  } else {
+    gel.textContent=g;
+    gel.style.background=({A:'#2f855a',B:'#2b5a9b',C:'#c9922b',D:'#d97706',E:'#c0392b'})[g]||'#6b7a8c';
+    fel.textContent=fin;
+    if(mode!=='normal'){ gt.className='gate'; gt.textContent='정성 처리'; }
+    else if(gateA(s,d)){ gt.className='gate ok'; gt.textContent='A 진입조건 충족'; }
+    else {
+      const miss=[];
+      if(s.S1<9)miss.push('Ⅰ<9'); if(s.S2<18)miss.push('Ⅱ<18'); if(s.S3<9)miss.push('Ⅲ<9');
+      if(d['3-2']!==3)miss.push('3-2'); if(d['2-3']!==5)miss.push('2-3'); if(d['3-4']!==3)miss.push('3-4');
+      gt.className='gate no'; gt.textContent='A 조건 미충족 ('+miss.join(', ')+')';
+    }
+  }
+  return {s:s,ded:ded,raw:raw,part:part,g:g,fin:fin,answered:answered,d:d,mode:mode,scope:scope,need:sc.n};
+}
+document.addEventListener('change',e=>{
+  if(e.target.matches('#quiz input[type=radio]')){
+    e.target.closest('.opts').querySelectorAll('label').forEach(l=>l.classList.remove('sel'));
+    e.target.closest('label').classList.add('sel');
+  }
+  if(e.target.matches('#mScope')) { applyScope(); return; }
+  if(e.target.matches('#quiz input[type=radio], .ded, #mMode')) calc();
+});
+
+/* ===================== 탭 ===================== */
+document.querySelectorAll('nav.tabs button').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.querySelectorAll('section.view').forEach(v=>v.classList.remove('on'));
+    document.getElementById('view-'+b.dataset.v).classList.add('on');
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+});
+
+/* ===================== 토스트 ===================== */
+let tT;
+function toast(m){
+  const t=document.getElementById('toast');
+  t.textContent=m; t.classList.add('on');
+  clearTimeout(tT); tT=setTimeout(()=>t.classList.remove('on'),2100);
+}
+
+/* ===================== 저장 / 집계 / CSV ===================== */
+const ROWS=[];
+const KEYS=['1-1','1-2','1-3','1-4','1-5','2-1','2-2','2-3','2-4','2-5','3-1','3-2','3-3','3-4'];
+const GORDER=['A','B','C','D','E','인정점','결시'];
+const GCOLOR={A:'#2f855a',B:'#2b5a9b',C:'#c9922b',D:'#d97706',E:'#c0392b','인정점':'#6b7a8c','결시':'#6b7a8c'};
+/* ===== 성명 기준 합산 ===== */
+const DED={};   /* 합산 단계에서 적용하는 감점 (대상자별 1회) */
+function avg(a){ return a.reduce((x,y)=>x+y,0)/a.length; }
+function mergeRows(){
+  const map=new Map();
+  ROWS.forEach(r=>{
+    const key=r.name+'|'+(r.team||'');
+    if(!map.has(key)) map.set(key,{key:key,name:r.name,team:r.team,school:r.school,place:r.place,course:r.course,rep:[],htm:[],raters:[],modes:[],memos:[]});
+    const m=map.get(key);
+    if(r.school&&!m.school)m.school=r.school;
+    if(r.place&&!m.place)m.place=r.place;
+    if(r.course&&!m.course)m.course=r.course;
+    if(r.rater)m.raters.push(r.rater);
+    if(r.memo)m.memos.push(r.memo);
+    m.modes.push(r.mode);
+    if(r.scope==='report'||r.scope==='all') m.rep.push(r);
+    if(r.scope==='html'  ||r.scope==='all') m.htm.push(r);
+  });
+  return [...map.values()].map(m=>{
+    const hasR=m.rep.length>0, hasH=m.htm.length>0;
+    const S1=hasR?avg(m.rep.map(r=>r.s.S1)):0;
+    const S2=hasR?avg(m.rep.map(r=>r.s.S2)):0;
+    const S3=hasH?avg(m.htm.map(r=>r.s.S3)):0;
+    const repPts=S1+S2, htmPts=S3;
+    /* 문항별 평균(게이트 판정용) */
+    const dAvg={};
+    KEYS.forEach(k=>{
+      const src=(k[0]==='3')?m.htm:m.rep;
+      const vals=src.map(r=>r.d[k]).filter(v=>v!==undefined);
+      if(vals.length) dAvg[k]=Math.round(avg(vals));
+    });
+    const ded=DED[m.key]||0;
+    const rawExact=repPts+htmPts-ded;
+    const raw=Math.max(0,Math.round(rawExact));
+    const s={S1:Math.round(S1*10)/10,S2:Math.round(S2*10)/10,S3:Math.round(S3*10)/10};
+    const sInt={S1:Math.round(S1),S2:Math.round(S2),S3:Math.round(S3)};
+    const complete=hasR&&hasH;
+    let g=null,fin=null;
+    if(m.modes.includes('absent')){ g='결시'; fin=0; }
+    else if(m.modes.includes('ack')){ g='인정점'; fin=30; }
+    else if(complete){ g=gradeOf(raw,sInt,dAvg); fin=FINAL[g]; }
+    /* 채점위원 간 편차 */
+    const spread=[];
+    if(m.rep.length>1){ const v=m.rep.map(r=>r.s.S1+r.s.S2); const gap=Math.max(...v)-Math.min(...v); if(gap>=4) spread.push('보고서 '+gap+'점 차'); }
+    if(m.htm.length>1){ const v=m.htm.map(r=>r.s.S3); const gap=Math.max(...v)-Math.min(...v); if(gap>=2) spread.push('HTML '+gap+'점 차'); }
+    return {key:m.key,name:m.name,team:m.team,school:m.school,place:m.place,course:m.course,
+      raters:[...new Set(m.raters)],memo:m.memos.join(' / '),
+      hasR:hasR,hasH:hasH,complete:complete,repPts:Math.round(repPts*10)/10,htmPts:Math.round(htmPts*10)/10,
+      s:s,d:dAvg,ded:ded,raw:raw,g:g,fin:fin,spread:spread,
+      nRep:m.rep.length,nHtm:m.htm.length};
+  });
+}
+window.setDed=function(key,v){ DED[key]=parseInt(v,10)||0; renderRows(); };
+function renderMerge(){
+  const tb=document.getElementById('mergeBody'), w=document.getElementById('mergeWarn');
+  const M=mergeRows();
+  if(!M.length){ tb.innerHTML='<tr><td colspan="11" class="empty">저장된 채점 결과가 없습니다.</td></tr>'; w.innerHTML=''; return M; }
+  tb.innerHTML=M.map((r,i)=>{
+    const dedSel='<select onchange="setDed(\''+r.key.replace(/'/g,"\\'")+'\',this.value)" style="padding:2px 4px;font-size:12px;border:1px solid var(--line);border-radius:5px;">'
+      +[0,1,2,3,4].map(v=>'<option value="'+v+'"'+(v===r.ded?' selected':'')+'>'+(v?'-'+v:'0')+'</option>').join('')+'</select>';
+    let stat, grade, fin;
+    if(r.g){ grade='<span class="gtag '+GCLASS[r.g]+'">'+r.g+'</span>'; fin='<b style="font-size:16px;color:#2f855a;">'+r.fin+'</b>'; }
+    else { grade='<span style="color:var(--muted);">–</span>'; fin='<span style="color:var(--muted);">–</span>'; }
+    if(r.complete) stat='<span style="color:var(--ok);font-weight:700;">합산 완료</span>';
+    else stat='<span style="color:var(--warn);font-weight:700;">'+(r.hasR?'HTML 채점 대기':'보고서 채점 대기')+'</span>';
+    if(r.spread.length) stat+='<br><span style="color:var(--warn);font-size:11px;">협의 필요('+r.spread.join(', ')+')</span>';
+    return '<tr><td class="c">'+(i+1)+'</td><td class="c"><b>'+r.name+'</b></td><td class="c">'+(r.team||'-')+'</td>'
+      +'<td>'+(r.place||'-')+(r.course?' / '+r.course:'')+'</td>'
+      +'<td class="c">'+(r.hasR?'<b>'+r.repPts+'</b>'+(r.nRep>1?'<br><span style="font-size:10px;color:var(--muted);">'+r.nRep+'인 평균</span>':''):'<span style="color:var(--muted);">–</span>')+'</td>'
+      +'<td class="c">'+(r.hasH?'<b>'+r.htmPts+'</b>'+(r.nHtm>1?'<br><span style="font-size:10px;color:var(--muted);">'+r.nHtm+'인 평균</span>':''):'<span style="color:var(--muted);">–</span>')+'</td>'
+      +'<td class="c">'+dedSel+'</td>'
+      +'<td class="c">'+(r.complete?'<b style="font-size:15px;color:var(--navy);">'+r.raw+'</b>':'<span style="color:var(--muted);">–</span>')+'</td>'
+      +'<td class="c">'+grade+'</td><td class="c">'+fin+'</td><td class="c">'+stat+'</td></tr>';
+  }).join('');
+  const wait=M.filter(r=>!r.complete&&!r.g).length;
+  const conf=M.filter(r=>r.spread.length).length;
+  const msgs=[];
+  if(wait) msgs.push('<b>'+wait+'명</b>이 아직 한쪽 영역만 채점되어 합산 대기 상태입니다.');
+  if(conf) msgs.push('<b>'+conf+'명</b>은 같은 영역 채점위원 간 점수 차가 기준(보고서 4점·HTML 2점) 이상이어서 <b>협의 또는 제3 채점위원</b>이 필요합니다.');
+  w.innerHTML=msgs.length?('<div class="note red" style="margin-top:14px;"><b>합산 점검</b><br>'+msgs.join('<br>')+'</div>'):'';
+  return M;
+}
+function renderDist(){
+  const tb=document.getElementById('distBody'), w=document.getElementById('distWarn');
+  const M=renderMerge().filter(r=>r.g);
+  document.getElementById('cntBadge').textContent=M.length+'명 확정';
+  document.getElementById('logBadge').textContent=ROWS.length+'건';
+  if(!M.length){ tb.innerHTML='<tr><td colspan="5" class="empty">합산이 완료된 대상자가 없습니다.</td></tr>'; w.innerHTML=''; return; }
+  const cnt={}; GORDER.forEach(g=>cnt[g]=0);
+  M.forEach(r=>cnt[r.g]++);
+  const n=M.length;
+  tb.innerHTML=GORDER.map(g=>{
+    const p=n?Math.round(cnt[g]/n*1000)/10:0;
+    const fin=(g==='인정점')?30:(g==='결시'?0:FINAL[g]);
+    return '<tr><td class="c"><span class="gtag '+GCLASS[g]+'">'+g+'</span></td><td class="c"><b>'+fin+'</b></td>'
+      +'<td class="c"><b>'+cnt[g]+'</b></td><td class="c">'+p+'%</td>'
+      +'<td><div class="bar" style="width:'+Math.max(p,0)+'%;background:'+GCOLOR[g]+';"></div></td></tr>';
+  }).join('');
+  const scored=cnt.A+cnt.B+cnt.C+cnt.D+cnt.E;
+  const msgs=[];
+  if(scored){
+    const pa=cnt.A/scored*100, pab=(cnt.A+cnt.B)/scored*100, plow=(cnt.C+cnt.D+cnt.E)/scored*100;
+    if(pa>40) msgs.push('A 비율이 '+Math.round(pa)+'%로 40%를 초과했습니다. 2-3·2-4·3-3·3-4의 <b>최고 단계 질적 요건</b>이 엄격히 적용되었는지 채점위원 협의로 재확인하세요.');
+    if(pab>90) msgs.push('A~B 비율이 '+Math.round(pab)+'%로 90%를 초과했습니다. 변별이 충분한지 점검이 필요합니다.');
+    if(plow>50) msgs.push('C 이하가 '+Math.round(plow)+'%입니다. 과제 안내의 충분성과 채점 엄격도를 함께 점검하세요.');
+  }
+  w.innerHTML=msgs.length?('<div class="note red" style="margin-top:14px;"><b>사후 점검 알림</b><br>'+msgs.join('<br>')+'</div>')
+    :'<div class="note blue" style="margin-top:14px;"><b>사후 점검</b> 현재 분포는 참고 기준(A ≤40%, A~B ≤90%, C 이하 ≤50%) 범위 안에 있습니다.</div>';
+}
+const SCLABEL={report:'📄 보고서',html:'💻 HTML',all:'📄+💻 통합'};
+function renderRows(){
+  const tb=document.getElementById('saveBody');
+  if(!ROWS.length){ tb.innerHTML='<tr><td colspan="10" class="empty">저장된 채점 결과가 없습니다.</td></tr>'; renderDist(); return; }
+  tb.innerHTML=ROWS.map((r,i)=>{
+    const na='<span style="color:var(--muted);">–</span>';
+    const sc=r.scope;
+    return '<tr><td class="c">'+(i+1)+'</td>'
+    +'<td class="c" style="font-size:12px;">'+SCLABEL[sc]+'</td>'
+    +'<td class="c"><b>'+(r.name||'-')+'</b></td><td class="c">'+(r.team||'-')+'</td>'
+    +'<td class="c" style="font-size:12px;">'+(r.rater||'-')+'</td>'
+    +'<td class="c">'+(sc==='html'?na:r.s.S1)+'</td><td class="c">'+(sc==='html'?na:r.s.S2)+'</td>'
+    +'<td class="c">'+(sc==='report'?na:r.s.S3)+'</td>'
+    +'<td class="c"><b style="font-size:15px;color:var(--navy);">'+r.part+'</b><span style="color:var(--muted);font-size:11px;"> /'+(sc==='report'?30:sc==='html'?10:40)+'</span></td>'
+    +'<td class="c"><button class="act gh" style="padding:3px 10px;font-size:12px;" onclick="delRow('+i+')">×</button></td></tr>';
+  }).join('');
+  renderDist();
+}
+window.delRow=function(i){ ROWS.splice(i,1); renderRows(); toast('삭제했습니다.'); };
+
+document.getElementById('btnSave').onclick=()=>{
+  const c=calc();
+  const name=document.getElementById('mName').value.trim();
+  if(!name){ toast('성명을 입력해 주세요.'); document.getElementById('mName').focus(); return; }
+  if(c.mode==='normal' && c.answered<c.need){
+    if(!confirm('아직 선택하지 않은 문항이 있습니다('+c.answered+'/'+c.need+'). 그대로 저장할까요?')) return;
+  }
+  const team=document.getElementById('mTeam').value.trim();
+  const dup=ROWS.filter(r=>r.name===name && (r.team||'')===team && r.scope===c.scope);
+  if(dup.length && !confirm(name+' 선생님의 「'+SCLABEL[c.scope]+'」 채점 기록이 이미 '+dup.length+'건 있습니다.\n복수 채점이면 그대로 저장하세요(평균 처리). 계속할까요?')) return;
+  ROWS.push({
+    scope:c.scope,
+    name:name,
+    school:document.getElementById('mSchool').value.trim(),
+    team:team,
+    place:document.getElementById('mPlace').value.trim(),
+    course:document.getElementById('mCourse').value.trim(),
+    rater:document.getElementById('mRater').value.trim(),
+    date:document.getElementById('mDate').value.trim(),
+    memo:document.getElementById('mMemo').value.trim(),
+    mode:c.mode,
+    s:{S1:c.s.S1,S2:c.s.S2,S3:c.s.S3}, ded:c.ded, part:c.part, raw:c.raw, g:c.g, fin:c.fin, d:c.d
+  });
+  renderRows();
+  if(c.scope==='all' && c.mode==='normal') toast(name+' 선생님 저장 · 원점수 '+c.raw+' → '+c.g+' 등급 · 최종 '+c.fin+'점');
+  else if(c.mode!=='normal') toast(name+' 선생님 '+c.g+' 처리 · 최종 '+c.fin+'점');
+  else toast(name+' 선생님 '+SCLABEL[c.scope]+' 저장 · '+c.part+'점 (집계 탭에서 합산)');
+};
+document.getElementById('btnClear').onclick=()=>{
+  document.querySelectorAll('#quiz input[type=radio]').forEach(r=>r.checked=false);
+  document.querySelectorAll('.opts label').forEach(l=>l.classList.remove('sel'));
+  document.querySelectorAll('.ded').forEach(c=>c.checked=false);
+  ['mName','mSchool','mPlace','mCourse','mMemo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mMode').value='normal';
+  calc(); toast('입력을 초기화했습니다.');
+};
+document.getElementById('btnPrint').onclick=()=>window.print();
+document.getElementById('btnPrint2').onclick=()=>window.print();
+document.getElementById('btnWipe').onclick=()=>{ if(confirm('저장된 모든 결과를 지울까요?')){ ROWS.length=0; Object.keys(DED).forEach(k=>delete DED[k]); renderRows(); toast('모두 비웠습니다.'); } };
+
+function download(name,lines){
+  const blob=new Blob(['﻿'+lines.join('\r\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=name; a.click(); URL.revokeObjectURL(a.href);
+  toast('CSV를 내려받았습니다.');
+}
+const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+/* 합산 결과 CSV */
+document.getElementById('btnCsv').onclick=()=>{
+  const M=mergeRows();
+  if(!M.length){ toast('저장된 결과가 없습니다.'); return; }
+  const head=['번호','성명','소속','분임','장소','코스','채점위원','보고서(30)','HTML(10)','감점','원점수(40)','등급','최종점수','상태','종합의견'];
+  const lines=[head.map(q).join(',')];
+  M.forEach((r,i)=>{
+    const stat=r.complete?'합산 완료':(r.g?r.g+' 처리':(r.hasR?'HTML 채점 대기':'보고서 채점 대기'));
+    lines.push([i+1,r.name,r.school,r.team,r.place,r.course,r.raters.join(' · '),
+      r.hasR?r.repPts:'', r.hasH?r.htmPts:'', r.ded, r.complete?r.raw:'', r.g||'', r.g?r.fin:'', stat, r.memo].map(q).join(','));
+  });
+  download('MATHTOUR_개인평가_합산결과.csv',lines);
+};
+/* 채점 원장 CSV */
+document.getElementById('btnCsvLog').onclick=()=>{
+  if(!ROWS.length){ toast('저장된 결과가 없습니다.'); return; }
+  const head=['번호','채점범위','성명','소속','분임','장소','코스','채점위원','채점일'].concat(KEYS)
+    .concat(['Ⅰ영역(10)','Ⅱ영역(20)','Ⅲ영역(10)','부분점수','처리구분','종합의견']);
+  const lines=[head.map(q).join(',')];
+  const SCTXT={report:'보고서',html:'HTML',all:'통합'};
+  ROWS.forEach((r,i)=>{
+    const cells=[i+1,SCTXT[r.scope],r.name,r.school,r.team,r.place,r.course,r.rater,r.date]
+      .concat(KEYS.map(k=>(r.d[k]===undefined?'':r.d[k])))
+      .concat([r.scope==='html'?'':r.s.S1, r.scope==='html'?'':r.s.S2, r.scope==='report'?'':r.s.S3,
+               r.part, r.mode==='normal'?'정상':(r.mode==='ack'?'인정점':'결시'), r.memo]);
+    lines.push(cells.map(q).join(','));
+  });
+  download('MATHTOUR_개인평가_채점원장.csv',lines);
+};
+
+applyScope();
+</script>
+</body>
+</html>

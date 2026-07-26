@@ -1,0 +1,123 @@
+<!-- 원본 크기: 1000x500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>문방사우</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .dms-svg { display:block; width:100%; height:auto; }
+
+</style>
+</head>
+<body>
+<svg class="dms-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="문방사우">
+<title>문방사우</title>
+<desc>도호부 동헌의 문방사우. 벼루와 먹, 붓, 한지 두루마리.</desc>
+<defs>
+  <linearGradient id="dmsInk" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#4a4a52"/><stop offset="1" stop-color="#1f1f26"/>
+  </linearGradient>
+  <linearGradient id="dmsStone" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#5f5a56"/><stop offset="0.5" stop-color="#3f3b38"/><stop offset="1" stop-color="#2a2724"/>
+  </linearGradient>
+  <linearGradient id="dmsPaper" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fdf8ea"/><stop offset="1" stop-color="#e8dcc0"/>
+  </linearGradient>
+  <linearGradient id="dmsBrush" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#d9b076"/><stop offset="1" stop-color="#8f6a34"/>
+  </linearGradient>
+  <linearGradient id="dmsDesk" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#a8763a"/><stop offset="1" stop-color="#6e4a1c"/>
+  </linearGradient>
+</defs>
+<!-- 서안(책상) -->
+<path d="M40,352 L960,352 L940,416 L60,416 Z" fill="url(#dmsDesk)" stroke="#4a2f10" stroke-width="5"/>
+<path d="M40,352 L960,352 L950,338 L50,338 Z" fill="#c49a5c" stroke="#4a2f10" stroke-width="4"/>
+<g stroke="#8f6a34" stroke-width="3" opacity="0.6">
+  <line x1="240" y1="352" x2="234" y2="416"/><line x1="500" y1="352" x2="500" y2="416"/>
+  <line x1="760" y1="352" x2="766" y2="416"/>
+</g>
+<path d="M96,416 L136,416 L128,470 L104,470 Z" fill="#6e4a1c" stroke="#4a2f10" stroke-width="4"/>
+<path d="M864,416 L904,416 L896,470 L872,470 Z" fill="#6e4a1c" stroke="#4a2f10" stroke-width="4"/>
+
+<!-- 한지 두루마리 -->
+<g>
+  <path d="M300,338 L720,338 L716,300 L304,300 Z" fill="url(#dmsPaper)" stroke="#c4b48c" stroke-width="4"/>
+  <ellipse cx="720" cy="319" rx="14" ry="22" fill="#e8dcc0" stroke="#c4b48c" stroke-width="4"/>
+  <ellipse cx="300" cy="319" rx="14" ry="22" fill="#f6f0e0" stroke="#c4b48c" stroke-width="4"/>
+  <!-- 붓글씨 -->
+  <g stroke="#20201f" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.85">
+    <path d="M356,308 L392,308 M374,300 L374,332 M360,326 L390,326"/>
+    <path d="M440,302 L440,334 M424,312 L456,312 M428,330 L452,330"/>
+    <path d="M508,302 L536,302 M522,302 L522,334 M506,326 L540,326"/>
+    <path d="M596,304 L596,332 M582,318 L610,318 M586,304 L606,304"/>
+  </g>
+</g>
+
+<!-- 벼루 -->
+<g transform="translate(196,300)">
+  <path d="M-136,0 L136,0 L120,60 L-120,60 Z" fill="url(#dmsStone)" stroke="#181614" stroke-width="5"/>
+  <path d="M-136,0 C-136,-26 -80,-40 0,-40 C80,-40 136,-26 136,0 Z" fill="#4f4b48" stroke="#181614" stroke-width="5"/>
+  <ellipse cx="0" cy="-6" rx="112" ry="26" fill="#2a2724"/>
+  <!-- 먹물 -->
+  <ellipse cx="-30" cy="-4" rx="70" ry="17" fill="url(#dmsInk)"/>
+  <ellipse cx="-46" cy="-9" rx="24" ry="6" fill="#5a5a66" opacity="0.55"/>
+  <!-- 물 담는 홈 -->
+  <ellipse cx="86" cy="-10" rx="22" ry="10" fill="#1f1f26"/>
+</g>
+
+<!-- 먹 -->
+<g transform="translate(390,318) rotate(-6)">
+  <path d="M-24,-52 L24,-52 L20,52 L-20,52 Z" fill="url(#dmsInk)" stroke="#101014" stroke-width="4"/>
+  <path d="M-24,-52 L24,-52 L28,-60 L-20,-60 Z" fill="#5a5a66" stroke="#101014" stroke-width="3.4"/>
+  <g fill="#c9922e" opacity="0.9">
+    <circle cx="0" cy="-16" r="9"/>
+    <path d="M-12,12 h24 M-12,26 h24" stroke="#c9922e" stroke-width="4"/>
+  </g>
+  <path d="M-14,-46 L-14,44" stroke="#7d7d88" stroke-width="4" opacity="0.4"/>
+</g>
+
+<!-- 붓걸이와 붓 -->
+<g transform="translate(760,240)">
+  <!-- 걸이 -->
+  <rect x="-130" y="0" width="260" height="14" rx="7" fill="#8f6a34" stroke="#5e4220" stroke-width="4"/>
+  <path d="M-120,14 L-110,98 L-88,98 L-98,14 Z" fill="#8f6a34" stroke="#5e4220" stroke-width="4"/>
+  <path d="M120,14 L110,98 L88,98 L98,14 Z" fill="#8f6a34" stroke="#5e4220" stroke-width="4"/>
+  <g stroke="#5e4220" stroke-width="3.4">
+    <line x1="-70" y1="0" x2="-70" y2="-14"/><line x1="0" y1="0" x2="0" y2="-14"/><line x1="70" y1="0" x2="70" y2="-14"/>
+  </g>
+  <!-- 붓 3자루 -->
+  <g transform="translate(-70,0)">
+    <rect x="-7" y="-10" width="14" height="110" rx="7" fill="url(#dmsBrush)" stroke="#5e4220" stroke-width="3"/>
+    <rect x="-9" y="94" width="18" height="14" rx="4" fill="#c2452e"/>
+    <path d="M-9,108 C-9,140 -4,164 0,172 C4,164 9,140 9,108 Z" fill="#2b2318" stroke="#141008" stroke-width="3"/>
+  </g>
+  <g transform="translate(0,0)">
+    <rect x="-8" y="-14" width="16" height="126" rx="8" fill="url(#dmsBrush)" stroke="#5e4220" stroke-width="3"/>
+    <rect x="-10" y="106" width="20" height="15" rx="4" fill="#1f5f8c"/>
+    <path d="M-10,121 C-10,158 -5,186 0,196 C5,186 10,158 10,121 Z" fill="#2b2318" stroke="#141008" stroke-width="3"/>
+  </g>
+  <g transform="translate(70,0)">
+    <rect x="-7" y="-10" width="14" height="110" rx="7" fill="url(#dmsBrush)" stroke="#5e4220" stroke-width="3"/>
+    <rect x="-9" y="94" width="18" height="14" rx="4" fill="#2f7a3c"/>
+    <path d="M-9,108 C-9,140 -4,164 0,172 C4,164 9,140 9,108 Z" fill="#2b2318" stroke="#141008" stroke-width="3"/>
+  </g>
+</g>
+
+<!-- 연적 -->
+<g transform="translate(546,314)">
+  <path d="M-34,0 C-34,-26 -18,-40 0,-40 C18,-40 34,-26 34,0 C34,20 18,32 0,32 C-18,32 -34,20 -34,0 Z"
+        fill="#dfe8ec" stroke="#8fa0a8" stroke-width="4"/>
+  <path d="M22,-26 C36,-32 44,-24 40,-14" fill="none" stroke="#8fa0a8" stroke-width="5" stroke-linecap="round"/>
+  <ellipse cx="0" cy="-38" rx="12" ry="5" fill="#8fa0a8"/>
+  <g fill="#5f88a0" opacity="0.65">
+    <path d="M-18,-6 q10,-10 20,0 q-10,10 -20,0 Z"/>
+    <circle cx="14" cy="8" r="6"/>
+  </g>
+  <ellipse cx="-14" cy="-18" rx="10" ry="6" transform="rotate(-24 -14 -18)" fill="#ffffff" opacity="0.7"/>
+</g>
+</svg>
+</body>
+</html>

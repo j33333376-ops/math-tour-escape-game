@@ -1,0 +1,172 @@
+<!-- 원본 크기: 900x500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>월미전통정원</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .wmg-svg { display:block; width:100%; height:auto; }
+
+  .wmg-water { fill:url(#wmgWater); stroke:#2f6b56; stroke-width:2; }
+  .wmg-ripple { stroke:#eaf6f0; stroke-width:1.2; opacity:0.4; fill:none; }
+  .wmg-lily { fill:#4a8f5c; opacity:0.85; }
+  .wmg-lily-flower { fill:#e08fae; }
+  .wmg-stone { fill:#b7b2a6; stroke:#8f8a7c; stroke-width:1; }
+  .wmg-post { fill:#a83a2c; }
+  .wmg-post-dark { fill:#8a2e22; }
+  .wmg-platform { fill:url(#wmgStone); stroke:#7c7666; stroke-width:1; }
+  .wmg-roof { fill:url(#wmgRoof); stroke:#274d38; stroke-width:1; }
+  .wmg-roof-ridge { fill:#1f3d2c; }
+  .wmg-band-blue { fill:#3d6ea5; }
+  .wmg-band-red { fill:#a83a2c; }
+  .wmg-band-gold { fill:#d4a634; }
+  .wmg-pine-trunk { fill:#6b4a2c; }
+  .wmg-pine-dark { fill:#2f5d3a; }
+  .wmg-pine-light { fill:#3f7a4a; opacity:0.9; }
+  .wmg-shadow { fill:#1a3a2a; opacity:0.18; }
+  .wmg-grass { fill:#4f8f52; }
+</style>
+</head>
+<body>
+<svg class="wmg-svg" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="월미전통정원 일러스트">
+<title>월미전통정원</title>
+<desc>월미공원 전통정원의 부용지 연못과 그 위 정자, 좌우 대칭의 소나무, 돌다리가 있는 풍경.</desc>
+
+<defs>
+  <linearGradient id="wmgWater" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#7fc4c4"/>
+    <stop offset="0.6" stop-color="#4f9ea8"/>
+    <stop offset="1" stop-color="#357f8c"/>
+  </linearGradient>
+  <linearGradient id="wmgRoof" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#3f7a52"/>
+    <stop offset="1" stop-color="#2c5c3c"/>
+  </linearGradient>
+  <linearGradient id="wmgStone" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#cfc9ba"/>
+    <stop offset="1" stop-color="#a8a290"/>
+  </linearGradient>
+</defs>
+
+<!-- ════════ 연못(부용지) ════════ -->
+<ellipse class="wmg-water" cx="450" cy="410" rx="420" ry="78"/>
+<g class="wmg-ripple">
+  <ellipse cx="450" cy="405" rx="360" ry="55" fill="none"/>
+  <ellipse cx="450" cy="415" rx="280" ry="40" fill="none"/>
+  <ellipse cx="300" cy="425" rx="90" ry="18" fill="none"/>
+  <ellipse cx="620" cy="420" rx="100" ry="20" fill="none"/>
+</g>
+
+<!-- 연꽃잎/수련 -->
+<g>
+  <ellipse class="wmg-lily" cx="190" cy="430" rx="20" ry="9"/>
+  <ellipse class="wmg-lily" cx="230" cy="445" rx="16" ry="7"/>
+  <circle class="wmg-lily-flower" cx="192" cy="428" r="4"/>
+  <ellipse class="wmg-lily" cx="700" cy="430" rx="20" ry="9"/>
+  <ellipse class="wmg-lily" cx="660" cy="445" rx="16" ry="7"/>
+  <circle class="wmg-lily-flower" cx="702" cy="428" r="4"/>
+  <ellipse class="wmg-lily" cx="450" cy="460" rx="18" ry="8"/>
+</g>
+
+<!-- ════════ 돌다리 ════════ -->
+<g class="wmg-stone">
+  <ellipse cx="160" cy="422" rx="26" ry="10"/>
+  <ellipse cx="215" cy="412" rx="24" ry="9"/>
+  <ellipse cx="268" cy="400" rx="22" ry="9"/>
+  <ellipse cx="318" cy="388" rx="21" ry="8"/>
+  <ellipse cx="365" cy="372" rx="20" ry="8"/>
+</g>
+
+<!-- 정자 물그림자(반영) -->
+<ellipse class="wmg-shadow" cx="450" cy="400" rx="130" ry="20"/>
+
+<!-- ════════ 정자(누각) ════════ -->
+<!-- 기단(석축) -->
+<polygon class="wmg-platform" points="355,325 545,325 565,352 335,352"/>
+<rect x="360" y="352" width="180" height="8" fill="#8f8a7c"/>
+
+<!-- 기둥 -->
+<g>
+  <rect class="wmg-post" x="378" y="215" width="10" height="112"/>
+  <rect class="wmg-post" x="418" y="215" width="10" height="112"/>
+  <rect class="wmg-post" x="472" y="215" width="10" height="112"/>
+  <rect class="wmg-post" x="512" y="215" width="10" height="112"/>
+</g>
+<!-- 난간 -->
+<rect class="wmg-post-dark" x="372" y="300" width="156" height="7"/>
+<g stroke="#8a2e22" stroke-width="3">
+  <line x1="392" y1="300" x2="392" y2="325"/>
+  <line x1="408" y1="300" x2="408" y2="325"/>
+  <line x1="452" y1="300" x2="452" y2="325"/>
+  <line x1="468" y1="300" x2="468" y2="325"/>
+  <line x1="500" y1="300" x2="500" y2="325"/>
+</g>
+
+<!-- 단청 띠 (기둥 상부) -->
+<g>
+  <rect class="wmg-band-blue" x="372" y="205" width="156" height="6"/>
+  <rect class="wmg-band-red"  x="372" y="211" width="156" height="4"/>
+  <rect class="wmg-band-gold" x="372" y="215" width="156" height="3"/>
+</g>
+
+<!-- 처마(지붕 하단면) -->
+<polygon class="wmg-roof" points="360,205 540,205 505,158 395,158"/>
+<!-- 용마루(지붕 마루) -->
+<rect class="wmg-roof-ridge" x="408" y="150" width="84" height="9"/>
+<!-- 처마 끝 반전(추녀) -->
+<path class="wmg-roof" d="M360,205 Q335,192 340,172 Q353,190 372,200 Z"/>
+<path class="wmg-roof" d="M540,205 Q565,192 560,172 Q547,190 528,200 Z"/>
+<!-- 지붕 기와선 -->
+<g stroke="#1f3d2c" stroke-width="1" opacity="0.5">
+  <line x1="380" y1="170" x2="410" y2="205"/>
+  <line x1="420" y1="163" x2="440" y2="205"/>
+  <line x1="460" y1="163" x2="460" y2="205"/>
+  <line x1="480" y1="163" x2="475" y2="205"/>
+  <line x1="500" y1="170" x2="490" y2="205"/>
+</g>
+<!-- 지붕 꼭대기 장식(절병통) -->
+<circle cx="450" cy="145" r="6" fill="#d4a634"/>
+<rect x="447" y="130" width="6" height="17" fill="#d4a634"/>
+
+<!-- ════════ 소나무 (좌) ════════ -->
+<g>
+  <rect class="wmg-pine-trunk" x="98" y="330" width="14" height="95"/>
+  <path class="wmg-pine-trunk" d="M98,360 Q65,345 55,320" fill="none" stroke="#6b4a2c" stroke-width="6"/>
+  <ellipse class="wmg-pine-dark" cx="60" cy="315" rx="42" ry="14"/>
+  <ellipse class="wmg-pine-dark" cx="105" cy="300" rx="55" ry="16"/>
+  <ellipse class="wmg-pine-dark" cx="90" cy="270" rx="48" ry="15"/>
+  <ellipse class="wmg-pine-dark" cx="115" cy="245" rx="38" ry="13"/>
+  <ellipse class="wmg-pine-light" cx="95" cy="298" rx="40" ry="10"/>
+  <ellipse class="wmg-pine-light" cx="105" cy="243" rx="26" ry="8"/>
+</g>
+
+<!-- ════════ 소나무 (우, 대칭) ════════ -->
+<g>
+  <rect class="wmg-pine-trunk" x="788" y="330" width="14" height="95"/>
+  <path class="wmg-pine-trunk" d="M802,360 Q835,345 845,320" fill="none" stroke="#6b4a2c" stroke-width="6"/>
+  <ellipse class="wmg-pine-dark" cx="840" cy="315" rx="42" ry="14"/>
+  <ellipse class="wmg-pine-dark" cx="795" cy="300" rx="55" ry="16"/>
+  <ellipse class="wmg-pine-dark" cx="810" cy="270" rx="48" ry="15"/>
+  <ellipse class="wmg-pine-dark" cx="785" cy="245" rx="38" ry="13"/>
+  <ellipse class="wmg-pine-light" cx="805" cy="298" rx="40" ry="10"/>
+  <ellipse class="wmg-pine-light" cx="795" cy="243" rx="26" ry="8"/>
+</g>
+
+<!-- 물가 풀 -->
+<g class="wmg-grass">
+  <path d="M20,440 Q25,415 30,440 Q35,420 40,440 Q45,418 50,440 Z"/>
+  <path d="M850,440 Q855,415 860,440 Q865,420 870,440 Q875,418 880,440 Z"/>
+</g>
+
+<!-- 석등 -->
+<g transform="translate(300,392)">
+  <rect x="-4" y="0" width="8" height="18" fill="#9a9484"/>
+  <rect x="-9" y="-6" width="18" height="8" fill="#b7b2a6"/>
+  <rect x="-6" y="-20" width="12" height="16" fill="#a8a290"/>
+  <polygon points="-11,-20 11,-20 0,-32" fill="#8f8a7c"/>
+</g>
+</svg>
+</body>
+</html>

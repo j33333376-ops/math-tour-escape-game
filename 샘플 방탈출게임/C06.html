@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차이나타운 체험학습앱 - C06</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* 기본 바디 리셋 */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* 16:9 가로 고정 게임 스크린 */
+        #game-container {
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(to top, #2b1111 0%, #172554 40%, #0f172a 100%);
+            position: relative;
+            overflow: hidden;
+            border: 4px solid #d4af37;
+            box-sizing: border-box;
+        }
+
+        /* 새벽 여명 이펙트 백그라운드 그라데이션 오버레이 */
+        .sunrise-sky {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 65%;
+            background: radial-gradient(circle at 50% 100%, rgba(239, 68, 68, 0.3) 0%, rgba(245, 158, 11, 0.2) 30%, transparent 80%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 바닥 레이어 마당 */
+        .ground-surface {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 35%;
+            background: linear-gradient(to bottom, #231b15 0%, #0f0a08 100%);
+            border-top: 3px solid #8c3030;
+            z-index: 2;
+        }
+
+        /* 상단 앤틱 스타일 정보바 */
+        .top-status-bar {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            background: rgba(43, 17, 17, 0.8);
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            box-sizing: border-box;
+        }
+        .stage-title {
+            font-family: 'Nanum Myeongjo', serif;
+            font-weight: 700;
+            font-size: 22px;
+            color: #d4af37;
+            margin: 0;
+        }
+        .stage-subtitle {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 13px;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+
+        /* 가로막는 요소 정비용 무대 레이어 */
+        .stage-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+        }
+
+        /* 개업 축하 현수막 디자인 데코레이션 */
+        .hotel-banner {
+            position: absolute;
+            right: 125px;
+            bottom: 380px;
+            background-color: #f5f0e6;
+            border: 2px solid #8c3030;
+            padding: 4px 12px;
+            font-family: 'Nanum Myeongjo', serif;
+            font-weight: bold;
+            font-size: 12px;
+            color: #8c3030;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            white-space: nowrap;
+            z-index: 4;
+            transform: rotate(-1deg);
+        }
+
+        /* 캐릭터 개별 배치 프레임 컴포넌트 */
+        .character-frame {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            overflow: visible;
+            transition: filter 0.3s ease, opacity 0.3s ease;
+        }
+        .character-frame iframe {
+            width: 260px;
+            height: 320px;
+            border: 0;
+            overflow: hidden;
+        }
+
+        /* 인물 위치 세부 CSS 규칙 반영 */
+        #actor-minwoo {
+            left: 80px;
+            bottom: 60px;
+            z-index: 6;
+        }
+        #actor-seoyeon {
+            left: 200px;
+            bottom: 55px;
+            z-index: 5;
+        }
+        #actor-chen {
+            right: 40px;
+            bottom: 50px;
+            z-index: 5;
+        }
+
+        /* 비활성화 어두움 처리 스타일 정의 */
+        .inactive {
+            filter: brightness(0.4) grayscale(0.2);
+        }
+
+        /* 푸른색 타임슬립 이펙트 오버레이 입자 */
+        .time-portal-effect {
+            position: absolute;
+            left: 40px;
+            bottom: 30px;
+            width: 440px;
+            height: 120px;
+            background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.3) 0%, rgba(30, 58, 138, 0.1) 50%, transparent 70%);
+            pointer-events: none;
+            z-index: 4;
+            mix-blend-mode: screen;
+            animation: ripple 2.5s infinite ease-in-out;
+        }
+
+        /* 유형 2 대화창 스타일 가이드 디자인 설계 */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            height: 24%;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #d4af37;
+            border-radius: 0px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 15;
+            padding: 15px 25px;
+            box-sizing: border-box;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 8px;
+        }
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            margin: 0;
+            word-break: keep-all;
+        }
+
+        /* 상황 안내 엔딩 메시지 보드 박스 (유형 1 디자인 차용) */
+        #ending-narrative-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            height: 24%;
+            background-color: #f5f0e6;
+            border: 3px double #8c3030;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            z-index: 14;
+            padding: 18px 25px;
+            box-sizing: border-box;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .ending-narrative-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            color: #2d3748;
+            margin: 0;
+            text-align: center;
+            word-break: keep-all;
+        }
+
+        /* 공통 네비게이션 액션 버튼 인프라 구조 */
+        .btn-nav {
+            position: absolute;
+            background-color: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 20;
+            transition: background 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+            display: none; /* 대화 진행 중에는 기본적으로 숨김 처리 */
+        }
+        #btn-next, #btn-skip {
+            right: 20px;
+            bottom: 20px;
+        }
+        #btn-skip {
+            right: 150px;
+            background-color: #4a5568;
+            border: 1px solid #cbd5e1;
+        }
+        #btn-skip:hover {
+            background-color: #2d3748;
+        }
+
+        /* 타임 게이트 맥박 애니메이션 연출 */
+        @keyframes ripple {
+            0%, 100% { transform: scale(1); opacity: 0.4; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        /* 페이드 아웃 특수 효과 클래스 */
+        .fade-out-heroes {
+            animation: fadeOutHero 2s forwards ease-in-out;
+        }
+        @keyframes fadeOutHero {
+            to { opacity: 0; filter: blur(10px) brightness(2); transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        
+        <!-- 상단 역사 컨텍스트 타이틀 바 -->
+        <div class="top-status-bar">
+            <h2 class="stage-title">대불호텔의 비밀</h2>
+            <div class="stage-subtitle">에필로그 : 역사의 제자리</div>
+        </div>
+
+        <!-- 환경 배경 오버레이 레이어 조립 -->
+        <div class="sunrise-sky"></div>
+
+        <!-- 에셋 로딩 규칙 의거: 건물 원본 크기 프레임 연동 및 배율 스케일 압축 주입 구조 -->
+        <!-- 원본 크기 W:500px, H:500px, 배율 s:0.75 적용 -> 컨테이너 크기 가로 375px, 세로 375px 구성 -->
+        <div style="position: absolute; right: 100px; bottom: 110px; width: 375px; height: 375px; overflow: hidden; z-index: 2;">
+            <iframe src="C_대불호텔.html" scrolling="no" style="border: 0; width: 500px; height: 500px; transform: scale(0.75); transform-origin: top left;"></iframe>
+        </div>
+
+        <!-- 대불호텔 정문 위 개업 축하 현수막 부착 데코레이션 레이어 -->
+        <div class="hotel-banner">WELCOME TO DAIBUTSU HOTEL (1889)</div>
+
+        <div class="ground-surface"></div>
+        <div class="time-portal-effect" id="portal-glow"></div>
+
+        <!-- 등장인물 레이어 풀세트 (260x320 고정 규격 iframe 연동) -->
+        <div class="stage-layer">
+            
+            <!-- 주인공 민우 (좌측 앞선 배치) -->
+            <div id="actor-minwoo" class="character-frame">
+                <iframe src="민우.html" scrolling="no"></iframe>
+            </div>
+
+            <!-- 주인공 서연 (좌측 민우 바로 옆) -->
+            <div id="actor-seoyeon" class="character-frame">
+                <iframe src="서연.html" scrolling="no"></iframe>
+            </div>
+
+            <!-- 악역 미스터 첸 (우측 구석 배치, 본 구조 유지 상태 대치) -->
+            <div id="actor-chen" class="character-frame">
+                <iframe src="미스터첸.html" scrolling="no"></iframe>
+            </div>
+
+        </div>
+
+        <!-- 유형 2: 대화 진행 인터페이스 패널 -->
+        <div id="dialogue-box" onclick="advanceDialogue()">
+            <div id="speaker-name">시스템</div>
+            <p id="dialogue-text">대화를 시작합니다.</p>
+        </div>
+
+        <!-- 최종 연출용 엔딩 나레이션 카드형 박스 (유형 1 디자인 스타일 차용) -->
+        <div id="ending-narrative-box">
+            <p class="ending-narrative-text">
+                민우와 서연의 몸이 눈부신 푸른 입자와 함께 하늘로 흐려지며 사라진다.<br>
+                대불호텔 정문 위에는 'WELCOME TO DAIBUTSU HOTEL' 현수막이 아침 햇살을 받아 빛나고 있다.<br><br>
+                <strong>"해냈다! 역사가 원래대로 돌아왔어! 자, 이제 진짜 우리의 시간으로 돌아갈 시간이야. 안녕, 1889년의 대불호텔!"</strong>
+            </p>
+        </div>
+
+        <!-- 스크립트 인터랙션 버튼 제어 컴포넌트 프레임 -->
+        <button class="btn-nav" id="btn-prev" onclick="window.location.href='C05.html'">이전 장면</button>
+        <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
+        <button class="btn-nav" id="btn-next" onclick="endStage()">다음 장면</button>
+
+    </div>
+
+    <script>
+        // 대화 진행용 데이터셋 인프라 배열 선언 (유형 2 구현 필수 요구사항)
+        const dialogues = [
+            { speaker: "서연", text: "(금고 안을 가리키며 기뻐서 날뛰듯) \"민우야! 열렸어! 금고가 열렸어! 저기 진짜 황금 열쇠가 있어!\"", target: "actor-seoyeon" },
+            { speaker: "민우", text: "(금고 안에서 황금 열쇠를 꺼내 하늘 높이 치켜들며) \"해냈어...! 미스터 첸이 위조한 장부의 숙박비 암호를 정확하게 맞춘 거야! 역사의 왜곡이 멈췄어!\"", target: "actor-minwoo" },
+            { speaker: "미스터 첸", text: "(외알안경이 삐뚤어진 채 뒷걸음질 치며 허탈하게) \"이, 이럴 수가...! 그 복잡한 개항기 환율과 객실 계산법을 초등학생 녀석들이 풀어내다니... 내 완벽한 계획이 수포로 돌아가다니!\"", target: "actor-chen" },
+            { speaker: "민우", text: "(미스터 첸을 당당하게 바라보며) \"당신의 탐욕 때문에 한국 최초의 서양식 호텔인 대불호텔의 역사가 사라지게 둘 순 없죠. 이제 곧 아침이고, 대불호텔은 예정대로 화려하게 개업할 겁니다!\"", target: "actor-minwoo" },
+            { speaker: "서연", text: "(민우의 발밑에서 피어오르는 푸른 빛을 보며) \"앗, 민우야! 우리 발밑을 봐! 황금 열쇠를 찾으니까 다시 현대의 전시관으로 돌아가는 타임슬립 게이트가 열리고 있어!\"", target: "actor-seoyeon" },
+            { speaker: "민우", text: "(황금 열쇠와 회중시계를 꼭 쥐고 미소를 지으며) \"응, 우리의 멋진 역사 체험학습이 드디어 끝날 시간이야. 자, 가자 서연아! 안녕, 1889년의 대불호텔!\"", target: "both" }
+        ];
+
+        let currentIndex = 0;
+
+        // 초기 화면 구동 엔진
+        function initScene() {
+            document.getElementById("btn-next").style.display = "none";
+            updateDialoguePage();
+        }
+
+        // 각 대사별 캐릭터 라이팅 및 활성화 다이내믹 제어 엔진 루프
+        function updateDialoguePage() {
+            if (currentIndex >= dialogues.length) {
+                finishDialogueSequence();
+                return;
+            }
+
+            const currentData = dialogues[currentIndex];
+            document.getElementById("speaker-name").innerText = currentData.speaker;
+            document.getElementById("dialogue-text").innerText = currentData.text;
+
+            // 캐릭터 비활성화 쉐이더 초기화 갱신 자동화 처리
+            const actors = ["actor-minwoo", "actor-seoyeon", "actor-chen"];
+            
+            actors.forEach(id => {
+                const element = document.getElementById(id);
+                if (currentData.target === "both") {
+                    if (id === "actor-minwoo" || id === "actor-seoyeon") {
+                        element.classList.remove("inactive");
+                    } else {
+                        element.classList.add("inactive");
+                    }
+                } else {
+                    if (id === currentData.target) {
+                        element.classList.remove("inactive");
+                    } else {
+                        element.classList.add("inactive");
+                    }
+                }
+            });
+        }
+
+        // 대사창 바디 클릭 시 순차 인덱스 카운터 제어 함수
+        function advanceDialogue() {
+            currentIndex++;
+            updateDialoguePage();
+        }
+
+        // 스킵 시스템 트리거 제어 엔진
+        function skipDialogue() {
+            currentIndex = dialogues.length;
+            finishDialogueSequence();
+        }
+
+        // 모든 대화 스크립트 시퀀스 종료 후 하이라이트 연출 처리 단원
+        function finishDialogueSequence() {
+            // 대화창 가림 처리 및 인물 상태 전체 원상 복구 복원 규칙 준수
+            document.getElementById("dialogue-box").style.display = "none";
+            document.getElementById("btn-skip").style.display = "none";
+            
+            document.getElementById("actor-minwoo").classList.remove("inactive");
+            document.getElementById("actor-seoyeon").classList.remove("inactive");
+            document.getElementById("actor-chen").classList.add("inactive"); // 완패한 미스터 첸만 어둡게 고정
+
+            // 시각 연출: 민우와 서연 페이드아웃 및 타임슬립 입자 효과 증폭
+            document.getElementById("actor-minwoo").classList.add("fade-out-heroes");
+            document.getElementById("actor-seoyeon").classList.add("fade-out-heroes");
+            document.getElementById("portal-glow").style.background = "radial-gradient(circle, rgba(56,189,248,0.6) 0%, transparent 80%)";
+
+            // 상황 나레이션 박스 노출
+            document.getElementById("ending-narrative-box").style.display = "flex";
+
+            // 다음 장면이 비어있는 최종 페이지에 해당하므로 'End' 버튼으로 개조 전환 출력
+            const nextBtn = document.getElementById("btn-next");
+            nextBtn.innerText = "End (체험학습 종료)";
+            nextBtn.style.display = "inline-flex";
+            
+            // 이전 버튼 활성화 복귀 노출
+            document.getElementById("btn-prev").style.display = "inline-flex";
+        }
+
+        // 최종 페이지 종료 및 메인화면 리다이렉션 분기
+        function endStage() {
+            window.location.href = "index.html";
+        }
+
+        // 스크립트 실행 시작 엔진 바인딩
+        window.onload = initScene;
+    </script>
+</body>
+</html>

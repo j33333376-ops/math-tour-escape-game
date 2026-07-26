@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>옛날 짜장면 만들기 대작전 - 미션 완수</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Jua', sans-serif;
+            background-color: #fff9e6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border: 4px solid #ffb703;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        header h1 {
+            color: #fb8500;
+            margin-top: 0;
+            font-size: 32px;
+            text-shadow: 2px 2px 0px #ffe5b4;
+        }
+
+        .story-text {
+            font-size: 18px;
+            color: #555;
+            background-color: #f8edeb;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* 캐릭터 무대 */
+        .character-stage {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            background-color: #e9ecef;
+            border-radius: 15px;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        /* 미션 박스 */
+        .mission-box {
+            background-color: #ffffff;
+            border: 3px dashed #fb8500;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+
+        .mission-title {
+            background-color: #fb8500;
+            color: white;
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .problem-text {
+            font-size: 20px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .question-group {
+            background-color: #fff9e6;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 19px;
+            text-align: center;
+        }
+
+        /* 입력창 기본 및 상태별 스타일 개선 */
+        .input-field {
+            width: 80px;
+            padding: 8px;
+            font-size: 18px;
+            font-family: 'Jua', sans-serif;
+            border: 2px solid #ffb703;
+            border-radius: 8px;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field.error {
+            border-color: #e63946;
+            background-color: #ffe3e3;
+        }
+
+        .input-field.success-input {
+            border-color: #2a9d8f;
+            background-color: #e8f5e9;
+        }
+
+        /* 버튼 영역 */
+        .action-buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn {
+            font-family: 'Jua', sans-serif;
+            font-size: 20px;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-submit { background-color: #219ebc; color: white; }
+        .btn-submit:hover { background-color: #126782; }
+
+        .btn-nav { background-color: #8ecae6; color: #023047; text-decoration: none; display: inline-block; }
+        .btn-nav:hover { background-color: #219ebc; color: white; }
+
+        /* 다음 버튼 활성화 애니메이션 */
+        .btn-next { 
+            background-color: #ffb703; 
+            color: #023047; 
+            display: none; 
+            text-decoration: none;
+        }
+        .btn-next.active {
+            display: inline-block;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, pulseGlow 2s infinite ease-in-out;
+        }
+
+        /* 피드백 메시지 애니메이션 효과 */
+        #feedback-msg {
+            font-size: 26px;
+            font-weight: bold;
+            margin-top: 15px;
+            text-align: center;
+            min-height: 38px;
+        }
+        .success { color: #d97706; text-shadow: 1px 1px 0px #fef3c7; }
+        .fail { color: #e63946; }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        /* 김이 펄펄 나는 짜장면 그림 영역 */
+        #jajangmyeon-container {
+            display: none;
+            margin: 30px auto 10px auto;
+            position: relative;
+            width: 200px;
+            height: 180px;
+            text-align: center;
+        }
+        
+        .food-emoji {
+            font-size: 120px;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.15));
+            animation: bounceBowl 2s infinite ease-in-out;
+        }
+
+        .steam {
+            position: absolute;
+            background-color: #ffffff;
+            border-radius: 50%;
+            filter: blur(8px);
+            opacity: 0;
+            z-index: 10;
+            animation: rise 3s infinite ease-in;
+        }
+
+        .steam:nth-child(1) { width: 30px; height: 30px; left: 40px; bottom: 100px; animation-delay: 0s; }
+        .steam:nth-child(2) { width: 40px; height: 40px; left: 80px; bottom: 100px; animation-delay: 1s; }
+        .steam:nth-child(3) { width: 25px; height: 25px; left: 130px; bottom: 100px; animation-delay: 0.5s; }
+        .steam:nth-child(4) { width: 35px; height: 35px; left: 100px; bottom: 90px; animation-delay: 1.5s; }
+
+        /* 신규 추가 애니메이션 효과들 */
+        @keyframes rise {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            20% { opacity: 0.6; }
+            100% { transform: translateY(-100px) scale(2.3); opacity: 0; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            70% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+            50% { box-shadow: 0 0 20px #ffb703; transform: scale(1.03); }
+        }
+        @keyframes bounceBowl {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-8px); }
+        }
+
+        .shake { animation: shake 0.4s ease-in-out; }
+        .pop-in { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        /* 캐릭터 CSS 스케일 */
+        .kyobok-minwoo-component, .kyobok-seoyeon-component {
+            transform: scale(0.8);
+            transform-origin: center top;
+        }
+
+        /* [민우 캐릭터 디자인] */
+        .kmw-stage { position: relative; width: 260px; height: 320px; margin: 0 auto; animation: kmw-breatheHuman 4s ease-in-out infinite; overflow: visible !important; }
+        @keyframes kmw-breatheHuman { 0%, 100% { transform: scale(1) translateY(0px); } 50% { transform: scale(1.01) translateY(-3px); } }
+        .kmw-head-wrapper { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 120px; height: 130px; overflow: visible !important; }
+        .kmw-ear-l, .kmw-ear-r { position: absolute; top: 52px; width: 16px; height: 26px; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; z-index: 2; }
+        .kmw-ear-l { left: -11px; border-radius: 50% 0 0 50%; transform: rotate(-10deg); }
+        .kmw-ear-r { right: -11px; border-radius: 0 50% 50% 0; transform: rotate(10deg); }
+        .kmw-hair-back { position: absolute; top: -8px; left: -4px; width: 128px; height: 80px; background-color: #242424; border: 3.5px solid #141414; border-radius: 60px 60px 20px 20px; z-index: 1; }
+        .kmw-neck { position: absolute; top: 105px; left: 50%; transform: translateX(-50%); width: 28px; height: 40px; background-color: #ffdbb5; border-left: 3.5px solid #8d5b4c; border-right: 3.5px solid #8d5b4c; z-index: 3; }
+        .kmw-face-skin { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; border-radius: 50px 50px 60px 60px; z-index: 4; overflow: hidden; }
+        .kmw-front-hair { position: absolute; top: 0; left: 0; width: 100%; height: 42px; background-color: #242424; border-bottom: 3.5px solid #141414; z-index: 10; }
+        .kmw-hair-point { position: absolute; top: 36px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 10px solid #141414; z-index: 11; }
+        .kmw-eyebrow-l, .kmw-eyebrow-r { position: absolute; top: 50px; width: 18px; height: 4px; background-color: #221a15; border-radius: 2px; z-index: 6; }
+        .kmw-eyebrow-l { left: 22px; transform: rotate(5deg); }
+        .kmw-eyebrow-r { right: 22px; transform: rotate(-5deg); }
+        .kmw-eye-l, .kmw-eye-r { position: absolute; top: 62px; width: 15px; height: 15px; background-color: #221a15; border-radius: 50%; z-index: 6; }
+        .kmw-eye-l::after, .kmw-eye-r::after { content: ''; position: absolute; top: 2px; left: 2px; width: 4px; height: 4px; background-color: #fff; border-radius: 50%; }
+        .kmw-eye-l { left: 24px; } .kmw-eye-r { right: 24px; }
+        .kmw-blush-l, .kmw-blush-r { position: absolute; top: 78px; width: 18px; height: 9px; background-color: rgba(244, 63, 94, 0.4); border-radius: 50%; filter: blur(0.5px); z-index: 6; }
+        .kmw-blush-l { left: 16px; } .kmw-blush-r { right: 16px; }
+        .kmw-mouth { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); width: 22px; height: 11px; background-color: #e11d48; border-radius: 2px 2px 12px 12px; border: 1.5px solid #9f1239; z-index: 6; }
+        .kmw-uniform-top { position: absolute; top: 180px; left: 50%; transform: translateX(-50%); width: 124px; height: 110px; background-color: #1e293b; border: 3.5px solid #475569; border-radius: 24px 24px 10px 10px; z-index: 7; overflow: hidden; }
+        .kmw-collar-l { position: absolute; top: -2px; left: 32px; width: 30px; height: 26px; background-color: #ffffff; border: 3px solid #475569; transform: rotate(-30deg); border-radius: 0 0 5px 0; }
+        .kmw-collar-r { position: absolute; top: -2px; right: 32px; width: 30px; height: 26px; background-color: #ffffff; border: 3px solid #475569; transform: rotate(30deg); border-radius: 0 0 0 5px; }
+        .kmw-tie { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 12px; height: 50px; background-color: #b91c1c; border: 2px solid #7f1d1d; border-radius: 2px 2px 6px 6px; z-index: 10; }
+        .kmw-tie::after { content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 16px; height: 10px; background-color: #b91c1c; border: 2px solid #7f1d1d; border-radius: 3px; }
+
+        /* [서연 캐릭터 디자인] */
+        .ksy-stage { position: relative; width: 260px; height: 320px; margin: 0 auto; animation: ksy-breatheHuman 4s ease-in-out infinite; overflow: visible !important; }
+        @keyframes ksy-breatheHuman { 0%, 100% { transform: scale(1) translateY(0px); } 50% { transform: scale(1.01) translateY(-3px); } }
+        .ksy-head-wrapper { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 120px; height: 130px; overflow: visible !important; }
+        .ksy-ponytail { position: absolute; top: 15px; right: -36px; width: 44px; height: 85px; background-color: #4a3728; border: 3.5px solid #2d1f10; border-radius: 0 40px 15px 40px; transform: rotate(15deg); z-index: 1; }
+        .ksy-hair-elastic { position: absolute; top: 28px; right: -6px; width: 14px; height: 14px; background-color: #fb7185; border: 2px solid #e11d48; border-radius: 50%; z-index: 2; }
+        .ksy-hair-back { position: absolute; top: -8px; left: -4px; width: 128px; height: 85px; background-color: #4a3728; border: 3.5px solid #2d1f10; border-radius: 60px 60px 20px 20px; z-index: 1; }
+        .ksy-ear-l, .ksy-ear-r { position: absolute; top: 52px; width: 16px; height: 26px; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; z-index: 2; }
+        .ksy-ear-l { left: -11px; border-radius: 50% 0 0 50%; transform: rotate(-10deg); }
+        .ksy-ear-r { right: -11px; border-radius: 0 50% 50% 0; transform: rotate(10deg); }
+        .ksy-neck { position: absolute; top: 105px; left: 50%; transform: translateX(-50%); width: 28px; height: 40px; background-color: #ffdbb5; border-left: 3.5px solid #8d5b4c; border-right: 3.5px solid #8d5b4c; z-index: 3; }
+        .ksy-face-skin { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffdbb5; border: 3.5px solid #8d5b4c; border-radius: 50px 50px 60px 60px; z-index: 4; overflow: hidden; }
+        .ksy-front-hair { position: absolute; top: 0; left: 0; width: 100%; height: 45px; background-color: #4a3728; border-bottom: 3.5px solid #2d1f10; z-index: 10; }
+        .ksy-hair-point { position: absolute; top: 39px; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 9px solid #2d1f10; z-index: 11; }
+        .ksy-eye-l, .ksy-eye-r { position: absolute; top: 62px; width: 15px; height: 15px; background-color: #221a15; border-radius: 50%; z-index: 6; }
+        .ksy-eye-l::after, .ksy-eye-r::after { content: ''; position: absolute; top: 2px; left: 2px; width: 4px; height: 4px; background-color: #fff; border-radius: 50%; }
+        .ksy-eye-l { left: 24px; } .ksy-eye-r { right: 24px; }
+        .ksy-blush-l, .ksy-blush-r { position: absolute; top: 78px; width: 18px; height: 9px; background-color: rgba(244, 63, 94, 0.4); border-radius: 50%; filter: blur(0.5px); z-index: 6; }
+        .ksy-blush-l { left: 16px; } .ksy-blush-r { right: 16px; }
+        .ksy-mouth-surprise { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); width: 14px; height: 14px; background-color: #f43f5e; border-radius: 50%; border: 2px solid #be123c; z-index: 6; }
+        .ksy-uniform-top { position: absolute; top: 180px; left: 50%; transform: translateX(-50%); width: 124px; height: 110px; background-color: #1e293b; border: 3.5px solid #475569; border-radius: 24px 24px 10px 10px; z-index: 7; overflow: hidden; }
+        .ksy-collar-l { position: absolute; top: -2px; left: 32px; width: 30px; height: 26px; background-color: #ffffff; border: 3px solid #475569; transform: rotate(-30deg); border-radius: 0 0 5px 0; }
+        .ksy-collar-r { position: absolute; top: -2px; right: 32px; width: 30px; height: 26px; background-color: #ffffff; border: 3px solid #475569; transform: rotate(30deg); border-radius: 0 0 0 5px; }
+        .ksy-ribbon { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 32px; height: 14px; background-color: #e11d48; border: 2px solid #9f1239; border-radius: 4px; z-index: 10; }
+        .ksy-ribbon::before { content: ''; position: absolute; top: -4px; left: -14px; width: 18px; height: 20px; background-color: #e11d48; border: 2px solid #9f1239; border-radius: 6px 2px 2px 6px; transform: rotate(-15deg); }
+        .ksy-ribbon::after { content: ''; position: absolute; top: -4px; right: -14px; width: 18px; height: 20px; background-color: #e11d48; border: 2px solid #9f1239; border-radius: 2px 6px 6px 2px; transform: rotate(15deg); }
+        .ksy-skirt { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 126px; height: 35px; background: repeating-linear-gradient(90deg, #64748b, #64748b 10px, #475569 10px, #475569 20px); border: 3px solid #334155; border-radius: 5px 5px 12px 12px; z-index: 8; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <h1>🍜 옛날 짜장면 만들기 대작전</h1>
+        </header>
+
+        <div class="story-text">
+            거의 다 왔어! 짜장면을 완성하기 위한 마지막 관문이야.<br>
+            문제를 풀고 민우와 서연이에게 맛있는 짜장면을 선물해 주자!
+        </div>
+
+        <div class="character-stage">
+            <div class="kyobok-minwoo-component" style="display: inline-block; overflow: visible !important;">
+                <div class="kmw-stage">
+                    <div class="kmw-head-wrapper">
+                        <div class="kmw-hair-back"></div>
+                        <div class="kmw-ear-l"></div><div class="kmw-ear-r"></div>
+                        <div class="kmw-neck"></div>
+                        <div class="kmw-face-skin">
+                            <div class="kmw-front-hair"></div>
+                            <div class="kmw-hair-point" style="left: 15px;"></div>
+                            <div class="kmw-hair-point" style="left: 45px;"></div>
+                            <div class="kmw-hair-point" style="right: 25px;"></div>
+                            <div class="kmw-eyebrow-l"></div><div class="kmw-eyebrow-r"></div>
+                            <div class="kmw-eye-l"></div><div class="kmw-eye-r"></div>
+                            <div class="kmw-blush-l"></div><div class="kmw-blush-r"></div>
+                            <div class="kmw-mouth"></div>
+                        </div>
+                    </div>
+                    <div class="kmw-uniform-top"><div class="kmw-collar-l"></div><div class="kmw-collar-r"></div><div class="kmw-tie"></div></div>
+                </div>
+            </div>
+
+            <div class="kyobok-seoyeon-component" style="display: inline-block; overflow: visible !important;">
+                <div class="ksy-stage">
+                    <div class="ksy-head-wrapper">
+                        <div class="ksy-ponytail"></div><div class="ksy-hair-elastic"></div><div class="ksy-hair-back"></div>
+                        <div class="ksy-ear-l"></div><div class="ksy-ear-r"></div>
+                        <div class="ksy-neck"></div>
+                        <div class="ksy-face-skin">
+                            <div class="ksy-front-hair"></div>
+                            <div class="ksy-hair-point" style="left: 20px;"></div>
+                            <div class="ksy-hair-point" style="left: 50px;"></div>
+                            <div class="ksy-hair-point" style="right: 30px;"></div>
+                            <div class="ksy-eye-l"></div><div class="ksy-eye-r"></div>
+                            <div class="ksy-blush-l"></div><div class="ksy-blush-r"></div>
+                            <div class="ksy-mouth-surprise"></div>
+                        </div>
+                    </div>
+                    <div class="ksy-uniform-top"><div class="ksy-collar-l"></div><div class="ksy-collar-r"></div><div class="ksy-ribbon"></div><div class="ksy-skirt"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mission-box" id="missionBox">
+            <h2 class="mission-title">미션 2</h2>
+            <div class="problem-text">
+                <strong>&lt;문제&gt;</strong><br>
+                민우는 집에서 직접 짜장면 요리를 시작했습니다.<br>
+                오후 <strong>5시 35분</strong>에 면을 삶기 시작하여 <strong>7분</strong> 동안 삶았고, 이어서 짜장 소스를 부어 볶는 데 <strong>12분</strong>이 더 걸렸습니다.<br>
+                민우가 짜장면 요리를 모두 완성한 시각은 오후 몇 시 몇 분인가요?
+            </div>
+            
+            <div class="question-group">
+                👉 오후 <input type="number" id="ansHour" class="input-field" placeholder="시"> 시 <input type="number" id="ansMin" class="input-field" placeholder="분"> 분
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-submit" onclick="checkAnswer()">정답 확인하기</button>
+            </div>
+            
+            <p id="feedback-msg"></p>
+            
+            <div id="jajangmyeon-container">
+                <div class="steam"></div>
+                <div class="steam"></div>
+                <div class="steam"></div>
+                <div class="steam"></div>
+                <div class="food-emoji">🍜</div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <a href="E02.html" class="btn btn-nav">◀ 이전 미션</a>
+            <a href="index.html" class="btn btn-next" id="nextBtn">처음 화면으로(완료) ▶</a>
+        </div>
+
+    </div>
+
+    <script>
+        function checkAnswer() {
+            // 입력창 DOM 가져오기
+            const ansHourField = document.getElementById('ansHour');
+            const ansMinField = document.getElementById('ansMin');
+            const feedbackMsg = document.getElementById('feedback-msg');
+            const nextBtn = document.getElementById('nextBtn');
+            const jjGraphic = document.getElementById('jajangmyeon-container');
+            const missionBox = document.getElementById('missionBox');
+
+            // 값 정리
+            const ansHour = ansHourField.value.trim();
+            const ansMin = ansMinField.value.trim();
+
+            // 이전 애니메이션 및 상태 스타일 초기화
+            ansHourField.classList.remove('error', 'success-input');
+            ansMinField.classList.remove('error', 'success-input');
+            missionBox.classList.remove('shake');
+            feedbackMsg.classList.remove('pop-in');
+            if (jjGraphic.classList.contains('pop-in')) jjGraphic.classList.remove('pop-in');
+            
+            // 브라우저 리플로우(Reflow)를 강제하여 애니메이션 초기화 처리
+            void missionBox.offsetWidth; 
+
+            // 정답 확인 (5시 54분)
+            if (ansHour === "5" && ansMin === "54") {
+                feedbackMsg.innerHTML = "🎉 미션 성공! 짜장면이 완성되었어요. 😋";
+                feedbackMsg.className = "success pop-in";
+                
+                // 입력창 정답 스타일 추가 및 잠금
+                ansHourField.classList.add('success-input');
+                ansMinField.classList.add('success-input');
+                ansHourField.disabled = true;
+                ansMinField.disabled = true;
+
+                // 짜장면 등장 애니메이션 및 활성화
+                jjGraphic.style.display = "block";
+                jjGraphic.classList.add('pop-in');
+                
+                // 다음 버튼 부드럽게 등장 및 강조
+                nextBtn.classList.add('active');
+            } else {
+                feedbackMsg.innerHTML = "실패!, 재도전하세요 🤔";
+                feedbackMsg.className = "fail pop-in";
+                
+                // 입력창 오답 스타일 및 박스 덜덜 흔들리는 효과(shake) 부여
+                ansHourField.classList.add('error');
+                ansMinField.classList.add('error');
+                missionBox.classList.add('shake');
+
+                // 오답일 경우 숨김 유지
+                jjGraphic.style.display = "none";
+                nextBtn.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!-- 원본 크기: 600x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>짜장면</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .cjm-svg { display:block; width:100%; height:auto; }
+  .cjm-steam { animation: cjm-steam 4s ease-in-out infinite; }
+  @keyframes cjm-steam { 0% { transform: translateY(0) scale(1); opacity:0.5; } 100% { transform: translateY(-70px) scale(1.5); opacity:0; } }
+</style>
+</head>
+<body>
+<svg class="cjm-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="짜장면">
+<title>짜장면</title>
+<desc>차이나타운의 짜장면 한 그릇. 청화백자 무늬 그릇과 나무젓가락.</desc>
+<defs>
+  <radialGradient id="cjmBowl" cx="0.4" cy="0.28" r="0.85">
+    <stop offset="0" stop-color="#ffffff"/><stop offset="0.65" stop-color="#f2f4f6"/><stop offset="1" stop-color="#c4ccd4"/>
+  </radialGradient>
+  <radialGradient id="cjmSauce" cx="0.38" cy="0.3" r="0.8">
+    <stop offset="0" stop-color="#5f4028"/><stop offset="0.6" stop-color="#3a2618"/><stop offset="1" stop-color="#241610"/>
+  </radialGradient>
+  <linearGradient id="cjmNoodle" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f6ecd0"/><stop offset="1" stop-color="#e0cfa4"/>
+  </linearGradient>
+</defs>
+<!-- 김 -->
+<g fill="#e8eef2">
+  <ellipse class="cjm-steam" cx="230" cy="200" rx="16" ry="22"/>
+  <ellipse class="cjm-steam" cx="300" cy="190" rx="14" ry="20" style="animation-delay:1.3s"/>
+  <ellipse class="cjm-steam" cx="368" cy="200" rx="15" ry="21" style="animation-delay:2.6s"/>
+</g>
+<ellipse cx="300" cy="512" rx="230" ry="30" fill="#4a3a28" opacity="0.2"/>
+<!-- 그릇 -->
+<path d="M64,286
+         C64,286 84,436 130,478
+         C164,508 436,508 470,478
+         C516,436 536,286 536,286 Z"
+      fill="url(#cjmBowl)" stroke="#8f9aa4" stroke-width="6"/>
+<!-- 굽 -->
+<path d="M212,494 L388,494 L376,522 C372,532 360,538 344,538 L256,538 C240,538 228,532 224,522 Z"
+      fill="#dde4ea" stroke="#8f9aa4" stroke-width="5"/>
+<!-- 청화 문양 띠 -->
+<path d="M74,326 C160,350 440,350 526,326" fill="none" stroke="#1f5f9c" stroke-width="9"/>
+<g fill="#1f5f9c" opacity="0.9">
+  <path d="M140,372 q18,-16 36,0 q-18,16 -36,0 Z"/>
+  <path d="M232,384 q18,-16 36,0 q-18,16 -36,0 Z"/>
+  <path d="M332,384 q18,-16 36,0 q-18,16 -36,0 Z"/>
+  <path d="M424,372 q18,-16 36,0 q-18,16 -36,0 Z"/>
+</g>
+<g fill="none" stroke="#2f7fbc" stroke-width="3.4" opacity="0.7">
+  <path d="M110,420 C200,446 400,446 490,420"/>
+</g>
+<!-- 그릇 테두리 -->
+<ellipse cx="300" cy="286" rx="236" ry="60" fill="#eef2f5" stroke="#8f9aa4" stroke-width="6"/>
+<ellipse cx="300" cy="290" rx="212" ry="50" fill="url(#cjmNoodle)"/>
+<!-- 면발 -->
+<g fill="none" stroke="#d9c496" stroke-width="5" opacity="0.9">
+  <path d="M130,290 C190,270 270,266 350,274"/>
+  <path d="M148,308 C220,290 310,288 400,300"/>
+  <path d="M120,272 C180,254 280,250 360,258"/>
+  <path d="M200,320 C270,306 360,308 440,320"/>
+</g>
+<!-- 춘장 소스 -->
+<path d="M300,240
+         C214,240 138,258 130,286
+         C122,316 178,336 300,336
+         C422,336 478,316 470,286
+         C462,258 386,240 300,240 Z"
+      fill="url(#cjmSauce)" stroke="#1a0f08" stroke-width="4"/>
+<!-- 소스 광택 -->
+<ellipse cx="238" cy="266" rx="46" ry="16" transform="rotate(-8 238 266)" fill="#8a6440" opacity="0.5"/>
+<ellipse cx="380" cy="300" rx="34" ry="12" fill="#7d5a38" opacity="0.4"/>
+<!-- 고명 -->
+<g>
+  <circle cx="336" cy="262" r="17" fill="#e8e2d0" stroke="#b8ac90" stroke-width="3"/>
+  <circle cx="336" cy="262" r="7" fill="#f2b03c"/>
+  <ellipse cx="238" cy="304" rx="20" ry="12" fill="#7fae4c" stroke="#4f7a2c" stroke-width="3"/>
+  <ellipse cx="396" cy="266" rx="18" ry="11" fill="#7fae4c" stroke="#4f7a2c" stroke-width="3"/>
+  <ellipse cx="290" cy="318" rx="16" ry="10" fill="#f0a08c" stroke="#b8604c" stroke-width="3"/>
+  <ellipse cx="182" cy="284" rx="15" ry="9" fill="#e8e2d0" stroke="#b8ac90" stroke-width="2.4"/>
+  <circle cx="410" cy="308" r="9" fill="#c2452e"/>
+</g>
+<!-- 오이채 -->
+<g fill="#5f9c3c" stroke="#3f6b2c" stroke-width="2.4">
+  <rect x="256" y="244" width="52" height="9" rx="4" transform="rotate(-8 282 248)"/>
+  <rect x="286" y="234" width="52" height="9" rx="4" transform="rotate(4 312 238)"/>
+  <rect x="238" y="258" width="48" height="9" rx="4" transform="rotate(10 262 262)"/>
+</g>
+<!-- 젓가락 -->
+<g transform="rotate(-26 470 200)">
+  <rect x="456" y="60" width="14" height="300" rx="7" fill="#d9b076" stroke="#8f6a34" stroke-width="3.4"/>
+  <rect x="456" y="60" width="14" height="52" rx="7" fill="#8c3a24"/>
+</g>
+<g transform="rotate(-19 494 200)">
+  <rect x="486" y="66" width="14" height="300" rx="7" fill="#d9b076" stroke="#8f6a34" stroke-width="3.4"/>
+  <rect x="486" y="66" width="14" height="52" rx="7" fill="#8c3a24"/>
+</g>
+<!-- 그릇 광택 -->
+<path d="M110,320 C130,392 170,450 214,480" fill="none" stroke="#ffffff" stroke-width="12" opacity="0.45" stroke-linecap="round"/>
+</svg>
+</body>
+</html>

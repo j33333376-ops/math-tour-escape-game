@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기후위기시계</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Black+Han+Sans&family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        /* 전체 구조 래퍼 */
+        .clock-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        /* 상단 영역 (물범 + 텍스트 간판) */
+        .top-section {
+            display: flex;
+            align-items: flex-end; 
+            position: relative;
+            left: -200px; /* 전체적으로 훨씬 더 왼쪽으로 이동 (원하는 만큼 숫자 조절 가능) */
+            margin-bottom: -5px; /* 전광판 프레임과 자연스럽게 겹치도록 */
+            z-index: 10;
+        }
+
+        /* --- CSS 물범 삼총사 크기/여백 보정 래퍼 --- */
+        .seal-scale-wrapper {
+            /* scale()로 인한 원래 크기(빈 공간)가 레이아웃을 망치지 않도록 너비 고정 */
+            width: 220px; 
+            height: 90px;
+            position: relative;
+            z-index: 12;
+            /* 흰 물범이 간판의 모서리만 살짝 가리도록 (글자는 안 가림) */
+            margin-right: -15px; 
+        }
+
+        /* 실제 물범 컨테이너 */
+        .seal-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            /* 비율에 맞게 축소 및 정렬 기준점 설정 */
+            transform: scale(0.45);
+            transform-origin: bottom left;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+
+        /* 물범 기본 형태 (몸통) */
+        .seal {
+            width: 140px;
+            height: 180px;
+            border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+            position: relative;
+            box-shadow: inset -10px -15px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 얼굴 요소 공통 */
+        .face {
+            position: absolute;
+            top: 45px;
+            width: 100%;
+            height: 50px;
+        }
+
+        .eye {
+            width: 12px;
+            height: 15px;
+            background-color: #333;
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+        }
+        
+        /* 눈동자 반짝임 */
+        .eye::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 4px;
+            height: 4px;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        .eye.left { left: 40px; }
+        .eye.right { right: 40px; }
+
+        .nose {
+            width: 10px;
+            height: 8px;
+            background-color: #333;
+            border-radius: 50%;
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .mouth {
+            width: 20px;
+            height: 12px;
+            border-bottom: 3px solid #333;
+            border-radius: 0 0 10px 10px;
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* 팔(지느러미) 공통 */
+        .flipper {
+            width: 40px;
+            height: 25px;
+            border-radius: 20px;
+            position: absolute;
+            top: 90px;
+        }
+
+        /* 모자 공통 */
+        .hat {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 25px;
+            border-radius: 25px 25px 0 0;
+            z-index: 2;
+        }
+
+        .hat-brim {
+            position: absolute;
+            bottom: 0;
+            left: -10px;
+            width: 70px;
+            height: 8px;
+            border-radius: 5px;
+        }
+
+        /* 1. 파란색 물범 (왼쪽) */
+        .blue-seal { background-color: #8cd1eb; transform: rotate(-5deg); }
+        .blue-seal .hat { background-color: #ffde59; transform: translateX(-50%) rotate(-15deg); }
+        .blue-seal .hat-brim { background-color: #f5c71a; }
+        .blue-seal .flipper { background-color: #8cd1eb; }
+        .blue-seal .flipper.left { left: -15px; transform: rotate(-30deg); }
+        .blue-seal .flipper.right { right: -5px; top: 110px; transform: rotate(20deg); }
+        .blue-seal .mouth { height: 15px; background-color: #c94f61; border: 2px solid #333; border-top: none; }
+
+        /* 2. 분홍색 물범 (가운데) */
+        .pink-seal { background-color: #f8b4c4; height: 170px; z-index: 1; }
+        .pink-seal .hat { background-color: #ec5895; top: -10px; }
+        .pink-seal .hat-brim { background-color: #d13d78; }
+        .pink-seal .flipper { background-color: #f8b4c4; }
+        .pink-seal .flipper.left { left: 15px; top: 110px; transform: rotate(45deg); width: 30px;}
+        .pink-seal .flipper.right { right: 15px; top: 110px; transform: rotate(-45deg); width: 30px;}
+        .pink-seal .spots { position: absolute; bottom: 30px; left: 20px; width: 15px; height: 15px; background-color: #d93d59; border-radius: 50%; box-shadow: 15px -10px 0 #d93d59, -5px -20px 0 -3px #d93d59; }
+
+        /* 3. 하얀색 물범 (오른쪽) */
+        .white-seal { background-color: #ffffff; height: 160px; transform: rotate(5deg); }
+        .white-seal .hat { background-color: #5bb3e4; width: 40px; left: 40%; top: -5px; transform: rotate(10deg); }
+        .white-seal .hat-brim { background-color: #4092bf; width: 60px; left: -10px;}
+        .white-seal .flipper { background-color: #ffffff; box-shadow: -2px 2px 5px rgba(0,0,0,0.05); }
+        .white-seal .flipper.left { left: 20px; top: 100px; transform: rotate(30deg); }
+        .white-seal .flipper.right { right: -10px; transform: rotate(-30deg); }
+        .white-seal .spots { position: absolute; bottom: 25px; left: 20px; width: 12px; height: 12px; background-color: #add8e6; border-radius: 50%; box-shadow: 12px -15px 0 -2px #add8e6; }
+        /* --- 물범 디자인 끝 --- */
+
+        /* 상단 간판 (빙하 모티브) */
+        .top-sign {
+            background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 100%);
+            padding: 15px 40px 15px 40px;
+            border-radius: 10px 40px 0 0;
+            border: 2px solid #bae6fd;
+            border-bottom: none;
+            text-align: center;
+            box-shadow: 0 -5px 10px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 11;
+        }
+
+        .top-sign h1 {
+            color: #0284c7;
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+
+        .top-sign p {
+            color: #38bdf8;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        /* 메인 전광판 프레임 */
+        .display-frame {
+            background-color: #333;
+            border: 12px solid #555;
+            border-radius: 5px;
+            padding: 15px 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 0 20px rgba(0,0,0,0.8);
+            position: relative;
+            z-index: 20;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        /* 전광판 내부 스크린 */
+        .display-screen {
+            background-color: #0a0a0a;
+            border-radius: 3px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* 시간 표시 영역 */
+        .time-row {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 15px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .led-number {
+            color: #ffffff;
+            font-size: 5rem;
+            text-shadow: 0 0 10px rgba(255,255,255,0.7);
+            line-height: 1;
+        }
+
+        .led-text {
+            color: #fbbf24;
+            font-size: 2.2rem;
+            text-shadow: 0 0 8px rgba(251,191,36,0.6);
+            margin-right: 10px;
+        }
+
+        /* 콜론 깜빡임 효과 */
+        .colon {
+            animation: blink 1s step-start infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* 하단 텍스트 영역 */
+        .message-row {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            word-spacing: 2px;
+        }
+
+        .text-red {
+            color: #ef4444;
+            text-shadow: 0 0 8px rgba(239,68,68,0.6);
+            margin-right: 15px;
+        }
+
+        .text-green {
+            color: #4ade80;
+            text-shadow: 0 0 8px rgba(74,222,128,0.6);
+        }
+
+        /* 하단 지지대 (기둥) */
+        .legs {
+            display: flex;
+            justify-content: space-between;
+            width: 85%;
+            margin-top: -5px;
+        }
+
+        .leg {
+            width: 35px;
+            height: 180px;
+            background: linear-gradient(90deg, #111 0%, #333 50%, #111 100%);
+            border-radius: 0 0 5px 5px;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* 모바일 반응형 처리 */
+        @media (max-width: 768px) {
+            .led-number { font-size: 2.5rem; }
+            .led-text { font-size: 1.2rem; margin-right: 5px; }
+            .time-row { gap: 8px; }
+            .message-row { font-size: 0.9rem; }
+            .top-section { left: 0; }
+            .seal-scale-wrapper { width: 150px; margin-right: -10px; }
+            .seal-container { transform: scale(0.3); }
+            .top-sign { padding: 5px 20px; }
+            .leg { height: 100px; width: 25px; }
+            .display-frame { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="clock-wrapper">
+        <div class="top-section">
+            
+            <div class="seal-scale-wrapper">
+                <div class="seal-container">
+                    <div class="seal blue-seal">
+                        <div class="hat">
+                            <div class="hat-brim"></div>
+                        </div>
+                        <div class="face">
+                            <div class="eye left"></div>
+                            <div class="eye right"></div>
+                            <div class="nose"></div>
+                            <div class="mouth"></div>
+                        </div>
+                        <div class="flipper left"></div>
+                        <div class="flipper right"></div>
+                    </div>
+
+                    <div class="seal pink-seal">
+                        <div class="hat">
+                            <div class="hat-brim"></div>
+                        </div>
+                        <div class="face">
+                            <div class="eye left"></div>
+                            <div class="eye right"></div>
+                            <div class="nose"></div>
+                            <div class="mouth"></div>
+                        </div>
+                        <div class="flipper left"></div>
+                        <div class="flipper right"></div>
+                        <div class="spots"></div>
+                    </div>
+
+                    <div class="seal white-seal">
+                        <div class="hat">
+                            <div class="hat-brim"></div>
+                        </div>
+                        <div class="face">
+                            <div class="eye left"></div>
+                            <div class="eye right"></div>
+                            <div class="nose"></div>
+                            <div class="mouth"></div>
+                        </div>
+                        <div class="flipper left"></div>
+                        <div class="flipper right"></div>
+                        <div class="spots"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="top-sign">
+                <h1>기후위기시계</h1>
+                <p>CLIMATE CLOCK</p>
+            </div>
+        </div>
+
+        <div class="display-frame">
+            <div class="display-screen">
+                <div class="time-row">
+                    <span class="led-number" id="val-years">0</span>
+                    <span class="led-text">Year</span>
+                    
+                    <span class="led-number" id="val-days">000</span>
+                    <span class="led-text">Days</span>
+                    
+                    <span class="led-number" id="val-time">00<span class="colon">:</span>00<span class="colon">:</span>00</span>
+                </div>
+                <div class="message-row">
+                    <span class="text-red">기후위기온도입니다.</span>
+                    <span class="text-green">탄소중립 실현을 위한 기후행동에 함께해주세요.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="legs">
+            <div class="leg"></div>
+            <div class="leg"></div>
+        </div>
+    </div>
+
+    <script>
+        // 기준 날짜 초기값
+        let deadline = new Date("2029-07-22T16:00:00Z").getTime();
+
+        // Climate Clock API 연동
+        async function fetchApiData() {
+            try {
+                const res = await fetch("https://api.climateclock.world/v2/clock.json");
+                const json = await res.json();
+                
+                const modules = json.data.modules;
+                for (let key in modules) {
+                    if (modules[key].type === "timer" && modules[key].flavor === "deadline") {
+                        deadline = new Date(modules[key].timestamp).getTime();
+                        break;
+                    }
+                }
+            } catch (e) {
+                console.error("API 호출 에러", e);
+            }
+        }
+
+        function updateDisplay() {
+            const now = new Date().getTime();
+            const diff = deadline - now;
+
+            if (diff <= 0) {
+                document.getElementById("val-years").innerText = "0";
+                document.getElementById("val-days").innerText = "000";
+                document.getElementById("val-time").innerHTML = "00<span class='colon'>:</span>00<span class='colon'>:</span>00";
+                return;
+            }
+
+            const msSec = 1000, msMin = msSec * 60, msHour = msMin * 60, msDay = msHour * 24;
+            const daysInYear = 365.2425;
+
+            const totalDays = diff / msDay;
+            const y = Math.floor(totalDays / daysInYear);
+            const d = Math.floor(totalDays % daysInYear);
+            
+            const h = Math.floor((diff % msDay) / msHour);
+            const m = Math.floor((diff % msHour) / msMin);
+            const s = Math.floor((diff % msMin) / msSec);
+
+            document.getElementById("val-years").innerText = y;
+            document.getElementById("val-days").innerText = String(d).padStart(3, '0');
+            document.getElementById("val-time").innerHTML = 
+                `${String(h).padStart(2, '0')}<span class="colon">:</span>${String(m).padStart(2, '0')}<span class="colon">:</span>${String(s).padStart(2, '0')}`;
+        }
+
+        fetchApiData().then(() => {
+            updateDisplay();
+            setInterval(updateDisplay, 1000);
+        });
+    </script>
+</body>
+</html>

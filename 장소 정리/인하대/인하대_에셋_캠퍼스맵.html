@@ -1,0 +1,130 @@
+<!-- 원본 크기: 640x780 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인하대학교 캠퍼스 안내도</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .cmap-svg { display:block; width:100%; height:auto; }
+  .cmap-post { fill:#4a3a28; stroke:#31241a; stroke-width:1; }
+  .cmap-frame { fill:#4a3a28; stroke:#31241a; stroke-width:2; }
+  .cmap-panel { fill:#f7f2e6; }
+  .cmap-titlebar { fill:#123a6b; }
+  .cmap-title-text { fill:#fff; font-family:"Malgun Gothic", sans-serif; font-size:25px; font-weight:bold; text-anchor:middle; }
+  .cmap-ground { fill:#dce8cf; stroke:#b7c8a3; stroke-width:1.5; }
+  .cmap-lake { fill:#6fa8d8; stroke:#4d84b3; stroke-width:1; }
+  .cmap-road { stroke:#a9a49a; stroke-width:11; stroke-linecap:round; fill:none; }
+  .cmap-road-line { stroke:#fff; stroke-width:1.5; stroke-dasharray:6,6; fill:none; opacity:0.8; }
+  .cmap-bld { fill:#a8462f; stroke:#7c2f1c; stroke-width:1; }
+  .cmap-bld2 { fill:#b8583e; stroke:#7c2f1c; stroke-width:1; }
+  .cmap-bld-text { fill:#fff; font-family:"Malgun Gothic", sans-serif; font-size:10px; font-weight:bold; text-anchor:middle; }
+  .cmap-field { fill:#7fae6a; stroke:#5c8a49; stroke-width:1.5; }
+  .cmap-track { fill:none; stroke:#e8dcc0; stroke-width:5; opacity:0.85; }
+  .cmap-label { fill:#33301f; font-family:"Malgun Gothic", sans-serif; font-size:9px; text-anchor:middle; }
+  .cmap-compass-bg { fill:#fff; stroke:#8a8578; stroke-width:1.5; }
+  .cmap-legend-bg { fill:#fffdf7; stroke:#8a8578; stroke-width:1.2; }
+  .cmap-legend-text { fill:#333; font-family:"Malgun Gothic", sans-serif; font-size:10.5px; }
+  .cmap-scale-line { stroke:#333; stroke-width:2; }
+  .cmap-scale-text { fill:#333; font-family:"Malgun Gothic", sans-serif; font-size:9.5px; text-anchor:middle; }
+  .cmap-foot { fill:#8a8578; font-family:"Malgun Gothic", sans-serif; font-size:10px; letter-spacing:1.5px; text-anchor:middle; }
+  .cmap-tree { fill:#5c8a49; }
+  .cmap-tree2 { fill:#4a7038; }
+</style>
+</head>
+<body>
+<svg class="cmap-svg" viewBox="0 0 640 780" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="인하대학교 캠퍼스 안내도 게시판">
+<title>인하대학교 캠퍼스 안내도</title>
+
+<!-- 지지 기둥 -->
+<rect class="cmap-post" x="150" y="540" width="22" height="200"/>
+<rect class="cmap-post" x="468" y="540" width="22" height="200"/>
+<ellipse cx="161" cy="742" rx="30" ry="7" fill="#000" opacity="0.15"/>
+<ellipse cx="479" cy="742" rx="30" ry="7" fill="#000" opacity="0.15"/>
+
+<!-- 게시판 액자 -->
+<rect class="cmap-frame" x="68" y="38" width="504" height="514" rx="10"/>
+<rect class="cmap-panel" x="88" y="58" width="464" height="474" rx="4"/>
+
+<!-- 제목 -->
+<rect class="cmap-titlebar" x="88" y="58" width="464" height="52" rx="4"/>
+<rect class="cmap-titlebar" x="88" y="96" width="464" height="14"/>
+<text class="cmap-title-text" x="320" y="92">인하대학교 캠퍼스 안내도</text>
+
+<!-- 지도 배경(잔디/지면) -->
+<rect class="cmap-ground" x="104" y="126" width="432" height="336"/>
+
+<!-- 호수 (인경호) -->
+<path class="cmap-lake" d="M140,370 Q116,392 132,420 Q150,448 186,442 Q214,432 210,404 Q206,376 178,368 Q158,362 140,370 Z"/>
+<path d="M150,392 Q170,384 190,398" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
+
+<!-- 도로 -->
+<path class="cmap-road" d="M120,300 L520,300"/>
+<path class="cmap-road-line" d="M120,300 L520,300"/>
+<path class="cmap-road" d="M300,140 L300,450"/>
+<path class="cmap-road-line" d="M300,140 L300,450"/>
+<path class="cmap-road" d="M300,300 Q380,320 420,380"/>
+<path class="cmap-road-line" d="M300,300 Q380,320 420,380"/>
+
+<!-- 가로수 점점이 -->
+<g class="cmap-tree"><circle cx="128" cy="292" r="5"/><circle cx="150" cy="308" r="5"/><circle cx="512" cy="292" r="5"/><circle cx="490" cy="308" r="5"/></g>
+<g class="cmap-tree2"><circle cx="128" cy="292" r="2.5"/><circle cx="512" cy="292" r="2.5"/></g>
+
+<!-- 건물 블록들 -->
+<rect class="cmap-bld" x="248" y="150" width="58" height="38"/>
+<text class="cmap-bld-text" x="277" y="173">본관</text>
+
+<rect class="cmap-bld2" x="336" y="160" width="46" height="32"/>
+<text class="cmap-bld-text" x="359" y="180">도서관</text>
+
+<rect class="cmap-bld2" x="418" y="200" width="52" height="36"/>
+<text class="cmap-bld-text" x="444" y="222">학생회관</text>
+
+<rect class="cmap-bld" x="150" y="196" width="52" height="42"/>
+<text class="cmap-bld-text" x="176" y="220">공과대학</text>
+
+<!-- 비룡탑 위치 마커 -->
+<g transform="translate(388,346)">
+  <circle r="6" fill="#d8a838" stroke="#8a6a1a" stroke-width="1"/>
+  <path d="M0,-9 L2,-3 L8,-3 L3,1 L5,7 L0,3 L-5,7 L-3,1 L-8,-3 L-2,-3 Z" fill="#d8a838" stroke="#8a6a1a" stroke-width="0.6"/>
+</g>
+<text class="cmap-label" x="388" y="368">비룡탑</text>
+
+<!-- 대운동장 -->
+<rect class="cmap-field" x="228" y="392" width="150" height="58" rx="6"/>
+<ellipse class="cmap-track" cx="303" cy="421" rx="64" ry="20"/>
+<text class="cmap-bld-text" x="303" y="425" fill="#eef7e6">대운동장</text>
+
+<!-- 나침반 -->
+<circle class="cmap-compass-bg" cx="500" cy="150" r="22"/>
+<path d="M500,132 L506,150 L500,146 L494,150 Z" fill="#a8462f"/>
+<line x1="500" y1="150" x2="500" y2="168" stroke="#666" stroke-width="1.5"/>
+<text class="cmap-label" x="500" y="129" font-weight="bold">N</text>
+
+<!-- 범례 -->
+<rect class="cmap-legend-bg" x="392" y="378" width="132" height="72" rx="3"/>
+<rect x="400" y="386" width="12" height="10" fill="#a8462f"/>
+<text class="cmap-legend-text" x="418" y="395">건물</text>
+<rect x="400" y="401" width="12" height="10" fill="#7fae6a"/>
+<text class="cmap-legend-text" x="418" y="410">잔디/필드</text>
+<rect x="400" y="416" width="12" height="10" fill="#6fa8d8"/>
+<text class="cmap-legend-text" x="418" y="425">호수</text>
+<rect x="400" y="431" width="12" height="8" fill="#a9a49a"/>
+<text class="cmap-legend-text" x="418" y="439">도로</text>
+
+<!-- 축척 바 -->
+<line class="cmap-scale-line" x1="120" y1="475" x2="220" y2="475"/>
+<line class="cmap-scale-line" x1="120" y1="470" x2="120" y2="480"/>
+<line class="cmap-scale-line" x1="170" y1="470" x2="170" y2="480"/>
+<line class="cmap-scale-line" x1="220" y1="470" x2="220" y2="480"/>
+<text class="cmap-scale-text" x="120" y="492">0</text>
+<text class="cmap-scale-text" x="170" y="492">100m</text>
+<text class="cmap-scale-text" x="220" y="492">200m</text>
+
+<!-- 하단 문구 -->
+<text class="cmap-foot" x="320" y="520">INHA UNIVERSITY CAMPUS MAP</text>
+
+</svg>
+</body>
+</html>

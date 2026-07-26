@@ -1,0 +1,91 @@
+<!-- 원본 크기: 1200x720 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>인하대 - 해오름동산</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .sr-svg { display:block; width:100%; height:auto; }
+</style>
+</head>
+<body>
+<svg class="sr-svg" viewBox="0 0 1200 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="인하대 해오름동산">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffc98a"/><stop offset="50%" stop-color="#ffe3b8"/><stop offset="100%" stop-color="#fdf4e3"/></linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a4cb8e"/><stop offset="100%" stop-color="#7fae6c"/></linearGradient>
+    <linearGradient id="ringg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffb35c"/><stop offset="100%" stop-color="#e0812b"/></linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1200" height="520" fill="url(#sky)"/>
+  <!-- 떠오르는 해 -->
+  <circle cx="600" cy="300" r="70" fill="#ffb35c"/>
+  <circle cx="600" cy="300" r="52" fill="#ffcf7a"/>
+  <g stroke="#ffb35c" stroke-width="6" stroke-linecap="round" opacity="0.8">
+    <line x1="600" y1="196" x2="600" y2="164"/><line x1="676" y1="228" x2="700" y2="206"/><line x1="524" y1="228" x2="500" y2="206"/><line x1="706" y1="300" x2="740" y2="300"/><line x1="494" y1="300" x2="460" y2="300"/>
+  </g>
+  <g fill="#ffffff" opacity="0.6"><ellipse cx="240" cy="110" rx="76" ry="20"/><ellipse cx="960" cy="96" rx="84" ry="22"/></g>
+  <!-- 새 -->
+  <g stroke="#8a6a48" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M420,140 q10,-10 20,0 q10,-10 20,0"/><path d="M760,120 q9,-9 18,0 q9,-9 18,0"/>
+  </g>
+
+  <!-- 언덕(동산) -->
+  <path d="M0,720 Q90,470 380,440 Q600,418 820,440 Q1110,470 1200,720 Z" fill="url(#hill)"/>
+  <!-- 산책 계단길 -->
+  <g>
+    <polygon points="560,720 576,460 624,460 640,720" fill="#d8cfbc"/>
+    <g stroke="#bfb49c" stroke-width="4">
+      <line x1="566" y1="660" x2="634" y2="660"/><line x1="570" y1="612" x2="630" y2="612"/><line x1="573" y1="568" x2="627" y2="568"/><line x1="575" y1="528" x2="625" y2="528"/><line x1="577" y1="494" x2="623" y2="494"/>
+    </g>
+  </g>
+
+  <!-- 해오름 조형물 : 언덕 위 둥근 고리(떠오르는 해) -->
+  <g transform="translate(600,430)">
+    <ellipse cx="0" cy="16" rx="120" ry="14" fill="#6e9c5c"/>
+    <rect x="-104" y="-6" width="208" height="22" rx="8" fill="#c9c3b4" stroke="#a39a86" stroke-width="3"/>
+    <path d="M-88,-4 A88,88 0 1 1 88,-4" fill="none" stroke="url(#ringg)" stroke-width="26" stroke-linecap="round"/>
+    <path d="M-88,-4 A88,88 0 1 1 88,-4" fill="none" stroke="#ffe0ae" stroke-width="8" stroke-linecap="round" opacity="0.7"/>
+    <!-- 고리 안 태양 반사 -->
+    <circle cx="0" cy="-64" r="18" fill="#ffd23f" opacity="0.9"/>
+  </g>
+
+  <!-- 꽃밭 -->
+  <g>
+    <g fill="#e05e7a"><circle cx="250" cy="560" r="9"/><circle cx="300" cy="596" r="9"/><circle cx="210" cy="620" r="9"/><circle cx="350" cy="640" r="9"/></g>
+    <g fill="#ffd23f"><circle cx="280" cy="620" r="9"/><circle cx="230" cy="580" r="9"/><circle cx="330" cy="570" r="9"/><circle cx="180" cy="650" r="9"/></g>
+    <g fill="#a06cd5"><circle cx="900" cy="570" r="9"/><circle cx="950" cy="600" r="9"/><circle cx="870" cy="620" r="9"/><circle cx="1010" cy="640" r="9"/></g>
+    <g fill="#ff8a5c"><circle cx="930" cy="640" r="9"/><circle cx="980" cy="565" r="9"/><circle cx="1040" cy="600" r="9"/></g>
+    <g stroke="#5f8a4e" stroke-width="3">
+      <line x1="250" y1="569" x2="250" y2="586"/><line x1="300" y1="605" x2="300" y2="622"/><line x1="900" y1="579" x2="900" y2="596"/><line x1="950" y1="609" x2="950" y2="626"/>
+    </g>
+  </g>
+
+  <!-- 벤치 -->
+  <g transform="translate(420,600)">
+    <rect x="-44" y="-14" width="88" height="12" rx="4" fill="#b98d5e" stroke="#8a6540" stroke-width="2.5"/>
+    <rect x="-44" y="-36" width="88" height="10" rx="4" fill="#b98d5e" stroke="#8a6540" stroke-width="2.5"/>
+    <g stroke="#6e5232" stroke-width="5"><line x1="-36" y1="-4" x2="-36" y2="22"/><line x1="36" y1="-4" x2="36" y2="22"/></g>
+  </g>
+  <g transform="translate(790,606)">
+    <rect x="-44" y="-14" width="88" height="12" rx="4" fill="#b98d5e" stroke="#8a6540" stroke-width="2.5"/>
+    <rect x="-44" y="-36" width="88" height="10" rx="4" fill="#b98d5e" stroke="#8a6540" stroke-width="2.5"/>
+    <g stroke="#6e5232" stroke-width="5"><line x1="-36" y1="-4" x2="-36" y2="22"/><line x1="36" y1="-4" x2="36" y2="22"/></g>
+  </g>
+
+  <!-- 사람들 : 해맞이 -->
+  <g><circle cx="510" cy="500" r="9" fill="#e8c9a8"/><rect x="502" y="508" width="16" height="26" rx="6" fill="#c0392b"/><line x1="500" y1="504" x2="492" y2="492" stroke="#e8c9a8" stroke-width="4" stroke-linecap="round"/><line x1="520" y1="504" x2="528" y2="492" stroke="#e8c9a8" stroke-width="4" stroke-linecap="round"/></g>
+  <g><circle cx="700" cy="506" r="9" fill="#e8c9a8"/><rect x="692" y="514" width="16" height="26" rx="6" fill="#2b6cb0"/></g>
+  <g><circle cx="180" cy="690" r="10" fill="#e8c9a8"/><rect x="171" y="699" width="18" height="21" rx="6" fill="#2f855a"/></g>
+
+  <!-- 나무 -->
+  <g transform="translate(90,540)"><rect x="-7" y="0" width="14" height="50" fill="#6a4a2c"/><circle cy="-18" r="38" fill="#5aa653"/><circle cx="-24" cy="2" r="24" fill="#69b55f"/><circle cx="24" cy="2" r="24" fill="#69b55f"/></g>
+  <g transform="translate(1110,540)"><rect x="-7" y="0" width="14" height="50" fill="#6a4a2c"/><circle cy="-18" r="38" fill="#5aa653"/><circle cx="-24" cy="2" r="24" fill="#69b55f"/><circle cx="24" cy="2" r="24" fill="#69b55f"/></g>
+
+  <!-- 사인 -->
+  <g transform="translate(600,684)">
+    <rect x="-96" y="-22" width="192" height="42" rx="10" fill="rgba(255,255,255,0.94)" stroke="#e0812b" stroke-width="2.5"/>
+    <text x="0" y="8" text-anchor="middle" font-family="'Jua','Noto Sans KR',sans-serif" font-size="24" font-weight="700" fill="#b0641f">해오름동산</text>
+  </g>
+</svg>
+</body>
+</html>

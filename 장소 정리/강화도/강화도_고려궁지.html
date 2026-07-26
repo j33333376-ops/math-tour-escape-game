@@ -1,0 +1,409 @@
+<!-- 원본 크기: 900x550 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>강화도 고려궁지</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .grjSvg { display:block; width:100%; height:auto; }
+
+  /* 돌계단 */
+  .grjTread { fill:url(#grjGranite); stroke:#8f8875; stroke-width:0.6; }
+  .grjNosing { stroke:#ffffff; stroke-opacity:0.55; stroke-width:1; }
+  .grjRiserShadow { stroke:#5f584a; stroke-opacity:0.28; stroke-width:1.4; }
+  .grjSeam { stroke:#8a8272; stroke-opacity:0.35; stroke-width:1; }
+  .grjLanding { fill:url(#grjGranite); stroke:#8f8875; stroke-width:0.6; }
+
+  /* 대지/기단 */
+  .grjPlatform { fill:url(#grjEarth); }
+  .grjCurb { fill:#8f7550; }
+  .grjDirt { fill:#7a6240; opacity:0.18; }
+
+  /* 초석 */
+  .grjStone { fill:#a29a8a; stroke:#847c6c; stroke-width:0.8; }
+  .grjStoneMoss { fill:#7a9a5c; opacity:0.35; }
+  .grjStoneShadow { fill:#000000; opacity:0.12; }
+  .grjGrass { stroke:#5e8a44; stroke-width:1.3; fill:none; opacity:0.85; }
+
+  /* 나무 */
+  .grjTreeTrunk { fill:#6b4a30; }
+  .grjTreeDark { fill:#4f7a45; }
+  .grjTreeLight { fill:#74a862; opacity:0.9; }
+  .grjTreeA { transform-origin: 190px 128px; animation: grjSway 5.5s ease-in-out infinite alternate; }
+  .grjTreeB { transform-origin: 733px 118px; animation: grjSway 6.5s ease-in-out infinite alternate; animation-delay:0.7s; }
+
+  /* 지붕 */
+  .grjRoof { fill:url(#grjRoofGrad); stroke:#4b5560; stroke-width:1; }
+  .grjRidge { fill:#4d5762; }
+  .grjRoofTick { stroke:#3f4a55; stroke-opacity:0.45; stroke-width:1; }
+  .grjFascia { fill:url(#grjWoodGrad); }
+  .grjBracket { fill:#c98a5a; opacity:0.55; }
+
+  /* 벽/살창/기둥 */
+  .grjWall { fill:url(#grjWallGrad); stroke:#d8cdb4; stroke-width:0.6; }
+  .grjLattice { stroke:#8a5a34; stroke-width:0.9; opacity:0.65; }
+  .grjOpenBay { fill:#332821; }
+  .grjInnerLine { stroke:#5a4a3c; stroke-width:0.8; opacity:0.4; }
+  .grjBeam { fill:url(#grjWoodGrad); }
+  .grjPillar { fill:url(#grjWoodGrad); }
+  .grjPillarHi { fill:#c07040; opacity:0.35; }
+
+  /* 마루/기단석 */
+  .grjFloor { fill:url(#grjFloorGrad); }
+  .grjPlank { stroke:#8a6b45; stroke-width:0.6; opacity:0.5; }
+  .grjFoundation { fill:url(#grjGranite); stroke:#8f8875; stroke-width:0.6; }
+  .grjStepStone { fill:#bcb6a6; stroke:#93897a; stroke-width:0.7; }
+
+  .grjGroundShadow { fill:#000000; opacity:0.09; }
+
+  @keyframes grjSway {
+    0%   { transform: rotate(-1deg); }
+    100% { transform: rotate(1deg); }
+  }
+</style>
+</head>
+<body>
+<svg class="grjSvg" viewBox="0 40 900 550" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="강화도 고려궁지 일러스트">
+<title>강화도 고려궁지</title>
+<desc>강화도 고려궁지의 화강암 돌계단과 복원된 한옥 관아 건물, 옛 궁궐터의 흩어진 주춧돌.</desc>
+
+<defs>
+  <linearGradient id="grjGranite" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#eee9de"/>
+    <stop offset="1" stop-color="#c7c1b1"/>
+  </linearGradient>
+  <linearGradient id="grjRoofGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#8d99a8"/>
+    <stop offset="1" stop-color="#57626e"/>
+  </linearGradient>
+  <linearGradient id="grjWoodGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#a3502f"/>
+    <stop offset="1" stop-color="#6a2a14"/>
+  </linearGradient>
+  <linearGradient id="grjWallGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#faf5e9"/>
+    <stop offset="1" stop-color="#e8e0d0"/>
+  </linearGradient>
+  <linearGradient id="grjEarthGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#c2a57c"/>
+    <stop offset="1" stop-color="#9a7c54"/>
+  </linearGradient>
+  <linearGradient id="grjFloorGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#cdae7c"/>
+    <stop offset="1" stop-color="#a3835a"/>
+  </linearGradient>
+</defs>
+
+<rect x="0" y="40" width="900" height="550" fill="none"/>
+
+<!-- ════════ 바닥 그림자 ════════ -->
+<ellipse class="grjGroundShadow" cx="450" cy="582" rx="420" ry="7"/>
+
+<!-- ════════════════════════════════
+     돌계단 (하단 1단: 가장 넓은 층)
+════════════════════════════════ -->
+<g>
+  <polygon class="grjTread" points="20,580 880,580 855,560 45,560"/>
+  <polygon class="grjTread" points="45,560 855,560 830,540 70,540"/>
+  <polygon class="grjTread" points="70,540 830,540 805,520 95,520"/>
+  <polygon class="grjTread" points="95,520 805,520 780,500 120,500"/>
+  <polygon class="grjTread" points="120,500 780,500 755,480 145,480"/>
+  <polygon class="grjTread" points="145,480 755,480 730,460 170,460"/>
+</g>
+<g class="grjNosing">
+  <line x1="45" y1="560" x2="855" y2="560"/>
+  <line x1="70" y1="540" x2="830" y2="540"/>
+  <line x1="95" y1="520" x2="805" y2="520"/>
+  <line x1="120" y1="500" x2="780" y2="500"/>
+  <line x1="145" y1="480" x2="755" y2="480"/>
+  <line x1="170" y1="460" x2="730" y2="460"/>
+</g>
+<g class="grjRiserShadow">
+  <line x1="45" y1="562.5" x2="855" y2="562.5"/>
+  <line x1="70" y1="542.5" x2="830" y2="542.5"/>
+  <line x1="95" y1="522.5" x2="805" y2="522.5"/>
+  <line x1="120" y1="502.5" x2="780" y2="502.5"/>
+  <line x1="145" y1="482.5" x2="755" y2="482.5"/>
+</g>
+<g class="grjSeam">
+  <line x1="150" y1="565" x2="145" y2="578"/>
+  <line x1="300" y1="562" x2="296" y2="579"/>
+  <line x1="450" y1="561" x2="450" y2="580"/>
+  <line x1="600" y1="562" x2="604" y2="579"/>
+  <line x1="750" y1="565" x2="755" y2="578"/>
+  <line x1="220" y1="543" x2="216" y2="558"/>
+  <line x1="680" y1="543" x2="684" y2="558"/>
+</g>
+
+<!-- 계단참 1 -->
+<polygon class="grjLanding" points="170,460 730,460 730,430 170,430"/>
+<g class="grjSeam">
+  <line x1="250" y1="432" x2="250" y2="458"/>
+  <line x1="450" y1="432" x2="450" y2="458"/>
+  <line x1="650" y1="432" x2="650" y2="458"/>
+</g>
+
+<!-- ════════════════════════════════
+     돌계단 (중단: 2단)
+════════════════════════════════ -->
+<g>
+  <polygon class="grjTread" points="170,430 730,430 700,410 200,410"/>
+  <polygon class="grjTread" points="200,410 700,410 670,390 230,390"/>
+  <polygon class="grjTread" points="230,390 670,390 640,370 260,370"/>
+  <polygon class="grjTread" points="260,370 640,370 610,350 290,350"/>
+</g>
+<g class="grjNosing">
+  <line x1="200" y1="410" x2="700" y2="410"/>
+  <line x1="230" y1="390" x2="670" y2="390"/>
+  <line x1="260" y1="370" x2="640" y2="370"/>
+  <line x1="290" y1="350" x2="610" y2="350"/>
+</g>
+<g class="grjRiserShadow">
+  <line x1="200" y1="412.5" x2="700" y2="412.5"/>
+  <line x1="230" y1="392.5" x2="670" y2="392.5"/>
+  <line x1="260" y1="372.5" x2="640" y2="372.5"/>
+</g>
+
+<!-- 계단참 2 -->
+<polygon class="grjLanding" points="290,350 610,350 610,325 290,325"/>
+<g class="grjSeam">
+  <line x1="380" y1="327" x2="380" y2="348"/>
+  <line x1="520" y1="327" x2="520" y2="348"/>
+</g>
+
+<!-- ════════════════════════════════
+     돌계단 (상단: 3단, 기단 진입부)
+════════════════════════════════ -->
+<g>
+  <polygon class="grjTread" points="290,325 610,325 590,305 310,305"/>
+  <polygon class="grjTread" points="310,305 590,305 570,285 330,285"/>
+  <polygon class="grjTread" points="330,285 570,285 550,265 350,265"/>
+</g>
+<g class="grjNosing">
+  <line x1="310" y1="305" x2="590" y2="305"/>
+  <line x1="330" y1="285" x2="570" y2="285"/>
+  <line x1="350" y1="265" x2="550" y2="265"/>
+</g>
+<g class="grjRiserShadow">
+  <line x1="310" y1="307.5" x2="590" y2="307.5"/>
+  <line x1="330" y1="287.5" x2="570" y2="287.5"/>
+</g>
+
+<!-- ════════════════════════════════
+     넓은 대지 (궁궐터 기단)
+════════════════════════════════ -->
+<rect class="grjPlatform" x="120" y="180" width="660" height="86"/>
+<rect class="grjCurb" x="120" y="258" width="660" height="8"/>
+<g class="grjDirt">
+  <ellipse cx="165" cy="200" rx="8" ry="4"/>
+  <ellipse cx="200" cy="235" rx="10" ry="4"/>
+  <ellipse cx="150" cy="245" rx="7" ry="3"/>
+  <ellipse cx="235" cy="200" rx="6" ry="3"/>
+  <ellipse cx="700" cy="205" rx="9" ry="4"/>
+  <ellipse cx="740" cy="240" rx="8" ry="3"/>
+  <ellipse cx="670" cy="248" rx="7" ry="3"/>
+  <ellipse cx="180" cy="220" rx="5" ry="2.5"/>
+  <ellipse cx="720" cy="222" rx="6" ry="3"/>
+</g>
+
+<!-- ════════════════════════════════
+     흩어진 주춧돌 (좌측 옛 터)
+════════════════════════════════ -->
+<g>
+  <ellipse class="grjStoneShadow" cx="168" cy="252" rx="20" ry="5"/>
+  <ellipse class="grjStone" cx="165" cy="246" rx="19" ry="9"/>
+  <ellipse class="grjStoneMoss" cx="158" cy="243" rx="7" ry="3.5"/>
+
+  <ellipse class="grjStoneShadow" cx="220" cy="230" rx="15" ry="4"/>
+  <ellipse class="grjStone" cx="218" cy="225" rx="14" ry="7"/>
+  <ellipse class="grjStoneMoss" cx="213" cy="223" rx="5" ry="2.5"/>
+
+  <ellipse class="grjStoneShadow" cx="196" cy="205" rx="12" ry="3.5"/>
+  <ellipse class="grjStone" cx="195" cy="201" rx="11" ry="5.5"/>
+</g>
+<g class="grjGrass">
+  <path d="M140,248 q2,-10 -1,-16"/>
+  <path d="M146,250 q4,-9 1,-15"/>
+  <path d="M245,228 q2,-8 -1,-13"/>
+  <path d="M251,229 q4,-7 1,-12"/>
+</g>
+
+<!-- ════════════════════════════════
+     흩어진 주춧돌 (우측 옛 터)
+════════════════════════════════ -->
+<g>
+  <ellipse class="grjStoneShadow" cx="735" cy="250" rx="19" ry="5"/>
+  <ellipse class="grjStone" cx="733" cy="244" rx="18" ry="8.5"/>
+  <ellipse class="grjStoneMoss" cx="727" cy="241" rx="6" ry="3"/>
+
+  <ellipse class="grjStoneShadow" cx="682" cy="228" rx="14" ry="4"/>
+  <ellipse class="grjStone" cx="680" cy="223" rx="13" ry="6.5"/>
+  <ellipse class="grjStoneMoss" cx="676" cy="221" rx="5" ry="2.5"/>
+
+  <ellipse class="grjStoneShadow" cx="705" cy="203" rx="11" ry="3.5"/>
+  <ellipse class="grjStone" cx="704" cy="199" rx="10" ry="5"/>
+</g>
+<g class="grjGrass">
+  <path d="M760,246 q-2,-10 1,-16"/>
+  <path d="M754,248 q-4,-9 -1,-15"/>
+  <path d="M655,226 q-2,-8 1,-13"/>
+</g>
+
+<!-- ════════════════════════════════
+     배경 나무 (좌/우)
+════════════════════════════════ -->
+<g class="grjTreeA">
+  <rect class="grjTreeTrunk" x="186" y="145" width="9" height="34"/>
+  <g class="grjTreeDark">
+    <circle cx="165" cy="130" r="22"/>
+    <circle cx="195" cy="120" r="26"/>
+    <circle cx="220" cy="135" r="20"/>
+    <circle cx="150" cy="150" r="16"/>
+  </g>
+  <g class="grjTreeLight">
+    <circle cx="180" cy="118" r="14"/>
+    <circle cx="205" cy="128" r="12"/>
+    <circle cx="160" cy="138" r="10"/>
+  </g>
+</g>
+
+<g class="grjTreeB">
+  <rect class="grjTreeTrunk" x="729" y="140" width="9" height="34"/>
+  <g class="grjTreeDark">
+    <circle cx="710" cy="128" r="20"/>
+    <circle cx="738" cy="116" r="25"/>
+    <circle cx="762" cy="132" r="19"/>
+    <circle cx="778" cy="150" r="14"/>
+  </g>
+  <g class="grjTreeLight">
+    <circle cx="725" cy="114" r="13"/>
+    <circle cx="750" cy="124" r="11"/>
+    <circle cx="768" cy="140" r="9"/>
+  </g>
+</g>
+
+<!-- ════════════════════════════════
+     한옥 관아 건물 (명위헌 스타일)
+════════════════════════════════ -->
+
+<!-- 기단석 -->
+<rect class="grjFoundation" x="258" y="244" width="384" height="14"/>
+<rect class="grjStepStone" x="400" y="253" width="100" height="9"/>
+
+<!-- 툇마루(마루 바닥) -->
+<rect class="grjFloor" x="264" y="230" width="372" height="16"/>
+<g class="grjPlank">
+  <line x1="290" y1="230" x2="290" y2="246"/>
+  <line x1="330" y1="230" x2="330" y2="246"/>
+  <line x1="370" y1="230" x2="370" y2="246"/>
+  <line x1="410" y1="230" x2="410" y2="246"/>
+  <line x1="450" y1="230" x2="450" y2="246"/>
+  <line x1="490" y1="230" x2="490" y2="246"/>
+  <line x1="530" y1="230" x2="530" y2="246"/>
+  <line x1="570" y1="230" x2="570" y2="246"/>
+  <line x1="610" y1="230" x2="610" y2="246"/>
+</g>
+
+<!-- 벽체: 좌측 회벽+살창 -->
+<rect class="grjWall" x="296" y="187" width="84" height="43"/>
+<g class="grjLattice">
+  <line x1="308" y1="192" x2="308" y2="226"/>
+  <line x1="320" y1="192" x2="320" y2="226"/>
+  <line x1="332" y1="192" x2="332" y2="226"/>
+  <line x1="344" y1="192" x2="344" y2="226"/>
+  <line x1="356" y1="192" x2="356" y2="226"/>
+  <line x1="368" y1="192" x2="368" y2="226"/>
+  <line x1="300" y1="198" x2="376" y2="198"/>
+  <line x1="300" y1="208" x2="376" y2="208"/>
+  <line x1="300" y1="218" x2="376" y2="218"/>
+</g>
+
+<!-- 벽체: 우측 회벽+살창 -->
+<rect class="grjWall" x="520" y="187" width="84" height="43"/>
+<g class="grjLattice">
+  <line x1="532" y1="192" x2="532" y2="226"/>
+  <line x1="544" y1="192" x2="544" y2="226"/>
+  <line x1="556" y1="192" x2="556" y2="226"/>
+  <line x1="568" y1="192" x2="568" y2="226"/>
+  <line x1="580" y1="192" x2="580" y2="226"/>
+  <line x1="592" y1="192" x2="592" y2="226"/>
+  <line x1="524" y1="198" x2="600" y2="198"/>
+  <line x1="524" y1="208" x2="600" y2="208"/>
+  <line x1="524" y1="218" x2="600" y2="218"/>
+</g>
+
+<!-- 중앙 개방형 툇마루 (어두운 내부) -->
+<rect class="grjOpenBay" x="380" y="183" width="140" height="47"/>
+<line class="grjInnerLine" x1="386" y1="222" x2="514" y2="222"/>
+<line class="grjInnerLine" x1="386" y1="200" x2="514" y2="200"/>
+
+<!-- 창방(상부 가로보) -->
+<rect class="grjBeam" x="282" y="180" width="338" height="7"/>
+
+<!-- 기둥 (붉은 목조 기둥 7개) -->
+<g>
+  <rect class="grjPillar" x="286" y="183" width="10" height="49"/>
+  <rect class="grjPillar" x="339" y="183" width="10" height="49"/>
+  <rect class="grjPillar" x="392" y="183" width="10" height="49"/>
+  <rect class="grjPillar" x="445" y="183" width="10" height="49"/>
+  <rect class="grjPillar" x="498" y="183" width="10" height="49"/>
+  <rect class="grjPillar" x="551" y="183" width="10" height="49"/>
+  <rect class="grjPillar" x="604" y="183" width="10" height="49"/>
+</g>
+<g class="grjPillarHi">
+  <rect x="287" y="184" width="3" height="47"/>
+  <rect x="393" y="184" width="3" height="47"/>
+  <rect x="499" y="184" width="3" height="47"/>
+  <rect x="605" y="184" width="3" height="47"/>
+</g>
+
+<!-- 처마 밑 공포/부연 -->
+<rect class="grjFascia" x="266" y="171" width="368" height="12"/>
+<g class="grjBracket">
+  <rect x="278" y="171" width="6" height="12"/>
+  <rect x="300" y="171" width="6" height="12"/>
+  <rect x="322" y="171" width="6" height="12"/>
+  <rect x="344" y="171" width="6" height="12"/>
+  <rect x="366" y="171" width="6" height="12"/>
+  <rect x="388" y="171" width="6" height="12"/>
+  <rect x="410" y="171" width="6" height="12"/>
+  <rect x="432" y="171" width="6" height="12"/>
+  <rect x="454" y="171" width="6" height="12"/>
+  <rect x="476" y="171" width="6" height="12"/>
+  <rect x="498" y="171" width="6" height="12"/>
+  <rect x="520" y="171" width="6" height="12"/>
+  <rect x="542" y="171" width="6" height="12"/>
+  <rect x="564" y="171" width="6" height="12"/>
+  <rect x="586" y="171" width="6" height="12"/>
+  <rect x="608" y="171" width="6" height="12"/>
+  <rect x="618" y="171" width="6" height="12"/>
+</g>
+
+<!-- 팔작지붕 -->
+<path class="grjRoof" d="M266,160 Q283,176 328,176 L572,176 Q617,176 634,160 L502,93 L398,93 Z"/>
+<rect class="grjRidge" x="396" y="86" width="108" height="9" rx="2"/>
+<circle cx="396" cy="90" r="5" fill="#4d5762"/>
+<circle cx="504" cy="90" r="5" fill="#4d5762"/>
+
+<g class="grjRoofTick">
+  <line x1="300" y1="169" x2="300" y2="176"/>
+  <line x1="330" y1="171" x2="330" y2="176"/>
+  <line x1="360" y1="172" x2="360" y2="176"/>
+  <line x1="390" y1="173" x2="390" y2="176"/>
+  <line x1="420" y1="174" x2="420" y2="176"/>
+  <line x1="450" y1="174" x2="450" y2="176"/>
+  <line x1="480" y1="174" x2="480" y2="176"/>
+  <line x1="510" y1="173" x2="510" y2="176"/>
+  <line x1="540" y1="172" x2="540" y2="176"/>
+  <line x1="570" y1="171" x2="570" y2="176"/>
+  <line x1="600" y1="169" x2="600" y2="176"/>
+  <line x1="345" y1="112" x2="300" y2="163"/>
+  <line x1="450" y1="99" x2="450" y2="130"/>
+  <line x1="555" y1="112" x2="600" y2="163"/>
+</g>
+
+</svg>
+</body>
+</html>

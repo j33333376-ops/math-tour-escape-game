@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>미니 스도쿠 4×4</title>
+  <style>
+    :root {
+      /* ===== 공통 디자인 토큰 (전체 퀴즈 공용) ===== */
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #ea580c;
+      --accent-soft: #fff7ed;
+      --border-color: #e2e8f0;
+      --success: #10b981;
+      --error: #ef4444;
+      --radius-card: 16px;
+      --radius-ctrl: 10px;
+      --shadow-card: 0 10px 25px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+    }
+
+    .app-layout {
+      display: flex;
+      width: 100%; height: 100%;
+      padding: 2vh 2vw;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-side {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      width: 38vw;
+      max-width: 440px;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-block h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+
+    .header-block p {
+      margin: 0 0 20px 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .control-group {
+      background: var(--primary-soft);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .control-header label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .col-badge {
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .col-badge.accent { background: var(--accent); }
+    .col-badge.muted  { background: #94a3b8; }
+
+    input[type=range] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+
+    .stat-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .btn-row { display: flex; gap: 8px; }
+
+    .btn-check, .btn-ghost {
+      border-radius: var(--radius-ctrl);
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .btn-check { background: var(--primary); color: #fff; border: none; }
+    .btn-check:hover:not(:disabled) { background: var(--primary-dark); }
+    .btn-check:active:not(:disabled) { transform: translateY(1px); }
+    .btn-ghost { background: var(--card-bg); color: var(--primary-dark); border: 1px solid var(--border-color); }
+    .btn-ghost:hover:not(:disabled) { background: var(--primary-soft); }
+    .btn-ghost:active:not(:disabled) { transform: translateY(1px); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .answer-group { padding-top: 16px; border-top: 2px dashed var(--border-color); }
+
+    .feedback {
+      margin-top: 10px;
+      font-weight: 700;
+      text-align: center;
+      min-height: 20px;
+      font-size: 0.95rem;
+      word-break: keep-all;
+      line-height: 1.45;
+    }
+    .feedback.success { color: var(--success); }
+    .feedback.error   { color: var(--error); }
+    .feedback.info    { color: var(--text-muted); }
+
+    .board-side {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      padding: 10px;
+    }
+
+    .board-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      border: 4px solid var(--border-color);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    @media (orientation: portrait) {
+      .app-layout { flex-direction: column; justify-content: flex-start; padding-top: 2vh; gap: 12px; }
+      .panel-side { width: 96vw; max-width: none; padding: 16px; }
+      .board-side { width: 96vw; flex: 1; padding: 0 0 2vh 0; }
+      .header-block p { margin-bottom: 12px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 520px) {
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.2rem; }
+      .header-block p { display: none; }
+      .control-group { padding: 8px 12px; margin-bottom: 10px; }
+      .stat-row { margin-bottom: 8px; }
+    }
+
+    /* ===== 미니 스도쿠 전용 ===== */
+    /* --u = 격자 한 변. 부모 높이에 의존하지 않도록 뷰포트 단위로 직접 정한다.
+       (예전엔 height:100% 가 높이 미정인 부모를 참조해 auto 로 무너졌음) */
+    .board-wrapper {
+      --u: min(70vmin, 58vh, 440px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: calc(var(--u) + var(--u) * 0.07);
+      gap: calc(var(--u) * 0.05);
+      padding: calc(var(--u) * 0.035);
+      touch-action: none;
+      user-select: none;
+    }
+
+    .sudoku {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      width: var(--u);
+      height: var(--u);          /* 항상 정사각 */
+      flex: 0 0 auto;
+    }
+
+    .sq {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      transition: background 0.12s, box-shadow 0.12s, transform 0.12s;
+    }
+    /* 2x2 상자 경계 굵게 */
+    .sq[data-c="0"] { border-left-width: 3px;  border-left-color: #94a3b8; }
+    .sq[data-c="1"] { border-right-width: 3px; border-right-color: #94a3b8; }
+    .sq[data-c="3"] { border-right-width: 3px; border-right-color: #94a3b8; }
+    .sq[data-r="0"] { border-top-width: 3px;    border-top-color: #94a3b8; }
+    .sq[data-r="1"] { border-bottom-width: 3px; border-bottom-color: #94a3b8; }
+    .sq[data-r="3"] { border-bottom-width: 3px; border-bottom-color: #94a3b8; }
+
+    .sq.given { background: #f1f5f9; }
+    .sq:not(.given) { cursor: pointer; }
+    .sq:not(.given):hover { background: var(--primary-soft); }
+    .sq.sel { background: #dbeafe; box-shadow: inset 0 0 0 3px var(--primary); }
+    .sq.peer:not(.sel) { background: #f8fafc; }
+
+    /* 드래그 중 표시 */
+    .sq.drop-ok  { background: #dcfce7; box-shadow: inset 0 0 0 3px var(--success); transform: scale(1.04); z-index: 2; }
+    .sq.drop-bad { background: #fee2e2; box-shadow: inset 0 0 0 3px var(--error); }
+
+    /* 칸 안의 숫자 */
+    .num {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: clamp(1.3rem, 6.6vmin, 2.8rem);
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .sq.given .num { color: var(--text-main); cursor: default; }
+    .sq:not(.given) .num { cursor: grab; }
+    .sq:not(.given) .num:active { cursor: grabbing; }
+    .num.conflict { color: var(--error); }
+    .num.dragging { opacity: 0.22; }
+
+    /* 숫자 팔레트 (몇 번이고 다시 끌어 쓸 수 있음) */
+    .tray {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: calc(var(--u) * 0.035);
+      width: var(--u);
+      height: calc(var(--u) * 0.19);
+      border-radius: 12px;
+      border: 2px dashed transparent;
+      transition: all 0.18s;
+    }
+    .tray.drop-ok { border-color: var(--error); background: #fef2f2; }
+
+    .chip {
+      height: 100%;
+      aspect-ratio: 1 / 1;
+      flex: 0 0 auto;
+      border-radius: 14px;
+      border: 2px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--primary-dark);
+      font-weight: 800;
+      font-size: clamp(1rem, 3.6vmin, 1.7rem);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      box-shadow: 0 3px 8px rgba(15,23,42,.07);
+      transition: transform 0.15s, background 0.15s, border-color 0.15s;
+      touch-action: none;
+    }
+    .chip:hover { background: var(--primary-soft); transform: translateY(-3px); }
+    .chip:active { cursor: grabbing; }
+    .chip.selected { background: var(--primary); color: #fff; border-color: var(--primary-dark); transform: scale(1.08); }
+    .chip.dragging { opacity: 0.3; }
+    .chip.eraser { color: var(--text-muted); font-size: clamp(0.9rem, 3.2vmin, 1.5rem); }
+    .chip.eraser.selected { background: var(--error); color: #fff; border-color: #b91c1c; }
+
+    .drag-ghost {
+      position: fixed;
+      z-index: 100;
+      pointer-events: none;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      box-shadow: 0 12px 22px -8px rgba(37,99,235,.7);
+      transform: translate(-50%, -50%) scale(1.1) rotate(-4deg);
+    }
+    .drag-ghost.eraser { background: var(--error); box-shadow: 0 12px 22px -8px rgba(239,68,68,.7); }
+
+    /* ===================================================================
+       반응형 안전장치 — PC/모바일, 가로/세로 어디서도 잘리지 않게
+       =================================================================== */
+    .app-layout { min-height: 0; min-width: 0; }
+    .board-side { min-height: 0; min-width: 0; }
+
+    .panel-side {
+      max-height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    @media (orientation: portrait) {
+      .panel-side { max-height: 46%; flex: 0 0 auto; }
+      .board-side { flex: 1 1 auto; }
+      .board-wrapper { --u: min(84vmin, 36vh, 420px); }
+    }
+    @media (orientation: landscape) and (max-height: 560px) {
+      .board-wrapper { --u: min(70vmin, 64vh, 440px); }
+    }
+
+    @media (orientation: landscape) and (max-height: 560px) {
+      .app-layout { padding: 8px; gap: 10px; }
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.12rem; margin-bottom: 4px; }
+      .header-block p  { display: none; }
+      .stat-row { margin-bottom: 8px; }
+      .answer-group { padding-top: 10px; margin-top: 10px !important; }
+      .feedback { font-size: 0.82rem; margin-top: 6px; min-height: 16px; }
+      .btn-row button { padding: 8px 12px; font-size: 0.85rem; }
+    }
+    @media (orientation: landscape) and (max-height: 430px) {
+      .control-group { padding: 7px 10px; margin-bottom: 8px; }
+      .col-badge { font-size: 0.72rem; padding: 3px 9px; }
+    }
+
+    /* ===== 목록(index.html)으로 돌아가는 버튼 ===== */
+    .home-btn {
+      position: fixed;
+      top: max(10px, env(safe-area-inset-top, 0px));
+      left: max(10px, env(safe-area-inset-left, 0px));
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px 8px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+      color: #1e293b;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: transform .18s, box-shadow .18s, color .18s, border-color .18s, background .18s;
+    }
+    .home-btn:hover {
+      background: #fff;
+      color: #1d4ed8;
+      border-color: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px -6px rgba(37, 99, 235, 0.5);
+    }
+    .home-btn:active { transform: translateY(0); }
+    .home-btn:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+    .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* 좁거나 납작한 화면에서는 아이콘만 */
+    @media (max-width: 560px), (orientation: landscape) and (max-height: 430px) {
+      .home-btn { padding: 8px; gap: 0; }
+      .home-btn .label { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="home-btn" href="index.html" title="게임 목록으로 돌아가기" aria-label="게임 목록으로 돌아가기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.2V20h13v-9.8"/>
+    </svg>
+    <span class="label">목록</span>
+  </a>
+
+
+  <div class="app-layout">
+    <div class="panel-side">
+      <div class="header-block">
+        <h2>미니 스도쿠 4×4</h2>
+        <p>아래 숫자를 칸으로 <b>끌어다 놓으세요</b>.<br>가로·세로·2×2 상자에 1~4가 <b>한 번씩만</b>.</p>
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <label>난이도 (빈칸 수)</label>
+          <span class="col-badge" id="diffBadge">8칸</span>
+        </div>
+        <input type="range" id="diffSlider" min="5" max="10" value="8" step="1">
+      </div>
+
+      <div class="stat-row">
+        <span class="col-badge muted" id="fillBadge">채운 칸 0 / 8</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-ghost" id="checkBtn">✔ 검사</button>
+        <button class="btn-check" id="newBtn">🔄 새 문제</button>
+      </div>
+
+      <div class="answer-group" style="margin-top:16px">
+        <div class="feedback info" id="feedback">숫자를 끌어다 놓으세요. (클릭·키보드 1~4 도 가능)</div>
+      </div>
+    </div>
+
+    <div class="board-side">
+      <div class="board-wrapper" id="wrapper">
+        <div class="sudoku" id="sudoku"></div>
+        <div class="tray" id="tray"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // ==========================================================
+    //  미니 스도쿠 4x4 — 2x2 상자, 유일해를 보장하는 문제 생성기
+    //  숫자를 드래그해서 칸에 놓는다. (클릭·키보드도 그대로 지원)
+    // ==========================================================
+    const N = 4;
+
+    const wrapper   = document.getElementById('wrapper');
+    const sudokuEl  = document.getElementById('sudoku');
+    const trayEl    = document.getElementById('tray');
+    const diffSlider = document.getElementById('diffSlider');
+    const diffBadge = document.getElementById('diffBadge');
+    const fillBadge = document.getElementById('fillBadge');
+    const checkBtn  = document.getElementById('checkBtn');
+    const newBtn    = document.getElementById('newBtn');
+    const feedback  = document.getElementById('feedback');
+
+    let solution = [], puzzle = [], grid = [], given = [];
+    let sel = null;            // 선택된 칸 (키보드용)
+    let selectedNum = null;    // 선택된 팔레트 숫자 (0 = 지우개)
+    let cells = [], chipEls = [];
+    let solved = false;
+
+    const rc = (i) => [Math.floor(i / N), i % N];
+    const box = (r, c) => (Math.floor(r / 2) * 2 + Math.floor(c / 2));
+
+    // ---------- 규칙 ----------
+    function ok(g, i, v) {
+      const [r, c] = rc(i);
+      for (let k = 0; k < N; k++) {
+        if (k !== c && g[r * N + k] === v) return false;
+        if (k !== r && g[k * N + c] === v) return false;
+      }
+      const br = Math.floor(r / 2) * 2, bc = Math.floor(c / 2) * 2;
+      for (let dr = 0; dr < 2; dr++) for (let dc = 0; dc < 2; dc++) {
+        const j = (br + dr) * N + (bc + dc);
+        if (j !== i && g[j] === v) return false;
+      }
+      return true;
+    }
+
+    function shuffle(a) {
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function fill(g, i) {
+      if (i === N * N) return true;
+      for (const v of shuffle([1, 2, 3, 4])) {
+        if (ok(g, i, v)) { g[i] = v; if (fill(g, i + 1)) return true; g[i] = 0; }
+      }
+      return false;
+    }
+
+    function countSolutions(g, limit) {
+      const i = g.indexOf(0);
+      if (i === -1) return 1;
+      let cnt = 0;
+      for (let v = 1; v <= N; v++) {
+        if (ok(g, i, v)) {
+          g[i] = v;
+          cnt += countSolutions(g, limit - cnt);
+          g[i] = 0;
+          if (cnt >= limit) return cnt;
+        }
+      }
+      return cnt;
+    }
+
+    function newPuzzle() {
+      const holes = parseInt(diffSlider.value, 10);
+      solution = new Array(N * N).fill(0);
+      fill(solution, 0);
+
+      puzzle = solution.slice();
+      let removed = 0;
+      for (const i of shuffle([...Array(N * N).keys()])) {
+        if (removed >= holes) break;
+        const backup = puzzle[i];
+        puzzle[i] = 0;
+        if (countSolutions(puzzle.slice(), 2) === 1) removed++;
+        else puzzle[i] = backup;          // 유일해가 깨지면 되돌림
+      }
+
+      grid = puzzle.slice();
+      given = puzzle.map(v => v !== 0);
+      sel = null;
+      selectedNum = null;
+      solved = false;
+      setFeedback('숫자를 끌어다 놓으세요. (클릭·키보드 1~4 도 가능)', 'info');
+      build();
+    }
+
+    // ---------- 만들기 ----------
+    function build() {
+      sudokuEl.innerHTML = '';
+      cells = [];
+      for (let i = 0; i < N * N; i++) {
+        const [r, c] = rc(i);
+        const d = document.createElement('div');
+        d.className = 'sq' + (given[i] ? ' given' : '');
+        d.dataset.i = i; d.dataset.r = r; d.dataset.c = c;
+        sudokuEl.appendChild(d);
+        cells.push(d);
+      }
+      render();
+    }
+
+    function buildTray() {
+      trayEl.innerHTML = '';
+      chipEls = [];
+      for (const v of [1, 2, 3, 4]) {
+        const c = document.createElement('div');
+        c.className = 'chip';
+        c.dataset.v = v;
+        c.textContent = v;
+        trayEl.appendChild(c);
+        chipEls.push(c);
+      }
+      const e = document.createElement('div');
+      e.className = 'chip eraser';
+      e.dataset.v = 0;
+      e.textContent = '🧽';
+      trayEl.appendChild(e);
+      chipEls.push(e);
+    }
+
+    // ---------- 상태 바꾸기 ----------
+    function setCell(i, v) {
+      if (given[i] || solved) return false;
+      grid[i] = v;
+      return true;
+    }
+
+    function conflicts() {
+      const bad = new Set();
+      for (let i = 0; i < N * N; i++) {
+        if (grid[i] === 0) continue;
+        if (!ok(grid, i, grid[i])) bad.add(i);
+      }
+      return bad;
+    }
+
+    function setFeedback(t, k) {
+      feedback.textContent = t;
+      feedback.className = 'feedback ' + k;
+    }
+
+    // ---------- 그리기 ----------
+    function render() {
+      const bad = conflicts();
+      const blanks = given.filter(g => !g).length;
+      const filled = grid.filter((v, i) => !given[i] && v !== 0).length;
+      fillBadge.textContent = '채운 칸 ' + filled + ' / ' + blanks;
+
+      let selR = -1, selC = -1, selB = -1;
+      if (sel !== null) { [selR, selC] = rc(sel); selB = box(selR, selC); }
+
+      cells.forEach((el, i) => {
+        const [r, c] = rc(i);
+        el.innerHTML = '';
+        if (grid[i]) {
+          const n = document.createElement('div');
+          n.className = 'num' + (bad.has(i) && !given[i] ? ' conflict' : '');
+          n.dataset.cell = i;
+          n.textContent = grid[i];
+          el.appendChild(n);
+        }
+        el.classList.toggle('sel', sel === i);
+        el.classList.toggle('peer', sel !== null && sel !== i &&
+          (r === selR || c === selC || box(r, c) === selB));
+      });
+
+      chipEls.forEach(ch => ch.classList.toggle('selected',
+        selectedNum !== null && parseInt(ch.dataset.v, 10) === selectedNum));
+
+      if (!solved && filled === blanks && bad.size === 0) {
+        solved = true;
+        sel = null; selectedNum = null;
+        setFeedback('🎉 스도쿠 완성! 모든 줄과 상자에 1~4가 한 번씩 들어갔습니다.', 'success');
+        cells.forEach(el => el.classList.remove('sel', 'peer'));
+      }
+    }
+
+    // ==========================================================
+    //  드래그 앤 드롭 (마우스 + 터치 공용)
+    // ==========================================================
+    let drag = null;
+
+    function makeGhost(v, size) {
+      const g = document.createElement('div');
+      g.className = 'drag-ghost' + (v === 0 ? ' eraser' : '');
+      g.textContent = v === 0 ? '🧽' : v;
+      g.style.width = size + 'px';
+      g.style.height = size + 'px';
+      g.style.fontSize = (size * 0.5) + 'px';
+      document.body.appendChild(g);
+      return g;
+    }
+
+    function startDrag(e, value, fromCell, srcEl) {
+      const r = srcEl.getBoundingClientRect();
+      drag = { value, fromCell, srcEl, moved: false,
+               ghost: makeGhost(value, Math.max(36, r.width)),
+               startX: e.clientX, startY: e.clientY };
+      srcEl.classList.add('dragging');
+      moveGhost(e.clientX, e.clientY);
+    }
+    function moveGhost(x, y) {
+      drag.ghost.style.left = x + 'px';
+      drag.ghost.style.top  = y + 'px';
+    }
+
+    function cellUnder(x, y) {
+      for (let i = 0; i < cells.length; i++) {
+        const r = cells[i].getBoundingClientRect();
+        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return i;
+      }
+      return -1;
+    }
+    function overTray(x, y) {
+      const r = trayEl.getBoundingClientRect();
+      return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+    }
+    function clearHighlights() {
+      cells.forEach(el => el.classList.remove('drop-ok', 'drop-bad'));
+      trayEl.classList.remove('drop-ok');
+    }
+
+    wrapper.addEventListener('pointerdown', (e) => {
+      if (drag || solved) return;
+
+      const num = e.target.closest('.num');
+      if (num) {
+        const i = parseInt(num.dataset.cell, 10);
+        if (given[i]) return;                       // 문제로 주어진 숫자는 못 옮김
+        e.preventDefault();
+        startDrag(e, grid[i], i, num);
+        wrapper.setPointerCapture(e.pointerId);
+        return;
+      }
+      const chip = e.target.closest('.chip');
+      if (chip) {
+        e.preventDefault();
+        startDrag(e, parseInt(chip.dataset.v, 10), null, chip);
+        wrapper.setPointerCapture(e.pointerId);
+      }
+    });
+
+    wrapper.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) > 4) drag.moved = true;
+      moveGhost(e.clientX, e.clientY);
+
+      clearHighlights();
+      const i = cellUnder(e.clientX, e.clientY);
+      if (i >= 0) {
+        if (given[i]) cells[i].classList.add('drop-bad');       // 고정 숫자 칸에는 못 놓음
+        else if (i !== drag.fromCell) cells[i].classList.add('drop-ok');
+      } else if (drag.fromCell !== null && overTray(e.clientX, e.clientY)) {
+        trayEl.classList.add('drop-ok');                        // 보관함으로 끌면 지움
+      }
+    });
+
+    wrapper.addEventListener('pointerup', (e) => {
+      if (!drag) return;
+      const { value, fromCell, srcEl, moved } = drag;
+      const x = e.clientX, y = e.clientY;
+
+      drag.ghost.remove();
+      srcEl.classList.remove('dragging');
+      drag = null;
+      clearHighlights();
+
+      if (!moved) { handleTap(value, fromCell); return; }
+
+      const i = cellUnder(x, y);
+      if (i >= 0 && !given[i]) {
+        if (fromCell === null) {
+          if (value === 0) { setCell(i, 0); setFeedback('지웠습니다.', 'info'); }
+          else { setCell(i, value); setFeedback(value + '을(를) 놓았습니다.', 'info'); }
+        } else if (i !== fromCell) {
+          setCell(fromCell, 0);
+          setCell(i, value);
+          setFeedback(value + '을(를) 옮겼습니다.', 'info');
+        }
+      } else if (i >= 0 && given[i]) {
+        setFeedback('문제로 주어진 칸에는 놓을 수 없어요.', 'error');
+      } else if (fromCell !== null) {
+        setCell(fromCell, 0);                       // 칸 밖으로 끌면 지움
+        setFeedback('지웠습니다.', 'info');
+      }
+      render();
+    });
+
+    wrapper.addEventListener('pointercancel', () => {
+      if (!drag) return;
+      drag.ghost.remove();
+      drag.srcEl.classList.remove('dragging');
+      drag = null;
+      clearHighlights();
+      render();
+    });
+
+    // ---------- 클릭 / 탭 방식 ----------
+    function handleTap(value, fromCell) {
+      if (fromCell !== null) {                      // 칸의 숫자를 톡 누르면 그 칸 선택
+        sel = fromCell;
+        if (selectedNum !== null) { setCell(sel, selectedNum); }
+        render();
+        return;
+      }
+      // 팔레트를 톡 누름
+      if (sel !== null && !given[sel]) { setCell(sel, value); selectedNum = null; }
+      else selectedNum = (selectedNum === value) ? null : value;
+      render();
+    }
+
+    sudokuEl.addEventListener('click', (e) => {
+      if (solved) return;
+      const el = e.target.closest('.sq');
+      if (!el) return;
+      const i = parseInt(el.dataset.i, 10);
+      if (given[i]) { sel = null; render(); return; }
+      if (selectedNum !== null) { setCell(i, selectedNum); selectedNum = null; sel = i; }
+      else sel = (sel === i) ? null : i;
+      render();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (solved || sel === null) return;
+      if (e.key >= '1' && e.key <= '4') { setCell(sel, parseInt(e.key, 10)); render(); }
+      else if (e.key === 'Backspace' || e.key === 'Delete' || e.key === '0') { setCell(sel, 0); render(); }
+    });
+
+    checkBtn.addEventListener('click', () => {
+      if (solved) return;
+      const bad = conflicts();
+      const blanks = given.filter(g => !g).length;
+      const filled = grid.filter((v, i) => !given[i] && v !== 0).length;
+      if (bad.size > 0) setFeedback('❌ 빨간 숫자가 있는 줄/상자에 같은 수가 두 번 들어갔어요.', 'error');
+      else if (filled < blanks) setFeedback('지금까지는 문제없어요! 아직 ' + (blanks - filled) + '칸 남았습니다.', 'info');
+    });
+
+    diffSlider.addEventListener('input', (e) => {
+      diffBadge.textContent = e.target.value + '칸';
+      newPuzzle();
+    });
+    newBtn.addEventListener('click', newPuzzle);
+
+    buildTray();
+    newPuzzle();
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차이나타운 체험학습앱 - H02</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* 공통 스타일 및 초기화 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #2d3748;
+            font-family: 'Noto Sans KR', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 게임 컨테이너 (16:9 비율 고정) */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f5f0e6; /* 연베이지 배경 */
+            border: 4px solid #d4af37; /* 앤틱 골드 테두리 */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        /* 스테이지 상단 표시바 */
+        #stage-header {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(45, 55, 72, 0.85);
+            border: 2px solid #d4af37;
+            padding: 8px 24px;
+            border-radius: 4px;
+            z-index: 10;
+            text-align: center;
+        }
+        #stage-header h1 {
+            font-family: 'Nanum Myeongjo', serif;
+            color: #d4af37;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        /* 무대/배경 레이어 */
+        #stage-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #e2dcd0, #f5f0e6);
+            z-index: 1;
+        }
+
+        /* 캐릭터 기본 스타일 및 비활성화(어두움) 처리 */
+        .character-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            bottom: 80px;
+            z-index: 5;
+            transition: filter 0.3s ease, transform 0.3s ease;
+            overflow: visible;
+        }
+        .character-wrapper.inactive {
+            filter: brightness(0.4) grayscale(0.2);
+        }
+        .character-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            overflow: hidden;
+        }
+
+        /* 캐릭터 개별 위치 고정 */
+        #char-minwoo { left: 80px; }
+        #char-seoyeon { left: 320px; }
+        #char-chen { right: 80px; transform: scaleX(-1); } /* 미스터첸 마주보게 반전 */
+        #char-chen.inactive { transform: scaleX(-1); } /* 반전 유지 */
+
+        /* 대화창 UI */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            height: 140px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid #d4af37;
+            border-radius: 6px;
+            padding: 15px 25px;
+            z-index: 20;
+            cursor: pointer;
+        }
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            color: #d4af37;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #8c3030;
+            padding-bottom: 4px;
+            display: inline-block;
+        }
+        #dialogue-text {
+            color: #ffffff;
+            font-size: 1rem;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+        }
+
+        /* 퀴즈 선택지 컨테이너 (대화 종료 후 등장) */
+        #quiz-selection-container {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            background: rgba(245, 240, 230, 0.95);
+            border: 3px solid #8c3030;
+            border-radius: 6px;
+            padding: 20px;
+            z-index: 25;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        #quiz-question {
+            font-family: 'Nanum Myeongjo', serif;
+            color: #8c3030;
+            font-size: 1.15rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .opt-btn {
+            background-color: #f5f0e6;
+            border: 2px solid #d4af37;
+            color: #2d3748;
+            padding: 12px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        .opt-btn:hover {
+            background-color: #8c3030;
+            color: white;
+            border-color: #8c3030;
+        }
+
+        /* 네비게이션 버튼 공통 */
+        .btn-nav {
+            position: absolute;
+            background-color: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-weight: bold;
+            font-family: 'Noto Sans KR', sans-serif;
+            cursor: pointer;
+            z-index: 30;
+            transition: background-color 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+        #btn-prev { left: 20px; bottom: 20px; display: none; }
+        #btn-next { right: 20px; bottom: 20px; display: none; }
+        #btn-skip { right: 20px; bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="stage-header">
+            <h1>차이나타운 체험학습앱 - 한중문화관 앞</h1>
+        </div>
+
+        <div id="stage-background">
+            <div style="position:absolute; left:223px; bottom:150px; width:465px; height:367.5px; overflow:hidden; z-index:2;">
+                <iframe src="H_한중문화관.html" scrolling="no" style="border:0; width:620px; height:490px; transform:scale(0.75); transform-origin:top left;"></iframe>
+            </div>
+        </div>
+
+        <div id="char-minwoo" class="character-wrapper inactive">
+            <iframe src="민우.html" scrolling="no"></iframe>
+        </div>
+        <div id="char-seoyeon" class="character-wrapper inactive">
+            <iframe src="서연.html" scrolling="no"></iframe>
+        </div>
+        <div id="char-chen" class="character-wrapper inactive">
+            <iframe src="미스터첸.html" scrolling="no"></iframe>
+        </div>
+
+        <div id="dialogue-box" onclick="advanceDialogue()">
+            <div id="speaker-name">미스터첸</div>
+            <div id="dialogue-text">대사가 로딩 중입니다...</div>
+        </div>
+
+        <div id="quiz-selection-container">
+            <div id="quiz-question">Q. 한중문화관에서 관람객들이 직접 입어보고 기념사진을 촬영할 수 있는 중국의 전통 의상은 무엇이지?</div>
+            <div class="quiz-options">
+                <button class="opt-btn" onclick="checkAnswer('한복')">1. 한복</button>
+                <button class="opt-btn" onclick="checkAnswer('사리')">2. 사리</button>
+                <button class="opt-btn" onclick="checkAnswer('치파오')">3. 치파오</button>
+                <button class="opt-btn" onclick="checkAnswer('기모노')">4. 기모노</button>
+            </div>
+        </div>
+
+        <a href="H01.html" id="btn-prev" class="btn-nav">이전</a>
+        <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+        <a href="H03.html" id="btn-next" class="btn-nav">다음</a>
+    </div>
+
+    <script>
+        // 대화 시나리오 데이터 정의 (추천 2: 허세 부리는 민우 버전 적용)
+        const dialogues = [
+            {
+                speaker: "미스터첸",
+                text: "허허, 한중문화관에 잘 찾아왔구나! 여기까지 왔으니 실력을 한 번 확인해볼까?",
+                target: "char-chen"
+            },
+            {
+                speaker: "민우",
+                text: "훗, 제 눈빛이 안 보이십니까? 이래 봬도 걸어 다니는 백과사전, 차이나타운의 명탐정 김민우라고요!",
+                target: "char-minwoo"
+            },
+            {
+                speaker: "서연",
+                text: "참나, 아까 올 때 패루(마을 입구 문) 보고 '와! 진짜 큰 중국집 문이다!'라고 소리 지른 게 누구시더라?",
+                target: "char-seoyeon"
+            },
+            {
+                speaker: "민우",
+                text: "크흠! 큼! 그... 그건 긴장감을 풀어주려고 던진 고도의 유머였지! 진짜 퀴즈는 지금부터라구!",
+                target: "char-minwoo"
+            },
+            {
+                speaker: "서연",
+                text: "어련하시겠어요~ 미스터첸님, 얼른 문제 내주셔서 저 허세 가득한 콧대를 확 꺾어주세요!",
+                target: "char-seoyeon"
+            },
+            {
+                speaker: "미스터첸",
+                text: "허허, 녀석들 참 활기차구나. 좋다! 첫번째 문제야. 한중문화관에서 관람객들이 직접 입어보고 기념사진을 촬영할 수 있는 중국의 전통 의상은 무엇이지?",
+                target: "char-chen"
+            }
+        ];
+
+        let currentIndex = 0;
+
+        // 대화 진행 함수
+        function advanceDialogue() {
+            if (currentIndex < dialogues.length) {
+                const currentData = dialogues[currentIndex];
+                
+                // 대사 및 화자 업데이트
+                document.getElementById("speaker-name").innerText = currentData.speaker;
+                document.getElementById("dialogue-text").innerText = currentData.text;
+
+                // 모든 인물 비활성화 및 화자만 활성화
+                document.querySelectorAll('.character-wrapper').forEach(el => {
+                    el.classList.add('inactive');
+                });
+                const activeWrapper = document.getElementById(currentData.target);
+                if (activeWrapper) {
+                    activeWrapper.classList.remove('inactive');
+                }
+
+                currentIndex++;
+            } else {
+                // 모든 대화 완료 시 대화창 종료 및 퀴즈 페이즈 전환
+                endDialoguePhase();
+            }
+        }
+
+        // 대화 건너뛰기
+        function skipDialogue() {
+            endDialoguePhase();
+        }
+
+        // 대화창이 끝나고 퀴즈 선택지가 등장하는 시점 처리
+        function endDialoguePhase() {
+            // 대화 상자 및 건너뛰기 버튼 숨김
+            document.getElementById("dialogue-box").style.display = "none";
+            document.getElementById("btn-skip").style.display = "none";
+
+            // 모든 캐릭터 원래 밝기로 복구
+            document.querySelectorAll('.character-wrapper').forEach(el => {
+                el.classList.remove('inactive');
+            });
+
+            // 퀴즈UI 및 이전 버튼 활성화
+            document.getElementById("quiz-selection-container").style.display = "block";
+            document.getElementById("btn-prev").style.display = "block";
+        }
+
+        // 퀴즈 정답 확인 함수
+        function checkAnswer(selectedOption) {
+            if (selectedOption === '치파오') {
+                alert("정답이다! 역시 잘 알고 있구나. 다음 장소로 이동하자!");
+                // 정답 시 퀴즈창을 닫고 '다음' 버튼 활성화하여 이동 유도
+                document.getElementById("quiz-selection-container").style.display = "none";
+                document.getElementById("btn-next").style.display = "block";
+                // 자동 이동 처리
+                window.location.href = "H03.html";
+            } else {
+                alert("음, 그 의상은 중국의 전통 의상이 아닌 것 같구나. 다시 한 번 생각해보렴.");
+            }
+        }
+
+        // 초기 시작 시 첫 번째 대사 자동 실행
+        window.onload = function() {
+            advanceDialogue();
+        };
+    </script>
+</body>
+</html>

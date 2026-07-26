@@ -1,0 +1,85 @@
+<!-- 원본 크기: 500x750 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>솜사탕</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .wss-svg { display:block; width:100%; height:auto; }
+  .wss-puff { animation: wss-puff 5s ease-in-out infinite; transform-origin: 250px 250px; }
+  @keyframes wss-puff { 0%,100% { transform: scale(1);} 50% { transform: scale(1.03);} }
+  .wss-spark { animation: wss-spark 3s ease-in-out infinite; }
+  @keyframes wss-spark { 0%,100% { opacity:0.25; } 50% { opacity:0.95; } }
+</style>
+</head>
+<body>
+<svg class="wss-svg" viewBox="0 0 500 750" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="솜사탕">
+<title>솜사탕</title>
+<desc>월미도 놀이공원에서 파는 분홍 솜사탕.</desc>
+<defs>
+  <radialGradient id="wssCotton" cx="0.38" cy="0.3" r="0.8">
+    <stop offset="0" stop-color="#fff2f8"/><stop offset="0.5" stop-color="#ffb8d8"/><stop offset="1" stop-color="#f286b8"/>
+  </radialGradient>
+  <radialGradient id="wssCotton2" cx="0.4" cy="0.32" r="0.8">
+    <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#ffcfe4"/>
+  </radialGradient>
+  <linearGradient id="wssStick" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#a8763a"/><stop offset="0.4" stop-color="#e0c08c"/><stop offset="1" stop-color="#8f6a34"/>
+  </linearGradient>
+</defs>
+<!-- 막대 -->
+<rect x="236" y="400" width="28" height="330" rx="14" fill="url(#wssStick)" stroke="#6e4f26" stroke-width="4"/>
+<g stroke="#8f6a34" stroke-width="2.4" opacity="0.6">
+  <line x1="250" y1="430" x2="250" y2="710"/>
+</g>
+<!-- 종이 띠 -->
+<rect x="222" y="606" width="56" height="46" rx="6" fill="#f2f6f8" stroke="#8f9aa4" stroke-width="3.4"/>
+<g stroke="#e6403a" stroke-width="6">
+  <line x1="228" y1="618" x2="272" y2="618"/><line x1="228" y1="640" x2="272" y2="640"/>
+</g>
+<g class="wss-puff">
+  <!-- 솜사탕 뭉치 -->
+  <g>
+    <circle cx="250" cy="112" r="88" fill="url(#wssCotton)"/>
+    <circle cx="146" cy="176" r="76" fill="url(#wssCotton)"/>
+    <circle cx="354" cy="176" r="76" fill="url(#wssCotton)"/>
+    <circle cx="96" cy="270" r="62" fill="url(#wssCotton2)"/>
+    <circle cx="404" cy="270" r="62" fill="url(#wssCotton2)"/>
+    <circle cx="182" cy="262" r="72" fill="url(#wssCotton2)"/>
+    <circle cx="318" cy="262" r="72" fill="url(#wssCotton2)"/>
+    <circle cx="250" cy="216" r="82" fill="url(#wssCotton)"/>
+    <circle cx="250" cy="334" r="72" fill="url(#wssCotton)"/>
+    <circle cx="164" cy="348" r="56" fill="url(#wssCotton2)"/>
+    <circle cx="336" cy="348" r="56" fill="url(#wssCotton2)"/>
+    <circle cx="250" cy="400" r="52" fill="url(#wssCotton)"/>
+  </g>
+  <!-- 결 -->
+  <g fill="none" stroke="#ffffff" stroke-width="5" opacity="0.7" stroke-linecap="round">
+    <path d="M150,140 C186,116 232,106 276,116"/>
+    <path d="M112,240 C150,206 208,190 262,196"/>
+    <path d="M330,142 C360,158 384,186 394,220"/>
+    <path d="M140,330 C182,306 240,300 292,312"/>
+    <path d="M300,368 C330,354 362,352 388,362"/>
+  </g>
+  <g fill="none" stroke="#f07ab0" stroke-width="4" opacity="0.55" stroke-linecap="round">
+    <path d="M200,180 C242,164 292,166 330,184"/>
+    <path d="M170,282 C216,262 286,262 332,282"/>
+    <path d="M210,386 C238,398 268,398 296,386"/>
+  </g>
+</g>
+<!-- 설탕 반짝임 -->
+<g class="wss-spark" fill="#ffffff">
+  <path d="M132,120 l4,10 l10,4 l-10,4 l-4,10 l-4,-10 l-10,-4 l10,-4 Z"/>
+  <path d="M382,128 l3,8 l8,3 l-8,3 l-3,8 l-3,-8 l-8,-3 l8,-3 Z"/>
+  <path d="M250,58 l4,10 l10,4 l-10,4 l-4,10 l-4,-10 l-10,-4 l10,-4 Z"/>
+</g>
+<g class="wss-spark" fill="#ffffff" style="animation-delay:1.4s">
+  <path d="M76,300 l3,8 l8,3 l-8,3 l-3,8 l-3,-8 l-8,-3 l8,-3 Z"/>
+  <path d="M430,296 l3,8 l8,3 l-8,3 l-3,8 l-3,-8 l-8,-3 l8,-3 Z"/>
+  <path d="M250,442 l3,8 l8,3 l-8,3 l-3,8 l-3,-8 l-8,-3 l8,-3 Z"/>
+</g>
+</svg>
+</body>
+</html>

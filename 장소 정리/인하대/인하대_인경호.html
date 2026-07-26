@@ -1,0 +1,142 @@
+<!-- 원본 크기: 900x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인하대학교 인경호</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .ihl-svg { display:block; width:100%; height:auto; }
+  .ihl-shore { fill:#8fbf72; stroke:#6d9a54; stroke-width:1.5; }
+  .ihl-shore2 { fill:#7fae62; opacity:0.7; }
+  .ihl-path { fill:#d9cba6; stroke:#c0ae82; stroke-width:1; }
+  .ihl-water { fill:url(#ihlWaterGrad); stroke:#3f7ca0; stroke-width:1.5; }
+  .ihl-wave { stroke:#ffffff; stroke-width:1.2; opacity:0.35; fill:none; }
+  .ihl-ripple { fill:none; stroke:#eaf6fb; stroke-width:1.4; opacity:0.55; }
+  .ihl-tree-trunk { fill:#6a4a2a; }
+  .ihl-tree-dark { fill:#4f7a3c; }
+  .ihl-tree-light { fill:#6fa85a; opacity:0.9; }
+  .ihl-bloom { fill:#f3b6c8; }
+  .ihl-bloom2 { fill:#f7cdd9; opacity:0.9; }
+  .ihl-bench-seat { fill:#8a5a34; stroke:#5c3a1e; stroke-width:1; }
+  .ihl-bench-leg { fill:#4a4a4a; }
+  .ihl-fountain-base { fill:#c9c2b0; stroke:#9c9480; stroke-width:1.5; }
+  .ihl-fountain-jet { fill:#eaf6fb; opacity:0.85; }
+  @keyframes ihlRipple { 0% { opacity:0.55; r:14; } 100% { opacity:0; r:46; } }
+  @keyframes ihlJet { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(1.12); } }
+  .ihl-ripple1 { animation: ihlRipple 3.2s ease-out infinite; transform-origin: 430px 300px; }
+  .ihl-ripple2 { animation: ihlRipple 3.2s ease-out infinite 1.6s; transform-origin: 430px 300px; }
+  .ihl-jetgrp { animation: ihlJet 2.6s ease-in-out infinite; transform-origin: 430px 300px; }
+</style>
+</head>
+<body>
+<svg class="ihl-svg" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="인하대학교 캠퍼스 호수 인경호">
+<title>인하대학교 인경호</title>
+<defs>
+  <linearGradient id="ihlWaterGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#7fc0dc"/>
+    <stop offset="1" stop-color="#3f88ab"/>
+  </linearGradient>
+</defs>
+
+<!-- 산책로 (호수 외곽) -->
+<path class="ihl-path" d="M70,300 C50,215 115,110 240,80 C345,52 425,105 525,75 C630,44 755,88 815,182 C868,255 858,345 815,405 C862,448 830,528 745,548 C650,573 555,528 478,548 C378,573 275,548 195,505 C115,462 55,398 70,300 Z"/>
+
+<!-- 잔디 호숫가 -->
+<path class="ihl-shore" d="M90,300 C72,225 130,130 245,102 C340,78 415,122 512,94 C608,66 725,106 780,190 C828,258 818,340 780,395 C822,435 794,505 715,524 C628,546 542,505 470,524 C378,546 285,524 210,486 C138,448 82,392 90,300 Z"/>
+<path class="ihl-shore2" d="M120,240 C160,180 240,140 320,150 C260,190 200,230 170,290 Z"/>
+<path class="ihl-shore2" d="M700,410 C660,460 590,486 520,478 C590,450 650,430 690,390 Z"/>
+
+<!-- 호수 물 -->
+<path class="ihl-water" d="M210,300 C192,235 236,178 312,168 C388,158 428,198 490,188 C566,176 646,206 686,266 C716,314 696,378 636,410 C566,448 486,422 424,432 C346,446 268,420 228,382 C198,352 200,332 210,300 Z"/>
+
+<!-- 물결 라인 -->
+<g class="ihl-wave">
+  <path d="M250,260 Q300,250 350,262 Q400,274 450,262"/>
+  <path d="M260,340 Q320,330 380,342 Q440,354 500,340"/>
+  <path d="M480,240 Q540,232 600,244"/>
+</g>
+
+<!-- 분수 -->
+<g>
+  <ellipse class="ihl-fountain-base" cx="430" cy="304" rx="34" ry="12"/>
+  <ellipse class="ihl-fountain-base" cx="430" cy="300" rx="28" ry="10"/>
+  <circle class="ihl-ripple ihl-ripple1" cx="430" cy="300" r="14"/>
+  <circle class="ihl-ripple ihl-ripple2" cx="430" cy="300" r="14"/>
+  <g class="ihl-jetgrp">
+    <path class="ihl-fountain-jet" d="M430,296 C426,260 424,220 430,190 C436,220 434,260 430,296 Z"/>
+    <path class="ihl-fountain-jet" d="M430,296 C412,268 396,240 400,214 C414,236 424,266 430,296 Z" opacity="0.7"/>
+    <path class="ihl-fountain-jet" d="M430,296 C448,268 464,240 460,214 C446,236 436,266 430,296 Z" opacity="0.7"/>
+  </g>
+  <g fill="#eaf6fb" opacity="0.6">
+    <circle cx="418" cy="230" r="2.2"/>
+    <circle cx="444" cy="222" r="2"/>
+    <circle cx="430" cy="198" r="2.4"/>
+  </g>
+</g>
+
+<!-- 벤치 1 -->
+<g transform="translate(150,470)">
+  <rect class="ihl-bench-seat" x="-30" y="0" width="60" height="8" rx="1"/>
+  <rect class="ihl-bench-seat" x="-30" y="-16" width="60" height="6" rx="1"/>
+  <rect class="ihl-bench-leg" x="-26" y="8" width="5" height="14"/>
+  <rect class="ihl-bench-leg" x="21" y="8" width="5" height="14"/>
+  <rect class="ihl-bench-leg" x="-26" y="-16" width="5" height="16"/>
+  <rect class="ihl-bench-leg" x="21" y="-16" width="5" height="16"/>
+</g>
+
+<!-- 벤치 2 -->
+<g transform="translate(700,180)">
+  <rect class="ihl-bench-seat" x="-30" y="0" width="60" height="8" rx="1"/>
+  <rect class="ihl-bench-seat" x="-30" y="-16" width="60" height="6" rx="1"/>
+  <rect class="ihl-bench-leg" x="-26" y="8" width="5" height="14"/>
+  <rect class="ihl-bench-leg" x="21" y="8" width="5" height="14"/>
+  <rect class="ihl-bench-leg" x="-26" y="-16" width="5" height="16"/>
+  <rect class="ihl-bench-leg" x="21" y="-16" width="5" height="16"/>
+</g>
+
+<!-- 벚나무(분홍) 무리 - 좌상단 -->
+<g transform="translate(160,120)">
+  <rect class="ihl-tree-trunk" x="-4" y="10" width="8" height="30"/>
+  <circle class="ihl-bloom" cx="-14" cy="-4" r="20"/>
+  <circle class="ihl-bloom" cx="10" cy="-10" r="22"/>
+  <circle class="ihl-bloom" cx="16" cy="8" r="18"/>
+  <circle class="ihl-bloom2" cx="0" cy="-14" r="16"/>
+</g>
+
+<!-- 초록 나무 - 우상단 -->
+<g transform="translate(760,140)">
+  <rect class="ihl-tree-trunk" x="-4" y="8" width="8" height="28"/>
+  <circle class="ihl-tree-dark" cx="-12" cy="-6" r="18"/>
+  <circle class="ihl-tree-dark" cx="12" cy="-10" r="20"/>
+  <circle class="ihl-tree-light" cx="0" cy="-16" r="15"/>
+</g>
+
+<!-- 초록 나무 - 좌하단 -->
+<g transform="translate(105,430)">
+  <rect class="ihl-tree-trunk" x="-4" y="6" width="8" height="26"/>
+  <circle class="ihl-tree-dark" cx="-10" cy="-6" r="16"/>
+  <circle class="ihl-tree-dark" cx="10" cy="-8" r="17"/>
+  <circle class="ihl-tree-light" cx="0" cy="-14" r="13"/>
+</g>
+
+<!-- 벚나무 - 우하단 -->
+<g transform="translate(770,470)">
+  <rect class="ihl-tree-trunk" x="-4" y="8" width="8" height="28"/>
+  <circle class="ihl-bloom" cx="-12" cy="-4" r="18"/>
+  <circle class="ihl-bloom" cx="12" cy="-8" r="19"/>
+  <circle class="ihl-bloom2" cx="0" cy="-14" r="15"/>
+</g>
+
+<!-- 벚꽃잎 흩날림 -->
+<g fill="#f3b6c8" opacity="0.7">
+  <circle cx="220" cy="180" r="2"/>
+  <circle cx="250" cy="210" r="1.6"/>
+  <circle cx="680" cy="230" r="2"/>
+  <circle cx="650" cy="260" r="1.6"/>
+</g>
+
+</svg>
+</body>
+</html>

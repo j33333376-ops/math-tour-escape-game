@@ -1,0 +1,290 @@
+<div class="merchant-chen-component" style="display: inline-block; overflow: visible !important;">
+    
+    <style>
+        .mrc-stage {
+            position: relative;
+            width: 260px;
+            height: 320px;
+            margin: 0 auto;
+            animation: mrc-breatheHuman 4s ease-in-out infinite;
+            overflow: visible !important;
+        }
+
+        @keyframes mrc-breatheHuman {
+            0%, 100% { transform: scale(1) translateY(0px); }
+            50% { transform: scale(1.01) translateY(-3px); }
+        }
+
+        /* 두상 기본 상자 */
+        .mrc-head-wrapper {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 130px;
+            overflow: visible !important;
+        }
+
+        /* 귀 */
+        .mrc-ear-l, .mrc-ear-r {
+            position: absolute;
+            top: 52px;
+            width: 16px;
+            height: 26px;
+            background-color: #ffdbb5;
+            border: 3.5px solid #8d5b4c;
+            z-index: 2;
+        }
+        .mrc-ear-l { left: -11px; border-radius: 50% 0 0 50%; transform: rotate(-10deg); }
+        .mrc-ear-r { right: -11px; border-radius: 0 50% 50% 0; transform: rotate(10deg); }
+
+        /* 전통 상인 모자 (마과 스타일) */
+        .mrc-hat {
+            position: absolute;
+            top: -20px;
+            left: -6px;
+            width: 132px;
+            height: 55px;
+            background-color: #171717;
+            border: 3.5px solid #0a0a0a;
+            border-radius: 40px 40px 10px 10px;
+            z-index: 10;
+        }
+        .mrc-hat-brim {
+            position: absolute;
+            bottom: -3px;
+            left: -3px;
+            width: 132px;
+            height: 12px;
+            background-color: #b45309; /* 짙은 금/구리색 띠 */
+            border: 3px solid #78350f;
+            border-radius: 4px;
+        }
+        .mrc-hat-button {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 18px;
+            height: 18px;
+            background-color: #dc2626; /* 붉은 장식 구슬 */
+            border: 2px solid #991b1b;
+            border-radius: 50%;
+        }
+
+        /* 목 */
+        .mrc-neck {
+            position: absolute;
+            top: 105px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 40px;
+            background-color: #ffdbb5;
+            border-left: 3.5px solid #8d5b4c;
+            border-right: 3.5px solid #8d5b4c;
+            z-index: 3;
+        }
+
+        /* 얼굴 피부 컨테이너 */
+        .mrc-face-skin {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffdbb5;
+            border: 3.5px solid #8d5b4c;
+            border-radius: 50px 50px 60px 60px;
+            z-index: 4;
+            overflow: hidden;
+        }
+
+        /* 계산적인 날카로운 눈썹 */
+        .mrc-eyebrow-l, .mrc-eyebrow-r {
+            position: absolute;
+            top: 50px;
+            width: 22px;
+            height: 4.5px;
+            background-color: #27272a;
+            border-radius: 2px;
+            z-index: 6;
+        }
+        .mrc-eyebrow-l { left: 20px; transform: rotate(15deg); }
+        .mrc-eyebrow-r { right: 20px; transform: rotate(-15deg); }
+
+        /* 눈 */
+        .mrc-eye-l, .mrc-eye-r {
+            position: absolute;
+            top: 62px;
+            width: 14px;
+            height: 14px;
+            background-color: #221a15;
+            border-radius: 50%;
+            z-index: 6;
+        }
+        .mrc-eye-l::after, .mrc-eye-r::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 4px;
+            height: 4px;
+            background-color: #fff;
+            border-radius: 50%;
+        }
+        .mrc-eye-l { left: 24px; }
+        .mrc-eye-r { right: 24px; }
+
+        /* 모노클 (오른쪽 눈의 금테 안경) */
+        .mrc-monocle {
+            position: absolute;
+            top: 57px;
+            right: 19px;
+            width: 24px;
+            height: 24px;
+            border: 2.5px solid #fbbf24;
+            background-color: rgba(251, 191, 36, 0.2);
+            border-radius: 50%;
+            z-index: 7;
+            box-shadow: inset 0 0 4px rgba(251, 191, 36, 0.5);
+        }
+        .mrc-monocle-chain {
+            position: absolute;
+            top: 68px;
+            right: 8px;
+            width: 15px;
+            height: 20px;
+            border-right: 2px dotted #fbbf24;
+            border-bottom: 2px dotted #fbbf24;
+            border-radius: 0 0 10px 0;
+            z-index: 7;
+        }
+
+        /* 콧수염 (거상의 권위) */
+        .mrc-mustache-l, .mrc-mustache-r {
+            position: absolute;
+            top: 88px;
+            width: 22px;
+            height: 12px;
+            border-top: 4px solid #27272a;
+            border-radius: 50%;
+            z-index: 8;
+        }
+        .mrc-mustache-l { left: 28px; transform: rotate(-25deg); }
+        .mrc-mustache-r { right: 28px; transform: rotate(25deg); }
+
+        /* 여유만만 썩소 */
+        .mrc-mouth {
+            position: absolute;
+            bottom: 20px;
+            left: 45%;
+            transform: translateX(-50%) rotate(-10deg);
+            width: 18px;
+            height: 8px;
+            border-bottom: 2.5px solid #9f1239;
+            border-left: 2.5px solid #9f1239;
+            border-radius: 0 0 0 10px;
+            z-index: 6;
+        }
+
+        /* 거상의 화려한 비단 옷 (에메랄드/골드) */
+        .mrc-uniform-top {
+            position: absolute;
+            top: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 124px;
+            height: 110px;
+            background-color: #064e3b; /* 에메랄드 딥그린 */
+            border: 3.5px solid #022c22;
+            border-radius: 20px 20px 10px 10px;
+            z-index: 7;
+            overflow: hidden;
+        }
+
+        /* 전통 마고자 깃 (만다린 칼라) */
+        .mrc-collar-l, .mrc-collar-r {
+            position: absolute;
+            top: -2px;
+            width: 25px;
+            height: 22px;
+            background-color: #064e3b;
+            border: 3px solid #fbbf24; /* 황금색 테두리 */
+            z-index: 8;
+        }
+        .mrc-collar-l { left: 35px; border-radius: 0 0 6px 0; transform: rotate(-15deg); }
+        .mrc-collar-r { right: 35px; border-radius: 0 0 0 6px; transform: rotate(15deg); }
+        
+        /* 옷깃 중앙선 */
+        .mrc-center-seam {
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background-color: #022c22;
+            z-index: 8;
+        }
+
+        /* 전통 매듭 단추 (Frog Buttons) */
+        .mrc-frog-button {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 6px;
+            border: 2px solid #fbbf24;
+            border-radius: 6px;
+            background-color: #064e3b;
+            z-index: 9;
+        }
+        .mrc-frog-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            background-color: #fbbf24;
+            border-radius: 50%;
+        }
+    </style>
+
+    <div class="mrc-stage">
+        <div class="mrc-head-wrapper">
+            <div class="mrc-ear-l"></div>
+            <div class="mrc-ear-r"></div>
+            <div class="mrc-neck"></div>
+            
+            <div class="mrc-face-skin">
+                <div class="mrc-eyebrow-l"></div>
+                <div class="mrc-eyebrow-r"></div>
+                <div class="mrc-eye-l"></div>
+                <div class="mrc-eye-r"></div>
+                <div class="mrc-mustache-l"></div>
+                <div class="mrc-mustache-r"></div>
+                <div class="mrc-mouth"></div>
+                <div class="mrc-monocle"></div>
+            </div>
+            
+            <div class="mrc-hat">
+                <div class="mrc-hat-brim"></div>
+                <div class="mrc-hat-button"></div>
+            </div>
+            <div class="mrc-monocle-chain"></div>
+        </div>
+
+        <div class="mrc-uniform-top">
+            <div class="mrc-collar-l"></div>
+            <div class="mrc-collar-r"></div>
+            <div class="mrc-center-seam"></div>
+            <div class="mrc-frog-button" style="top: 30px;"></div>
+            <div class="mrc-frog-button" style="top: 55px;"></div>
+            <div class="mrc-frog-button" style="top: 80px;"></div>
+        </div>
+    </div>
+</div>

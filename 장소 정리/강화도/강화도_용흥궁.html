@@ -1,0 +1,340 @@
+<!-- 원본 크기: 900x480 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>강화도 용흥궁</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  svg { display:block; width:100%; height:auto; }
+
+  @keyframes yhg-sway-left {
+    0%, 100% { transform: rotate(-1.6deg); }
+    50%      { transform: rotate(1.2deg); }
+  }
+  @keyframes yhg-sway-right {
+    0%, 100% { transform: rotate(1.6deg); }
+    50%      { transform: rotate(-1.2deg); }
+  }
+  .yhg-lantern-left  { animation: yhg-sway-left 4.6s ease-in-out infinite;  transform-origin: 0px 0px; }
+  .yhg-lantern-right { animation: yhg-sway-right 5.2s ease-in-out infinite; transform-origin: 0px 0px; }
+</style>
+</head>
+<body>
+<svg viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="강화도 용흥궁 솟을대문과 담장">
+<title>강화도 용흥궁</title>
+<desc>조선 철종의 잠저인 강화도 용흥궁. 중앙에 솟을대문이 우뚝 서 있고 좌우로 와편담장이 이어지며, 담장 뒤로 안채 지붕과 문살창이 살짝 보인다.</desc>
+
+<defs>
+  <linearGradient id="yhgWoodGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#c9805a"/>
+    <stop offset="0.45" stop-color="#9c4a30"/>
+    <stop offset="1" stop-color="#6a2611"/>
+  </linearGradient>
+  <linearGradient id="yhgDoorGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#5c3a24"/>
+    <stop offset="1" stop-color="#2e1e0e"/>
+  </linearGradient>
+  <linearGradient id="yhgRoofGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#606f7c"/>
+    <stop offset="1" stop-color="#252d35"/>
+  </linearGradient>
+  <linearGradient id="yhgRearRoofGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#8d99a4"/>
+    <stop offset="1" stop-color="#5b6570"/>
+  </linearGradient>
+  <linearGradient id="yhgStoneGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#d6cdb2"/>
+    <stop offset="1" stop-color="#aa9d7e"/>
+  </linearGradient>
+  <linearGradient id="yhgWallGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f2e8ca"/>
+    <stop offset="1" stop-color="#ddce9d"/>
+  </linearGradient>
+  <linearGradient id="yhgGoldGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f7de84"/>
+    <stop offset="1" stop-color="#a97a1e"/>
+  </linearGradient>
+  <radialGradient id="yhgLanternRed" cx="35%" cy="26%" r="75%">
+    <stop offset="0" stop-color="#ee7150"/>
+    <stop offset="1" stop-color="#94201a"/>
+  </radialGradient>
+  <radialGradient id="yhgLanternBlue" cx="35%" cy="26%" r="75%">
+    <stop offset="0" stop-color="#5a94d4"/>
+    <stop offset="1" stop-color="#1a3a72"/>
+  </radialGradient>
+
+  <pattern id="yhgTileCap" width="15" height="16" patternUnits="userSpaceOnUse">
+    <rect width="15" height="16" fill="#3a4249"/>
+    <path d="M0.5,16 A6.5,6.5 0 0 1 14.5,16 Z" fill="#5e6a76"/>
+    <path d="M0.5,16 A6.5,6.5 0 0 1 14.5,16 Z" fill="none" stroke="#24292f" stroke-width="0.6"/>
+  </pattern>
+
+  <pattern id="yhgStonePattern" width="46" height="17" patternUnits="userSpaceOnUse">
+    <line x1="0" y1="17" x2="46" y2="17" stroke="#8f8368" stroke-width="0.8" opacity="0.55"/>
+    <line x1="0" y1="0" x2="0" y2="17" stroke="#8f8368" stroke-width="0.8" opacity="0.45"/>
+    <line x1="23" y1="0" x2="23" y2="17" stroke="#8f8368" stroke-width="0.8" opacity="0.45"/>
+  </pattern>
+
+  <pattern id="yhgStuds" width="16" height="24" patternUnits="userSpaceOnUse">
+    <circle cx="8" cy="12" r="2.3" fill="#e6c25a" stroke="#8a6a1e" stroke-width="0.6"/>
+  </pattern>
+
+  <pattern id="yhgTransom" width="8" height="50" patternUnits="userSpaceOnUse">
+    <rect width="8" height="50" fill="#233039"/>
+    <rect x="3" width="2" height="50" fill="#101a20"/>
+  </pattern>
+
+  <pattern id="yhgLattice" width="12.5" height="12.5" patternUnits="userSpaceOnUse">
+    <rect width="12.5" height="12.5" fill="#25333f"/>
+    <line x1="0" y1="0" x2="0" y2="12.5" stroke="#e8dfc8" stroke-width="1"/>
+    <line x1="0" y1="0" x2="12.5" y2="0" stroke="#e8dfc8" stroke-width="1"/>
+  </pattern>
+</defs>
+
+<!-- ════════════════════════════════
+     뒤쪽 안채 (담장 너머 원근 배경 건물)
+════════════════════════════════ -->
+<g>
+  <path d="M550,300 Q568,255 610,212 L710,212 Q752,255 770,300 Q736,285 710,280 L610,280 Q584,285 550,300 Z"
+        fill="url(#yhgRearRoofGrad)" stroke="#4a535e" stroke-width="1"/>
+  <rect x="602" y="202" width="116" height="9" rx="3" fill="#3d4650"/>
+  <polygon points="596,202 606,196 606,208" fill="#4a535e"/>
+  <polygon points="724,202 714,196 714,208" fill="#4a535e"/>
+
+  <!-- 서까래 마구리 -->
+  <g fill="#4a2f1f">
+    <circle cx="562" cy="298" r="3"/><circle cx="576" cy="296" r="3"/><circle cx="590" cy="293" r="3"/>
+    <circle cx="604" cy="291" r="3"/><circle cx="618" cy="289" r="3"/><circle cx="632" cy="288" r="3"/>
+    <circle cx="646" cy="287" r="3"/><circle cx="660" cy="287" r="3"/><circle cx="674" cy="288" r="3"/>
+    <circle cx="688" cy="289" r="3"/><circle cx="702" cy="291" r="3"/><circle cx="716" cy="293" r="3"/>
+    <circle cx="730" cy="296" r="3"/><circle cx="744" cy="298" r="3"/>
+  </g>
+
+  <!-- 단청 프리즈 -->
+  <g opacity="0.92">
+    <rect x="598" y="300" width="11" height="9" fill="#1f6b5c"/>
+    <rect x="612" y="300" width="11" height="9" fill="#a83232"/>
+    <rect x="626" y="300" width="11" height="9" fill="#c99a35"/>
+    <rect x="640" y="300" width="11" height="9" fill="#1f6b5c"/>
+    <rect x="654" y="300" width="11" height="9" fill="#a83232"/>
+    <rect x="668" y="300" width="11" height="9" fill="#c99a35"/>
+    <rect x="682" y="300" width="11" height="9" fill="#1f6b5c"/>
+    <rect x="696" y="300" width="11" height="9" fill="#a83232"/>
+    <rect x="710" y="300" width="11" height="9" fill="#c99a35"/>
+  </g>
+
+  <!-- 격자무늬 문살창 (담장 위로 살짝) -->
+  <rect x="608" y="311" width="104" height="39" fill="url(#yhgLattice)" stroke="#101a20" stroke-width="1"/>
+</g>
+
+<!-- ════════════════════════════════
+     좌측 와편담장
+════════════════════════════════ -->
+<g>
+  <rect x="0" y="400" width="350" height="30" fill="url(#yhgStoneGrad)"/>
+  <rect x="0" y="400" width="350" height="30" fill="url(#yhgStonePattern)"/>
+  <rect x="0" y="366" width="350" height="34" fill="url(#yhgWallGrad)"/>
+  <g stroke="#c8b98a" stroke-width="1" opacity="0.35">
+    <line x1="30" y1="366" x2="60" y2="400"/>
+    <line x1="60" y1="366" x2="30" y2="400"/>
+    <line x1="150" y1="366" x2="180" y2="400"/>
+    <line x1="180" y1="366" x2="150" y2="400"/>
+    <line x1="270" y1="366" x2="300" y2="400"/>
+    <line x1="300" y1="366" x2="270" y2="400"/>
+  </g>
+  <rect x="0" y="364" width="350" height="2" fill="#2c333a"/>
+  <rect x="0" y="350" width="350" height="16" fill="url(#yhgTileCap)"/>
+  <rect x="0" y="349" width="350" height="2" fill="#2c333a"/>
+</g>
+
+<!-- ════════════════════════════════
+     우측 와편담장
+════════════════════════════════ -->
+<g>
+  <rect x="450" y="400" width="450" height="30" fill="url(#yhgStoneGrad)"/>
+  <rect x="450" y="400" width="450" height="30" fill="url(#yhgStonePattern)"/>
+  <rect x="450" y="366" width="450" height="34" fill="url(#yhgWallGrad)"/>
+  <g stroke="#c8b98a" stroke-width="1" opacity="0.35">
+    <line x1="490" y1="366" x2="520" y2="400"/>
+    <line x1="520" y1="366" x2="490" y2="400"/>
+    <line x1="640" y1="366" x2="670" y2="400"/>
+    <line x1="670" y1="366" x2="640" y2="400"/>
+    <line x1="790" y1="366" x2="820" y2="400"/>
+    <line x1="820" y1="366" x2="790" y2="400"/>
+  </g>
+  <rect x="450" y="364" width="450" height="2" fill="#2c333a"/>
+  <rect x="450" y="350" width="450" height="16" fill="url(#yhgTileCap)"/>
+  <rect x="450" y="349" width="450" height="2" fill="#2c333a"/>
+</g>
+
+<!-- 지면 그림자 -->
+<ellipse cx="400" cy="432" rx="150" ry="7" fill="#000" opacity="0.12"/>
+
+<!-- ════════════════════════════════
+     솟을대문 (중앙 대문)
+════════════════════════════════ -->
+<g>
+  <!-- 주춧돌 -->
+  <rect x="344" y="418" width="30" height="14" fill="url(#yhgStoneGrad)" stroke="#8a7f63" stroke-width="0.8"/>
+  <rect x="426" y="418" width="30" height="14" fill="url(#yhgStoneGrad)" stroke="#8a7f63" stroke-width="0.8"/>
+
+  <!-- 앞 기둥 -->
+  <rect x="352" y="192" width="16" height="238" fill="url(#yhgWoodGrad)"/>
+  <rect x="432" y="192" width="16" height="238" fill="url(#yhgWoodGrad)"/>
+  <rect x="350" y="190" width="20" height="7" fill="url(#yhgGoldGrad)" stroke="#7a5a12" stroke-width="0.6"/>
+  <rect x="430" y="190" width="20" height="7" fill="url(#yhgGoldGrad)" stroke="#7a5a12" stroke-width="0.6"/>
+
+  <!-- 교창 (문살 통풍창) -->
+  <rect x="368" y="196" width="64" height="50" fill="url(#yhgTransom)" stroke="#6a2611" stroke-width="1.5"/>
+
+  <!-- 디딤돌 -->
+  <polygon points="366,432 434,432 424,440 376,440" fill="#b3a888" stroke="#8a7f63" stroke-width="0.6"/>
+
+  <!-- 문턱 -->
+  <rect x="364" y="422" width="72" height="8" fill="#3a2214"/>
+
+  <!-- 판문 두 짝 -->
+  <rect x="368" y="246" width="32" height="178" fill="url(#yhgDoorGrad)" stroke="#1c1206" stroke-width="1"/>
+  <rect x="400" y="246" width="32" height="178" fill="url(#yhgDoorGrad)" stroke="#1c1206" stroke-width="1"/>
+  <rect x="368" y="246" width="32" height="178" fill="url(#yhgStuds)"/>
+  <rect x="400" y="246" width="32" height="178" fill="url(#yhgStuds)"/>
+  <rect x="398" y="246" width="4" height="178" fill="#160e05"/>
+
+  <!-- 가로 문살 보강대 -->
+  <g fill="#241a0c">
+    <rect x="368" y="278" width="64" height="5"/>
+    <rect x="368" y="350" width="64" height="5"/>
+    <rect x="368" y="398" width="64" height="5"/>
+  </g>
+
+  <!-- 금색 문고리 -->
+  <g>
+    <circle cx="384" cy="335" r="7.5" fill="url(#yhgGoldGrad)" stroke="#7a5a12" stroke-width="1"/>
+    <circle cx="384" cy="335" r="2.6" fill="#241a08"/>
+    <path d="M380,341 Q384,350 388,341" fill="none" stroke="#c9a227" stroke-width="2.2"/>
+    <circle cx="416" cy="335" r="7.5" fill="url(#yhgGoldGrad)" stroke="#7a5a12" stroke-width="1"/>
+    <circle cx="416" cy="335" r="2.6" fill="#241a08"/>
+    <path d="M412,341 Q416,350 420,341" fill="none" stroke="#c9a227" stroke-width="2.2"/>
+  </g>
+
+  <!-- 단청 프리즈 (처마 밑) -->
+  <g opacity="0.95">
+    <rect x="300" y="182" width="16" height="12" fill="#1f6b5c"/>
+    <rect x="316" y="182" width="16" height="12" fill="#a83232"/>
+    <rect x="332" y="182" width="16" height="12" fill="#c99a35"/>
+    <rect x="348" y="182" width="16" height="12" fill="#1f6b5c"/>
+    <rect x="364" y="182" width="16" height="12" fill="#a83232"/>
+    <rect x="380" y="182" width="16" height="12" fill="#c99a35"/>
+    <rect x="396" y="182" width="16" height="12" fill="#1f6b5c"/>
+    <rect x="412" y="182" width="16" height="12" fill="#a83232"/>
+    <rect x="428" y="182" width="16" height="12" fill="#c99a35"/>
+    <rect x="444" y="182" width="16" height="12" fill="#1f6b5c"/>
+    <rect x="460" y="182" width="16" height="12" fill="#a83232"/>
+    <rect x="476" y="182" width="16" height="12" fill="#c99a35"/>
+  </g>
+
+  <!-- 서까래 마구리 -->
+  <g fill="#4a2f1f">
+    <circle cx="304" cy="180" r="3.6"/><circle cx="318" cy="177" r="3.6"/><circle cx="332" cy="174" r="3.6" fill="#caa227"/>
+    <circle cx="346" cy="171" r="3.6"/><circle cx="360" cy="169" r="3.6"/><circle cx="374" cy="187" r="3.6" fill="#caa227"/>
+    <circle cx="388" cy="192" r="3.6"/><circle cx="400" cy="194" r="3.6"/><circle cx="412" cy="192" r="3.6" fill="#caa227"/>
+    <circle cx="426" cy="187" r="3.6"/><circle cx="440" cy="169" r="3.6"/><circle cx="454" cy="171" r="3.6" fill="#caa227"/>
+    <circle cx="468" cy="174" r="3.6"/><circle cx="482" cy="177" r="3.6"/><circle cx="496" cy="180" r="3.6"/>
+  </g>
+
+  <!-- 팔작지붕 (처마 끝 들린 곡선) -->
+  <path d="M300,180 Q346,204 400,206 Q454,204 500,180 L482,112 Q444,98 400,96 Q356,98 318,112 Z"
+        fill="url(#yhgRoofGrad)" stroke="#1c232a" stroke-width="1.2"/>
+
+  <!-- 지붕 기와골 -->
+  <g stroke="#1c232a" stroke-width="0.8" opacity="0.55" fill="none">
+    <line x1="330" y1="120" x2="316" y2="182"/>
+    <line x1="355" y1="106" x2="345" y2="192"/>
+    <line x1="380" y1="98" x2="376" y2="200"/>
+    <line x1="400" y1="96" x2="400" y2="206"/>
+    <line x1="420" y1="98" x2="424" y2="200"/>
+    <line x1="445" y1="106" x2="455" y2="192"/>
+    <line x1="470" y1="120" x2="484" y2="182"/>
+  </g>
+
+  <!-- 용마루 -->
+  <rect x="350" y="88" width="100" height="10" rx="4" fill="#242b32"/>
+  <polygon points="344,90 356,76 356,92" fill="#2f3945"/>
+  <polygon points="456,90 444,76 444,92" fill="#2f3945"/>
+  <circle cx="356" cy="78" r="3.5" fill="#caa227"/>
+  <circle cx="444" cy="78" r="3.5" fill="#caa227"/>
+</g>
+
+<!-- ════════════════════════════════
+     청사초롱 (좌우, 은은한 흔들림 애니메이션)
+════════════════════════════════ -->
+<g transform="translate(312,183)">
+  <g class="yhg-lantern-left">
+    <line x1="0" y1="-4" x2="0" y2="6" stroke="#3a2214" stroke-width="1.5"/>
+    <rect x="-4" y="6" width="8" height="6" fill="#caa227" stroke="#8a6a1e" stroke-width="0.5"/>
+    <ellipse cx="0" cy="30" rx="13" ry="18" fill="url(#yhgLanternRed)" stroke="#7a1f14" stroke-width="1"/>
+    <path d="M-13,30 Q0,16 13,30" fill="none" stroke="#7a1f14" stroke-width="0.8" opacity="0.6"/>
+    <path d="M-13,30 Q0,44 13,30" fill="none" stroke="#7a1f14" stroke-width="0.8" opacity="0.6"/>
+    <line x1="0" y1="12" x2="0" y2="48" stroke="#7a1f14" stroke-width="0.7" opacity="0.5"/>
+    <rect x="-4" y="46" width="8" height="6" fill="#caa227" stroke="#8a6a1e" stroke-width="0.5"/>
+    <line x1="0" y1="52" x2="0" y2="64" stroke="#b1382a" stroke-width="1.4"/>
+    <path d="M-4,64 L0,78 L4,64" fill="none" stroke="#b1382a" stroke-width="1.2"/>
+  </g>
+</g>
+
+<g transform="translate(488,183)">
+  <g class="yhg-lantern-right">
+    <line x1="0" y1="-4" x2="0" y2="6" stroke="#3a2214" stroke-width="1.5"/>
+    <rect x="-4" y="6" width="8" height="6" fill="#caa227" stroke="#8a6a1e" stroke-width="0.5"/>
+    <ellipse cx="0" cy="30" rx="13" ry="18" fill="url(#yhgLanternBlue)" stroke="#152f5c" stroke-width="1"/>
+    <path d="M-13,30 Q0,16 13,30" fill="none" stroke="#152f5c" stroke-width="0.8" opacity="0.6"/>
+    <path d="M-13,30 Q0,44 13,30" fill="none" stroke="#152f5c" stroke-width="0.8" opacity="0.6"/>
+    <line x1="0" y1="12" x2="0" y2="48" stroke="#152f5c" stroke-width="0.7" opacity="0.5"/>
+    <rect x="-4" y="46" width="8" height="6" fill="#caa227" stroke="#8a6a1e" stroke-width="0.5"/>
+    <line x1="0" y1="52" x2="0" y2="64" stroke="#2c50a0" stroke-width="1.4"/>
+    <path d="M-4,64 L0,78 L4,64" fill="none" stroke="#2c50a0" stroke-width="1.2"/>
+  </g>
+</g>
+
+<!-- ════════════════════════════════
+     좌우 소나무 실루엣
+════════════════════════════════ -->
+<g>
+  <rect x="43" y="340" width="6" height="90" fill="#4a2f1f"/>
+  <g fill="#2e4f30">
+    <ellipse cx="46" cy="332" rx="20" ry="15"/>
+    <ellipse cx="30" cy="352" rx="22" ry="16"/>
+    <ellipse cx="60" cy="354" rx="19" ry="15"/>
+    <ellipse cx="44" cy="374" rx="26" ry="17"/>
+    <ellipse cx="26" cy="392" rx="17" ry="13"/>
+    <ellipse cx="62" cy="394" rx="17" ry="13"/>
+  </g>
+  <g fill="#4c7a4c" opacity="0.55">
+    <ellipse cx="38" cy="328" rx="9" ry="6"/>
+    <ellipse cx="52" cy="368" rx="10" ry="6"/>
+    <ellipse cx="24" cy="386" rx="7" ry="5"/>
+  </g>
+</g>
+
+<g>
+  <rect x="851" y="340" width="6" height="90" fill="#4a2f1f"/>
+  <g fill="#2e4f30">
+    <ellipse cx="854" cy="332" rx="20" ry="15"/>
+    <ellipse cx="870" cy="352" rx="22" ry="16"/>
+    <ellipse cx="840" cy="354" rx="19" ry="15"/>
+    <ellipse cx="856" cy="374" rx="26" ry="17"/>
+    <ellipse cx="874" cy="392" rx="17" ry="13"/>
+    <ellipse cx="838" cy="394" rx="17" ry="13"/>
+  </g>
+  <g fill="#4c7a4c" opacity="0.55">
+    <ellipse cx="862" cy="328" rx="9" ry="6"/>
+    <ellipse cx="848" cy="368" rx="10" ry="6"/>
+    <ellipse cx="876" cy="386" rx="7" ry="5"/>
+  </g>
+</g>
+
+</svg>
+</body>
+</html>

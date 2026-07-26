@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+
+*{box-sizing:border-box} :root{--skin:#ffd9bd;--hair:#191919;--hairLine:#111111;--vest:#08286f;--pants:#c8ad7e;--line:#1c3970;--bodyScale:1;--bodyW:210px;--bodyH:400px}
+body{margin:0;min-height:100vh;background:linear-gradient(180deg,#eef7ff 0%,#fff8ec 100%);font-family:"Pretendard","Noto Sans KR",Arial,sans-serif;color:#172033;display:grid;grid-template-columns:330px 1fr;gap:20px;padding:22px}.panel{background:#fff;border:3px solid #26364d;border-radius:22px;padding:18px;box-shadow:0 12px 28px rgba(0,0,0,.12);height:calc(100vh - 44px);overflow:auto}.panel h1{font-size:21px;margin:0 0 6px}.panel p{font-size:13px;margin:0 0 16px;color:#5d6675;line-height:1.45}.group{border-top:1px solid #e5eaf2;padding-top:13px;margin-top:13px}.group-title{font-size:14px;font-weight:900;margin-bottom:9px}.control{margin-bottom:10px}.control label{display:block;font-size:13px;font-weight:800;margin-bottom:5px}select,input[type="color"],input[type="text"],button,textarea{width:100%;border:2px solid #26364d;border-radius:11px;padding:9px;background:#f8fbff;font-weight:700}input[type="color"]{height:42px;padding:4px}.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.btn{cursor:pointer;background:#08286f;color:white;transition:.15s}.btn:hover{transform:translateY(-1px)}.btn.sub{background:#46627f}.preview-wrap{display:grid;place-items:center;min-height:calc(100vh - 44px)}.stage-card{width:min(560px,100%);background:rgba(255,255,255,.65);border:3px solid rgba(38,54,77,.18);border-radius:28px;padding:24px;box-shadow:0 14px 35px rgba(0,0,0,.08)}.character-area{position:relative;width:360px;height:470px;margin:0 auto;display:flex;justify-content:center;align-items:flex-end}.shadow{position:absolute;bottom:30px;left:50%;width:145px;height:22px;background:rgba(55,38,25,.15);border-radius:50%;transform:translateX(-50%)}.student{position:relative;width:var(--bodyW);height:var(--bodyH);transform:scale(var(--bodyScale));transform-origin:bottom center}.ear{position:absolute;top:78px;width:24px;height:30px;background:var(--skin);border:3px solid #3b2b24;border-radius:50%;z-index:2}.ear.left{left:37px}.ear.right{right:37px}.face{position:absolute;top:35px;left:50%;width:116px;height:122px;background:var(--skin);border:3px solid var(--line);border-radius:50%;transform:translateX(-50%);z-index:4;box-shadow:inset -5px -6px 0 rgba(221,151,125,.14)}.girl .face{width:126px;height:126px;top:36px}.hair-back{position:absolute;top:18px;left:50%;width:122px;height:96px;background:var(--hair);border:3px solid var(--hairLine);border-radius:58% 58% 45% 45%;transform:translateX(-50%);z-index:3}.bang{position:absolute;background:var(--hair);border-bottom:3px solid var(--hairLine);z-index:7}.bang.b1{top:33px;left:54px;width:42px;height:43px;border-radius:0 0 65% 65%;transform:rotate(28deg)}.bang.b2{top:31px;left:86px;width:44px;height:47px;border-radius:0 0 70% 70%;transform:rotate(-7deg)}.bang.b3{top:34px;right:54px;width:40px;height:43px;border-radius:0 0 65% 65%;transform:rotate(-28deg)}.hair-extra{display:none}.hair-short .hair-back{height:78px;border-radius:50% 50% 42% 42%}.hair-part .bang.b1{left:50px;width:65px;transform:rotate(12deg);border-radius:0 0 80% 30%}.hair-part .bang.b2{left:111px;width:28px;transform:rotate(-35deg)}.hair-part .bang.b3{display:none}.hair-curly .hair-back{top:24px;width:112px;height:58px;border-radius:55% 55% 35% 35%;z-index:3}.hair-curly .bang{display:none}.hair-afro .hair-back{top:0;left:50%;width:154px;height:154px;border-radius:50%;z-index:3}.hair-afro .hair-back::before{content:"";position:absolute;top:-13px;left:8px;width:26px;height:26px;background:var(--hair);border:3px solid var(--hairLine);border-radius:50%;box-shadow:24px -10px 0 var(--hair),50px -14px 0 var(--hair),76px -11px 0 var(--hair),101px -2px 0 var(--hair),116px 22px 0 var(--hair),-12px 23px 0 var(--hair),126px 52px 0 var(--hair),-9px 62px 0 var(--hair),111px 91px 0 var(--hair),14px 112px 0 var(--hair),64px 121px 0 var(--hair)}.hair-afro .hair-back::after{content:"";position:absolute;top:22px;left:26px;width:48px;height:22px;background:rgba(255,255,255,.10);border-radius:50%;transform:rotate(-25deg)}.hair-afro .bang{display:none}.hair-afro .face{top:52px}.hair-afro .ear{top:96px}.hair-afro .neck{top:160px}.hair-afro .shirt{top:172px}.hair-afro .collarL,.hair-afro .collarR{top:175px}.hair-afro .vest{top:176px}.hair-afro .name-tag{top:218px}.hair-afro .arm{top:188px}.hair-afro .pants{top:282px}.hair-afro .leg{top:338px}.hair-afro .shoe{top:379px}.girl.hair-bob .hair-back{width:134px;height:126px;border-radius:55% 55% 35% 35%}.girl.hair-long .hair-back{width:134px;height:174px;border-radius:55% 55% 32% 32%;z-index:2}.girl.hair-long .hair-extra.sideL,.girl.hair-long .hair-extra.sideR{display:block;position:absolute;top:100px;width:28px;height:92px;background:var(--hair);border:3px solid var(--hairLine);border-radius:18px;z-index:3}.girl.hair-long .hair-extra.sideL{left:33px;transform:rotate(5deg)}.girl.hair-long .hair-extra.sideR{right:33px;transform:rotate(-5deg)}.girl.hair-pony .hair-back{width:134px;height:112px;border-radius:56%}.girl.hair-pony .hair-extra.pony{display:block;position:absolute;top:15px;right:8px;width:48px;height:178px;background:var(--hair);border:3px solid var(--hairLine);border-radius:24px 28px 38px 38px;transform:rotate(-24deg);z-index:1}.girl.hair-pony .hair-extra.tie{display:block;position:absolute;top:20px;right:56px;width:26px;height:22px;background:#ff9dc4;border:3px solid var(--line);border-radius:10px;z-index:5;transform:rotate(-12deg)}.girl.hair-pigtail .hair-back{width:128px;height:112px}.girl.hair-pigtail .hair-extra.pigL,.girl.hair-pigtail .hair-extra.pigR{display:block;position:absolute;top:94px;width:34px;height:82px;background:var(--hair);border:3px solid var(--hairLine);border-radius:25px;z-index:2}.girl.hair-pigtail .hair-extra.pigL{left:18px;transform:rotate(10deg)}.girl.hair-pigtail .hair-extra.pigR{right:18px;transform:rotate(-10deg)}.girl.hair-pigtail .hair-extra.tieL,.girl.hair-pigtail .hair-extra.tieR{display:block;position:absolute;top:86px;width:18px;height:16px;background:#ff9dc4;border:3px solid var(--line);border-radius:50%;z-index:5}.girl.hair-pigtail .hair-extra.tieL{left:39px}.girl.hair-pigtail .hair-extra.tieR{right:39px}.girl.hair-half .hair-back{width:134px;height:168px;border-radius:55% 55% 32% 32%;z-index:2}.girl.hair-half .hair-extra.tie{display:block;position:absolute;top:17px;left:50%;width:32px;height:24px;background:#ff9dc4;border:3px solid var(--line);border-radius:50% 50% 45% 45%;transform:translateX(-50%);z-index:8}.girl.hair-half .hair-extra.sideL,.girl.hair-half .hair-extra.sideR{display:block;position:absolute;top:100px;width:25px;height:80px;background:var(--hair);border:3px solid var(--hairLine);border-radius:18px;z-index:3}.girl.hair-half .hair-extra.sideL{left:35px}.girl.hair-half .hair-extra.sideR{right:35px}.eyebrow{position:absolute;top:47px;width:20px;height:4px;background:#35241d;border-radius:10px}.eyebrow.left{left:25px}.eyebrow.right{right:25px}.eye{position:absolute;top:61px;width:13px;height:18px;background:#211714;border-radius:50%;z-index:6}.girl .eye{top:62px}.eye.left{left:31px}.eye.right{right:31px}.girl .eye.left{left:34px}.girl .eye.right{right:34px}.eye::after{content:"";position:absolute;top:3px;left:3px;width:4px;height:5px;background:white;border-radius:50%}.eye.round{width:17px;height:21px}.eye.sleepy,.eye.up,.eye.down{width:18px;height:5px;border-radius:10px;top:68px}.eye.up.left{transform:rotate(-13deg)}.eye.up.right{transform:rotate(13deg)}.eye.down.left{transform:rotate(13deg)}.eye.down.right{transform:rotate(-13deg)}.eye.sleepy::after,.eye.up::after,.eye.down::after{display:none}.nose{position:absolute;top:81px;left:50%;width:8px;height:7px;background:#e9a184;border-radius:50%;transform:translateX(-50%)}.mouth{position:absolute;top:99px;left:50%;width:20px;height:10px;border-bottom:3px solid #6b3b32;border-radius:50%;transform:translateX(-50%)}.cheek{position:absolute;top:86px;width:18px;height:10px;background:#f4a0a0;border-radius:50%;opacity:.55}.cheek.left{left:13px}.cheek.right{right:13px}.glasses{display:none;position:absolute;top:57px;left:50%;width:78px;height:30px;transform:translateX(-50%);z-index:9}.glasses.on{display:block}.glasses::before,.glasses::after{content:"";position:absolute;width:25px;height:25px;border:3px solid var(--glass,#14356f);background:rgba(255,255,255,.08)}.glasses::before{left:3px}.glasses::after{right:3px}.glasses span{position:absolute;top:13px;left:34px;width:10px;height:3px;background:var(--glass,#14356f)}.glass-round::before,.glass-round::after{border-radius:50%}.glass-square::before,.glass-square::after{border-radius:6px}.glass-big::before,.glass-big::after{width:30px;height:30px;top:-2px;border-radius:50%}.glass-horn::before,.glass-horn::after{border-width:4px;border-radius:8px 8px 12px 12px}.glass-red{--glass:#bf2836}.glass-silver{--glass:#7c8796}.neck{position:absolute;top:146px;left:50%;width:32px;height:27px;background:var(--skin);border:3px solid #3b2b24;transform:translateX(-50%);z-index:3}.shirt{position:absolute;top:160px;left:45px;width:120px;height:118px;background:#fff;border:3px solid var(--line);border-radius:16px 16px 14px 14px;z-index:2}.shirt::before{content:"";position:absolute;top:-3px;left:50%;width:24px;height:20px;background:#fff;border-left:3px solid var(--line);border-right:3px solid var(--line);transform:translateX(-50%);z-index:3}.collarL,.collarR{position:absolute;top:164px;width:36px;height:25px;background:#fff;border:0;z-index:8;filter:drop-shadow(0 1px 0 rgba(28,57,112,.22));box-shadow:none}.collarL{left:72px;clip-path:polygon(0 0,100% 26%,32% 100%);transform:rotate(3deg);transform-origin:100% 0}.collarR{right:72px;clip-path:polygon(100% 0,0 26%,68% 100%);transform:rotate(-3deg);transform-origin:0 0}
+/* v2.6 카라 최종 개선: 검은 테두리 제거, 크기 축소, 의상 위에서 자연스럽게 보이도록 그림자만 약하게 적용 */
+.uniform .collarL,.uniform .collarR,.cardigan .collarL,.cardigan .collarR{border:0;box-shadow:none;filter:drop-shadow(0 1px 0 rgba(28,57,112,.25));}
+.uniform .collarL,.cardigan .collarL{left:73px;}
+.uniform .collarR,.cardigan .collarR{right:73px;}
+.cardigan .collarL,.cardigan .collarR{top:163px;width:35px;height:24px;}
+.uniform .vest,.cardigan .vest{clip-path:polygon(0 0,34% 0,50% 16%,66% 0,100% 0,100% 100%,0 100%)}
+.uniform .shirt::before,.cardigan .shirt::before{border:0;box-shadow:none;width:22px;height:18px;}.vest{position:absolute;top:160px;left:50px;width:110px;height:118px;background:var(--vest);border:3px solid var(--line);border-radius:5px;z-index:4;clip-path:polygon(0 0,32% 0,50% 13%,68% 0,100% 0,100% 100%,0 100%)}.name-tag{position:absolute;top:210px;right:56px;width:34px;height:14px;background:#f5dc7b;border:2px solid #d1b34a;border-radius:2px;z-index:8}.arm{position:absolute;top:176px;width:28px;height:98px;background:#fff;border:3px solid var(--line);border-radius:22px;z-index:1}.arm.left{left:35px;transform:rotate(7deg)}.arm.right{right:35px;transform:rotate(-7deg)}.hand{position:absolute;bottom:-12px;left:1px;width:24px;height:24px;background:var(--skin);border:3px solid #3b2b24;border-radius:50%}.pants{position:absolute;top:270px;left:58px;width:94px;height:62px;background:var(--pants);border:3px solid #5c442b;border-radius:10px 10px 12px 12px;z-index:4}.pants::after{content:"";position:absolute;left:43px;width:3px;height:56px;background:#5c442b}.skirtLook .pants{top:266px;left:53px;width:104px;height:70px;background:var(--pants);border:3px solid #5c442b;border-radius:10px 10px 18px 18px;clip-path:polygon(8% 0,92% 0,100% 100%,0 100%)}.skirtLook .pants::after{display:none}.skirtLook .leg{top:326px}.skirtLook .leg.left{left:66px}.skirtLook .leg.right{right:66px}.leg{position:absolute;top:326px;width:25px;height:48px;background:var(--skin);border:3px solid #3b2b24;border-radius:0 0 10px 10px;z-index:2}.leg.left{left:68px}.leg.right{right:68px}.sock{position:absolute;bottom:-3px;left:-3px;width:25px;height:17px;background:#f8fbff;border:3px solid #3b2b24;border-top:3px solid #2d4667;border-radius:0 0 7px 7px}.shoe{position:absolute;top:367px;width:45px;height:22px;background:#6c3f28;border:3px solid #2b1b12;border-radius:50% 50% 35% 35%;z-index:5}.shoe.left{left:53px}.shoe.right{right:53px}.thin{--bodyScale:.96}.normal{--bodyScale:1}.chubby{--bodyScale:1.05}.chubby .face{width:124px}.chubby .shirt{left:42px;width:126px}.chubby .vest{left:56px;width:98px}.chubby .pants{left:52px;width:106px}.cardigan .shirt{background:#fff}.cardigan .collarL,.cardigan .collarR{display:block}.cardigan .vest{left:45px;width:120px;height:120px;background:var(--vest);border:3px solid var(--line);border-radius:12px;clip-path:polygon(0 0,33% 0,50% 15%,67% 0,100% 0,100% 100%,0 100%)}.cardigan .vest::before{content:"";position:absolute;left:0;bottom:0;width:100%;height:12px;background:repeating-linear-gradient(90deg,rgba(0,0,0,.22) 0 3px,rgba(255,255,255,.05) 3px 6px)}
+.cardigan .btn-dot{display:block;position:absolute;left:50%;width:7px;height:7px;background:#222;border:2px solid rgba(255,255,255,.28);border-radius:50%;transform:translateX(-50%);z-index:11;box-shadow:0 1px 0 rgba(255,255,255,.25) inset}
+.cardigan .btn-dot.b1{top:194px}
+.cardigan .btn-dot.b2{top:219px}
+.cardigan .btn-dot.b3{top:244px}
+
+.btn-dot{display:none}.cardigan .arm{background:var(--vest)}.cardigan .arm::after{content:"";position:absolute;left:-1px;bottom:0;width:calc(100% + 2px);height:11px;background:repeating-linear-gradient(90deg,rgba(0,0,0,.22) 0 3px,rgba(255,255,255,.06) 3px 6px);border-radius:0 0 18px 18px}
+.sports .shirt{background:var(--vest);border-color:var(--line)}
+.sports .shirt::before{display:none}
+.sports .collarL,.sports .collarR{display:none}
+.sports .vest{background:var(--vest);clip-path:none;border-radius:18px;border-color:var(--line)}
+.sports .arm{background:var(--vest);border-color:var(--line)}
+.sports .arm::before{content:"";position:absolute;right:4px;top:8px;width:3px;height:78px;background:#fff;border-radius:3px}
+/* v2.4 생활복: 무지 맨투맨 스타일, 명찰 제거 */
+.casual .shirt{background:var(--vest);border-color:var(--line);border-radius:25px}
+.casual .shirt::before{display:none}
+.casual .collarL,.casual .collarR,.casual .vest{display:none}
+.casual .shirt::after{content:"";position:absolute;top:0;left:50%;width:35px;height:12px;background:rgba(0,0,0,.2);border-radius:0 0 15px 15px;transform:translateX(-50%)}
+.casual .arm{background:var(--vest);border-color:var(--line)}
+.casual .arm::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:12px;background:rgba(0,0,0,.2);border-radius:0 0 18px 18px}
+.casual .name-tag{display:none}
+.codebox{margin-top:16px}.codebox textarea{height:120px;font-family:Consolas,monospace;font-size:12px;background:#111827;color:#e5e7eb;display:none}.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#172033;color:white;padding:10px 16px;border-radius:999px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1}
+@media(max-width:850px){body{grid-template-columns:1fr}.panel{height:auto}.preview-wrap{min-height:auto}.character-area{transform:scale(.9);transform-origin:center bottom}}
+
+/* v2.6.1 아프로 머리 위치 보정: 머리만 커지고 몸통/카라는 기본 위치 유지 */
+.hair-afro .neck{top:146px}
+.hair-afro .shirt{top:160px}
+.hair-afro .collarL,.hair-afro .collarR{top:164px}
+.hair-afro.cardigan .collarL,.hair-afro.cardigan .collarR{top:163px}
+.hair-afro .vest{top:164px}
+.hair-afro .name-tag{top:210px}
+.hair-afro .arm{top:176px}
+.hair-afro .pants{top:270px}
+.hair-afro .leg{top:326px}
+.hair-afro .shoe{top:367px}
+.hair-afro .face{top:45px}
+.hair-afro .ear{top:88px}
+
+/* v2.6.1 카라 삼각형 검정 외곽선 복원: clip-path 삼각형 모양 그대로 테두리만 또렷하게 */
+.collarL,.collarR,
+.uniform .collarL,.uniform .collarR,
+.cardigan .collarL,.cardigan .collarR{
+  border:0;
+  filter:drop-shadow(1px 0 0 #111) drop-shadow(-1px 0 0 #111) drop-shadow(0 1px 0 #111) drop-shadow(0 -1px 0 #111) drop-shadow(0 2px 0 rgba(0,0,0,.08));
+}
+
+
+/* v4.3 체육복 목 수정: 목이 길게 튀어나오지 않게 기본 위치 유지 */
+.sleeveL,.sleeveR{display:none}
+
+.sports .neck{
+  display:block;
+  top:146px;
+  left:50%;
+  width:32px;
+  height:24px;
+  background:var(--skin);
+  border:0;
+  border-radius:14px 14px 7px 7px;
+  transform:translateX(-50%);
+  z-index:2;
+}
+
+/* 여학생도 목은 보이되, 길게 앞으로 튀어나오지 않게 동일하게 고정 */
+.girl.sports .neck{
+  display:block;
+  top:146px;
+  width:32px;
+  height:24px;
+  z-index:3;
+}
+
+/* 몸통: 바지는 건드리지 않고 상의만 바지 바로 위까지 살짝 연장 */
+.sports .shirt{
+  top:160px;
+  left:51px;
+  width:108px;
+  height:112px;
+  background:var(--vest);
+  border:0;
+  border-radius:0;
+  z-index:4;
+  overflow:visible;
+}
+
+/* 핵심: 왼쪽에 있던 피부색 반원을 몸통 상단 중앙으로 올림 */
+.sports .shirt::before{
+  content:"";
+  display:block;
+  position:absolute;
+  left:50%;
+  top:0px;
+  width:52px;
+  height:22px;
+  background:var(--skin);
+  border:0;
+  border-radius:0 0 34px 34px;
+  transform:translateX(-50%);
+  z-index:10;
+  pointer-events:none;
+}
+.sports .shirt::after{display:none;content:none}
+
+.sports .vest,.sports .collarL,.sports .collarR,.sports .name-tag{display:none}
+
+/* 소매: 기존 직각삼각형 반팔 유지 */
+.sports .sleeveL,.sports .sleeveR{
+  display:block;
+  position:absolute;
+  top:160px;
+  width:28px;
+  height:58px;
+  background:var(--vest);
+  border:0;
+  z-index:5;
+  box-shadow:none;
+}
+.sports .sleeveL{
+  left:24px;
+  clip-path:polygon(100% 0,100% 100%,0 82%);
+}
+.sports .sleeveR{
+  right:24px;
+  clip-path:polygon(0 0,100% 82%,0 100%);
+}
+
+/* 팔은 소매 아래에서 자연스럽게 이어지도록 피부색으로 표시 */
+.sports .arm{
+  top:198px;
+  height:76px;
+  background:var(--skin);
+  border:3px solid #3b2b24;
+  border-radius:18px;
+  z-index:2;
+}
+.sports .arm.left{left:34px;transform:rotate(7deg)}
+.sports .arm.right{right:34px;transform:rotate(-7deg)}
+.sports .arm::before,.sports .arm::after{display:none;content:none}
+
+/* 바지는 절대 내리지 않음: 기존 위치 고정 */
+.sports .pants{top:270px}
+.sports .leg{top:326px}
+.sports .shoe{top:367px}
+.hair-afro.sports .neck{display:block;top:146px;width:32px;height:24px;z-index:3}
+.hair-afro.sports .shirt{top:160px}
+.hair-afro.sports .sleeveL,.hair-afro.sports .sleeveR{top:160px}
+.hair-afro.sports .arm{top:198px}
+.hair-afro.sports .pants{top:270px}
+
+/* 통통한 체형 교복 조끼: 좌우가 지나치게 좁아 보이지 않도록 폭 복원 */
+.chubby.uniform .vest{
+  left:47px;
+  width:116px;
+}
+.chubby.uniform .name-tag{
+  right:54px;
+}
+
+
+/* v4.9 마른 체형 체육복 잔여 테두리 제거 */
+.thin.sports .shirt,
+.sports.thin .shirt{
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+}
+
+.thin.sports .shirt::after,
+.sports.thin .shirt::after{
+  display:none !important;
+  content:none !important;
+}
+
+
+/* v5.0 여학생 체육복 목 노출 보정 */
+.girl.sports .neck{
+  top:149px !important;
+  z-index:4 !important;
+}
+
+
+
+/* v2.6.1 아프로 머리 위치 보정: 머리만 커지고 몸통/카라는 기본 위치 유지 */
+.hair-afro .neck{top:146px}
+.hair-afro .shirt{top:160px}
+.hair-afro .collarL,.hair-afro .collarR{top:164px}
+.hair-afro.cardigan .collarL,.hair-afro.cardigan .collarR{top:163px}
+.hair-afro .vest{top:164px}
+.hair-afro .name-tag{top:210px}
+.hair-afro .arm{top:176px}
+.hair-afro .pants{top:270px}
+.hair-afro .leg{top:326px}
+.hair-afro .shoe{top:367px}
+.hair-afro .face{top:45px}
+.hair-afro .ear{top:88px}
+
+/* v2.6.1 카라 삼각형 검정 외곽선 복원: clip-path 삼각형 모양 그대로 테두리만 또렷하게 */
+.collarL,.collarR,
+.uniform .collarL,.uniform .collarR,
+.cardigan .collarL,.cardigan .collarR{
+  border:0;
+  filter:drop-shadow(1px 0 0 #111) drop-shadow(-1px 0 0 #111) drop-shadow(0 1px 0 #111) drop-shadow(0 -1px 0 #111) drop-shadow(0 2px 0 rgba(0,0,0,.08));
+}
+
+</style>
+</head>
+<body>
+<div class="character-area"><div class="shadow"></div><div class="student boy chubby hair-part cardigan pantsLook" id="student" style="--skin: #f1c6a8; --hair: #191919; --hairLine: #101010; --vest: #6f4a2f; --pants: #6d5b45;">
+  <div class="hair-extra pony"></div><div class="hair-extra tie"></div><div class="hair-extra pigL"></div><div class="hair-extra pigR"></div><div class="hair-extra tieL"></div><div class="hair-extra tieR"></div><div class="hair-extra sideL"></div><div class="hair-extra sideR"></div>
+  <div class="ear left"></div><div class="ear right"></div><div class="hair-back"></div><div class="bang b1"></div><div class="bang b2"></div><div class="bang b3"></div>
+  <div class="face"><div class="eyebrow left"></div><div class="eyebrow right"></div><div class="eye left sleepy"></div><div class="eye right sleepy"></div><div class="glasses on glass-big"><span></span></div><div class="nose"></div><div class="mouth"></div><div class="cheek left"></div><div class="cheek right"></div></div>
+  <div class="neck"></div><div class="shirt"></div><div class="sleeveL"></div><div class="sleeveR"></div><div class="collarL"></div><div class="collarR"></div><div class="vest"></div><div class="btn-dot b1"></div><div class="btn-dot b2"></div><div class="btn-dot b3"></div><div class="name-tag"></div><div class="arm left"><div class="hand"></div></div><div class="arm right"><div class="hand"></div></div><div class="pants"></div><div class="leg left"><div class="sock"></div></div><div class="leg right"><div class="sock"></div></div><div class="shoe left"></div><div class="shoe right"></div>
+</div></div>
+</body>
+</html>

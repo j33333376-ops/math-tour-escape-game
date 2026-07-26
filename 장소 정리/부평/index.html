@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>부평공원 · 부평종합시장 MATHTOUR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&family=Nanum+Myeongjo:wght@700;800&family=Noto+Sans+KR:wght@700;900&display=swap');
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Jua', 'Noto Sans KR', sans-serif;
+            background: #efe2d4;
+            background-image: radial-gradient(circle at 50% 38%, #fff8ec 0%, #efe2d4 72%, #efe2d4 100%);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .map-container {
+            width: 95vw; max-width: 1400px; max-height: 90vh;
+            aspect-ratio: 16 / 9;
+            background-color: #fdf3e4;
+            border-radius: 26px;
+            box-shadow: 0 14px 34px rgba(20,20,30,0.30), inset 0 0 0 6px rgba(255,255,255,0.85);
+            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+        svg { width: 100%; height: 100%; display: block; }
+
+        .point-scale {
+            transition: transform 0.25s ease;
+            transform-box: fill-box; transform-origin: center;
+        }
+        .point-link { outline: none; cursor: pointer; text-decoration: none; }
+        .point-link:hover .point-scale { transform: scale(1.1); }
+
+        .tile-frame { position: relative; overflow: hidden; pointer-events: none; background: transparent; }
+        .tile-iframe { position: absolute; border: 0; display: block; background: transparent; transform-origin: top left; pointer-events: none; }
+        .tile-badge {
+            position: absolute; top: 2px; left: 2px;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #c2452e; border: 2px solid #ffffff; color: #ffffff;
+            font-family: 'Black Han Sans', 'Jua', sans-serif; font-size: 12px; line-height: 1;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2; box-shadow: 0 1px 3px rgba(0,0,0,0.45); pointer-events: none;
+        }
+
+        .map-title {
+            font-family: 'Jua','Noto Sans KR',sans-serif; font-size: 40px;
+            fill: url(#titleGrad); stroke: #5a2010; stroke-width: 7px;
+            paint-order: stroke; stroke-linejoin: round; filter: url(#titleShadow);
+        }
+        .label-wrap {
+            width: 200px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            pointer-events: none;
+        }
+        .place-tag {
+            background: rgba(255,248,236,0.94);
+            color: #5a3418;
+            font-family: 'Jua', 'Noto Sans KR', sans-serif;
+            font-size: 12px; font-weight: 700; line-height: 1.1;
+            padding: 2px 8px; border-radius: 9px; white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            border: 1px solid #d9a970;
+        }
+        .no-select { user-select: none; }
+    </style>
+</head>
+<body>
+    <div class="map-container">
+        <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <defs>
+                <radialGradient id="bgGrad" cx="50%" cy="42%" r="75%">
+                    <stop offset="0%" stop-color="#fff8ec"/>
+                    <stop offset="60%" stop-color="#f6e3cb"/>
+                    <stop offset="100%" stop-color="#e6cba8"/>
+                </radialGradient>
+                <pattern id="pt" width="36" height="36" patternUnits="userSpaceOnUse">
+    <circle cx="9" cy="9" r="2.6" fill="#e0bb8a" opacity="0.5"/>
+    <circle cx="27" cy="27" r="2.6" fill="#e0bb8a" opacity="0.35"/>
+  </pattern>
+                <linearGradient id="titleGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#fff0c0"/>
+                    <stop offset="45%" stop-color="#f2a03c"/>
+                    <stop offset="100%" stop-color="#b83a2c"/>
+                </linearGradient>
+                <filter id="titleShadow" x="-20%" y="-20%" width="140%" height="160%">
+                    <feDropShadow dx="0" dy="4" stdDeviation="2" flood-color="#5a2010" flood-opacity="0.45"/>
+                </filter>
+            </defs>
+
+            <rect x="0" y="0" width="800" height="450" fill="url(#bgGrad)"/>
+            <rect x="0" y="0" width="800" height="450" fill="url(#pt)"/>
+
+            <!-- 시장 차양 -->
+              <g>
+                <path d="M60,44 h680 v10 h-680 Z" fill="#b83a2c" opacity="0.85"/>
+                <g fill="#b83a2c">
+                  <path d="M60,54 l24,0 l-12,16 Z"/><path d="M108,54 l24,0 l-12,16 Z"/><path d="M156,54 l24,0 l-12,16 Z"/>
+                  <path d="M596,54 l24,0 l-12,16 Z"/><path d="M644,54 l24,0 l-12,16 Z"/><path d="M692,54 l24,0 l-12,16 Z"/>
+                </g>
+                <g fill="#f7f0e0">
+                  <path d="M84,54 l24,0 l-12,16 Z"/><path d="M132,54 l24,0 l-12,16 Z"/><path d="M180,54 l24,0 l-12,16 Z"/>
+                  <path d="M620,54 l24,0 l-12,16 Z"/><path d="M668,54 l24,0 l-12,16 Z"/><path d="M716,54 l24,0 l-12,16 Z"/>
+                </g>
+              </g>
+              <!-- 과일 상자 -->
+              <g opacity="0.9">
+                <g transform="translate(120,404)">
+                  <rect x="-24" y="-14" width="48" height="20" rx="3" fill="#a9743e" stroke="#7a5228" stroke-width="1.6"/>
+                  <circle cx="-10" cy="-18" r="8" fill="#d94b3c"/><circle cx="6" cy="-19" r="8" fill="#e07a2c"/>
+                  <circle cx="-2" cy="-26" r="7" fill="#4c9a44"/>
+                </g>
+                <g transform="translate(680,404)">
+                  <rect x="-24" y="-14" width="48" height="20" rx="3" fill="#a9743e" stroke="#7a5228" stroke-width="1.6"/>
+                  <circle cx="-9" cy="-19" r="8" fill="#e8b830"/><circle cx="8" cy="-18" r="8" fill="#7a9a3c"/>
+                </g>
+              </g>
+              <!-- 나뭇잎 -->
+              <g fill="#6f9a52" opacity="0.55">
+                <ellipse cx="40" cy="180" rx="16" ry="8" transform="rotate(-24 40 180)"/>
+                <ellipse cx="760" cy="270" rx="16" ry="8" transform="rotate(20 760 270)"/>
+              </g>
+
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#7a4a2c" stroke-width="24" />
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#c98a4a" stroke-width="17" />
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#ffe9c4" stroke-width="3" stroke-linecap="round" stroke-dasharray="10 10" opacity="0.9" />
+
+            <text x="400" y="225" dy="0.35em" text-anchor="middle" class="map-title no-select">부평공원 · 부평종합시장 MATHTOUR</text>
+
+            <a href="A01.html" class="point-link" aria-label="부평지하상가">
+                <g transform="translate(94, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-40.45" width="140.0" height="80.89" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:80.89px;">
+                                <iframe class="tile-iframe" src="부평_지하상가.html" scrolling="no" style="width:900px;height:520px;left:0px;top:0px;transform:scale(0.15556);"></iframe>
+                                <div class="tile-badge">A</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-40.45" width="140.0" height="80.89" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="B01.html" class="point-link" aria-label="종합시장 점포거리">
+                <g transform="translate(400, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-26.6" width="140.0" height="53.2" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:53.2px;">
+                                <iframe class="tile-iframe" src="부평종합시장_점포거리.html" scrolling="no" style="width:1000px;height:380px;left:0px;top:0px;transform:scale(0.14);"></iframe>
+                                <div class="tile-badge">B</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-26.6" width="140.0" height="53.2" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="C01.html" class="point-link" aria-label="깡시장 과일가게">
+                <g transform="translate(706, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-44.39" width="140.0" height="88.78" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:88.78px;">
+                                <iframe class="tile-iframe" src="부평종합시장_과일가게.html" scrolling="no" style="width:820px;height:520px;left:0px;top:0px;transform:scale(0.17073);"></iframe>
+                                <div class="tile-badge">C</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-44.39" width="140.0" height="88.78" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="D01.html" class="point-link" aria-label="부평 평리단길">
+                <g transform="translate(706, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-42.0" width="140.0" height="84.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:84.0px;">
+                                <iframe class="tile-iframe" src="부평_평리단길.html" scrolling="no" style="width:1200px;height:720px;left:0px;top:0px;transform:scale(0.11667);"></iframe>
+                                <div class="tile-badge">D</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-42.0" width="140.0" height="84.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="E01.html" class="point-link" aria-label="평화의 소녀상">
+                <g transform="translate(400, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-42.0" width="140.0" height="84.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:84.0px;">
+                                <iframe class="tile-iframe" src="부평_평화의소녀상.html" scrolling="no" style="width:1200px;height:720px;left:0px;top:0px;transform:scale(0.11667);"></iframe>
+                                <div class="tile-badge">E</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-42.0" width="140.0" height="84.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="F01.html" class="point-link" aria-label="굴포천 생태하천">
+                <g transform="translate(94, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-42.0" width="140.0" height="84.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:84.0px;">
+                                <iframe class="tile-iframe" src="부평_굴포천생태하천.html" scrolling="no" style="width:1200px;height:720px;left:0px;top:0px;transform:scale(0.11667);"></iframe>
+                                <div class="tile-badge">F</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-42.0" width="140.0" height="84.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+
+            <foreignObject x="-6" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">A. 부평지하상가</span></div>
+            </foreignObject>
+            <foreignObject x="300" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">B. 종합시장 점포거리</span></div>
+            </foreignObject>
+            <foreignObject x="606" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">C. 깡시장 과일가게</span></div>
+            </foreignObject>
+            <foreignObject x="606" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">D. 부평 평리단길</span></div>
+            </foreignObject>
+            <foreignObject x="300" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">E. 평화의 소녀상</span></div>
+            </foreignObject>
+            <foreignObject x="-6" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">F. 굴포천 생태하천</span></div>
+            </foreignObject>
+
+        </svg>
+    </div>
+</body>
+</html>

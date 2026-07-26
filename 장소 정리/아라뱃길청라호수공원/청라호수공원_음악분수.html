@@ -1,0 +1,215 @@
+<!-- 원본 크기: 1000x420 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>청라호수공원 음악분수</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  *,*::before,*::after{ box-sizing:border-box; }
+  .cqf-wrap{ width:100%; max-width:1000px; margin:0 auto; }
+  .cqf-svg{ display:block; width:100%; height:auto; }
+
+  .cqf-center{ transform-origin: 500px 372px; animation: cqf-pulse 2.2s ease-in-out infinite; }
+  @keyframes cqf-pulse{ 0%,100%{ transform:scaleY(0.9); opacity:0.85; } 50%{ transform:scaleY(1.08); opacity:1; } }
+
+  .cqf-arc{ transform-origin: center; animation: cqf-arcpulse 2.6s ease-in-out infinite; }
+  @keyframes cqf-arcpulse{ 0%,100%{ opacity:0.5; } 50%{ opacity:0.95; } }
+  .cqf-a1{ animation-delay:0s; }
+  .cqf-a2{ animation-delay:0.3s; }
+  .cqf-a3{ animation-delay:0.6s; }
+  .cqf-a4{ animation-delay:0.9s; }
+  .cqf-a5{ animation-delay:0.45s; }
+  .cqf-a6{ animation-delay:0.75s; }
+
+  .cqf-glow{ animation: cqf-color 4.8s ease-in-out infinite; }
+  @keyframes cqf-color{ 0%,100%{ opacity:0.5; } 50%{ opacity:0.95; } }
+
+  .cqf-ripple{ animation: cqf-ripple 3.6s ease-in-out infinite; }
+  @keyframes cqf-ripple{ 0%,100%{ opacity:0.2; } 50%{ opacity:0.55; } }
+
+  .cqf-beam{ animation: cqf-beam 6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+  @keyframes cqf-beam{ 0%,100%{ opacity:0.12; transform: rotate(-4deg);} 50%{ opacity:0.32; transform: rotate(4deg);} }
+</style>
+</head>
+<body>
+<div class="cqf-wrap">
+<svg class="cqf-svg" viewBox="0 0 1000 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="청라호수공원 음악분수">
+<title>청라호수공원 음악분수</title>
+<desc>야간의 청라호수공원 음악분수. 색색의 조명과 아치형 물줄기, 뒤편 도심 야경과 호수 산책로.</desc>
+<defs>
+  <linearGradient id="cqf-sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#101a38"/>
+    <stop offset="0.55" stop-color="#22355e"/>
+    <stop offset="1" stop-color="#3d5c85"/>
+  </linearGradient>
+  <linearGradient id="cqf-water" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#3f7fa4"/>
+    <stop offset="1" stop-color="#1d4763"/>
+  </linearGradient>
+  <linearGradient id="cqf-jet" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffffff"/>
+    <stop offset="1" stop-color="#bfe4f2"/>
+  </linearGradient>
+  <linearGradient id="cqf-tower" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#2c3f66"/>
+    <stop offset="1" stop-color="#1a2846"/>
+  </linearGradient>
+  <linearGradient id="cqf-deck" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#4a4f5c"/>
+    <stop offset="1" stop-color="#2e323c"/>
+  </linearGradient>
+  <filter id="cqf-blur"><feGaussianBlur stdDeviation="10"/></filter>
+  <filter id="cqf-blur2"><feGaussianBlur stdDeviation="4"/></filter>
+</defs>
+
+<!-- 밤하늘 -->
+<rect x="0" y="0" width="1000" height="300" fill="url(#cqf-sky)"/>
+<g fill="#ffffff" opacity="0.65">
+  <circle cx="70" cy="42" r="1.6"/><circle cx="180" cy="26" r="1.2"/><circle cx="300" cy="56" r="1.5"/>
+  <circle cx="700" cy="34" r="1.4"/><circle cx="830" cy="60" r="1.6"/><circle cx="940" cy="30" r="1.2"/>
+  <circle cx="410" cy="22" r="1.2"/><circle cx="620" cy="66" r="1.3"/>
+</g>
+<circle cx="880" cy="62" r="20" fill="#f5f0d8" opacity="0.9"/>
+<circle cx="872" cy="56" r="16" fill="#22355e" opacity="0.55"/>
+
+<!-- 도심 야경 -->
+<g fill="url(#cqf-tower)">
+  <rect x="20" y="180" width="52" height="120"/>
+  <rect x="84" y="146" width="40" height="154"/>
+  <polygon points="138,300 138,160 160,124 182,160 182,300"/>
+  <rect x="196" y="196" width="46" height="104"/>
+  <rect x="756" y="168" width="46" height="132"/>
+  <rect x="814" y="136" width="38" height="164"/>
+  <polygon points="866,300 866,178 888,146 910,178 910,300"/>
+  <rect x="924" y="200" width="52" height="100"/>
+</g>
+<g fill="#ffe9a8" opacity="0.75">
+  <rect x="30" y="196" width="7" height="9"/><rect x="46" y="196" width="7" height="9"/>
+  <rect x="30" y="220" width="7" height="9"/><rect x="56" y="242" width="7" height="9"/>
+  <rect x="94" y="164" width="7" height="9"/><rect x="108" y="164" width="7" height="9"/>
+  <rect x="94" y="192" width="7" height="9"/><rect x="108" y="216" width="7" height="9"/>
+  <rect x="206" y="212" width="7" height="9"/><rect x="224" y="212" width="7" height="9"/>
+  <rect x="766" y="186" width="7" height="9"/><rect x="784" y="186" width="7" height="9"/>
+  <rect x="824" y="156" width="7" height="9"/><rect x="838" y="180" width="7" height="9"/>
+  <rect x="936" y="220" width="7" height="9"/><rect x="954" y="220" width="7" height="9"/>
+</g>
+
+<!-- 서치라이트 빔 -->
+<g>
+  <polygon class="cqf-beam" points="300,372 240,120 300,110" fill="#7fd8ff" opacity="0.18"/>
+  <polygon class="cqf-beam" points="700,372 760,120 700,110" fill="#ff8fb8" opacity="0.18" style="animation-delay:1.4s"/>
+</g>
+
+<!-- 호수 건너편 산책로 -->
+<rect x="0" y="296" width="1000" height="18" fill="url(#cqf-deck)"/>
+<g stroke="#7d8698" stroke-width="1.4" opacity="0.7">
+  <line x1="0" y1="306" x2="1000" y2="306"/>
+</g>
+<g stroke="#8a94a6" stroke-width="2" opacity="0.8">
+  <line x1="60" y1="296" x2="60" y2="276"/><line x1="240" y1="296" x2="240" y2="276"/>
+  <line x1="420" y1="296" x2="420" y2="276"/><line x1="600" y1="296" x2="600" y2="276"/>
+  <line x1="780" y1="296" x2="780" y2="276"/><line x1="960" y1="296" x2="960" y2="276"/>
+</g>
+<g fill="#ffe9a8" opacity="0.9">
+  <circle cx="60" cy="272" r="5"/><circle cx="240" cy="272" r="5"/><circle cx="420" cy="272" r="5"/>
+  <circle cx="600" cy="272" r="5"/><circle cx="780" cy="272" r="5"/><circle cx="960" cy="272" r="5"/>
+</g>
+<g filter="url(#cqf-blur2)" fill="#ffe9a8" opacity="0.35">
+  <circle cx="60" cy="272" r="11"/><circle cx="240" cy="272" r="11"/><circle cx="420" cy="272" r="11"/>
+  <circle cx="600" cy="272" r="11"/><circle cx="780" cy="272" r="11"/><circle cx="960" cy="272" r="11"/>
+</g>
+
+<!-- 관람객 실루엣 -->
+<g fill="#161c2c" opacity="0.9">
+  <g transform="translate(140,296)"><circle cx="0" cy="-14" r="4.4"/><path d="M-4.4,-9 L4.4,-9 L3.6,2 L-3.6,2 Z"/></g>
+  <g transform="translate(158,296)"><circle cx="0" cy="-12" r="3.8"/><path d="M-3.8,-8 L3.8,-8 L3,2 L-3,2 Z"/></g>
+  <g transform="translate(858,296)"><circle cx="0" cy="-14" r="4.4"/><path d="M-4.4,-9 L4.4,-9 L3.6,2 L-3.6,2 Z"/></g>
+  <g transform="translate(876,296)"><circle cx="0" cy="-11" r="3.4"/><path d="M-3.4,-7 L3.4,-7 L2.8,2 L-2.8,2 Z"/></g>
+</g>
+
+<!-- 호수 수면 -->
+<rect x="0" y="312" width="1000" height="108" fill="url(#cqf-water)"/>
+<ellipse cx="500" cy="380" rx="480" ry="36" fill="#4a8bad" opacity="0.5"/>
+<ellipse class="cqf-ripple" cx="500" cy="380" rx="430" ry="26" fill="none" stroke="#dff3fa" stroke-width="2"/>
+<ellipse class="cqf-ripple" cx="500" cy="382" rx="330" ry="19" fill="none" stroke="#dff3fa" stroke-width="1.5" style="animation-delay:1.1s"/>
+<ellipse class="cqf-ripple" cx="500" cy="396" rx="240" ry="13" fill="none" stroke="#dff3fa" stroke-width="1.2" style="animation-delay:2s"/>
+
+<!-- 도심 불빛 반영 -->
+<g opacity="0.35">
+  <rect x="36" y="316" width="4" height="46" fill="#ffe9a8"/>
+  <rect x="102" y="316" width="4" height="58" fill="#ffe9a8"/>
+  <rect x="158" y="316" width="4" height="50" fill="#ffe9a8"/>
+  <rect x="778" y="316" width="4" height="54" fill="#ffe9a8"/>
+  <rect x="832" y="316" width="4" height="46" fill="#ffe9a8"/>
+  <rect x="944" y="316" width="4" height="40" fill="#ffe9a8"/>
+</g>
+
+<!-- 수중 조명 -->
+<g filter="url(#cqf-blur)">
+  <circle class="cqf-glow" cx="430" cy="374" r="28" fill="#ff4d5e"/>
+  <circle class="cqf-glow" cx="500" cy="378" r="32" fill="#ffd23f" style="animation-delay:0.8s"/>
+  <circle class="cqf-glow" cx="570" cy="374" r="28" fill="#4d7dff"/>
+  <circle class="cqf-glow" cx="465" cy="380" r="22" fill="#c04dff" style="animation-delay:1.6s"/>
+  <circle class="cqf-glow" cx="535" cy="380" r="22" fill="#2fe0c0" style="animation-delay:2.2s"/>
+  <circle class="cqf-glow" cx="330" cy="378" r="20" fill="#ff8f3c" style="animation-delay:2.8s"/>
+  <circle class="cqf-glow" cx="670" cy="378" r="20" fill="#3cffb0" style="animation-delay:3.4s"/>
+</g>
+
+<!-- 분수 링(노즐 구조물) -->
+<ellipse cx="500" cy="372" rx="150" ry="24" fill="#5f6b73" stroke="#414c54" stroke-width="2"/>
+<ellipse cx="500" cy="367" rx="150" ry="20" fill="#8a97a0"/>
+<ellipse cx="500" cy="365" rx="122" ry="15" fill="#a3b0b8" opacity="0.8"/>
+<g fill="#3f4a52">
+  <ellipse cx="400" cy="364" rx="7" ry="3.4"/><ellipse cx="450" cy="361" rx="7" ry="3.4"/>
+  <ellipse cx="500" cy="360" rx="7" ry="3.4"/><ellipse cx="550" cy="361" rx="7" ry="3.4"/>
+  <ellipse cx="600" cy="364" rx="7" ry="3.4"/>
+</g>
+
+<!-- 아치형 물줄기 -->
+<g fill="none" stroke="url(#cqf-jet)" stroke-linecap="round">
+  <path class="cqf-arc cqf-a1" d="M570,391 Q640,300 690,368" stroke-width="7"/>
+  <path class="cqf-arc cqf-a1" d="M430,391 Q360,300 310,368" stroke-width="7"/>
+  <path class="cqf-arc cqf-a2" d="M640,372 Q722,296 762,360" stroke-width="6"/>
+  <path class="cqf-arc cqf-a2" d="M360,372 Q278,296 238,360" stroke-width="6"/>
+  <path class="cqf-arc cqf-a6" d="M722,364 Q800,300 848,356" stroke-width="5"/>
+  <path class="cqf-arc cqf-a6" d="M278,364 Q200,300 152,356" stroke-width="5"/>
+  <path class="cqf-arc cqf-a3" d="M430,353 Q398,296 366,340" stroke-width="4.5"/>
+  <path class="cqf-arc cqf-a3" d="M570,353 Q602,296 634,340" stroke-width="4.5"/>
+  <path class="cqf-arc cqf-a4" d="M470,368 Q460,270 500,210" stroke-width="5"/>
+  <path class="cqf-arc cqf-a4" d="M530,368 Q540,270 500,210" stroke-width="5"/>
+  <path class="cqf-arc cqf-a5" d="M452,366 Q436,286 470,236" stroke-width="3.6"/>
+  <path class="cqf-arc cqf-a5" d="M548,366 Q564,286 530,236" stroke-width="3.6"/>
+</g>
+
+<!-- 물방울 스플래시 -->
+<g fill="#ffffff" opacity="0.85">
+  <circle class="cqf-arc cqf-a1" cx="690" cy="368" r="4"/>
+  <circle class="cqf-arc cqf-a1" cx="310" cy="368" r="4"/>
+  <circle class="cqf-arc cqf-a2" cx="762" cy="360" r="4"/>
+  <circle class="cqf-arc cqf-a2" cx="238" cy="360" r="4"/>
+  <circle class="cqf-arc cqf-a6" cx="848" cy="356" r="3.4"/>
+  <circle class="cqf-arc cqf-a6" cx="152" cy="356" r="3.4"/>
+  <circle class="cqf-arc cqf-a5" cx="500" cy="205" r="5"/>
+</g>
+
+<!-- 중앙 대형 수직 물줄기 -->
+<g class="cqf-center">
+  <polygon points="491,372 509,372 503,120 497,120" fill="url(#cqf-jet)"/>
+  <ellipse cx="500" cy="116" rx="14" ry="9" fill="#ffffff" opacity="0.9"/>
+  <g fill="#ffffff" opacity="0.85">
+    <circle cx="484" cy="140" r="4.4"/>
+    <circle cx="516" cy="152" r="4.4"/>
+    <circle cx="500" cy="100" r="3.8"/>
+    <circle cx="490" cy="182" r="3.4"/>
+    <circle cx="512" cy="200" r="3.4"/>
+  </g>
+</g>
+
+<!-- 물안개 -->
+<ellipse cx="500" cy="372" rx="180" ry="16" fill="#ffffff" opacity="0.22" filter="url(#cqf-blur2)"/>
+</svg>
+</div>
+</body>
+</html>

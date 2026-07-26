@@ -1,0 +1,341 @@
+<!-- 원본 크기: 800x590 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천 제물포구청</title>
+    <style>
+        /* 기본 페이지 리셋 및 중앙 정렬 */
+        body {
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+        }
+
+        /* 직사각형 벽돌 패턴 (SVG를 활용하여 선명한 직사각형 구현) */
+        .brick-pattern {
+            background-color: #c4b7a6; /* 시멘트(줄눈) 색상 */
+            background-image: url("data:image/svg+xml,%3Csvg width='50' height='26' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='48' height='11' fill='%239b3726' /%3E%3Crect x='25' y='13' width='48' height='11' fill='%239b3726' /%3E%3Crect x='-25' y='13' width='48' height='11' fill='%239b3726' /%3E%3C/svg%3E");
+            box-shadow: inset 0 8px 15px rgba(0,0,0,0.15);
+        }
+
+        /* 건물 전체 컨테이너 */
+        .building-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 100px;
+        }
+
+        .building-core {
+            position: relative;
+            width: 720px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        /* 깃발 및 국기봉 */
+        .flags-container {
+            position: absolute;
+            top: -120px;
+            display: flex;
+            gap: 35px;
+            z-index: 10;
+        }
+        .flagpole {
+            width: 8px;
+            height: 120px;
+            background: linear-gradient(to right, #e0e0e0, #888, #e0e0e0);
+            position: relative;
+            border-radius: 4px;
+        }
+        .flagpole::before { /* 국기봉 둥근 머리 */
+            content: '';
+            position: absolute;
+            top: -14px;
+            left: -5px;
+            width: 18px;
+            height: 18px;
+            background: radial-gradient(circle at 30% 30%, #fff, #999);
+            border-radius: 50%;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        .flag {
+            position: absolute;
+            top: 15px;
+            left: 8px;
+            width: 65px;
+            height: 42px;
+            border-radius: 0 3px 3px 0;
+            box-shadow: 2px 3px 6px rgba(0,0,0,0.15);
+        }
+        .flag.ivory { background: linear-gradient(135deg, #fffff0, #e6e6c8); }
+        .flag.pink { background: linear-gradient(135deg, #ffe4e1, #ffb6c1); }
+        .flag.green { background: linear-gradient(135deg, #e0ffe0, #98fb98); }
+
+        /* 지붕 및 층간 구분선(Ledge) */
+        .roof-ledge, .floor-ledge {
+            width: 100%;
+            background: linear-gradient(to bottom, #f5f5f5, #cccccc);
+            border: 2px solid #a0a0a0;
+            border-left: 4px solid #f5f5f5;
+            border-right: 4px solid #999;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 5;
+        }
+        .roof-ledge { height: 35px; border-radius: 3px 3px 0 0; }
+        .floor-ledge { height: 25px; box-shadow: 0 5px 10px rgba(0,0,0,0.25); }
+
+        /* 층별 기본 구조 */
+        .floor {
+            width: 100%;
+            height: 140px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* 전면 수직 돌출 기둥 (디테일 묘사) */
+        .vertical-pillars {
+            position: absolute;
+            top: -15px;
+            left: 0;
+            width: 100%;
+            height: 345px;
+            z-index: 8;
+            pointer-events: none;
+        }
+        .pillar {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 26px;
+            box-shadow: 4px 0 8px rgba(0,0,0,0.3), -2px 0 4px rgba(0,0,0,0.2);
+            border-left: 1px solid #d05a48;
+            border-right: 1px solid #5a1910;
+        }
+        /* 중앙 4개의 기둥 위치 */
+        .pillar:nth-child(1) { left: 220px; }
+        .pillar:nth-child(2) { left: 300px; }
+        .pillar:nth-child(3) { left: 380px; }
+        .pillar:nth-child(4) { left: 460px; }
+
+        /* 창문 공통 디자인 */
+        .window-wrapper { display: flex; justify-content: center; align-items: center; z-index: 2; }
+        .window {
+            width: 78px;
+            height: 98px;
+            background-color: #888;
+            border: 4px solid #b0b0b0;
+            border-top: 4px solid #d0d0d0;
+            border-bottom: 4px solid #909090;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 3px;
+            padding: 3px;
+            box-sizing: border-box;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.6), 2px 3px 6px rgba(0,0,0,0.25);
+        }
+        .window .pane { box-shadow: inset 0 0 3px rgba(0,0,0,0.5); }
+        .window .pane.top { background: linear-gradient(to bottom, #ffffff, #c0c0c0); }
+        .window .pane.bottom { background: linear-gradient(to bottom, #6b1414, #2a0000); }
+        
+        /* 중앙의 좁은 창문 */
+        .window.narrow { width: 48px; }
+
+        /* 1층 입구 영역 */
+        .ground-floor { height: 160px; padding-top: 15px; align-items: flex-end; }
+        .entrance-zone {
+            position: relative;
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        /* 파란색 현판 (인천 제물포구청) */
+        .awning {
+            position: absolute;
+            top: -55px;
+            width: 340px;
+            height: 55px;
+            background: linear-gradient(to bottom, #1e90ff, #00bfff, #005cff);
+            color: white;
+            font-size: 28px;
+            font-weight: 900;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 4px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.5);
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+            letter-spacing: 3px;
+            border: 1px solid #0047b3;
+        }
+
+        /* 1층 출입문 및 원형 창문 */
+        .entrance-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            width: 100%;
+            height: 110px;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+        .round-window {
+            width: 52px;
+            height: 52px;
+            background-color: white;
+            border: 5px solid #e0e0e0;
+            border-radius: 50%;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 3px 3px 8px rgba(0,0,0,0.3);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .round-window .cross::before {
+            content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 4px; 
+            background: #d0d0d0; transform: translateY(-50%); box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        .round-window .cross::after {
+            content: ''; position: absolute; left: 50%; top: 0; height: 100%; width: 4px; 
+            background: #d0d0d0; transform: translateX(-50%); box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .main-door {
+            width: 100px;
+            height: 110px;
+            background: #3b0000;
+            border: 6px solid #220000;
+            border-bottom: none;
+            display: flex;
+            box-shadow: inset 0 8px 20px rgba(0,0,0,0.8);
+        }
+        .door-panel {
+            flex: 1;
+            border: 1px solid #1a0000;
+            display: flex;
+            align-items: center;
+            padding: 8px;
+        }
+        .door-panel:first-child { justify-content: flex-end; border-right: 2px solid #111; }
+        .door-panel:last-child { justify-content: flex-start; }
+        .handle { width: 5px; height: 25px; background: linear-gradient(to right, #ddd, #999); border-radius: 3px; box-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+
+        /* 하단 기단 (계단) */
+        .base-foundation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 12;
+        }
+        .step-1 {
+            width: 760px;
+            height: 25px;
+            background: linear-gradient(to bottom, #9b0000, #730000);
+            border-top: 3px solid #b30000;
+            border-radius: 4px 4px 0 0;
+            box-shadow: 0 -3px 10px rgba(0,0,0,0.3);
+        }
+        .step-2 {
+            width: 800px;
+            height: 35px;
+            background: linear-gradient(to bottom, #730000, #4a0000);
+            border-top: 2px solid #8b0000;
+            border-radius: 4px 4px 0 0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div class="building-wrapper">
+    <div class="flags-container">
+        <div class="flagpole"><div class="flag ivory"></div></div>
+        <div class="flagpole"><div class="flag pink"></div></div>
+        <div class="flagpole"><div class="flag green"></div></div>
+    </div>
+
+    <div class="building-core">
+        
+        <div class="vertical-pillars">
+            <div class="pillar brick-pattern"></div>
+            <div class="pillar brick-pattern"></div>
+            <div class="pillar brick-pattern"></div>
+            <div class="pillar brick-pattern"></div>
+        </div>
+
+        <div class="roof-ledge"></div>
+
+        <div class="floor brick-pattern">
+            <div class="window-wrapper"><div class="window"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+            <div class="window-wrapper" style="margin-right: 30px;"><div class="window"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+            
+            <div class="window-wrapper"><div class="window narrow"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+            <div class="window-wrapper" style="margin: 0 25px;"><div class="window narrow"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+            <div class="window-wrapper"><div class="window narrow"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+            
+            <div class="window-wrapper" style="margin-left: 30px;"><div class="window"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+            <div class="window-wrapper"><div class="window"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+        </div>
+        
+        <div class="floor-ledge"></div>
+
+        <div class="floor brick-pattern">
+            <div class="window-wrapper"><div class="window"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+            <div class="window-wrapper" style="margin-right: 30px;"><div class="window"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+            
+            <div class="window-wrapper"><div class="window narrow"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+            <div class="window-wrapper" style="margin: 0 25px;"><div class="window narrow"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+            <div class="window-wrapper"><div class="window narrow"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+            
+            <div class="window-wrapper" style="margin-left: 30px;"><div class="window"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+            <div class="window-wrapper"><div class="window"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+        </div>
+
+        <div class="floor-ledge"></div>
+
+        <div class="floor brick-pattern ground-floor">
+            <div class="window-wrapper" style="margin-bottom: 25px;"><div class="window"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+            
+            <div class="entrance-zone">
+                <div class="awning">인천 제물포구청</div>
+                <div class="entrance-details">
+                    <div class="round-window"><div class="cross"></div></div>
+                    <div class="main-door">
+                        <div class="door-panel"><div class="handle"></div></div>
+                        <div class="door-panel"><div class="handle"></div></div>
+                    </div>
+                    <div class="round-window"><div class="cross"></div></div>
+                </div>
+            </div>
+
+            <div class="window-wrapper" style="margin-bottom: 25px;"><div class="window"><div class="pane top"></div><div class="pane top"></div><div class="pane bottom"></div><div class="pane bottom"></div></div></div>
+        </div>
+
+    </div>
+
+    <div class="base-foundation">
+        <div class="step-1"></div>
+        <div class="step-2"></div>
+    </div>
+</div>
+
+</body>
+</html>

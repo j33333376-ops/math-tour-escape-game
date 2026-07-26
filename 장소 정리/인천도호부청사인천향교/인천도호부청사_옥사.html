@@ -1,0 +1,141 @@
+<!-- 원본 크기: 1200x720 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>인천도호부청사 - 옥사(감옥)</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .oksa-svg { display:block; width:100%; height:auto; }
+</style>
+</head>
+<body>
+<svg class="oksa-svg" viewBox="0 0 1200 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="인천도호부청사 옥사 감옥 장면">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#aab6c1"/><stop offset="100%" stop-color="#dbe3e8"/>
+    </linearGradient>
+    <linearGradient id="grd" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c9b997"/><stop offset="100%" stop-color="#ab9a76"/>
+    </linearGradient>
+    <linearGradient id="roof" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5b6675"/><stop offset="100%" stop-color="#39424f"/>
+    </linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8a5e34"/><stop offset="100%" stop-color="#6a441e"/>
+    </linearGradient>
+    <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a9a294"/><stop offset="100%" stop-color="#8d8578"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 하늘 -->
+  <rect x="0" y="0" width="1200" height="470" fill="url(#sky)"/>
+  <!-- 흐린 구름 -->
+  <g fill="#ffffff" opacity="0.5">
+    <ellipse cx="250" cy="90" rx="80" ry="26"/><ellipse cx="320" cy="100" rx="60" ry="22"/>
+    <ellipse cx="930" cy="70" rx="90" ry="28"/><ellipse cx="1010" cy="84" rx="60" ry="20"/>
+  </g>
+  <!-- 먼 산 -->
+  <path d="M0,470 L0,380 Q220,300 430,375 Q680,290 900,372 Q1080,320 1200,378 L1200,470 Z" fill="#a7b09c" opacity="0.55"/>
+
+  <!-- 땅 -->
+  <rect x="0" y="450" width="1200" height="270" fill="url(#grd)"/>
+  <g stroke="#9a8a66" stroke-width="2" opacity="0.4">
+    <line x1="0" y1="540" x2="1200" y2="540"/><line x1="0" y1="620" x2="1200" y2="620"/>
+  </g>
+  <!-- 자갈 -->
+  <g fill="#9a8a66" opacity="0.5">
+    <ellipse cx="150" cy="580" rx="12" ry="5"/><ellipse cx="1050" cy="560" rx="14" ry="6"/>
+    <ellipse cx="380" cy="650" rx="16" ry="6"/><ellipse cx="820" cy="640" rx="13" ry="5"/>
+  </g>
+
+  <!-- 뒷 담장 (돌담 + 기와) -->
+  <g>
+    <rect x="70" y="340" width="1060" height="115" fill="url(#stone)" stroke="#79735f" stroke-width="3"/>
+    <g stroke="#877f6b" stroke-width="2" opacity="0.7">
+      <line x1="70" y1="378" x2="1130" y2="378"/><line x1="70" y1="416" x2="1130" y2="416"/>
+      <line x1="240" y1="340" x2="240" y2="378"/><line x1="420" y1="378" x2="420" y2="416"/>
+      <line x1="620" y1="340" x2="620" y2="378"/><line x1="800" y1="378" x2="800" y2="416"/>
+      <line x1="980" y1="340" x2="980" y2="378"/>
+    </g>
+    <!-- 담장 기와 지붕 -->
+    <rect x="58" y="322" width="1084" height="22" rx="6" fill="#454f5c"/>
+    <g fill="#5c6675"><ellipse cx="90" cy="322" rx="12" ry="8"/><ellipse cx="130" cy="322" rx="12" ry="8"/><ellipse cx="170" cy="322" rx="12" ry="8"/><ellipse cx="1030" cy="322" rx="12" ry="8"/><ellipse cx="1070" cy="322" rx="12" ry="8"/><ellipse cx="1110" cy="322" rx="12" ry="8"/></g>
+  </g>
+
+  <!-- ===== 옥사 건물 (중앙) ===== -->
+  <g>
+    <!-- 지붕 -->
+    <path d="M398,262 L470,176 L730,176 L802,262 Z" fill="url(#roof)" stroke="#2c333d" stroke-width="3"/>
+    <path d="M398,262 L802,262 L790,278 L410,278 Z" fill="#2f3742"/>
+    <!-- 지붕 기와줄 -->
+    <g stroke="#6b7684" stroke-width="2" opacity="0.6">
+      <line x1="470" y1="176" x2="430" y2="260"/><line x1="530" y1="176" x2="510" y2="260"/>
+      <line x1="600" y1="176" x2="600" y2="260"/><line x1="670" y1="176" x2="690" y2="260"/><line x1="730" y1="176" x2="770" y2="260"/>
+    </g>
+    <!-- 용마루 -->
+    <rect x="466" y="170" width="268" height="12" rx="5" fill="#2c333d"/>
+
+    <!-- 돌 기단 -->
+    <rect x="410" y="410" width="380" height="44" fill="#928a7b" stroke="#736c5c" stroke-width="2"/>
+    <g stroke="#7d766563" stroke-width="2" opacity="0.5"><line x1="470" y1="410" x2="470" y2="454"/><line x1="600" y1="410" x2="600" y2="454"/><line x1="730" y1="410" x2="730" y2="454"/></g>
+
+    <!-- 감옥 내부(어둠) -->
+    <rect x="432" y="278" width="336" height="140" fill="#201d18"/>
+    <!-- 기둥 -->
+    <rect x="414" y="270" width="22" height="150" fill="url(#wood)" stroke="#4d3216" stroke-width="1.5"/>
+    <rect x="764" y="270" width="22" height="150" fill="url(#wood)" stroke="#4d3216" stroke-width="1.5"/>
+    <!-- 상·하 인방 -->
+    <rect x="420" y="270" width="360" height="16" fill="#5a3d22"/>
+    <rect x="420" y="406" width="360" height="16" fill="#5a3d22"/>
+    <!-- 창살(세로 감옥 살) -->
+    <g fill="#5b4026">
+      <rect x="452" y="286" width="9" height="120"/><rect x="480" y="286" width="9" height="120"/>
+      <rect x="508" y="286" width="9" height="120"/><rect x="536" y="286" width="9" height="120"/>
+      <rect x="564" y="286" width="9" height="120"/><rect x="592" y="286" width="9" height="120"/>
+      <rect x="620" y="286" width="9" height="120"/><rect x="648" y="286" width="9" height="120"/>
+      <rect x="676" y="286" width="9" height="120"/><rect x="704" y="286" width="9" height="120"/>
+      <rect x="732" y="286" width="9" height="120"/>
+    </g>
+    <!-- 창살 가로 보강 -->
+    <rect x="426" y="338" width="348" height="8" fill="#4d3419"/>
+    <!-- 옥문 자물쇠 -->
+    <rect x="588" y="360" width="24" height="34" rx="4" fill="#c9a24a" stroke="#6e4e15" stroke-width="2"/>
+    <path d="M594,360 v-8 a6,6 0 0 1 12,0 v8" fill="none" stroke="#6e4e15" stroke-width="3"/>
+
+    <!-- 현판 '獄' -->
+    <g transform="translate(600,258)">
+      <rect x="-40" y="-20" width="80" height="34" rx="5" fill="#241a10" stroke="#c9a24a" stroke-width="2.5"/>
+      <text x="0" y="4" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="26" font-weight="800" fill="#e7c469">獄</text>
+    </g>
+  </g>
+
+  <!-- ===== 형틀: 곤장대 (앞쪽 왼편) ===== -->
+  <g transform="translate(210,560)">
+    <!-- 다리 -->
+    <rect x="-70" y="0" width="14" height="60" rx="3" fill="#6a451f"/><rect x="56" y="0" width="14" height="60" rx="3" fill="#6a451f"/>
+    <!-- 상판 -->
+    <rect x="-88" y="-16" width="176" height="20" rx="6" fill="url(#wood)" stroke="#4d3216" stroke-width="2"/>
+    <!-- 곤장(몽둥이) -->
+    <g transform="rotate(-24)"><rect x="-10" y="-96" width="14" height="120" rx="7" fill="#9c6a34" stroke="#6a451f" stroke-width="2"/></g>
+    <text x="0" y="86" text-anchor="middle" font-family="'Jua',sans-serif" font-size="20" fill="#5c4a2a">형틀 (곤장대)</text>
+  </g>
+
+  <!-- ===== 죄인 경고 방(榜) : 앞쪽 오른편 ===== -->
+  <g transform="translate(1000,470)">
+    <rect x="-8" y="0" width="16" height="150" rx="4" fill="#6a451f"/>
+    <rect x="-70" y="-70" width="140" height="86" rx="6" fill="#efe3c6" stroke="#8a6a3a" stroke-width="3"/>
+    <text x="0" y="-40" text-anchor="middle" font-family="'Nanum Myeongjo',serif" font-size="22" font-weight="800" fill="#8c3520">罪 人</text>
+    <line x1="-52" y1="-24" x2="52" y2="-24" stroke="#b79a6a" stroke-width="2"/>
+    <text x="0" y="0" text-anchor="middle" font-family="'Jua',sans-serif" font-size="15" fill="#5c4a2a">출입을 금한다</text>
+  </g>
+
+  <!-- 마른 풀 -->
+  <g stroke="#8f9c5e" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.8">
+    <path d="M120,690 q-4,-22 -8,-30 M126,690 q0,-24 2,-34 M132,690 q6,-20 12,-28"/>
+    <path d="M1120,700 q-4,-22 -8,-30 M1128,700 q0,-24 2,-34"/>
+  </g>
+</svg>
+</body>
+</html>

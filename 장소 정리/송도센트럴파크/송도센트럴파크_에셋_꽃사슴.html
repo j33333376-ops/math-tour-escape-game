@@ -1,0 +1,96 @@
+<!-- 원본 크기: 600x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>꽃사슴</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .sds-svg { display:block; width:100%; height:auto; }
+  .sds-ear { animation: sds-ear 4s ease-in-out infinite; transform-box: fill-box; transform-origin: 100% 100%; }
+  @keyframes sds-ear { 0%,90%,100% { transform: rotate(0deg);} 95% { transform: rotate(-12deg);} }
+  .sds-tail { animation: sds-tail 3s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 0%; }
+  @keyframes sds-tail { 0%,100% { transform: rotate(-9deg);} 50% { transform: rotate(9deg);} }
+</style>
+</head>
+<body>
+<svg class="sds-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="꽃사슴">
+<title>꽃사슴</title>
+<desc>송도 센트럴파크 사슴농장의 꽃사슴. 흰 반점이 있는 갈색 사슴.</desc>
+<defs>
+  <linearGradient id="sdsBody" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#c99a5c"/><stop offset="0.6" stop-color="#a8763a"/><stop offset="1" stop-color="#7d5424"/>
+  </linearGradient>
+  <linearGradient id="sdsHorn" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#c9b08a"/><stop offset="1" stop-color="#8a6e46"/>
+  </linearGradient>
+</defs>
+<ellipse cx="300" cy="556" rx="220" ry="28" fill="#3f5a2c" opacity="0.22"/>
+<!-- 뿔 -->
+<g stroke="url(#sdsHorn)" stroke-width="13" fill="none" stroke-linecap="round">
+  <path d="M392,158 C388,116 400,80 424,54"/>
+  <path d="M400,124 C420,110 442,110 456,96"/>
+  <path d="M396,96 C414,84 434,80 444,62"/>
+  <path d="M466,158 C474,116 466,80 444,52"/>
+  <path d="M462,124 C444,108 424,106 412,92"/>
+</g>
+<!-- 뒷다리 -->
+<g fill="url(#sdsBody)" stroke="#5f3d16" stroke-width="4">
+  <path d="M118,362 C100,410 96,470 106,536 L142,536 C140,472 148,420 166,382 Z"/>
+  <path d="M180,378 C168,428 168,486 178,540 L214,540 C210,486 218,432 232,394 Z"/>
+</g>
+<!-- 몸통 -->
+<path d="M120,332
+         C104,268 156,214 244,206
+         C320,199 396,214 428,246
+         C452,270 456,320 440,362
+         C420,414 340,442 258,438
+         C176,434 132,394 120,332 Z"
+      fill="url(#sdsBody)" stroke="#5f3d16" stroke-width="6"/>
+<!-- 앞다리 -->
+<g fill="url(#sdsBody)" stroke="#5f3d16" stroke-width="4">
+  <path d="M356,414 C352,462 352,502 360,542 L396,542 C392,500 394,456 404,420 Z"/>
+  <path d="M418,404 C420,452 424,496 432,536 L466,536 C460,494 460,450 464,412 Z"/>
+</g>
+<g fill="#5f3d16">
+  <rect x="104" y="530" width="42" height="18" rx="7"/><rect x="176" y="534" width="42" height="18" rx="7"/>
+  <rect x="356" y="536" width="42" height="18" rx="7"/><rect x="430" y="530" width="38" height="18" rx="7"/>
+</g>
+<!-- 반점 -->
+<g fill="#f4e6cc" opacity="0.9">
+  <ellipse cx="200" cy="264" rx="15" ry="10"/><ellipse cx="256" cy="248" rx="14" ry="9"/>
+  <ellipse cx="312" cy="256" rx="15" ry="10"/><ellipse cx="366" cy="272" rx="13" ry="9"/>
+  <ellipse cx="176" cy="318" rx="14" ry="9"/><ellipse cx="234" cy="304" rx="15" ry="10"/>
+  <ellipse cx="292" cy="312" rx="14" ry="9"/><ellipse cx="350" cy="324" rx="15" ry="10"/>
+  <ellipse cx="206" cy="366" rx="13" ry="9"/><ellipse cx="268" cy="360" rx="14" ry="9"/>
+  <ellipse cx="326" cy="372" rx="13" ry="9"/>
+</g>
+<!-- 배 -->
+<path d="M156,388 C220,428 340,432 424,394 C400,428 330,444 256,438 C204,434 172,414 156,388 Z" fill="#f0e2c8" opacity="0.75"/>
+<!-- 꼬리 -->
+<g class="sds-tail">
+  <path d="M118,306 C90,296 74,308 78,330 C82,352 104,352 118,338 Z" fill="#f0e2c8" stroke="#5f3d16" stroke-width="3.4"/>
+</g>
+<!-- 목과 머리 -->
+<path d="M400,242 C420,204 428,176 430,152 C458,146 486,158 490,182 C494,214 476,252 448,272 Z"
+      fill="url(#sdsBody)" stroke="#5f3d16" stroke-width="5"/>
+<path d="M400,158 C402,118 424,92 462,90 C500,88 522,110 522,146 C522,182 502,206 470,212 C436,218 402,196 400,158 Z"
+      fill="#c99a5c" stroke="#5f3d16" stroke-width="5"/>
+<!-- 주둥이 -->
+<path d="M498,168 C534,164 556,182 552,206 C548,228 524,238 500,230 Z" fill="#e0b982" stroke="#5f3d16" stroke-width="4.4"/>
+<ellipse cx="544" cy="196" rx="13" ry="10" fill="#4a3018"/>
+<path d="M524,220 q16,8 26,-2" fill="none" stroke="#5f3d16" stroke-width="3.4" stroke-linecap="round"/>
+<!-- 귀 -->
+<g class="sds-ear">
+  <path d="M416,128 C388,106 376,80 392,68 C410,58 432,80 440,110 Z" fill="#c99a5c" stroke="#5f3d16" stroke-width="4"/>
+  <path d="M414,116 C398,102 392,86 400,80 C410,76 422,94 426,110 Z" fill="#e8c9a8"/>
+</g>
+<!-- 눈 -->
+<circle cx="470" cy="150" r="16" fill="#2b1a10"/>
+<circle cx="465" cy="144" r="5.4" fill="#ffffff"/>
+<!-- 볼 -->
+<ellipse cx="440" cy="188" rx="16" ry="10" fill="#e08a7c" opacity="0.35"/>
+</svg>
+</body>
+</html>

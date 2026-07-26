@@ -1,0 +1,121 @@
+<!-- 원본 크기: 600x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>실험 기구</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .ihf-svg { display:block; width:100%; height:auto; }
+  .ihf-bub { animation: ihf-bub 3.4s ease-in-out infinite; }
+  @keyframes ihf-bub { 0% { transform: translateY(0); opacity:0.85; } 100% { transform: translateY(-70px); opacity:0; } }
+  .ihf-shine { animation: ihf-shine 4.4s ease-in-out infinite; }
+  @keyframes ihf-shine { 0%,100% { opacity:0.35; } 50% { opacity:0.8; } }
+</style>
+</head>
+<body>
+<svg class="ihf-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="실험 기구">
+<title>실험 기구</title>
+<desc>인하대 공대 실험실의 비커, 삼각플라스크, 시험관.</desc>
+<defs>
+  <linearGradient id="ihfGlass" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#ffffff" stop-opacity="0.5"/>
+    <stop offset="0.35" stop-color="#ffffff" stop-opacity="0.12"/>
+    <stop offset="1" stop-color="#8fa8b8" stop-opacity="0.35"/>
+  </linearGradient>
+  <linearGradient id="ihfBlue" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#5fc4e0"/><stop offset="1" stop-color="#1f7fa8"/>
+  </linearGradient>
+  <linearGradient id="ihfRed" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f0806c"/><stop offset="1" stop-color="#c2302a"/>
+  </linearGradient>
+  <linearGradient id="ihfGreen" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#7fd0a0"/><stop offset="1" stop-color="#2f8f5c"/>
+  </linearGradient>
+</defs>
+<ellipse cx="300" cy="536" rx="250" ry="28" fill="#2a3a40" opacity="0.18"/>
+<!-- 시험관 거치대 -->
+<g transform="translate(452,438)">
+  <rect x="-90" y="46" width="180" height="20" rx="6" fill="#a8763a" stroke="#6e4a1c" stroke-width="4"/>
+  <rect x="-90" y="-30" width="180" height="16" rx="6" fill="#a8763a" stroke="#6e4a1c" stroke-width="4"/>
+  <rect x="-84" y="-14" width="14" height="60" fill="#8f6a34"/>
+  <rect x="70" y="-14" width="14" height="60" fill="#8f6a34"/>
+  <!-- 시험관 3개 -->
+  <g>
+    <path d="M-58,-64 L-30,-64 L-30,36 C-30,48 -38,56 -44,56 C-50,56 -58,48 -58,36 Z"
+          fill="url(#ihfGlass)" stroke="#8fa8b8" stroke-width="3.4"/>
+    <path d="M-58,-4 L-30,-4 L-30,36 C-30,48 -38,56 -44,56 C-50,56 -58,48 -58,36 Z" fill="url(#ihfRed)"/>
+    <ellipse cx="-44" cy="-64" rx="14" ry="4" fill="none" stroke="#8fa8b8" stroke-width="3"/>
+  </g>
+  <g>
+    <path d="M-14,-64 L14,-64 L14,36 C14,48 6,56 0,56 C-6,56 -14,48 -14,36 Z"
+          fill="url(#ihfGlass)" stroke="#8fa8b8" stroke-width="3.4"/>
+    <path d="M-14,10 L14,10 L14,36 C14,48 6,56 0,56 C-6,56 -14,48 -14,36 Z" fill="url(#ihfGreen)"/>
+    <ellipse cx="0" cy="-64" rx="14" ry="4" fill="none" stroke="#8fa8b8" stroke-width="3"/>
+  </g>
+  <g>
+    <path d="M30,-64 L58,-64 L58,36 C58,48 50,56 44,56 C38,56 30,48 30,36 Z"
+          fill="url(#ihfGlass)" stroke="#8fa8b8" stroke-width="3.4"/>
+    <path d="M30,-22 L58,-22 L58,36 C58,48 50,56 44,56 C38,56 30,48 30,36 Z" fill="url(#ihfBlue)"/>
+    <ellipse cx="44" cy="-64" rx="14" ry="4" fill="none" stroke="#8fa8b8" stroke-width="3"/>
+  </g>
+</g>
+<!-- 비커 -->
+<g transform="translate(158,384)">
+  <path d="M-88,-116 L88,-116 L78,104 C77,116 68,124 56,124 L-56,124 C-68,124 -77,116 -78,104 Z"
+        fill="url(#ihfGlass)" stroke="#7d96a4" stroke-width="5"/>
+  <!-- 액체 -->
+  <path d="M-76,-24 L76,-24 L78,104 C77,116 68,124 56,124 L-56,124 C-68,124 -77,116 -78,104 Z" fill="url(#ihfBlue)" opacity="0.85"/>
+  <ellipse cy="-24" rx="76" ry="12" fill="#8fdcf0" opacity="0.9"/>
+  <!-- 눈금 -->
+  <g stroke="#5f7f92" stroke-width="3">
+    <line x1="42" y1="-72" x2="72" y2="-72"/><line x1="52" y1="-40" x2="74" y2="-40"/>
+    <line x1="42" y1="-8" x2="74" y2="-8"/><line x1="52" y1="24" x2="76" y2="24"/>
+    <line x1="42" y1="56" x2="76" y2="56"/>
+  </g>
+  <!-- 주둥이 -->
+  <path d="M-88,-116 L-114,-104 L-96,-96" fill="none" stroke="#7d96a4" stroke-width="5" stroke-linejoin="round"/>
+  <ellipse cy="-116" rx="88" ry="14" fill="none" stroke="#7d96a4" stroke-width="5"/>
+  <!-- 기포 -->
+  <g fill="#ffffff" opacity="0.8">
+    <circle class="ihf-bub" cx="-30" cy="90" r="7"/>
+    <circle class="ihf-bub" cx="6" cy="100" r="5" style="animation-delay:1.2s"/>
+    <circle class="ihf-bub" cx="34" cy="86" r="6" style="animation-delay:2.3s"/>
+  </g>
+  <path class="ihf-shine" d="M-64,-96 L-58,100" stroke="#ffffff" stroke-width="11" stroke-linecap="round"/>
+</g>
+<!-- 삼각플라스크 -->
+<g transform="translate(340,364)">
+  <path d="M-26,-160 L26,-160 L26,-72 L104,110 C110,126 100,142 82,142 L-82,142 C-100,142 -110,126 -104,110 L-26,-72 Z"
+        fill="url(#ihfGlass)" stroke="#7d96a4" stroke-width="5"/>
+  <!-- 액체 -->
+  <path d="M-62,26 L62,26 L104,110 C110,126 100,142 82,142 L-82,142 C-100,142 -110,126 -104,110 Z" fill="url(#ihfRed)" opacity="0.88"/>
+  <ellipse cy="26" rx="62" ry="10" fill="#f8a898" opacity="0.9"/>
+  <!-- 목 테 -->
+  <rect x="-30" y="-166" width="60" height="14" rx="6" fill="#c4d4dc" stroke="#7d96a4" stroke-width="4"/>
+  <!-- 눈금 -->
+  <g stroke="#5f7f92" stroke-width="3">
+    <line x1="52" y1="66" x2="78" y2="66"/><line x1="62" y1="96" x2="86" y2="96"/>
+  </g>
+  <!-- 기포 -->
+  <g fill="#ffffff" opacity="0.75">
+    <circle class="ihf-bub" cx="-20" cy="120" r="6" style="animation-delay:.6s"/>
+    <circle class="ihf-bub" cx="24" cy="128" r="5" style="animation-delay:1.9s"/>
+  </g>
+  <path class="ihf-shine" d="M-16,-150 L-16,-70 L-76,90" stroke="#ffffff" stroke-width="9" stroke-linecap="round" fill="none"/>
+</g>
+<!-- 스포이드 -->
+<g transform="translate(506,190) rotate(20)">
+  <rect x="-8" y="-40" width="16" height="130" rx="6" fill="url(#ihfGlass)" stroke="#7d96a4" stroke-width="3.4"/>
+  <path d="M-8,90 L8,90 L0,120 Z" fill="url(#ihfGlass)" stroke="#7d96a4" stroke-width="3"/>
+  <path d="M-14,-64 C-14,-84 14,-84 14,-64 C14,-46 -14,-46 -14,-64 Z" fill="#e6403a" stroke="#8c1f18" stroke-width="3.4"/>
+  <path d="M-4,20 L4,20 L4,86 L0,100 L-4,86 Z" fill="url(#ihfGreen)"/>
+</g>
+<!-- 액체 방울 -->
+<g fill="#3f9f6c">
+  <path d="M486,286 q9,14 0,20 q-9,-6 0,-20 Z"/>
+</g>
+</svg>
+</body>
+</html>

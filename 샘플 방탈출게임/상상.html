@@ -1,0 +1,217 @@
+<!-- ===================================================
+     [독립 컴포넌트 소스] 로봇 상상 (Sangsang / AMI) - 구조 최종 수정본
+     =================================================== -->
+<div class="sangsang-robot-component" style="display: inline-block; overflow: visible !important;">
+
+    <style>
+        .ssr-stage {
+            position: relative;
+            width: 260px;
+            height: 320px;
+            margin: 0 auto;
+            animation: ssr-float 4s ease-in-out infinite;
+            overflow: visible !important; /* 귀와 팔이 잘리는 것을 방지 */
+        }
+
+        @keyframes ssr-float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+        }
+
+        /* 머리 */
+        .ssr-head {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 125px;
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            border-radius: 40px 40px 35px 35px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), inset -4px -4px 10px rgba(0,0,0,0.1);
+            border: 4px solid #475569;
+            z-index: 10;
+        }
+
+        /* 액정 화면 */
+        .ssr-visor {
+            position: absolute;
+            top: 25px;
+            left: 10px;
+            right: 10px;
+            height: 65px;
+            background-color: #1e293b;
+            border-radius: 20px;
+            border: 3px solid #64748b;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 15px;
+        }
+
+        /* 눈 (기본) */
+        .ssr-eye {
+            width: 22px;
+            height: 22px;
+            background-color: #00f2fe;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #00f2fe;
+            animation: ssr-blink 5s infinite;
+        }
+
+        @keyframes ssr-blink {
+            0%, 96%, 100% { transform: scaleY(1); }
+            98% { transform: scaleY(0.05); }
+        }
+
+        /* 양쪽 귀 (머리 뒤쪽 z-index 설정) */
+        .ssr-ear-l, .ssr-ear-r {
+            position: absolute;
+            top: 80px;
+            width: 12px;
+            height: 30px;
+            background-color: #64748b;
+            border: 3px solid #475569;
+            z-index: 5;
+        }
+        .ssr-ear-l { left: 42px; border-radius: 5px 0 0 5px; }
+        .ssr-ear-r { right: 42px; border-radius: 0 5px 5px 0; }
+
+        /* 안테나 */
+        .ssr-antenna {
+            position: absolute;
+            top: 0px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 45px;
+            background-color: #94a3b8;
+            border: 3px solid #475569;
+            border-radius: 4px;
+            z-index: 5;
+        }
+        .ssr-antenna-tip {
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background-color: #38bdf8;
+            border: 3px solid #475569;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #38bdf8;
+            z-index: 5;
+        }
+
+        /* 목 & 몸통 */
+        .ssr-neck {
+            position: absolute;
+            top: 155px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 25px;
+            background: linear-gradient(90deg, #94a3b8, #cbd5e1);
+            border: 3.5px solid #475569;
+            border-radius: 4px;
+            z-index: 5;
+        }
+        .ssr-body {
+            position: absolute;
+            top: 175px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 110px;
+            height: 90px;
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+            border: 4px solid #475569;
+            border-radius: 25px 25px 20px 20px;
+            z-index: 8;
+        }
+        .ssr-chest-core {
+            position: absolute;
+            top: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 38px;
+            height: 38px;
+            background-color: #38bdf8;
+            border-radius: 50%;
+            border: 3px solid #475569;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+        }
+
+        /* 어깨 조인트 & 팔 애니메이션 */
+        .ssr-shoulder-l, .ssr-shoulder-r {
+            position: absolute;
+            top: 190px;
+            width: 18px;
+            height: 18px;
+            background-color: #64748b;
+            border: 3px solid #475569;
+            border-radius: 50%;
+            z-index: 9;
+        }
+        .ssr-shoulder-l { left: 62px; }
+        .ssr-shoulder-r { right: 62px; }
+
+        .ssr-arm-l, .ssr-arm-r {
+            position: absolute;
+            top: 200px;
+            width: 14px;
+            height: 45px;
+            background-color: #cbd5e1;
+            border: 3.5px solid #475569;
+            border-radius: 7px;
+            z-index: 6;
+            transform-origin: top center;
+        }
+        .ssr-arm-l {
+            left: 52px;
+            animation: ssr-waveLeft 3s ease-in-out infinite alternate;
+        }
+        .ssr-arm-r {
+            right: 52px;
+            animation: ssr-waveRight 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes ssr-waveLeft { 0% { transform: rotate(15deg); } 100% { transform: rotate(30deg); } }
+        @keyframes ssr-waveRight { 0% { transform: rotate(-15deg); } 100% { transform: rotate(-30deg); } }
+
+        /* 그림자 (stage 내부 바닥 기준선) */
+        .ssr-shadow {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 12px;
+            background-color: rgba(15, 23, 42, 0.4);
+            border-radius: 50%;
+            z-index: 1;
+        }
+    </style>
+
+    <div class="ssr-stage">
+        <div class="ssr-antenna"></div>
+        <div class="ssr-antenna-tip"></div>
+        <div class="ssr-ear-l"></div>
+        <div class="ssr-ear-r"></div>
+        <div class="ssr-head">
+            <div class="ssr-visor">
+                <div class="ssr-eye"></div>
+                <div class="ssr-eye"></div>
+            </div>
+        </div>
+        <div class="ssr-neck"></div>
+        <div class="ssr-body">
+            <div class="ssr-chest-core"></div>
+        </div>
+        <div class="ssr-shoulder-l"></div>
+        <div class="ssr-shoulder-r"></div>
+        <div class="ssr-arm-l"></div>
+        <div class="ssr-arm-r"></div>
+        <div class="ssr-shadow"></div>
+    </div>
+</div>

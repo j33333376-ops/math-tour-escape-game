@@ -1,0 +1,110 @@
+<!-- 원본 크기: 520x562 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인천도호부청사 전통 창살</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .chs-svg { display:block; width:100%; height:auto; }
+</style>
+</head>
+<body>
+<svg class="chs-svg" viewBox="0 0 520 562" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="전통 문살 창">
+<title>전통 문살 창</title>
+<desc>한지를 바른 나무 창틀에 빗살무늬가 반복되는 전통 문살 창 한 짝.</desc>
+<defs>
+  <linearGradient id="chsWood" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#96551f"/>
+    <stop offset="0.5" stop-color="#7a3b18"/>
+    <stop offset="1" stop-color="#5a2810"/>
+  </linearGradient>
+  <linearGradient id="chsPaper" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f7efd9"/>
+    <stop offset="1" stop-color="#ecdfbc"/>
+  </linearGradient>
+  <pattern id="chsBitsal" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(0)">
+    <rect width="26" height="26" fill="url(#chsPaper)"/>
+    <path d="M0,26 L26,0 M-6.5,6.5 L6.5,-6.5 M19.5,32.5 L32.5,19.5" stroke="#a8763c" stroke-width="1.3" opacity="0.55" fill="none"/>
+    <path d="M0,0 L26,26 M-6.5,19.5 L6.5,32.5 M19.5,-6.5 L32.5,6.5" stroke="#a8763c" stroke-width="1.3" opacity="0.55" fill="none"/>
+  </pattern>
+  <radialGradient id="chsGlow" cx="0.5" cy="0.4" r="0.75">
+    <stop offset="0" stop-color="#fffaf0" stop-opacity="0.5"/>
+    <stop offset="1" stop-color="#fffaf0" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+
+<rect x="0" y="0" width="520" height="562" fill="none"/>
+
+<!-- 외곽 나무 창틀 -->
+<rect x="0" y="0" width="520" height="562" rx="4" fill="url(#chsWood)" stroke="#402008" stroke-width="2"/>
+<!-- 나무결 세로줄 -->
+<g stroke="#3f2007" stroke-width="1" opacity="0.25">
+  <line x1="8" y1="4" x2="8" y2="558"/>
+  <line x1="512" y1="4" x2="512" y2="558"/>
+  <line x1="4" y1="8" x2="516" y2="8"/>
+  <line x1="4" y1="554" x2="516" y2="554"/>
+</g>
+
+<!-- 창호지 은은한 빛 -->
+<rect x="26" y="26" width="468" height="510" fill="url(#chsGlow)"/>
+
+<!-- 3x4 문살 칸 (빗살 테셀레이션) -->
+<g stroke="#402008" stroke-width="1">
+  <rect x="26"  y="26"  width="147" height="117" fill="url(#chsBitsal)"/>
+  <rect x="187" y="26"  width="147" height="117" fill="url(#chsBitsal)"/>
+  <rect x="348" y="26"  width="147" height="117" fill="url(#chsBitsal)"/>
+
+  <rect x="26"  y="157" width="147" height="117" fill="url(#chsBitsal)"/>
+  <rect x="187" y="157" width="147" height="117" fill="url(#chsBitsal)"/>
+  <rect x="348" y="157" width="147" height="117" fill="url(#chsBitsal)"/>
+
+  <rect x="26"  y="288" width="147" height="117" fill="url(#chsBitsal)"/>
+  <rect x="187" y="288" width="147" height="117" fill="url(#chsBitsal)"/>
+  <rect x="348" y="288" width="147" height="117" fill="url(#chsBitsal)"/>
+
+  <rect x="26"  y="419" width="147" height="117" fill="url(#chsBitsal)"/>
+  <rect x="187" y="419" width="147" height="117" fill="url(#chsBitsal)"/>
+  <rect x="348" y="419" width="147" height="117" fill="url(#chsBitsal)"/>
+</g>
+
+<!-- 문살 살대 (세로) -->
+<g fill="url(#chsWood)" stroke="#402008" stroke-width="1">
+  <rect x="173" y="26" width="14" height="510"/>
+  <rect x="334" y="26" width="14" height="510"/>
+</g>
+<!-- 문살 살대 (가로) -->
+<g fill="url(#chsWood)" stroke="#402008" stroke-width="1">
+  <rect x="26" y="143" width="468" height="14"/>
+  <rect x="26" y="274" width="468" height="14"/>
+  <rect x="26" y="405" width="468" height="14"/>
+</g>
+
+<!-- 살대 위 결 하이라이트 -->
+<g stroke="#c98a4a" stroke-width="0.8" opacity="0.5">
+  <line x1="180" y1="26" x2="180" y2="536"/>
+  <line x1="341" y1="26" x2="341" y2="536"/>
+  <line x1="26" y1="150" x2="494" y2="150"/>
+  <line x1="26" y1="281" x2="494" y2="281"/>
+  <line x1="26" y1="412" x2="494" y2="412"/>
+</g>
+
+<!-- 모서리 경첩 장식 -->
+<g fill="#2a1608" stroke="#0f0800" stroke-width="0.6">
+  <rect x="4" y="4" width="20" height="8" rx="1"/>
+  <rect x="4" y="550" width="20" height="8" rx="1"/>
+  <rect x="496" y="4" width="20" height="8" rx="1"/>
+  <rect x="496" y="550" width="20" height="8" rx="1"/>
+</g>
+
+<!-- 문고리 (손잡이) -->
+<g transform="translate(334,281)">
+  <circle r="16" fill="none" stroke="#3a3530" stroke-width="5"/>
+  <circle r="16" fill="none" stroke="#6a6258" stroke-width="1.5"/>
+  <circle cx="0" cy="18" r="4" fill="#3a3530"/>
+</g>
+
+</svg>
+</body>
+</html>

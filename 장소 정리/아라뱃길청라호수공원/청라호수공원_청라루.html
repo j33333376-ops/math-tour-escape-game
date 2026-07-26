@@ -1,0 +1,136 @@
+<!-- 원본 크기: 640x580 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>청라호수공원 청라루</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  *,*::before,*::after{ box-sizing:border-box; }
+  .cqr-wrap{ width:100%; max-width:640px; margin:0 auto; }
+  .cqr-svg{ display:block; width:100%; height:auto; }
+
+  .cqr-lantern{ animation: cqr-glow 3.2s ease-in-out infinite; }
+  @keyframes cqr-glow{ 0%,100%{ opacity:0.75; } 50%{ opacity:1; } }
+
+  .cqr-refl{ animation: cqr-shimmer 5s ease-in-out infinite; }
+  @keyframes cqr-shimmer{ 0%,100%{ opacity:0.35; } 50%{ opacity:0.55; } }
+
+  .cqr-ripple{ animation: cqr-rmove 4s ease-in-out infinite; }
+  @keyframes cqr-rmove{ 0%,100%{ opacity:0.2; } 50%{ opacity:0.45; } }
+</style>
+</head>
+<body>
+<div class="cqr-wrap">
+<svg class="cqr-svg" viewBox="0 0 640 580" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="청라호수공원 청라루와 수면 반영">
+<title>청라루</title>
+<defs>
+  <linearGradient id="cqr-roof" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#3c7d63"/>
+    <stop offset="1" stop-color="#245943"/>
+  </linearGradient>
+  <linearGradient id="cqr-pillar" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#8a2620"/>
+    <stop offset="0.5" stop-color="#c0463a"/>
+    <stop offset="1" stop-color="#7c231d"/>
+  </linearGradient>
+  <linearGradient id="cqr-water" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#6fb0cf"/>
+    <stop offset="1" stop-color="#255f80"/>
+  </linearGradient>
+  <pattern id="cqr-dc" width="36" height="20" patternUnits="userSpaceOnUse">
+    <rect width="36" height="20" fill="#f0e6c8"/>
+    <rect x="0"  width="9" height="20" fill="#2e7d5b"/>
+    <rect x="9"  width="9" height="20" fill="#c0392b"/>
+    <rect x="18" width="9" height="20" fill="#2a5c8a"/>
+    <rect x="27" width="9" height="20" fill="#d4a017"/>
+  </pattern>
+  <filter id="cqr-wave" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.012 0.09" numOctaves="2" result="n" seed="4"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="10" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+
+  <!-- 정자 원본 그룹 (반사에 재사용) -->
+  <g id="cqr-main">
+    <!-- 기단 -->
+    <polygon points="120,320 520,320 500,296 140,296" fill="#c9c2b0" stroke="#a89f88" stroke-width="1.5"/>
+    <rect x="150" y="280" width="340" height="16" fill="#8a5a34" stroke="#6a4224" stroke-width="1"/>
+
+    <!-- 기둥 -->
+    <g fill="url(#cqr-pillar)">
+      <rect x="150" y="200" width="14" height="80"/>
+      <rect x="218" y="200" width="14" height="80"/>
+      <rect x="286" y="200" width="14" height="80"/>
+      <rect x="354" y="200" width="14" height="80"/>
+      <rect x="422" y="200" width="14" height="80"/>
+      <rect x="490" y="200" width="14" height="80"/>
+    </g>
+
+    <!-- 난간 -->
+    <rect x="150" y="250" width="354" height="30" fill="#e8dfc4" stroke="#b8a97c" stroke-width="1.5"/>
+    <g stroke="#a83a2e" stroke-width="2">
+      <line x1="164" y1="252" x2="164" y2="278"/><line x1="192" y1="252" x2="192" y2="278"/><line x1="220" y1="252" x2="220" y2="278"/>
+      <line x1="248" y1="252" x2="248" y2="278"/><line x1="276" y1="252" x2="276" y2="278"/><line x1="304" y1="252" x2="304" y2="278"/>
+      <line x1="332" y1="252" x2="332" y2="278"/><line x1="360" y1="252" x2="360" y2="278"/><line x1="388" y1="252" x2="388" y2="278"/>
+      <line x1="416" y1="252" x2="416" y2="278"/><line x1="444" y1="252" x2="444" y2="278"/><line x1="472" y1="252" x2="472" y2="278"/>
+      <line x1="496" y1="252" x2="496" y2="278"/>
+    </g>
+    <line x1="150" y1="264" x2="504" y2="264" stroke="#a83a2e" stroke-width="2"/>
+
+    <!-- 현판 -->
+    <rect x="278" y="182" width="84" height="26" rx="2" fill="#3c2a1a" stroke="#c9a24a" stroke-width="1.5"/>
+    <text x="320" y="201" text-anchor="middle" font-family="serif" font-size="15" fill="#e8c968" font-weight="bold">靑蘿樓</text>
+
+    <!-- 청사초롱 -->
+    <g class="cqr-lantern">
+      <line x1="165" y1="212" x2="165" y2="228" stroke="#5a3a1a" stroke-width="2"/>
+      <ellipse cx="165" cy="238" rx="10" ry="13" fill="#a83a2e" stroke="#c9a24a" stroke-width="1.3"/>
+    </g>
+    <g class="cqr-lantern" style="animation-delay:1.2s">
+      <line x1="475" y1="212" x2="475" y2="228" stroke="#5a3a1a" stroke-width="2"/>
+      <ellipse cx="475" cy="238" rx="10" ry="13" fill="#3a6ea8" stroke="#c9a24a" stroke-width="1.3"/>
+    </g>
+
+    <!-- 단청 띠 -->
+    <rect x="170" y="178" width="300" height="18" fill="url(#cqr-dc)"/>
+
+    <!-- 팔작지붕 -->
+    <path d="M80,170 Q136,214 190,204 L450,204 Q504,214 560,170
+             L544,120 Q494,166 442,157 L198,157 Q146,166 96,120 Z"
+          fill="url(#cqr-roof)" stroke="#1c4433" stroke-width="1.5"/>
+    <g stroke="#1c4433" stroke-width="1" opacity="0.45" fill="none">
+      <path d="M112,142 Q160,180 208,171"/>
+      <path d="M528,142 Q480,180 432,171"/>
+    </g>
+    <rect x="170" y="116" width="300" height="10" fill="#16382a"/>
+    <path d="M80,170 Q68,150 86,136 Q82,156 94,166 Z" fill="#16382a"/>
+    <path d="M560,170 Q572,150 554,136 Q558,156 546,166 Z" fill="#16382a"/>
+    <path d="M170,116 Q160,98 176,88 Q174,104 184,114 Z" fill="#16382a"/>
+    <path d="M470,116 Q480,98 464,88 Q466,104 456,114 Z" fill="#16382a"/>
+  </g>
+</defs>
+
+<!-- 수면 -->
+<rect x="0" y="320" width="640" height="260" fill="url(#cqr-water)"/>
+
+<!-- 반사 (상하 대칭, 물결 왜곡) -->
+<use class="cqr-refl" href="#cqr-main" transform="matrix(1,0,0,-1,0,640)" filter="url(#cqr-wave)"/>
+
+<!-- 수면 잔물결 -->
+<g class="cqr-ripple" stroke="#eaf6fb" stroke-width="1.4" fill="none">
+  <path d="M20,360 Q60,355 100,360 T180,360 T260,360 T340,360 T420,360 T500,360 T580,360"/>
+  <path d="M20,420 Q60,414 100,420 T180,420 T260,420 T340,420 T420,420 T500,420 T580,420"/>
+  <path d="M20,480 Q60,474 100,480 T180,480 T260,480 T340,480 T420,480 T500,480 T580,480"/>
+  <path d="M20,540 Q60,534 100,540 T180,540 T260,540 T340,540 T420,540 T500,540 T580,540"/>
+</g>
+
+<!-- 실제 정자 (원본) -->
+<use href="#cqr-main"/>
+
+<!-- 수변 경계선 -->
+<line x1="0" y1="320" x2="640" y2="320" stroke="#ffffff" stroke-width="1.5" opacity="0.35"/>
+</svg>
+</div>
+</body>
+</html>

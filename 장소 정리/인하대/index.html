@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>인하대학교 캠퍼스 MATHTOUR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&family=Nanum+Myeongjo:wght@700;800&family=Noto+Sans+KR:wght@700;900&display=swap');
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Jua', 'Noto Sans KR', sans-serif;
+            background: #d8dce6;
+            background-image: radial-gradient(circle at 50% 38%, #fbfcff 0%, #d8dce6 72%, #d8dce6 100%);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .map-container {
+            width: 95vw; max-width: 1400px; max-height: 90vh;
+            aspect-ratio: 16 / 9;
+            background-color: #f4f6fa;
+            border-radius: 26px;
+            box-shadow: 0 14px 34px rgba(20,20,30,0.30), inset 0 0 0 6px rgba(255,255,255,0.85);
+            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+        svg { width: 100%; height: 100%; display: block; }
+
+        .point-scale {
+            transition: transform 0.25s ease;
+            transform-box: fill-box; transform-origin: center;
+        }
+        .point-link { outline: none; cursor: pointer; text-decoration: none; }
+        .point-link:hover .point-scale { transform: scale(1.1); }
+
+        .tile-frame { position: relative; overflow: hidden; pointer-events: none; background: transparent; }
+        .tile-iframe { position: absolute; border: 0; display: block; background: transparent; transform-origin: top left; pointer-events: none; }
+        .tile-badge {
+            position: absolute; top: 2px; left: 2px;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #23458c; border: 2px solid #ffffff; color: #ffffff;
+            font-family: 'Black Han Sans', 'Jua', sans-serif; font-size: 12px; line-height: 1;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2; box-shadow: 0 1px 3px rgba(0,0,0,0.45); pointer-events: none;
+        }
+
+        .map-title {
+            font-family: 'Black Han Sans','Jua',sans-serif; font-size: 46px;
+            fill: url(#titleGrad); stroke: #0e1c40; stroke-width: 7px;
+            paint-order: stroke; stroke-linejoin: round; filter: url(#titleShadow);
+        }
+        .label-wrap {
+            width: 200px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            pointer-events: none;
+        }
+        .place-tag {
+            background: rgba(252,253,255,0.94);
+            color: #22345c;
+            font-family: 'Jua', 'Noto Sans KR', sans-serif;
+            font-size: 12px; font-weight: 700; line-height: 1.1;
+            padding: 2px 8px; border-radius: 9px; white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            border: 1px solid #a4b6d4;
+        }
+        .no-select { user-select: none; }
+    </style>
+</head>
+<body>
+    <div class="map-container">
+        <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <defs>
+                <radialGradient id="bgGrad" cx="50%" cy="42%" r="75%">
+                    <stop offset="0%" stop-color="#fbfcff"/>
+                    <stop offset="60%" stop-color="#e6eaf4"/>
+                    <stop offset="100%" stop-color="#c8d0e2"/>
+                </radialGradient>
+                <pattern id="pt" width="36" height="18" patternUnits="userSpaceOnUse">
+    <rect x="0" y="0" width="17" height="8" rx="1.5" fill="#d0d8e8" opacity="0.6"/>
+    <rect x="18" y="9" width="17" height="8" rx="1.5" fill="#d0d8e8" opacity="0.45"/>
+  </pattern>
+                <linearGradient id="titleGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="45%" stop-color="#8fb0e0"/>
+                    <stop offset="100%" stop-color="#1f3a72"/>
+                </linearGradient>
+                <filter id="titleShadow" x="-20%" y="-20%" width="140%" height="160%">
+                    <feDropShadow dx="0" dy="4" stdDeviation="2" flood-color="#0e1c40" flood-opacity="0.45"/>
+                </filter>
+            </defs>
+
+            <rect x="0" y="0" width="800" height="450" fill="url(#bgGrad)"/>
+            <rect x="0" y="0" width="800" height="450" fill="url(#pt)"/>
+
+            <!-- 학사모 -->
+              <g transform="translate(400,54)">
+                <polygon points="0,-12 34,-2 0,8 -34,-2" fill="#243a66"/>
+                <path d="M-14,2 l0,12 q14,8 28,0 l0,-12" fill="none" stroke="#243a66" stroke-width="3"/>
+                <line x1="30" y1="-3" x2="34" y2="14" stroke="#c9a227" stroke-width="2.4"/>
+                <circle cx="34" cy="16" r="3.4" fill="#c9a227"/>
+              </g>
+              <!-- 시계탑 -->
+              <g transform="translate(52,152)" opacity="0.8">
+                <rect x="-11" y="-10" width="22" height="46" fill="#c9c2b0" stroke="#8a8474" stroke-width="1.4"/>
+                <polygon points="-14,-10 14,-10 0,-28" fill="#3e4854"/>
+                <circle cy="2" r="7" fill="#f6f2e6" stroke="#8a8474" stroke-width="1.4"/>
+                <line x1="0" y1="2" x2="0" y2="-3" stroke="#3e4854" stroke-width="1.4"/>
+                <line x1="0" y1="2" x2="4" y2="4" stroke="#3e4854" stroke-width="1.4"/>
+              </g>
+              <!-- 인경호 -->
+              <g transform="translate(400,410)">
+                <ellipse rx="66" ry="18" fill="#8fb4d8" opacity="0.75"/>
+                <ellipse rx="66" ry="18" fill="none" stroke="#5f8ab4" stroke-width="1.6"/>
+                <path d="M0,-6 l0,-14" stroke="#ffffff" stroke-width="2.4" opacity="0.9"/>
+                <path d="M-8,-8 q8,-14 16,0" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.8"/>
+              </g>
+              <!-- 책 -->
+              <g transform="translate(750,320)" opacity="0.85">
+                <path d="M-18,-2 q18,-10 18,0 q0,-10 18,0 l0,14 q-18,-8 -18,0 q0,-8 -18,0 Z" fill="#f6f6f2" stroke="#5f7fb4" stroke-width="1.6"/>
+              </g>
+
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#243a66" stroke-width="24" />
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#5f7fb4" stroke-width="16" />
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-dasharray="14 12" opacity="0.9" />
+
+            <text x="400" y="225" dy="0.35em" text-anchor="middle" class="map-title no-select">인하대학교 캠퍼스 MATHTOUR</text>
+
+            <a href="A01.html" class="point-link" aria-label="수준원점">
+                <g transform="translate(94, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-42.0" width="140.0" height="84.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:84.0px;">
+                                <iframe class="tile-iframe" src="인하대_수준원점.html" scrolling="no" style="width:1200px;height:720px;left:0px;top:0px;transform:scale(0.11667);"></iframe>
+                                <div class="tile-badge">A</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-42.0" width="140.0" height="84.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="B01.html" class="point-link" aria-label="인경호">
+                <g transform="translate(400, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-46.66" width="140.0" height="93.33" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:93.33px;">
+                                <iframe class="tile-iframe" src="인하대_인경호.html" scrolling="no" style="width:900px;height:600px;left:0px;top:0px;transform:scale(0.15556);"></iframe>
+                                <div class="tile-badge">B</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-46.66" width="140.0" height="93.33" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="C01.html" class="point-link" aria-label="궁합나무">
+                <g transform="translate(706, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-42.0" width="140.0" height="84.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:84.0px;">
+                                <iframe class="tile-iframe" src="인하대_궁합나무.html" scrolling="no" style="width:1200px;height:720px;left:0px;top:0px;transform:scale(0.11667);"></iframe>
+                                <div class="tile-badge">C</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-42.0" width="140.0" height="84.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="D01.html" class="point-link" aria-label="비룡탑">
+                <g transform="translate(706, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-32.5" y="-65.0" width="65.0" height="130.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:65.0px;height:130.0px;">
+                                <iframe class="tile-iframe" src="인하대_비룡탑.html" scrolling="no" style="width:500px;height:1000px;left:0px;top:0px;transform:scale(0.13);"></iframe>
+                                <div class="tile-badge">D</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-32.5" y="-65.0" width="65.0" height="130.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="E01.html" class="point-link" aria-label="해오름동산">
+                <g transform="translate(400, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-42.0" width="140.0" height="84.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:84.0px;">
+                                <iframe class="tile-iframe" src="인하대_해오름동산.html" scrolling="no" style="width:1200px;height:720px;left:0px;top:0px;transform:scale(0.11667);"></iframe>
+                                <div class="tile-badge">E</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-42.0" width="140.0" height="84.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="F01.html" class="point-link" aria-label="우남호">
+                <g transform="translate(94, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-42.0" width="140.0" height="84.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:84.0px;">
+                                <iframe class="tile-iframe" src="인하대_우남호.html" scrolling="no" style="width:1200px;height:720px;left:0px;top:0px;transform:scale(0.11667);"></iframe>
+                                <div class="tile-badge">F</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-42.0" width="140.0" height="84.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+
+            <foreignObject x="-6" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">A. 수준원점</span></div>
+            </foreignObject>
+            <foreignObject x="300" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">B. 인경호</span></div>
+            </foreignObject>
+            <foreignObject x="606" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">C. 궁합나무</span></div>
+            </foreignObject>
+            <foreignObject x="606" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">D. 비룡탑</span></div>
+            </foreignObject>
+            <foreignObject x="300" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">E. 해오름동산</span></div>
+            </foreignObject>
+            <foreignObject x="-6" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">F. 우남호</span></div>
+            </foreignObject>
+
+        </svg>
+    </div>
+</body>
+</html>

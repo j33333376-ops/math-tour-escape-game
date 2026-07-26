@@ -1,0 +1,167 @@
+<!-- 원본 크기: 900x420 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>콩돌해안</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .kdb-svg { display:block; width:100%; height:auto; }
+  .kdb-wave { animation: kdb-drift 6.5s ease-in-out infinite; transform-origin: center; }
+  @keyframes kdb-drift {
+    0%,100% { transform: translateX(0); opacity:0.6; }
+    50% { transform: translateX(10px); opacity:0.9; }
+  }
+  .kdb-glint { animation: kdb-glint 4.5s ease-in-out infinite; }
+  @keyframes kdb-glint {
+    0%,100% { opacity: 0.35; }
+    50% { opacity: 0.95; }
+  }
+</style>
+</head>
+<body>
+<svg class="kdb-svg" viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="백령도 콩돌해안 알록달록 둥근 콩돌이 깔린 해변">
+<title>콩돌해안</title>
+<desc>인천 옹진군 백령도 콩돌해안. 해안 절벽 아래 알록달록한 콩만 한 둥근 자갈이 촘촘히 깔린 해변</desc>
+<defs>
+  <linearGradient id="kdbSky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#bfe2f0"/>
+    <stop offset="0.65" stop-color="#e3f2f6"/>
+    <stop offset="1" stop-color="#f4f1e4"/>
+  </linearGradient>
+  <linearGradient id="kdbSea" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#37718f"/>
+    <stop offset="0.5" stop-color="#5b9ab4"/>
+    <stop offset="1" stop-color="#9fc9d6"/>
+  </linearGradient>
+  <linearGradient id="kdbCliff" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#9a8f7e"/>
+    <stop offset="0.5" stop-color="#84796a"/>
+    <stop offset="1" stop-color="#665d51"/>
+  </linearGradient>
+  <linearGradient id="kdbBeach" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#c3b7a3"/>
+    <stop offset="1" stop-color="#a89b86"/>
+  </linearGradient>
+  <pattern id="kdbPebbles" x="0" y="0" width="34" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(4)">
+    <circle cx="4" cy="6" r="5" fill="#a89482"/>
+    <circle cx="16" cy="4" r="4" fill="#d9b7a0"/>
+    <circle cx="27" cy="9" r="5.5" fill="#8f8a76"/>
+    <circle cx="9" cy="16" r="4.5" fill="#cbb896"/>
+    <circle cx="22" cy="18" r="5" fill="#9fae8c"/>
+    <circle cx="31" cy="22" r="4" fill="#e6dcc4"/>
+    <circle cx="1" cy="22" r="4.2" fill="#78685a"/>
+    <circle cx="14" cy="24" r="3.6" fill="#c98f7c"/>
+  </pattern>
+  <pattern id="kdbPebbleFine" x="0" y="0" width="20" height="16" patternUnits="userSpaceOnUse">
+    <circle cx="3" cy="4" r="3" fill="#b3a691"/>
+    <circle cx="12" cy="3" r="2.4" fill="#cdbca4"/>
+    <circle cx="17" cy="10" r="3" fill="#94897a"/>
+    <circle cx="7" cy="12" r="2.6" fill="#c2a892"/>
+  </pattern>
+</defs>
+
+<!-- 하늘 -->
+<rect x="0" y="0" width="900" height="210" fill="url(#kdbSky)"/>
+<g fill="#ffffff" opacity="0.8">
+  <ellipse cx="200" cy="46" rx="54" ry="18"/>
+  <ellipse cx="248" cy="40" rx="34" ry="21"/>
+  <ellipse cx="620" cy="60" rx="44" ry="15"/>
+  <ellipse cx="660" cy="54" rx="30" ry="18"/>
+</g>
+<g fill="none" stroke="#6b7a82" stroke-width="2" stroke-linecap="round" opacity="0.65">
+  <path d="M330,72 q9,-8 18,0 q9,-8 18,0"/>
+  <path d="M430,52 q7,-6 14,0 q7,-6 14,0"/>
+</g>
+
+<!-- 원경 해안 절벽 (좌우) -->
+<path d="M0,206 L0,96 L36,74 L74,90 L104,64 L142,86 L176,78 L206,104 L232,96 L258,124 L286,142 L300,206 Z" fill="url(#kdbCliff)"/>
+<g fill="#514a40" opacity="0.45">
+  <polygon points="104,64 124,110 84,110"/>
+  <polygon points="36,74 54,116 18,116"/>
+</g>
+<g stroke="#5b5347" stroke-width="1.4" opacity="0.55" fill="none">
+  <path d="M20,118 L120,124"/>
+  <path d="M14,142 L150,150"/>
+  <path d="M30,166 L180,172"/>
+  <path d="M60,190 L230,194"/>
+</g>
+<path d="M900,206 L900,110 L864,86 L826,102 L790,80 L756,100 L726,92 L698,116 L668,134 L648,206 Z" fill="url(#kdbCliff)"/>
+<g stroke="#5b5347" stroke-width="1.4" opacity="0.55" fill="none">
+  <path d="M880,130 L760,138"/>
+  <path d="M888,156 L722,164"/>
+  <path d="M870,182 L680,188"/>
+</g>
+<g fill="#6f7d68" opacity="0.75">
+  <ellipse cx="104" cy="60" rx="16" ry="7"/>
+  <ellipse cx="176" cy="74" rx="13" ry="6"/>
+  <ellipse cx="790" cy="76" rx="15" ry="7"/>
+  <ellipse cx="864" cy="82" rx="12" ry="6"/>
+</g>
+
+<!-- 바다 -->
+<path d="M280,196 C420,190 520,200 640,196 L900,200 L900,268 L280,268 Z" fill="url(#kdbSea)"/>
+<rect x="0" y="196" width="320" height="72" fill="url(#kdbSea)" opacity="0.9"/>
+<g fill="none" stroke="#ffffff" stroke-width="1.6" opacity="0.4" stroke-linecap="round">
+  <path d="M60,212 C130,208 190,216 260,212"/>
+  <path d="M340,222 C410,218 470,226 540,222"/>
+  <path d="M620,208 C690,204 750,212 820,208"/>
+  <path d="M160,244 C230,240 290,248 360,244"/>
+  <path d="M560,250 C630,246 690,254 760,250"/>
+</g>
+
+<!-- 파도 -->
+<g class="kdb-wave" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.85" stroke-linecap="round">
+  <path d="M0,266 C120,258 220,274 340,266 C460,258 560,274 680,266 C790,259 850,270 900,266"/>
+</g>
+<path d="M0,272 C150,266 300,278 450,272 C600,266 750,278 900,272 L900,296 L0,296 Z" fill="#dff0f3" opacity="0.8"/>
+
+<!-- 콩돌 해변 -->
+<path d="M0,290 C160,282 320,296 460,288 C600,280 760,294 900,286 L900,420 L0,420 Z" fill="url(#kdbBeach)"/>
+<path d="M0,290 C160,282 320,296 460,288 C600,280 760,294 900,286 L900,344 C740,352 600,338 450,346 C300,354 150,342 0,350 Z" fill="url(#kdbPebbleFine)" opacity="0.9"/>
+<path d="M0,342 C150,334 300,348 450,340 C600,332 750,346 900,338 L900,420 L0,420 Z" fill="url(#kdbPebbles)"/>
+
+<!-- 젖은 콩돌 띠 (파도 자국) -->
+<path d="M0,292 C160,284 320,298 460,290 C600,282 760,296 900,288 L900,306 C760,314 600,300 460,308 C320,316 160,302 0,310 Z" fill="#8a7f6d" opacity="0.35"/>
+
+<!-- 강조용 큰 콩돌 -->
+<g stroke="#ffffff" stroke-width="0.5" opacity="0.95">
+  <ellipse cx="120" cy="368" rx="11" ry="9" fill="#d97a5c"/>
+  <ellipse cx="182" cy="392" rx="9" ry="7.5" fill="#8fae5c"/>
+  <ellipse cx="252" cy="360" rx="12" ry="9.5" fill="#e8c85a"/>
+  <ellipse cx="322" cy="398" rx="10" ry="8" fill="#6a7ba0"/>
+  <ellipse cx="398" cy="366" rx="11" ry="9" fill="#c96a86"/>
+  <ellipse cx="466" cy="402" rx="9" ry="7" fill="#8a8272"/>
+  <ellipse cx="540" cy="370" rx="12" ry="9.5" fill="#d9b7a0"/>
+  <ellipse cx="612" cy="400" rx="10" ry="8" fill="#7a9a7a"/>
+  <ellipse cx="686" cy="364" rx="11" ry="9" fill="#c98f7c"/>
+  <ellipse cx="756" cy="396" rx="9" ry="7.5" fill="#5c6a86"/>
+  <ellipse cx="826" cy="368" rx="11" ry="9" fill="#e6dcc4"/>
+  <ellipse cx="60" cy="404" rx="10" ry="8" fill="#a86050"/>
+  <ellipse cx="870" cy="408" rx="9" ry="7" fill="#93a86a"/>
+</g>
+<g fill="#ffffff" opacity="0.55">
+  <ellipse cx="116" cy="364" rx="3.4" ry="2.2"/>
+  <ellipse cx="248" cy="356" rx="3.6" ry="2.4"/>
+  <ellipse cx="394" cy="362" rx="3.4" ry="2.2"/>
+  <ellipse cx="536" cy="366" rx="3.6" ry="2.4"/>
+  <ellipse cx="682" cy="360" rx="3.4" ry="2.2"/>
+  <ellipse cx="822" cy="364" rx="3.4" ry="2.2"/>
+</g>
+<g class="kdb-glint" fill="#ffffff">
+  <circle cx="200" cy="330" r="2"/>
+  <circle cx="420" cy="322" r="2"/>
+  <circle cx="640" cy="332" r="2"/>
+  <circle cx="800" cy="324" r="2"/>
+</g>
+
+<!-- 유목과 조개 -->
+<g opacity="0.9">
+  <path d="M700,326 q26,-8 52,-2 q-24,8 -52,2 Z" fill="#8d7a63"/>
+  <path d="M712,324 l14,-6" stroke="#7a6952" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M150,336 q9,-10 18,0 q-9,4 -18,0 Z" fill="#f3ece0" stroke="#c8b9a0" stroke-width="0.8"/>
+</g>
+</svg>
+</body>
+</html>

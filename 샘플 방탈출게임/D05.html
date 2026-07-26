@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차이나타운 체험학습앱 - D05</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* 공통 및 구조 설정 */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #2d3748;
+            font-family: 'Noto Sans KR', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f5f0e6; /* 양피지 느낌의 연베이지 */
+            background-image: radial-gradient(circle, rgba(245,240,230,0.3) 0%, rgba(212,175,55,0.05) 100%);
+            border: 6px double #d4af37; /* 앤틱 골드 테두리 */
+            overflow: hidden;
+        }
+
+        /* 스테이지 상단 표시바 */
+        #stage-header {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            padding: 8px 20px;
+            background-color: rgba(30, 41, 59, 0.85);
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+        .stage-title {
+            font-family: 'Nanum Myeongjo', serif;
+            font-weight: 700;
+            color: #d4af37;
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
+        .stage-location {
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #ffffff;
+            font-size: 13px;
+        }
+
+        /* 무대 배경 및 에셋 배치 영역 */
+        #stage-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+
+        /* 건물 로딩 (원본 500x380, s=0.52 적용) */
+        .building-wrapper {
+            position: absolute;
+            left: 50%;
+            bottom: 110px;
+            transform: translateX(-50%);
+            width: 260px;  /* 500 * 0.52 */
+            height: 197px; /* 380 * 0.52 */
+            overflow: hidden;
+            z-index: 15;
+            filter: sepia(35%) contrast(95%) brightness(0.9);
+            border-bottom: 2px solid #8c3030;
+        }
+        .building-iframe {
+            border: 0;
+            width: 500px;
+            height: 380px;
+            transform: scale(0.52);
+            transform-origin: top left;
+            overflow: hidden;
+        }
+
+        /* 인물 캐릭터 공통 프레임 (260x320) */
+        .character-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            bottom: 60px;
+            z-index: 20;
+            overflow: visible !important;
+        }
+        .character-iframe {
+            width: 260px;
+            height: 320px;
+            border: 0;
+            overflow: hidden;
+        }
+
+        /* 캐릭터 개별 배치 */
+        #char-minwoo { left: 40px; }
+        #char-sangsang { left: 50%; transform: translateX(-50%); bottom: 40px; z-index: 25; }
+        #char-seoyeon { right: 40px; }
+
+        /* 바닥면 대지 표현 */
+        .ground-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 90px;
+            background-color: #e3dac9;
+            border-top: 2px solid #cbd5e1;
+            z-index: 5;
+        }
+
+        /* 수학 퀴즈 컨테이너 UI (유형 3) */
+        .quiz-container {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 480px;
+            background-color: rgba(245, 240, 230, 0.95);
+            border: 3px double #8c3030;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 24px;
+            z-index: 150;
+            text-align: center;
+        }
+        .quiz-speaker {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 15px;
+            color: #8c3030;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .quiz-question {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d3748;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            background-color: rgba(30, 41, 59, 0.05);
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 4px solid #d4af37;
+        }
+        .quiz-input-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .quiz-input {
+            width: 120px;
+            padding: 10px;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            border: 2px solid #475569;
+            border-radius: 4px;
+            background-color: #ffffff;
+            color: #2d3748;
+        }
+        .quiz-input:focus {
+            outline: none;
+            border-color: #8c3030;
+            box-shadow: 0 0 5px rgba(140, 48, 48, 0.3);
+        }
+        .btn-submit {
+            background-color: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            padding: 10px 20px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-submit:hover {
+            background-color: #661f1f;
+        }
+        .quiz-feedback {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            min-height: 22px;
+            margin-top: 5px;
+        }
+        .feedback-success { color: #15803d; }
+        .feedback-fail { color: #b91c1c; }
+
+        /* 이동 네비게이션 버튼 규칙 */
+        .btn-nav {
+            position: absolute;
+            bottom: 20px;
+            background-color: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 300;
+            transition: background-color 0.2s ease;
+        }
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+        #btn-prev { left: 20px; }
+        #btn-next { right: 20px; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="stage-header">
+        <div class="stage-title">제 5 장: 역사 속 수수께끼</div>
+        <div class="stage-location">인천개항박물관 앞거리</div>
+    </div>
+
+    <div id="stage-view">
+        <div class="building-wrapper">
+            <iframe src="D_인천개항박물관.html" class="building-iframe" scrolling="no"></iframe>
+        </div>
+
+        <div id="char-minwoo" class="character-wrapper">
+            <iframe src="민우.html" class="character-iframe" scrolling="no"></iframe>
+        </div>
+        
+        <div id="char-sangsang" class="character-wrapper">
+            <iframe src="상상.html" class="character-iframe" scrolling="no"></iframe>
+        </div>
+
+        <div id="char-seoyeon" class="character-wrapper">
+            <iframe src="서연.html" class="character-iframe" scrolling="no"></iframe>
+        </div>
+
+        <div class="ground-line"></div>
+    </div>
+
+    <div class="quiz-container">
+        <div class="quiz-speaker">🤖 상상이의 암호 분석 전송</div>
+        <div class="quiz-question">
+            "박물관 비밀 금고의 1차 코드야!<br>1부터 50 이하의 자연수 중에서<br>소수(Prime Number)인 것의 개수는 총 몇 개일까?"
+        </div>
+        <div class="quiz-input-group">
+            <input type="number" id="quiz-answer" class="quiz-input" placeholder="정답 입력" onkeypress="handleKeyPress(event)">
+            <button class="btn-submit" onclick="checkAnswer()">정답 확인</button>
+        </div>
+        <div id="quiz-feedback" class="quiz-feedback"></div>
+    </div>
+
+    <button id="btn-prev" class="btn-nav" onclick="navigate('D04.html')">이전 장면</button>
+    <button id="btn-next" class="btn-nav" style="display: none;" onclick="navigate('D06.html')">다음 장면</button>
+</div>
+
+<script>
+    // 엔터키 입력 시 정답 확인 연동
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            checkAnswer();
+        }
+    }
+
+    // 퀴즈 검증 로직 (1부터 50 이하의 소수 개수는 15개)
+    function checkAnswer() {
+        const userAnswer = document.getElementById("quiz-answer").value.trim();
+        const feedbackElement = document.getElementById("quiz-feedback");
+        const nextButton = document.getElementById("btn-next");
+
+        if (userAnswer === "") {
+            feedbackElement.className = "quiz-feedback feedback-fail";
+            feedbackElement.innerText = "값을 입력해 주세요!";
+            return;
+        }
+
+        // 정답 판정 (15)
+        if (parseInt(userAnswer, 10) === 15) {
+            feedbackElement.className = "quiz-feedback feedback-success";
+            feedbackElement.innerHTML = "✨ 정답이야! 민우와 서연이가 자물쇠의 첫 암호를 풀어냈어!";
+            
+            // 성공 시 숨겨둔 '다음' 버튼 활성화 (유형 3 규칙)
+            nextButton.style.display = "block";
+            document.getElementById("quiz-answer").disabled = true;
+        } else {
+            feedbackElement.className = "quiz-feedback feedback-fail";
+            feedbackElement.innerText = "❌ 음... 다시 한 번 꼼꼼하게 세어보자!";
+        }
+    }
+
+    // 장면 이동 공통 함수
+    function navigate(url) {
+        if(url) {
+            window.location.href = url;
+        }
+    }
+</script>
+
+</body>
+</html>

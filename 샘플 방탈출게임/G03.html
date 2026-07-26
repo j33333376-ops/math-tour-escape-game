@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차이나타운 체험학습앱 - 맥아더동상 미션 클리어</title>
+    <style>
+        /* 폰트 및 테마 스타일 설정 */
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        :root {
+            --main-color: #8c3030;    /* 다크 레드 */
+            --accent-color: #d4af37;  /* 앤틱 골드 */
+            --bg-color: #f5f0e6;      /* 연베이지 */
+            --text-color: #2d3748;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 16:9 고정 게임 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(rgba(0,0,0,0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 4px solid #4a3b32;
+        }
+
+        /* 상단 네비게이션 바 */
+        .stage-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 45px;
+            background-color: rgba(26, 21, 19, 0.85);
+            border-bottom: 2px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 100;
+        }
+
+        .stage-title {
+            font-family: 'Nanum Myeongjo', serif;
+            color: var(--accent-color);
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: 0.05em;
+        }
+
+        /* 에셋 배치 - 무대 공간 */
+        .stage-floor {
+            position: absolute;
+            top: 45px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 45px);
+        }
+
+        /* 건물(동상) 컨테이너 규칙 적용 [원본 320x495px] */
+        .building-wrapper {
+            position: absolute;
+            left: 50%;
+            bottom: 60px;
+            transform: translateX(-50%);
+            width: calc(320px * 0.7);
+            height: calc(495px * 0.7);
+            overflow: hidden;
+            z-index: 2;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+        }
+
+        .building-wrapper iframe {
+            border: 0;
+            width: 320px;
+            height: 495px;
+            transform: scale(0.7);
+            transform-origin: top left;
+        }
+
+        /* 인물(캐릭터) 공통 스타일 및 샌드위치 규칙 */
+        .character-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            overflow: visible !important;
+            transition: filter 0.4s ease, opacity 0.8s ease, transform 0.4s ease, box-shadow 0.4s ease;
+            z-index: 10;
+        }
+
+        .character-wrapper iframe {
+            border: 0;
+            width: 260px;
+            height: 320px;
+            overflow: hidden;
+        }
+
+        /* 캐릭터 개별 위치 및 맥아더 장군 특수 효과 */
+        #char-macarthur {
+            left: 50%;
+            transform: translateX(-50%) scale(1.1);
+            bottom: 110px;
+            z-index: 5;
+            /* 홀로그램 대신 후광 연출 (box-shadow) */
+            box-shadow: 0 0 20px 5px rgba(255, 223, 133, 0.7), 0 0 40px 10px rgba(255, 255, 255, 0.4);
+            border-radius: 50%; /* 후광을 둥글게 */
+            mix-blend-mode: normal; /* 홀로그램 혼합 모드 제거 */
+            opacity: 1; /* 투명도 제거 */
+        }
+
+        #char-minwoo {
+            left: 80px;
+            bottom: 40px;
+        }
+
+        #char-seoyeon {
+            right: 80px;
+            bottom: 40px;
+            transform: scaleX(-1); /* 서연 좌우 반전으로 안쪽 바라보기 */
+        }
+
+        /* 대화 비활성화 상태 어둡게 처리 */
+        .character-wrapper.inactive {
+            filter: brightness(0.4) grayscale(0.2);
+        }
+        
+        /* 맥아더 장군은 후광도 함께 비활성 처리 */
+        #char-macarthur.inactive {
+            box-shadow: 0 0 10px 2px rgba(255, 223, 133, 0.3);
+            filter: brightness(0.4) grayscale(0.2);
+        }
+
+        /* 비주얼노벨 대화창 */
+        #dialogue-box {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            height: 140px;
+            background-color: rgba(20, 16, 15, 0.9);
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            border-radius: 6px;
+            padding: 20px 30px;
+            z-index: 200;
+            cursor: pointer;
+        }
+
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            color: var(--accent-color);
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed rgba(212, 175, 55, 0.4);
+            padding-bottom: 4px;
+            display: inline-block;
+        }
+
+        #dialogue-text {
+            color: #ffffff;
+            font-size: 16px;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+        }
+
+        /* 대화창 내 클릭 유도 화살표 */
+        .click-indicator {
+            position: absolute;
+            bottom: 12px;
+            right: 20px;
+            color: var(--accent-color);
+            font-size: 12px;
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        /* 네비게이션 버튼 공통 구조 */
+        .btn-nav {
+            position: absolute;
+            background-color: var(--main-color);
+            color: white;
+            border: 1px solid var(--accent-color);
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            z-index: 150;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        .btn-nav:active {
+            transform: scale(0.97);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next, #btn-skip {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        /* 미션 클리어 성공 팝업 안내 메세지 상자 */
+        #clear-popup {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #f5f0e6;
+            border: 3px double var(--main-color);
+            outline: 1px solid var(--accent-color);
+            outline-offset: -6px;
+            padding: 30px 45px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+            z-index: 300;
+            border-radius: 4px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -40%) scale(0.9); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        #clear-popup h2 {
+            font-family: 'Nanum Myeongjo', serif;
+            color: var(--main-color);
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 24px;
+        }
+
+        #clear-popup p {
+            font-size: 16px;
+            color: #333;
+            margin: 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="stage-header">
+        <div class="stage-title">자유공원 - 맥아더 장군 동상 앞</div>
+    </div>
+
+    <div class="stage-floor">
+        <div class="building-wrapper">
+            <iframe src="G_맥아더장군동상.html" scrolling="no"></iframe>
+        </div>
+
+        <div id="char-macarthur" class="character-wrapper">
+            <iframe src="맥아더장군.html" scrolling="no"></iframe>
+        </div>
+
+        <div id="char-minwoo" class="character-wrapper">
+            <iframe src="민우.html" scrolling="no"></iframe>
+        </div>
+
+        <div id="char-seoyeon" class="character-wrapper">
+            <iframe src="서연.html" scrolling="no"></iframe>
+        </div>
+    </div>
+
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-name">맥아더</div>
+        <div id="dialogue-text">로드 중...</div>
+        <div class="click-indicator">▼ 클릭하여 계속</div>
+    </div>
+
+    <button id="btn-prev" class="btn-nav" onclick="navigate('G02.html')">이전</button>
+    <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+    <button id="btn-next" class="btn-nav" style="display:none;" onclick="navigate('index.html')">End</button>
+
+    <div id="clear-popup">
+        <h2>★ MISSION CLEAR ★</h2>
+        <p>맥아더동상 미션 클리어! 탈출 성공!</p>
+    </div>
+</div>
+
+<script>
+    // 대화 스크립트 데이터 세트 설정
+    const dialogues = [
+        {
+            speaker: "맥아더",
+            text: "훌륭하군! 자네들의 명석한 수학적 두뇌와 역사에 대한 관심 덕분에 역사가 바로잡혔네. 고맙네, 미래의 영웅들이여.",
+            target: "char-macarthur"
+        },
+        {
+            speaker: "민우",
+            text: "우와, 우리가 진짜 역사를 지켜낸 건가요?",
+            target: "char-minwoo"
+        },
+        {
+            speaker: "서연",
+            text: "민우야, 저기 봐! 동상 주변의 풍경이 다시 원래대로 돌아왔어!",
+            target: "char-seoyeon"
+        }
+    ];
+
+    let currentIndex = 0;
+
+    // 초기 화면 구성 실행
+    window.onload = function() {
+        updateDialogue();
+    };
+
+    // 대화 진행 제어 함수
+    function advanceDialogue() {
+        currentIndex++;
+        if (currentIndex < dialogues.length) {
+            updateDialogue();
+        } else {
+            endDialogueScene();
+        }
+    }
+
+    // 화면의 대사 텍스트 및 하이라이트 상태 업데이트
+    function updateDialogue() {
+        const currentData = dialogues[currentIndex];
+        
+        // 텍스트 출력
+        document.getElementById("speaker-name").innerText = currentData.speaker;
+        document.getElementById("dialogue-text").innerText = currentData.text;
+
+        // 모든 캐릭터 비활성화 상태(.inactive)로 일괄 변경
+        document.querySelectorAll('.character-wrapper').forEach(el => {
+            el.classList.add('inactive');
+        });
+
+        // 현재 대사 중인 타겟 캐릭터만 하이라이트 복원
+        const activeChar = document.getElementById(currentData.target);
+        if (activeChar) {
+            activeChar.classList.remove('inactive');
+        }
+    }
+
+    // 건너뛰기 기능
+    function skipDialogue() {
+        endDialogueScene();
+    }
+
+    // 대화 종료 후 최종 연출 및 클리어 이벤트 핸들러
+    function endDialogueScene() {
+        // 대화창 및 스킵버튼 숨김 처리
+        document.getElementById("dialogue-box").style.display = "none";
+        document.getElementById("btn-skip").style.display = "none";
+
+        // 캐릭터 원래 밝기로 일제히 복원
+        document.querySelectorAll('.character-wrapper').forEach(el => {
+            el.classList.remove('inactive');
+        });
+
+        // 맥아더 장군 퇴장 연출 (후광 유지하며 사라짐)
+        const macarthur = document.getElementById("char-macarthur");
+        if (macarthur) {
+            macarthur.style.transform = "translateX(-50%) scale(1.1) translateY(-10px)";
+            macarthur.style.opacity = "0";
+            macarthur.style.boxShadow = "0 0 30px 10px rgba(255, 223, 133, 0.9)"; // 사라질 때 후광 강조
+        }
+
+        // 미션 클리어 성공 알림창 활성화 및 End 내비게이션 버튼 노출
+        setTimeout(() => {
+            document.getElementById("clear-popup").style.display = "block";
+            document.getElementById("btn-next").style.display = "block";
+        }, 800);
+    }
+
+    // 안전한 웹 페이지 이동 처리 함수
+    function navigate(url) {
+        window.location.href = url;
+    }
+</script>
+
+</body>
+</html>

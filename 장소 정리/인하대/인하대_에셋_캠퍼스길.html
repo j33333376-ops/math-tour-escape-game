@@ -1,0 +1,185 @@
+<!-- 원본 크기: 1200x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인하대학교 캠퍼스길</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .icg-svg { display:block; width:100%; height:auto; }
+  .icg-ground { fill:#7fae6a; }
+  .icg-ground-line { stroke:#6c9a58; stroke-width:1.5; stroke-dasharray:10,8; opacity:0.6; }
+  .icg-path { fill:none; stroke:#cdc4ab; stroke-linecap:butt; }
+  .icg-path-edge { fill:none; stroke:#a99e80; stroke-width:2; }
+  .icg-path-dash { fill:none; stroke:#fff; stroke-width:2; stroke-dasharray:10,10; opacity:0.55; }
+  .icg-bldA-wall { fill:#d8d3c6; stroke:#a89f8a; stroke-width:1; }
+  .icg-bldA-band { fill:#c3bcaa; }
+  .icg-bldA-glass { fill:url(#icgGlassA); }
+  .icg-bldB-wall { fill:url(#icgBrickB); stroke:#6e2418; stroke-width:1; }
+  .icg-bldB-trim { fill:#f2ede0; stroke:#c9c2ab; stroke-width:0.8; }
+  .icg-bldB-glass { fill:url(#icgGlassB); }
+  .icg-sign-bg { fill:#123a6b; }
+  .icg-sign-text { fill:#fff; font-family:"Malgun Gothic", sans-serif; font-size:22px; font-weight:bold; text-anchor:middle; }
+  .icg-tree-trunk { fill:#6a4a2a; }
+  .icg-tree-dark { fill:#4f7a3c; }
+  .icg-tree-light { fill:#6fa85a; opacity:0.9; }
+  .icg-lamp-pole { fill:#4a4a4a; }
+  .icg-lamp-glow { fill:#ffe9a8; opacity:0.75; }
+  @keyframes icgLampGlow { 0%,100% { opacity:0.55; } 50% { opacity:0.9; } }
+  .icg-lamp-glow { animation: icgLampGlow 3.2s ease-in-out infinite; }
+</style>
+</head>
+<body>
+<svg class="icg-svg" viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="인하대학교 캠퍼스 단과대 A동 B동과 갈림길">
+<title>인하대학교 캠퍼스길</title>
+<defs>
+  <linearGradient id="icgGlassA" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#9cc0d4"/>
+    <stop offset="1" stop-color="#6a94aa"/>
+  </linearGradient>
+  <linearGradient id="icgGlassB" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#8fb0c4"/>
+    <stop offset="1" stop-color="#5f8298"/>
+  </linearGradient>
+  <pattern id="icgBrickB" width="22" height="11" patternUnits="userSpaceOnUse">
+    <rect width="22" height="11" fill="#9c4530"/>
+    <rect x="0" y="0" width="10" height="5" fill="#ac5138" stroke="#6e2418" stroke-width="0.4"/>
+    <rect x="11" y="0" width="10" height="5" fill="#ac5138" stroke="#6e2418" stroke-width="0.4"/>
+    <rect x="-5" y="6" width="10" height="5" fill="#ac5138" stroke="#6e2418" stroke-width="0.4"/>
+    <rect x="6" y="6" width="10" height="5" fill="#ac5138" stroke="#6e2418" stroke-width="0.4"/>
+    <rect x="17" y="6" width="10" height="5" fill="#ac5138" stroke="#6e2418" stroke-width="0.4"/>
+  </pattern>
+</defs>
+
+<!-- 하단 잔디 지면대 -->
+<rect class="icg-ground" x="0" y="556" width="1200" height="44"/>
+<line class="icg-ground-line" x1="0" y1="556" x2="1200" y2="556"/>
+
+<!-- ══════ 보도(Y자 갈림길) ══════ -->
+<path class="icg-path-edge" d="M600,600 L600,428"/>
+<path class="icg-path" d="M600,600 L600,428" stroke-width="76"/>
+<path class="icg-path-edge" d="M600,428 L268,372"/>
+<path class="icg-path" d="M600,428 L268,372" stroke-width="58"/>
+<path class="icg-path-edge" d="M600,428 L932,372"/>
+<path class="icg-path" d="M600,428 L932,372" stroke-width="58"/>
+<circle class="icg-path" cx="600" cy="428" r="42"/>
+<circle class="icg-path-edge" cx="600" cy="428" r="42" fill="none"/>
+
+<path class="icg-path-dash" d="M600,596 L600,432"/>
+<path class="icg-path-dash" d="M600,426 L272,374"/>
+<path class="icg-path-dash" d="M600,426 L928,374"/>
+
+<!-- 보도 포장 가로줄 -->
+<g stroke="#a99e80" stroke-width="1" opacity="0.5">
+  <line x1="566" y1="560" x2="634" y2="560"/>
+  <line x1="566" y1="520" x2="634" y2="520"/>
+  <line x1="566" y1="480" x2="634" y2="480"/>
+  <line x1="330" y1="380" x2="345" y2="342"/>
+  <line x1="400" y1="396" x2="412" y2="358"/>
+  <line x1="470" y1="412" x2="480" y2="374"/>
+  <line x1="870" y1="380" x2="855" y2="342"/>
+  <line x1="800" y1="396" x2="788" y2="358"/>
+  <line x1="730" y1="412" x2="720" y2="374"/>
+</g>
+
+<!-- ══════ 가로수 ══════ -->
+<g transform="translate(500,470)"><rect class="icg-tree-trunk" x="-4" y="6" width="8" height="24"/><circle class="icg-tree-dark" cx="-8" cy="-6" r="15"/><circle class="icg-tree-dark" cx="9" cy="-8" r="16"/><circle class="icg-tree-light" cx="0" cy="-14" r="13"/></g>
+<g transform="translate(700,470)"><rect class="icg-tree-trunk" x="-4" y="6" width="8" height="24"/><circle class="icg-tree-dark" cx="-8" cy="-6" r="15"/><circle class="icg-tree-dark" cx="9" cy="-8" r="16"/><circle class="icg-tree-light" cx="0" cy="-14" r="13"/></g>
+<g transform="translate(360,410)"><rect class="icg-tree-trunk" x="-3" y="5" width="6" height="20"/><circle class="icg-tree-dark" cx="-6" cy="-4" r="12"/><circle class="icg-tree-dark" cx="7" cy="-6" r="13"/><circle class="icg-tree-light" cx="0" cy="-11" r="10"/></g>
+<g transform="translate(830,410)"><rect class="icg-tree-trunk" x="-3" y="5" width="6" height="20"/><circle class="icg-tree-dark" cx="-6" cy="-4" r="12"/><circle class="icg-tree-dark" cx="7" cy="-6" r="13"/><circle class="icg-tree-light" cx="0" cy="-11" r="10"/></g>
+<g transform="translate(540,540)"><rect class="icg-tree-trunk" x="-3" y="5" width="6" height="20"/><circle class="icg-tree-dark" cx="-6" cy="-4" r="11"/><circle class="icg-tree-light" cx="5" cy="-8" r="10"/></g>
+<g transform="translate(660,540)"><rect class="icg-tree-trunk" x="-3" y="5" width="6" height="20"/><circle class="icg-tree-dark" cx="6" cy="-4" r="11"/><circle class="icg-tree-light" cx="-5" cy="-8" r="10"/></g>
+
+<!-- 가로등 -->
+<g>
+  <rect class="icg-lamp-pole" x="452" y="416" width="5" height="70"/>
+  <circle class="icg-lamp-glow" cx="454" cy="410" r="9"/>
+  <rect class="icg-lamp-pole" x="742" y="416" width="5" height="70"/>
+  <circle class="icg-lamp-glow" cx="744" cy="410" r="9"/>
+</g>
+
+<!-- ══════ A동 (좌측, 콘크리트/유리 건물) ══════ -->
+<rect class="icg-bldA-wall" x="30" y="160" width="380" height="396"/>
+<rect class="icg-bldA-band" x="30" y="160" width="380" height="12"/>
+<rect class="icg-bldA-band" x="30" y="544" width="380" height="12"/>
+
+<!-- A동 창문 그리드 -->
+<g>
+  <rect class="icg-bldA-glass" x="52" y="196" width="46" height="60"/>
+  <rect class="icg-bldA-glass" x="112" y="196" width="46" height="60"/>
+  <rect class="icg-bldA-glass" x="172" y="196" width="46" height="60"/>
+  <rect class="icg-bldA-glass" x="232" y="196" width="46" height="60"/>
+  <rect class="icg-bldA-glass" x="292" y="196" width="46" height="60"/>
+  <rect class="icg-bldA-glass" x="352" y="196" width="46" height="60"/>
+
+  <rect class="icg-bldA-glass" x="52" y="276" width="46" height="60"/>
+  <rect class="icg-bldA-glass" x="112" y="276" width="46" height="60"/>
+  <rect class="icg-bldA-glass" x="172" y="276" width="46" height="60"/>
+  <rect class="icg-bldA-glass" x="232" y="276" width="46" height="60"/>
+  <rect class="icg-bldA-glass" x="292" y="276" width="46" height="60"/>
+  <rect class="icg-bldA-glass" x="352" y="276" width="46" height="60"/>
+
+  <rect class="icg-bldA-glass" x="52" y="356" width="46" height="60"/>
+  <rect class="icg-bldA-glass" x="112" y="356" width="46" height="60"/>
+  <rect class="icg-bldA-glass" x="232" y="356" width="46" height="60"/>
+  <rect class="icg-bldA-glass" x="292" y="356" width="46" height="60"/>
+  <rect class="icg-bldA-glass" x="352" y="356" width="46" height="60"/>
+</g>
+
+<!-- A동 출입구 -->
+<rect x="172" y="436" width="66" height="120" fill="#3a4850"/>
+<rect x="178" y="440" width="27" height="112" fill="url(#icgGlassA)"/>
+<rect x="207" y="440" width="27" height="112" fill="url(#icgGlassA)"/>
+<rect x="152" y="556" width="106" height="9" fill="#c3bcaa"/>
+<rect x="140" y="565" width="130" height="9" fill="#b0a890"/>
+
+<!-- A동 간판 -->
+<rect class="icg-sign-bg" x="150" y="178" width="130" height="34" rx="3"/>
+<text class="icg-sign-text" x="215" y="202">A동</text>
+
+<!-- ══════ B동 (우측, 붉은 벽돌 건물) ══════ -->
+<rect class="icg-bldB-wall" x="790" y="130" width="380" height="426"/>
+<rect class="icg-bldB-trim" x="790" y="130" width="380" height="12"/>
+<rect class="icg-bldB-trim" x="790" y="544" width="380" height="12"/>
+<rect class="icg-bldB-trim" x="790" y="330" width="380" height="8"/>
+
+<!-- B동 창문 그리드 -->
+<g>
+  <rect class="icg-bldB-glass" x="812" y="166" width="44" height="56"/>
+  <rect class="icg-bldB-glass" x="870" y="166" width="44" height="56"/>
+  <rect class="icg-bldB-glass" x="928" y="166" width="44" height="56"/>
+  <rect class="icg-bldB-glass" x="1046" y="166" width="44" height="56"/>
+  <rect class="icg-bldB-glass" x="1104" y="166" width="44" height="56"/>
+
+  <rect class="icg-bldB-glass" x="812" y="242" width="44" height="56"/>
+  <rect class="icg-bldB-glass" x="870" y="242" width="44" height="56"/>
+  <rect class="icg-bldB-glass" x="928" y="242" width="44" height="56"/>
+  <rect class="icg-bldB-glass" x="1046" y="242" width="44" height="56"/>
+  <rect class="icg-bldB-glass" x="1104" y="242" width="44" height="56"/>
+
+  <rect class="icg-bldB-glass" x="812" y="358" width="44" height="56"/>
+  <rect class="icg-bldB-glass" x="870" y="358" width="44" height="56"/>
+  <rect class="icg-bldB-glass" x="1046" y="358" width="44" height="56"/>
+  <rect class="icg-bldB-glass" x="1104" y="358" width="44" height="56"/>
+
+  <rect class="icg-bldB-glass" x="812" y="434" width="44" height="56"/>
+  <rect class="icg-bldB-glass" x="870" y="434" width="44" height="56"/>
+  <rect class="icg-bldB-glass" x="1046" y="434" width="44" height="56"/>
+  <rect class="icg-bldB-glass" x="1104" y="434" width="44" height="56"/>
+</g>
+
+<!-- B동 출입구 -->
+<rect x="945" y="426" width="70" height="130" fill="#3a2a1a"/>
+<rect x="951" y="430" width="27" height="122" fill="url(#icgGlassB)"/>
+<rect x="982" y="430" width="27" height="122" fill="url(#icgGlassB)"/>
+<rect class="icg-bldB-trim" x="922" y="556" width="116" height="9"/>
+<rect class="icg-bldB-trim" x="908" y="565" width="144" height="9"/>
+
+<!-- B동 간판 -->
+<rect class="icg-sign-bg" x="915" y="148" width="130" height="34" rx="3"/>
+<text class="icg-sign-text" x="980" y="172">B동</text>
+
+</svg>
+</body>
+</html>

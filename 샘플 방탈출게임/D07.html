@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천 개항장 자산 수호대 (D07.html)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background-color: #f4edd9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .game-container {
+            background-color: #ffffff;
+            border: 3px solid #8b5a2b;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+        /* 정답 및 오답 화면 연출 스타일 */
+        .game-container.correct-flash {
+            background-color: #e8f5e9;
+            border-color: #2e7d32;
+        }
+        .game-container.wrong-flash {
+            background-color: #ffebee;
+            border-color: #c62828;
+        }
+        h1 {
+            color: #8b5a2b;
+            text-align: center;
+            border-bottom: 2px solid #8b5a2b;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            background-color: #f9f1e3;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border: 1px solid #d2b48c;
+        }
+        .stage-box {
+            margin-bottom: 20px;
+        }
+        .story {
+            font-style: italic;
+            color: #555;
+            background-color: #fcf8f2;
+            padding: 12px;
+            border-left: 5px solid #cd853f;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        /* 정오답 피드백 박스 강조 */
+        .story.correct-box {
+            background-color: #c8e6c9;
+            border-left-color: #2e7d32;
+            color: #1b5e20;
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+        .story.wrong-box {
+            background-color: #ffcdd2;
+            border-left-color: #c62828;
+            color: #b71c1c;
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+        .question {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            background-color: #cd853f;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-align: left;
+        }
+        button:hover {
+            background-color: #8b5a2b;
+        }
+        .result-msg {
+            font-weight: bold;
+            font-size: 1.4em;
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success { 
+            color: #2e7d32; 
+            background-color: #e8f5e9;
+            border: 2px dashed #2e7d32;
+        }
+        .fail { 
+            color: #c62828; 
+            background-color: #ffebee;
+            border: 2px dashed #c62828;
+        }
+        .action-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background-color: #333;
+            margin-top: 20px;
+        }
+        .action-btn:hover {
+            background-color: #000;
+        }
+        /* 네비게이션 바 (이전페이지 / 다음페이지) */
+        .nav-bar {
+            max-width: 600px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 0 5px;
+        }
+        .nav-btn {
+            background-color: #555;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.95em;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .nav-btn:hover {
+            background-color: #222;
+        }
+        .nav-btn.disabled {
+            background-color: #ccc;
+            color: #888;
+            cursor: not-allowed;
+            pointer-events: none; /* 클릭 불가 */
+            opacity: 0.6;
+        }
+        .nav-btn.active-next {
+            background-color: #2e7d32;
+            box-shadow: 0 0 10px rgba(46, 125, 50, 0.5);
+            animation: pulse 1.5s infinite;
+        }
+        .nav-btn.active-next:hover {
+            background-color: #1b5e20;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container" id="game-container">
+    <h1>인천 개항장 자산 수호대</h1>
+    
+    <div class="status-bar">
+        <div>스테이지: <span id="stage-num">1</span> / 5</div>
+        <div>대한제국 자산: <span id="asset-val">100</span>원</div>
+    </div>
+
+    <div id="game-body">
+        <!-- 동적으로 콘텐츠가 주입됩니다 -->
+    </div>
+</div>
+
+<!-- 네비게이션 버튼 구역 -->
+<div class="nav-bar">
+    <a href="D06.html" class="nav-btn">◀ 이전페이지 (D06.html)</a>
+    <a href="D08.html" id="next-page-btn" class="nav-btn disabled">다음페이지 (D08.html) ▶</a>
+</div>
+
+<script>
+    // 게임 데이터 (고증 기반 스토리 + 역사/수학 문제)
+    const stageData = [
+        {
+            story: "1883년 인천이 개항된 후, 일본은 제1은행 인천지점을 열고 한국의 금을 본격적으로 사들여 해외로 반출하기 시작했습니다. 나라의 자산인 금을 지켜야 합니다!",
+            question: "역사 퀴즈: 개항기 일본이 대한제국의 재정권을 장악하기 위해 인천 등지에서 발행하여 강제로 유통한 지폐의 이름은 무엇일까요?",
+            options: [
+                { text: "1. 제1은행권", isCorrect: true, effect: 30, msg: "⭕ 정답입니다! 제1은행권 유통을 막아 대한제국의 자산 +30원!" },
+                { text: "2. 상평통보", isCorrect: false, effect: -20, msg: "❌ 오답입니다. 상평통보는 조선 후기의 화폐입니다. 일본의 감시망에 걸려 자산 -20원." },
+                { text: "3. 당백전", isCorrect: false, effect: -20, msg: "❌ 오답입니다. 당백전은 흥선대원군이 경복궁 중건을 위해 발행한 화폐입니다. 자산 -20원." }
+            ]
+        },
+        {
+            story: "일본 상인들이 유리수의 계산법을 이용해 장부를 조작하여 조선 상인들의 금을 빼앗으려 합니다. 올바른 계산으로 속임수를 파헤치세요!",
+            question: "수학 연산: 다음 식을 올바르게 계산한 값은?  [ (-15) + (+32) - (-8) ]",
+            options: [
+                { text: "1.  9", isCorrect: false, effect: -25, msg: "❌ 틀렸습니다. 부호를 잘못 계산하여 일본 상인에게 금을 빼앗겼습니다. 자산 -25원." },
+                { text: "2.  +25", isCorrect: true, effect: 35, msg: "⭕ 정답입니다! 정확한 계산(-15 + 32 + 8 = 25)으로 조작된 장부를 바로잡아 자산 +35원!" },
+                { text: "3.  -9", isCorrect: false, effect: -25, msg: "❌ 틀렸습니다. 다시 한번 계산 순서와 부호를 확인해 보세요! 자산 -25원." }
+            ]
+        },
+        {
+            story: "일본은 한국의 화폐 발행 기관인 전환국을 폐지하고 대한제국의 화폐권을 완전히 박탈하려 합니다. 개항기의 아픈 금융 역사를 기억해야 합니다.",
+            question: "역사 퀴즈: 1904년 고문정치기, 일본 재정고문 메가타가 주도하여 한국의 화폐 제도를 일본 중심 체제로 개편함으로써 대한제국의 자산을 통째로 수탈한 이 조치는 무엇일까요?",
+            options: [
+                { text: "1. 토지조사사업", isCorrect: false, effect: -30, msg: "❌ 오답입니다. 이는 1910년대 일제가 농민들의 토지를 수탈한 사업입니다. 자산 -30원." },
+                { text: "2. 화폐정리사업", isCorrect: true, effect: 40, msg: "⭕ 정답입니다! 메가타 가네타로가 주도한 화폐정리사업으로 우리 백동화가 헐값에 매수당했습니다. 역사를 기억해 자산 +40원!" },
+                { text: "3. 산미증식계획", isCorrect: false, effect: -30, msg: "❌ 오답입니다. 이는 1920년대 쌀을 수탈해 간 계획입니다. 자산 -30원." }
+            ]
+        },
+        {
+            story: "인천항을 통해 밀반출되는 금괴의 무게를 음수와 양수의 곱셈과 나눗셈을 이용해 긴급 계산해야 합니다. 세관원의 눈을 피하세요!",
+            question: "수학 연산: 다음 식의 결과는 무엇일까요?  [ (-4) × (+2.5) ÷ (-0.5) ]",
+            options: [
+                { text: "1.  -20", isCorrect: false, effect: -20, msg: "❌ 오답입니다. 부호 계산을 실수하여 금괴를 압수당했습니다. 자산 -20원." },
+                { text: "2.  +20", isCorrect: true, effect: 45, msg: "⭕ 정답입니다! (-4)×2.5 = -10 이고, (-10)÷(-0.5) = +20 입니다. 밀반출되던 금괴를 확보하여 자산 +45원!" },
+                { text: "3.  +5", isCorrect: false, effect: -20, msg: "❌ 오답입니다. 연산 순서나 소수 계산을 다시 확인하세요. 자산 -20원." }
+            ]
+        },
+        {
+            story: "마지막 관문입니다. 일본 제1은행 인천지점의 비밀 금고를 열기 위해 거듭제곱과 사칙연산이 섞인 최종 암호를 풀어야 합니다.",
+            question: "수학 연산: 다음 식의 계산 결과는 무엇일까요? [ 12 - { (-3)³ ÷ 9 } × 2 ]",
+            options: [
+                { text: "1.  6", isCorrect: false, effect: -30, msg: "❌ 오답입니다. 음수 거듭제곱의 부호(-27)에 주의하세요! 자산 -30원." },
+                { text: "2.  18", isCorrect: true, effect: 50, msg: "⭕ 정답입니다! (-3)³ = -27 이고, -27÷9 = -3 입니다. 12 - (-3)×2 = 12 - (-6) = 18 입니다. 금고를 열어 자산 +50원!" },
+                { text: "3.  24", isCorrect: false, effect: -30, msg: "❌ 오답입니다. 중괄호 안을 먼저 계산한 뒤 곱셈을 해야 합니다. 자산 -30원." }
+            ]
+        }
+    ];
+
+    let currentStage = 0;
+    let assets = 100;
+
+    const containerEl = document.getElementById('game-container');
+    const stageNumEl = document.getElementById('stage-num');
+    const assetValEl = document.getElementById('asset-val');
+    const gameBodyEl = document.getElementById('game-body');
+    const nextPageBtn = document.getElementById('next-page-btn');
+
+    function updateStatus() {
+        stageNumEl.textContent = currentStage + 1;
+        assetValEl.textContent = assets;
+    }
+
+    function loadStage() {
+        if (currentStage >= stageData.length) {
+            endGame();
+            return;
+        }
+
+        // 새 스테이지 시작 시 피드백 색상 초기화
+        containerEl.className = "game-container";
+
+        updateStatus();
+        const data = stageData[currentStage];
+
+        let html = `
+            <div class="stage-box">
+                <div class="story">${data.story}</div>
+                <div class="question">${data.question}</div>
+                <div class="options">
+        `;
+
+        data.options.forEach((opt, idx) => {
+            html += `<button onclick="handleAnswer(${idx})">${opt.text}</button>`;
+        });
+
+        html += `</div></div>`;
+        gameBodyEl.innerHTML = html;
+    }
+
+    function handleAnswer(idx) {
+        const opt = stageData[currentStage].options[idx];
+        assets += opt.effect;
+        if(assets < 0) assets = 0;
+        
+        // 정오답에 따른 화면 전체 색상 변화 및 박스 변화
+        if (opt.isCorrect) {
+            containerEl.className = "game-container correct-flash";
+        } else {
+            containerEl.className = "game-container wrong-flash";
+        }
+        
+        let feedbackClass = opt.isCorrect ? "correct-box" : "wrong-box";
+        
+        let html = `
+            <div class="stage-box">
+                <div class="story ${feedbackClass}">${opt.msg}</div>
+                <p style="font-size: 1.1em; text-align:center;">자산 변동: <strong>${opt.effect > 0 ? '+' + opt.effect : opt.effect}원</strong> → 현재 자산: <strong>${assets}원</strong></p>
+                <button class="action-btn" onclick="nextStage()">다음 단계로 이동</button>
+            </div>
+        `;
+        
+        assetValEl.textContent = assets;
+        gameBodyEl.innerHTML = html;
+    }
+
+    function nextStage() {
+        currentStage++;
+        loadStage();
+    }
+
+    function endGame() {
+        stageNumEl.textContent = "종료";
+        containerEl.className = "game-container"; // 최종 화면 초기화
+        
+        let html = `<h2>미션 종료 결과</h2>`;
+        
+        // 통과 조건: 최종 자산 100원 이상
+        if (assets >= 100) {
+            html += `
+                <div class="result-msg success">🎉 미션 통과! 성공! 🎉</div>
+                <p class="story" style="margin-top:15px;">당신은 일본의 금융 수탈에 맞서 대한제국의 자산을 훌륭히 지켜냈습니다! 최종 자산 <strong>${assets}원</strong>을 남겨 미션에 통과했습니다.<br><br><strong>하단의 '다음페이지(D08.html)' 버튼이 활성화되었습니다. 클릭하여 이동하세요!</strong></p>
+            `;
+            // 다음페이지 버튼 활성화
+            nextPageBtn.className = "nav-btn active-next";
+        } else {
+            html += `
+                <div class="result-msg fail">😭 미션 실패... 😭</div>
+                <p class="story" style="margin-top:15px;">일본 제1은행과 메가타의 금융 수탈을 막지 못했습니다. 최종 자산이 <strong>${assets}원</strong>으로 기준치(100원)에 미치지 못해 통과하지 못했습니다. 다시 시도해 보세요!</p>
+                <button class="action-btn" onclick="restartGame()">처음부터 다시 도전</button>
+            `;
+            // 실패 시 다음페이지 버튼은 계속 비활성화 상태 유지
+            nextPageBtn.className = "nav-btn disabled";
+        }
+        
+        gameBodyEl.innerHTML = html;
+    }
+
+    function restartGame() {
+        currentStage = 0;
+        assets = 100;
+        nextPageBtn.className = "nav-btn disabled";
+        loadStage();
+    }
+
+    // 게임 최초 실행
+    loadStage();
+</script>
+
+</body>
+</html>

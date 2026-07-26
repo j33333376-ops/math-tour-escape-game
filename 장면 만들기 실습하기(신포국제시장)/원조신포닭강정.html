@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<!-- 원본 크기: 1000x500 -->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>신포원조닭강정</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      overflow: hidden;
+    }
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+<svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">신포원조닭강정 식당 건물</title>
+  <desc id="desc">파란색 간판과 닭 그림이 있는 가로로 긴 닭강정 식당 정면 건물</desc>
+
+  <defs>
+    <linearGradient id="wallGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f2dfc6"/>
+      <stop offset="1" stop-color="#d8b88e"/>
+    </linearGradient>
+
+    <linearGradient id="signGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b70bd"/>
+      <stop offset="1" stop-color="#064a86"/>
+    </linearGradient>
+
+    <linearGradient id="awningGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a8ad1"/>
+      <stop offset="1" stop-color="#0a5f9d"/>
+    </linearGradient>
+
+    <linearGradient id="glassGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d9f3ff" stop-opacity="0.92"/>
+      <stop offset="0.45" stop-color="#82b6cf" stop-opacity="0.86"/>
+      <stop offset="1" stop-color="#264f65" stop-opacity="0.94"/>
+    </linearGradient>
+
+    <linearGradient id="doorGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8a4b2b"/>
+      <stop offset="1" stop-color="#4d2718"/>
+    </linearGradient>
+
+    <pattern id="brickPattern" width="52" height="26" patternUnits="userSpaceOnUse">
+      <rect width="52" height="26" fill="#bd6f48"/>
+      <path d="M0 13H52M26 0V13M0 13V26M52 13V26" stroke="#8a482d" stroke-width="2" opacity="0.55"/>
+      <path d="M2 2H24M28 15H50" stroke="#e4a17c" stroke-width="2" opacity="0.4"/>
+    </pattern>
+
+    <pattern id="tilePattern" width="42" height="42" patternUnits="userSpaceOnUse">
+      <rect width="42" height="42" fill="#ddd2bd"/>
+      <path d="M0 0H42V42H0Z" fill="none" stroke="#b9aa91" stroke-width="2"/>
+      <circle cx="10" cy="11" r="1.2" fill="#9d8d76" opacity="0.45"/>
+      <circle cx="31" cy="28" r="1.1" fill="#9d8d76" opacity="0.35"/>
+    </pattern>
+
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#111" flood-opacity="0.34"/>
+    </filter>
+
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#111" flood-opacity="0.35"/>
+    </filter>
+
+    <filter id="textShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="3" stdDeviation="1.6" flood-color="#002d52" flood-opacity="0.8"/>
+    </filter>
+
+    <clipPath id="bodyClip">
+      <path d="M26 164 L66 100 L918 100 L972 164 L972 470 L26 470 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- 건물 본체 -->
+  <g filter="url(#shadow)">
+    <path d="M26 164 L66 100 L918 100 L972 164 L972 470 L26 470 Z"
+          fill="url(#wallGrad)" stroke="#4f382a" stroke-width="8" stroke-linejoin="round"/>
+
+    <!-- 좌우 벽 재질 -->
+    <rect x="30" y="253" width="166" height="213" fill="url(#brickPattern)" clip-path="url(#bodyClip)"/>
+    <rect x="802" y="253" width="166" height="213" fill="url(#brickPattern)" clip-path="url(#bodyClip)"/>
+
+    <!-- 중앙 타일 벽 -->
+    <rect x="196" y="250" width="606" height="216" fill="url(#tilePattern)" stroke="#7b6854" stroke-width="4"/>
+
+    <!-- 상부 몰딩 -->
+    <rect x="53" y="150" width="892" height="24" rx="5" fill="#6a4632" stroke="#382519" stroke-width="5"/>
+    <rect x="65" y="174" width="868" height="12" fill="#a16b45"/>
+
+    <!-- 큰 파란 간판 -->
+    <rect x="82" y="37" width="836" height="126" rx="18"
+          fill="url(#signGrad)" stroke="#04355f" stroke-width="8"/>
+    <rect x="96" y="51" width="808" height="98" rx="12"
+          fill="none" stroke="#63bdf2" stroke-width="4" opacity="0.7"/>
+
+    <!-- 닭 로고 -->
+    <g transform="translate(111 55)" filter="url(#softShadow)">
+      <circle cx="52" cy="47" r="41" fill="#fff5de" stroke="#f0c265" stroke-width="5"/>
+      <ellipse cx="52" cy="51" rx="24" ry="27" fill="#fffaf0" stroke="#d99026" stroke-width="3"/>
+      <circle cx="60" cy="42" r="3.8" fill="#20160f"/>
+      <path d="M72 48 L89 55 L72 61 Z" fill="#f4ad2d" stroke="#a55a0d" stroke-width="2"/>
+      <path d="M35 28 C32 17 39 11 44 20 C45 10 54 6 55 19 C60 10 69 13 65 25"
+            fill="#d9362b" stroke="#8d1f19" stroke-width="2"/>
+      <path d="M45 73 C41 82 39 87 38 94 M59 74 C61 82 62 88 62 94"
+            stroke="#b66e1d" stroke-width="4" stroke-linecap="round"/>
+      <path d="M31 50 C20 47 18 56 26 61" fill="none" stroke="#d99026" stroke-width="5" stroke-linecap="round"/>
+      <path d="M48 60 Q57 67 67 59" fill="none" stroke="#d9362b" stroke-width="3" stroke-linecap="round"/>
+    </g>
+
+    <!-- 간판 글자 -->
+    <text x="520" y="113" text-anchor="middle"
+          font-family="sans-serif" font-size="61" font-weight="900"
+          letter-spacing="2" fill="#fff7db" stroke="#06345b" stroke-width="2"
+          paint-order="stroke" filter="url(#textShadow)">신포원조닭강정</text>
+    <text x="520" y="143" text-anchor="middle"
+          font-family="sans-serif" font-size="20" font-weight="700"
+          letter-spacing="6" fill="#ccecff">SINPO ORIGINAL DAKGANGJEONG</text>
+
+    <!-- 차양 -->
+    <path d="M60 185 H940 L914 249 H86 Z"
+          fill="url(#awningGrad)" stroke="#063b66" stroke-width="7" stroke-linejoin="round"/>
+    <g stroke="#e7f5ff" stroke-width="6" opacity="0.85">
+      <path d="M144 188 L128 245"/>
+      <path d="M242 188 L231 246"/>
+      <path d="M340 188 L334 247"/>
+      <path d="M438 188 L437 247"/>
+      <path d="M536 188 L540 247"/>
+      <path d="M634 188 L643 247"/>
+      <path d="M732 188 L746 246"/>
+      <path d="M830 188 L850 245"/>
+    </g>
+    <path d="M87 248 H914" stroke="#093954" stroke-width="8"/>
+
+    <!-- 왼쪽 창 -->
+    <g>
+      <rect x="214" y="276" width="222" height="158" rx="4" fill="#3d2b22" stroke="#231812" stroke-width="7"/>
+      <rect x="224" y="286" width="202" height="138" fill="url(#glassGrad)" stroke="#8bc9e6" stroke-width="3"/>
+      <path d="M325 286 V424 M224 355 H426" stroke="#654331" stroke-width="7"/>
+      <path d="M237 299 L286 299 L237 348 Z" fill="#ffffff" opacity="0.22"/>
+      <path d="M337 368 L406 299" stroke="#dff7ff" stroke-width="8" opacity="0.18"/>
+      <rect x="245" y="330" width="70" height="30" rx="5" fill="#f2e9d4" stroke="#7d543d" stroke-width="3"/>
+      <text x="280" y="351" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="800" fill="#a52a22">포장가능</text>
+    </g>
+
+    <!-- 중앙 출입문 -->
+    <g>
+      <rect x="451" y="264" width="170" height="202" rx="3" fill="#41271c" stroke="#24150e" stroke-width="8"/>
+      <rect x="464" y="278" width="144" height="174" fill="url(#doorGrad)" stroke="#b97c4c" stroke-width="4"/>
+      <rect x="478" y="292" width="116" height="96" fill="url(#glassGrad)" stroke="#d6eff8" stroke-width="4"/>
+      <path d="M536 292 V388" stroke="#7c5338" stroke-width="5"/>
+      <path d="M479 339 H593" stroke="#7c5338" stroke-width="5"/>
+      <rect x="474" y="401" width="124" height="41" rx="3" fill="#6d3d24" stroke="#3c2114" stroke-width="3"/>
+      <circle cx="582" cy="406" r="6" fill="#e0b45f" stroke="#6f4d24" stroke-width="2"/>
+      <rect x="494" y="312" width="84" height="38" rx="5" fill="#fff4cf" stroke="#bd2d27" stroke-width="4"/>
+      <text x="536" y="338" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="900" fill="#b9231c">영업중</text>
+      <rect x="510" y="445" width="52" height="8" rx="3" fill="#c59b6f"/>
+    </g>
+
+    <!-- 오른쪽 창 -->
+    <g>
+      <rect x="636" y="276" width="150" height="158" rx="4" fill="#3d2b22" stroke="#231812" stroke-width="7"/>
+      <rect x="646" y="286" width="130" height="138" fill="url(#glassGrad)" stroke="#8bc9e6" stroke-width="3"/>
+      <path d="M711 286 V424 M646 355 H776" stroke="#654331" stroke-width="7"/>
+      <path d="M658 298 L700 298 L658 340 Z" fill="#ffffff" opacity="0.22"/>
+      <circle cx="746" cy="315" r="22" fill="#fff4d8" stroke="#efbd56" stroke-width="4"/>
+      <path d="M738 313 Q746 305 754 313 Q746 321 738 313Z" fill="#d8372c"/>
+      <path d="M746 294 Q752 287 756 296 Q750 298 746 294Z" fill="#d8372c"/>
+      <path d="M756 313 L766 317 L756 321 Z" fill="#f2ad2b"/>
+    </g>
+
+    <!-- 좌측 메뉴 게시판 -->
+    <g transform="translate(48 282)">
+      <rect width="128" height="146" rx="6" fill="#f6ead0" stroke="#6f4c34" stroke-width="5"/>
+      <rect x="9" y="9" width="110" height="128" rx="4" fill="#fff7e8" stroke="#c8aa78" stroke-width="2"/>
+      <text x="64" y="34" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="900" fill="#154f80">대표메뉴</text>
+      <path d="M22 45 H106" stroke="#c13c31" stroke-width="3"/>
+      <text x="20" y="69" font-family="sans-serif" font-size="16" font-weight="700" fill="#5c3c28">• 닭강정</text>
+      <text x="20" y="94" font-family="sans-serif" font-size="16" font-weight="700" fill="#5c3c28">• 후라이드</text>
+      <text x="20" y="119" font-family="sans-serif" font-size="16" font-weight="700" fill="#5c3c28">• 포장주문</text>
+    </g>
+
+    <!-- 우측 작은 간판 -->
+    <g transform="translate(823 294)">
+      <rect width="119" height="112" rx="8" fill="#134f81" stroke="#062f50" stroke-width="5"/>
+      <rect x="8" y="8" width="103" height="96" rx="5" fill="none" stroke="#7fd1ff" stroke-width="3"/>
+      <text x="59.5" y="40" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="900" fill="#fff7d2">SINCE</text>
+      <text x="59.5" y="72" text-anchor="middle" font-family="sans-serif" font-size="27" font-weight="900" fill="#ffcf59">1985</text>
+      <text x="59.5" y="94" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#d8f1ff">원조의 맛</text>
+    </g>
+
+    <!-- 하단 기단 -->
+    <rect x="24" y="458" width="950" height="24" rx="5" fill="#4e392d" stroke="#261b15" stroke-width="6"/>
+    <rect x="39" y="458" width="920" height="7" fill="#8f6a50" opacity="0.85"/>
+
+    <!-- 벽체 고정 장식 -->
+    <g fill="#4a3327">
+      <circle cx="50" cy="211" r="5"/>
+      <circle cx="950" cy="211" r="5"/>
+      <circle cx="50" cy="445" r="5"/>
+      <circle cx="950" cy="445" r="5"/>
+    </g>
+  </g>
+</svg>
+</body>
+</html>

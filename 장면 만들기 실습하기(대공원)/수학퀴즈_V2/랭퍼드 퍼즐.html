@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>랭퍼드 퍼즐</title>
+  <style>
+    :root {
+      /* ===== 공통 디자인 토큰 (전체 퀴즈 공용) ===== */
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #ea580c;
+      --accent-soft: #fff7ed;
+      --border-color: #e2e8f0;
+      --success: #10b981;
+      --error: #ef4444;
+      --radius-card: 16px;
+      --radius-ctrl: 10px;
+      --shadow-card: 0 10px 25px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+    }
+
+    .app-layout {
+      display: flex;
+      width: 100%; height: 100%;
+      padding: 2vh 2vw;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-side {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      width: 38vw;
+      max-width: 440px;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-block h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+
+    .header-block p {
+      margin: 0 0 20px 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .control-group {
+      background: var(--primary-soft);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .control-header label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .col-badge {
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .col-badge.accent { background: var(--accent); }
+    .col-badge.muted  { background: #94a3b8; }
+
+    input[type=range] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+
+    .stat-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .btn-row { display: flex; gap: 8px; }
+
+    .btn-check, .btn-ghost {
+      border-radius: var(--radius-ctrl);
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .btn-check { background: var(--primary); color: #fff; border: none; }
+    .btn-check:hover:not(:disabled) { background: var(--primary-dark); }
+    .btn-check:active:not(:disabled) { transform: translateY(1px); }
+    .btn-ghost { background: var(--card-bg); color: var(--primary-dark); border: 1px solid var(--border-color); }
+    .btn-ghost:hover:not(:disabled) { background: var(--primary-soft); }
+    .btn-ghost:active:not(:disabled) { transform: translateY(1px); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .answer-group { padding-top: 16px; border-top: 2px dashed var(--border-color); }
+
+    .feedback {
+      margin-top: 10px;
+      font-weight: 700;
+      text-align: center;
+      min-height: 20px;
+      font-size: 0.95rem;
+      word-break: keep-all;
+      line-height: 1.45;
+    }
+    .feedback.success { color: var(--success); }
+    .feedback.error   { color: var(--error); }
+    .feedback.info    { color: var(--text-muted); }
+
+    .board-side {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      padding: 10px;
+    }
+
+    .board-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      border: 4px solid var(--border-color);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    @media (orientation: portrait) {
+      .app-layout { flex-direction: column; justify-content: flex-start; padding-top: 2vh; gap: 12px; }
+      .panel-side { width: 96vw; max-width: none; padding: 16px; }
+      .board-side { width: 96vw; flex: 1; padding: 0 0 2vh 0; }
+      .header-block p { margin-bottom: 12px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 520px) {
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.2rem; }
+      .header-block p { display: none; }
+      .control-group { padding: 8px 12px; margin-bottom: 10px; }
+      .stat-row { margin-bottom: 8px; }
+    }
+
+    /* ===================================================================
+       반응형 안전장치 — PC/모바일, 가로/세로 어디서도 잘리지 않게
+       =================================================================== */
+    .app-layout { min-height: 0; min-width: 0; }
+    .board-side { min-height: 0; min-width: 0; }
+
+    /* 패널이 화면보다 길어지면 화면을 밀지 않고 패널 안에서만 스크롤 */
+    .panel-side {
+      max-height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    @media (orientation: portrait) {
+      .panel-side { max-height: 54%; flex: 0 0 auto; }
+      .board-side { flex: 1 1 auto; }
+    }
+
+    /* 폰 가로처럼 세로가 짧은 화면 */
+    @media (orientation: landscape) and (max-height: 560px) {
+      .app-layout { padding: 8px; gap: 10px; }
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.12rem; margin-bottom: 4px; }
+      .header-block p  { display: none; }
+      .stat-row { margin-bottom: 8px; }
+      .answer-group { padding-top: 10px; margin-top: 10px !important; }
+      .feedback { font-size: 0.82rem; margin-top: 6px; min-height: 16px; }
+      .btn-row button { padding: 8px 12px; font-size: 0.85rem; }
+    }
+    @media (orientation: landscape) and (max-height: 430px) {
+      .rule-note, .note { font-size: 0.7rem; padding: 6px 8px; margin-bottom: 8px; line-height: 1.4; }
+      .control-group { padding: 7px 10px; margin-bottom: 8px; }
+      .col-badge { font-size: 0.72rem; padding: 3px 9px; }
+    }
+
+    /* 부가 공통 유틸 (일부 퍼즐에서 사용) */
+    .note {
+      background: var(--accent-soft);
+      border: 1px solid #fed7aa;
+      border-radius: var(--radius-ctrl);
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      color: #9a3412;
+      line-height: 1.5;
+      word-break: keep-all;
+      margin-bottom: 14px;
+    }
+
+    /* ===== 목록(index.html)으로 돌아가는 버튼 ===== */
+    .home-btn {
+      position: fixed;
+      top: max(10px, env(safe-area-inset-top, 0px));
+      left: max(10px, env(safe-area-inset-left, 0px));
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px 8px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+      color: #1e293b;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: transform .18s, box-shadow .18s, color .18s, border-color .18s, background .18s;
+    }
+    .home-btn:hover {
+      background: #fff;
+      color: #1d4ed8;
+      border-color: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px -6px rgba(37, 99, 235, 0.5);
+    }
+    .home-btn:active { transform: translateY(0); }
+    .home-btn:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+    .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* 좁거나 납작한 화면에서는 아이콘만 */
+    @media (max-width: 560px), (orientation: landscape) and (max-height: 430px) {
+      .home-btn { padding: 8px; gap: 0; }
+      .home-btn .label { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+
+    /* ===== 랭퍼드 퍼즐 전용 ===== */
+    /* 난이도 프리셋 칩 */
+    .diff-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .diff-chip {
+      flex: 1; min-width: 52px;
+      padding: 9px 6px;
+      border-radius: var(--radius-ctrl);
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-main);
+      font-weight: 800;
+      font-size: 0.98rem;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .diff-chip:hover:not(.active) { background: var(--primary-soft); }
+    .diff-chip:active { transform: translateY(1px); }
+    .diff-chip.active { background: var(--primary); color: #fff; border-color: var(--primary-dark); }
+
+    /* 보드: 슬롯 한 줄 + 팔레트 (세로 배치) */
+    .board-wrapper {
+      flex-direction: column;
+      width: min(94vmin, 720px);
+      max-width: 100%;
+      padding: clamp(12px, 2.6vmin, 24px);
+      gap: clamp(14px, 3.4vmin, 28px);
+      justify-content: center;
+    }
+
+    .slots {
+      display: grid;
+      grid-template-columns: repeat(var(--slots, 8), 1fr);
+      gap: clamp(3px, 0.9vmin, 8px);
+      width: 100%;
+    }
+
+    .slot {
+      aspect-ratio: 1 / 1;
+      border-radius: clamp(6px, 1.4vmin, 12px);
+      border: 2px solid var(--border-color);
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: clamp(0.6rem, 3.1vmin, 1.5rem);
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s, color .15s, border-color .15s, transform .08s;
+    }
+    .slot:active { transform: scale(0.94); }
+    .slot.filled {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary-dark);
+      box-shadow: inset 0 2px 5px rgba(255,255,255,.25);
+    }
+    /* 판정 결과(가득 찼을 때) — filled 뒤에 정의해 우선 적용 */
+    .slot.ok  { background: var(--success); border-color: #0e9f6e; color: #fff; }
+    .slot.bad { background: #fee2e2; border-color: var(--error); color: var(--error); }
+    /* 힌트로 공개된 칸 표시 */
+    .slot.locked { outline: 3px dashed var(--accent); outline-offset: -6px; }
+
+    /* 팔레트 */
+    .palette {
+      display: flex;
+      flex-wrap: wrap;
+      gap: clamp(6px, 1.6vmin, 12px);
+      justify-content: center;
+      width: 100%;
+    }
+    .chip {
+      position: relative;
+      min-width: clamp(40px, 8vmin, 58px);
+      padding: clamp(6px, 1.4vmin, 10px) clamp(9px, 1.8vmin, 15px);
+      border-radius: 12px;
+      border: 2px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-main);
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+      transition: all .15s;
+    }
+    .chip:hover:not(.empty):not(.selected) { border-color: var(--primary); background: var(--primary-soft); }
+    .chip:active:not(.empty) { transform: translateY(1px); }
+    .chip .num { font-weight: 800; font-size: clamp(1rem, 2.7vmin, 1.4rem); line-height: 1.1; }
+    .chip .cnt { font-size: 0.62rem; font-weight: 700; color: var(--text-muted); }
+    .chip.selected {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px -4px var(--primary);
+    }
+    .chip.selected .cnt { color: #dbeafe; }
+    .chip.empty { opacity: 0.4; cursor: not-allowed; }
+
+    @media (orientation: portrait) {
+      .board-wrapper { width: 96vw; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slot, .chip { transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="home-btn" href="index.html" title="게임 목록으로 돌아가기" aria-label="게임 목록으로 돌아가기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.2V20h13v-9.8"/>
+    </svg>
+    <span class="label">목록</span>
+  </a>
+
+  <div class="app-layout">
+    <div class="panel-side">
+      <div class="header-block">
+        <h2>랭퍼드 퍼즐</h2>
+        <p>1,1,2,2, … ,n,n 을 한 줄에 놓되<br><b>두 개의 k 사이에 정확히 k칸</b>이 오게 하세요.</p>
+      </div>
+
+      <div class="note">
+        💡 랭퍼드 배열은 <b>n ≡ 0 또는 3 (mod 4)</b>일 때만 해가 있어요. 그래서 <b>n = 5, 6</b>은 아무리 해도 만들 수 없습니다. (그래서 3·4·7·8만!)
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <label>난이도 (n)</label>
+          <span class="col-badge" id="diffBadge">n=4 · 8칸</span>
+        </div>
+        <div class="diff-chips" id="diffChips">
+          <button class="diff-chip" data-n="3">n=3</button>
+          <button class="diff-chip" data-n="4">n=4</button>
+          <button class="diff-chip" data-n="7">n=7</button>
+          <button class="diff-chip" data-n="8">n=8</button>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <span class="col-badge muted" id="placeBadge">배치 0 / 8</span>
+        <span class="col-badge accent" id="selBadge">숫자 미선택</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-ghost" id="hintBtn">💡 힌트</button>
+        <button class="btn-ghost" id="clearBtn">🧹 지우기</button>
+        <button class="btn-check" id="newBtn">🔄 새 문제</button>
+      </div>
+
+      <div class="answer-group" style="margin-top:16px">
+        <div class="feedback info" id="feedback">팔레트에서 숫자를 골라 빈 칸에 놓으세요.</div>
+      </div>
+    </div>
+
+    <div class="board-side">
+      <div class="board-wrapper">
+        <div class="slots" id="slots"></div>
+        <div class="palette" id="palette"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // ==========================================================
+    //  랭퍼드 짝짓기 — 두 개의 k 사이에 정확히 k칸 (위치 차 = k+1)
+    //  해가 존재하는 n(≡0,3 mod4)만 제공: 3, 4, 7, 8
+    //  (node 스크립트로 솔버·판정·힌트 알고리즘 사전 검증 완료)
+    // ==========================================================
+    const AVAILABLE_N = [3, 4, 7, 8];
+
+    const slotsEl   = document.getElementById('slots');
+    const paletteEl = document.getElementById('palette');
+    const diffChips = document.getElementById('diffChips');
+    const diffBadge = document.getElementById('diffBadge');
+    const placeBadge = document.getElementById('placeBadge');
+    const selBadge  = document.getElementById('selBadge');
+    const hintBtn   = document.getElementById('hintBtn');
+    const clearBtn  = document.getElementById('clearBtn');
+    const newBtn    = document.getElementById('newBtn');
+    const feedback  = document.getElementById('feedback');
+
+    let n = 4;
+    let slots = [];          // 길이 2n, 0=빈칸, 그 외 = 놓인 숫자
+    let remaining = [];      // remaining[v] = 팔레트에 남은 v 개수 (0~2)
+    let selected = 0;        // 현재 선택된 숫자 (0=없음)
+    let locked = new Set();  // 힌트로 공개(고정)된 칸 인덱스
+    let marks = {};          // 판정 결과: 인덱스 -> 'ok' | 'bad'
+    let solution = [];       // 숨은 정답 (힌트용)
+    let finished = false;
+    let slotEls = [], chipEls = [];
+
+    // ---- 백트래킹 솔버(무작위 순서로 다양한 정답) ----
+    function solveLangfordRand(k) {
+      const size = 2 * k;
+      const board = new Array(size).fill(0);
+      function shuffled(len) {
+        const a = Array.from({ length: len }, (_, i) => i);
+        for (let i = len - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+        return a;
+      }
+      function place(v) {
+        if (v === 0) return true;
+        for (const i of shuffled(size)) {
+          if (i + v + 1 < size && board[i] === 0 && board[i + v + 1] === 0) {
+            board[i] = v; board[i + v + 1] = v;
+            if (place(v - 1)) return true;
+            board[i] = 0; board[i + v + 1] = 0;
+          }
+        }
+        return false;
+      }
+      return place(k) ? board : null;
+    }
+
+    function setFeedback(t, kind) {
+      feedback.textContent = t;
+      feedback.className = 'feedback ' + kind;
+    }
+
+    // ---- DOM 구성 (n이 바뀔 때만) ----
+    function buildDOM() {
+      slotsEl.style.setProperty('--slots', 2 * n);
+      slotsEl.innerHTML = ''; slotEls = [];
+      for (let i = 0; i < 2 * n; i++) {
+        const d = document.createElement('div');
+        d.className = 'slot';
+        d.dataset.i = i;
+        slotsEl.appendChild(d);
+        slotEls.push(d);
+      }
+      paletteEl.innerHTML = ''; chipEls = [];
+      for (let v = 1; v <= n; v++) {
+        const c = document.createElement('div');
+        c.className = 'chip';
+        c.dataset.v = v;
+        const num = document.createElement('span'); num.className = 'num'; num.textContent = v;
+        const cnt = document.createElement('span'); cnt.className = 'cnt';
+        c.appendChild(num); c.appendChild(cnt);
+        paletteEl.appendChild(c);
+        chipEls.push(c);
+      }
+    }
+
+    function clearBoard() {
+      slots = new Array(2 * n).fill(0);
+      remaining = new Array(n + 1).fill(2);
+      selected = 0;
+      locked = new Set();
+      marks = {};
+      finished = false;
+    }
+
+    // 가득 찼을 때 각 짝의 간격을 판정하고 marks 채움
+    function judgeBoard() {
+      marks = {};
+      let ok = true;
+      for (let v = 1; v <= n; v++) {
+        const pos = [];
+        for (let i = 0; i < slots.length; i++) if (slots[i] === v) pos.push(i);
+        const good = pos.length === 2 && (pos[1] - pos[0] === v + 1);
+        if (!good) ok = false;
+        for (const p of pos) marks[p] = good ? 'ok' : 'bad';
+      }
+      return ok;
+    }
+
+    function update() {
+      const filled = slots.reduce((a, x) => a + (x ? 1 : 0), 0);
+      const full = filled === 2 * n;
+
+      marks = {};
+      finished = false;
+      if (full) {
+        const ok = judgeBoard();
+        if (ok) finished = true;
+      }
+
+      // 슬롯 그리기
+      slotEls.forEach((el, i) => {
+        const v = slots[i];
+        el.textContent = v || '';
+        let cls = 'slot';
+        if (v) cls += ' filled';
+        if (locked.has(i)) cls += ' locked';
+        if (marks[i] === 'ok') cls += ' ok';
+        else if (marks[i] === 'bad') cls += ' bad';
+        el.className = cls;
+      });
+
+      // 팔레트 그리기
+      chipEls.forEach((c, idx) => {
+        const v = idx + 1;
+        const rem = remaining[v];
+        c.querySelector('.cnt').textContent = rem > 0 ? ('×' + rem) : '완료';
+        let cls = 'chip';
+        if (selected === v) cls += ' selected';
+        if (rem <= 0) cls += ' empty';
+        c.className = cls;
+      });
+
+      // 뱃지
+      placeBadge.textContent = '배치 ' + filled + ' / ' + (2 * n);
+      selBadge.textContent = selected ? ('선택: ' + selected) : '숫자 미선택';
+
+      // 가득 찼을 때 확정 메시지
+      if (full) {
+        if (finished) setFeedback('🎉 완성! 두 개의 k 사이에 정확히 k칸 — 완벽한 랭퍼드 배열이에요!', 'success');
+        else setFeedback('❌ 빨간 짝이 규칙을 어겼어요. 두 k 사이엔 정확히 k칸이어야 해요.', 'error');
+      }
+
+      hintBtn.disabled = finished;
+    }
+
+    function onSlotClick(i) {
+      if (finished) return;
+      if (slots[i] !== 0) {
+        if (locked.has(i)) { setFeedback('🔒 힌트로 공개된 칸이라 회수할 수 없어요.', 'info'); return; }
+        const v = slots[i];
+        remaining[v]++; slots[i] = 0; selected = v;
+        setFeedback('숫자 ' + v + '을(를) 회수했어요.', 'info');
+        update();
+        return;
+      }
+      // 빈 칸
+      if (selected === 0) { setFeedback('먼저 아래 팔레트에서 숫자를 고르세요.', 'info'); return; }
+      if (remaining[selected] <= 0) { setFeedback('그 숫자는 남아있지 않아요.', 'info'); return; }
+      const v = selected;
+      slots[i] = v; remaining[v]--;
+      if (remaining[v] === 0) selected = 0;
+      const empties = slots.reduce((a, x) => a + (x ? 0 : 1), 0);
+      if (empties > 0) setFeedback('좋아요! 남은 빈 칸 ' + empties + '개.', 'info');
+      update();
+    }
+
+    function onChipClick(v) {
+      if (finished) return;
+      if (remaining[v] <= 0) { setFeedback('숫자 ' + v + '은(는) 이미 다 놓았어요.', 'info'); return; }
+      selected = (selected === v) ? 0 : v;
+      if (selected) setFeedback('숫자 ' + v + ' 선택됨. 놓을 빈 칸을 클릭하세요.', 'info');
+      else setFeedback('선택을 해제했어요.', 'info');
+      update();
+    }
+
+    // 정답에서 한 칸을 공개(항상 일관되게 유지 — node로 수렴성 검증 완료)
+    function applyHint() {
+      const S = solution;
+      let pos = -1;
+      for (let i = 0; i < slots.length; i++) { if (slots[i] !== S[i]) { pos = i; break; } }
+      if (pos === -1) return -1;
+      const v = S[pos];
+      if (slots[pos] !== 0) { remaining[slots[pos]]++; slots[pos] = 0; }
+      let onBoard = 0;
+      for (let i = 0; i < slots.length; i++) if (slots[i] === v) onBoard++;
+      if (onBoard >= 2) {
+        for (let q = 0; q < slots.length; q++) {
+          if (slots[q] === v && S[q] !== v && !locked.has(q)) { remaining[v]++; slots[q] = 0; break; }
+        }
+      }
+      slots[pos] = v; remaining[v]--; locked.add(pos);
+      return pos;
+    }
+
+    function doHint() {
+      if (finished) return;
+      const pos = applyHint();
+      if (pos < 0) { setFeedback('더 공개할 칸이 없어요.', 'info'); return; }
+      selected = 0;
+      setFeedback('💡 ' + (pos + 1) + '번째 칸을 공개했어요.', 'info');
+      update();
+    }
+
+    function setActiveDiff(k) {
+      [...diffChips.children].forEach(b => b.classList.toggle('active', +b.dataset.n === k));
+    }
+
+    function setN(newN) {
+      n = newN;
+      setActiveDiff(n);
+      diffBadge.textContent = 'n=' + n + ' · ' + (2 * n) + '칸';
+      solution = solveLangfordRand(n);
+      buildDOM();
+      clearBoard();
+      setFeedback('팔레트에서 숫자를 골라 빈 칸에 놓으세요. 두 k 사이엔 정확히 k칸!', 'info');
+      update();
+    }
+
+    // ---- 이벤트 ----
+    slotsEl.addEventListener('click', (e) => {
+      const el = e.target.closest('.slot');
+      if (el) onSlotClick(parseInt(el.dataset.i, 10));
+    });
+    paletteEl.addEventListener('click', (e) => {
+      const el = e.target.closest('.chip');
+      if (el) onChipClick(parseInt(el.dataset.v, 10));
+    });
+    diffChips.addEventListener('click', (e) => {
+      const b = e.target.closest('.diff-chip');
+      if (b) setN(parseInt(b.dataset.n, 10));
+    });
+    hintBtn.addEventListener('click', doHint);
+    clearBtn.addEventListener('click', () => {
+      clearBoard();
+      setFeedback('보드를 비웠어요. 다시 도전!', 'info');
+      update();
+    });
+    newBtn.addEventListener('click', () => {
+      solution = solveLangfordRand(n);
+      clearBoard();
+      setFeedback('새 배치에 도전! (숨은 정답이 바뀌어 힌트도 달라져요)', 'info');
+      update();
+    });
+
+    // 시작
+    setN(4);
+
+  </script>
+</body>
+</html>

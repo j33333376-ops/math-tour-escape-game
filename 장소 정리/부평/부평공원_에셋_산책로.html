@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>부평공원 산책로</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .bpwk-svg { display:block; width:100%; height:auto; }
+  .bpwk-grass1 { fill:#6fa350; }
+  .bpwk-grass2 { fill:#84b862; opacity:0.85; }
+  .bpwk-path { fill:none; stroke:url(#bpwkPave); }
+  .bpwk-path-edge { fill:none; stroke:#b7ab93; }
+  .bpwk-dash { stroke:#faf6ea; stroke-width:4; stroke-dasharray:14,16; fill:none; opacity:0.85; animation: bpwkFlow 3.5s linear infinite; }
+  .bpwk-canopy-dark { fill:#3f7233; }
+  .bpwk-canopy-mid { fill:#57944a; }
+  .bpwk-canopy-light { fill:#79b866; opacity:0.9; }
+  .bpwk-trunk { fill:#6b4a2c; }
+  .bpwk-bench-seat { fill:#a5723c; }
+  .bpwk-bench-frame { fill:#4a3320; }
+  .bpwk-sign-post { fill:#8b8b8b; }
+  .bpwk-sign-board { fill:#f6f1e2; stroke:#c8a86a; stroke-width:3; }
+  .bpwk-sign-text { fill:#274064; font-family:'Malgun Gothic',sans-serif; font-weight:bold; text-anchor:middle; }
+  .bpwk-figure { stroke:#274064; stroke-width:3; stroke-linecap:round; fill:none; }
+  .bpwk-arrow { fill:#4c8a3e; }
+  @keyframes bpwkFlow { from { stroke-dashoffset:0; } to { stroke-dashoffset:-60; } }
+  @keyframes bpwkSway { 0%,100% { transform:rotate(-1.2deg); } 50% { transform:rotate(1.2deg); } }
+  .bpwk-tree { animation: bpwkSway 5s ease-in-out infinite; }
+</style>
+</head>
+<body>
+<!-- 원본 크기: 900x420 -->
+<svg class="bpwk-svg" viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="부평공원 산책로">
+<title>부평공원 산책로</title>
+<desc>완만하게 굽은 보도 위로 가로수와 벤치, 바른 걷기 안내판이 놓인 부평공원 산책로.</desc>
+<defs>
+  <linearGradient id="bpwkPave" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#e9e2d3"/>
+    <stop offset="1" stop-color="#d3c9b3"/>
+  </linearGradient>
+</defs>
+
+<!-- 잔디 블롭 -->
+<g>
+  <ellipse class="bpwk-grass1" cx="90" cy="400" rx="140" ry="60"/>
+  <ellipse class="bpwk-grass2" cx="55" cy="385" rx="90" ry="40"/>
+  <ellipse class="bpwk-grass1" cx="810" cy="55" rx="150" ry="70"/>
+  <ellipse class="bpwk-grass2" cx="850" cy="90" rx="90" ry="40"/>
+  <ellipse class="bpwk-grass1" cx="255" cy="185" rx="70" ry="34"/>
+  <ellipse class="bpwk-grass1" cx="600" cy="130" rx="60" ry="30"/>
+  <ellipse class="bpwk-grass2" cx="500" cy="360" rx="80" ry="34"/>
+</g>
+
+<!-- 산책로 (테두리 + 포장 + 중앙 점선) -->
+<path class="bpwk-path-edge" d="M60,390 C220,390 200,260 380,250 C560,240 540,120 840,60" stroke-width="80"/>
+<path class="bpwk-path" d="M60,390 C220,390 200,260 380,250 C560,240 540,120 840,60" stroke-width="72"/>
+<path class="bpwk-dash" d="M60,390 C220,390 200,260 380,250 C560,240 540,120 840,60"/>
+
+<!-- 배경 소형 가로수 -->
+<g class="bpwk-tree" style="transform-origin:700px 60px;">
+  <rect class="bpwk-trunk" x="696" y="60" width="5" height="18"/>
+  <circle class="bpwk-canopy-dark" cx="700" cy="55" r="13"/>
+  <circle class="bpwk-canopy-mid" cx="695" cy="51" r="9"/>
+  <circle class="bpwk-canopy-light" cx="692" cy="49" r="5"/>
+</g>
+<g class="bpwk-tree" style="transform-origin:400px 110px;">
+  <rect class="bpwk-trunk" x="395" y="110" width="6" height="20"/>
+  <circle class="bpwk-canopy-dark" cx="400" cy="105" r="15"/>
+  <circle class="bpwk-canopy-mid" cx="394" cy="100" r="10"/>
+  <circle class="bpwk-canopy-light" cx="391" cy="98" r="6"/>
+</g>
+
+<!-- 중경 가로수 -->
+<g class="bpwk-tree" style="transform-origin:640px 175px;">
+  <rect class="bpwk-trunk" x="634" y="175" width="8" height="28"/>
+  <circle class="bpwk-canopy-dark" cx="640" cy="168" r="20"/>
+  <circle class="bpwk-canopy-mid" cx="632" cy="161" r="14"/>
+  <circle class="bpwk-canopy-light" cx="627" cy="157" r="8"/>
+</g>
+<g class="bpwk-tree" style="transform-origin:230px 225px;">
+  <rect class="bpwk-trunk" x="224" y="225" width="9" height="30"/>
+  <circle class="bpwk-canopy-dark" cx="230" cy="217" r="22"/>
+  <circle class="bpwk-canopy-mid" cx="221" cy="210" r="15"/>
+  <circle class="bpwk-canopy-light" cx="216" cy="205" r="9"/>
+</g>
+
+<!-- 배치 안내판 -->
+<g transform="translate(500,330)">
+  <rect class="bpwk-sign-post" x="-4" y="-72" width="8" height="72"/>
+  <rect class="bpwk-sign-board" x="-58" y="-134" width="116" height="66" rx="6"/>
+  <text class="bpwk-sign-text" x="10" y="-98" font-size="14">바른 걷기 안내</text>
+  <g class="bpwk-figure" transform="translate(-32,-108)">
+    <circle cx="0" cy="-13" r="5" fill="#274064" stroke="none"/>
+    <line x1="0" y1="-8" x2="0" y2="8"/>
+    <line x1="0" y1="-2" x2="-8" y2="5"/>
+    <line x1="0" y1="-2" x2="9" y2="-5"/>
+    <line x1="0" y1="8" x2="-7" y2="20"/>
+    <line x1="0" y1="8" x2="8" y2="18"/>
+  </g>
+  <polygon class="bpwk-arrow" points="18,-104 34,-98 18,-92"/>
+</g>
+
+<!-- 벤치 (전경) -->
+<g transform="translate(200,372)">
+  <rect class="bpwk-bench-frame" x="-23" y="-26" width="6" height="26"/>
+  <rect class="bpwk-bench-frame" x="17" y="-26" width="6" height="26"/>
+  <rect class="bpwk-bench-seat" x="-25" y="-30" width="50" height="6"/>
+  <rect class="bpwk-bench-seat" x="-25" y="-20" width="50" height="6"/>
+  <rect class="bpwk-bench-seat" x="-25" y="-4" width="50" height="6"/>
+  <rect class="bpwk-bench-frame" x="-23" y="2" width="6" height="14"/>
+  <rect class="bpwk-bench-frame" x="17" y="2" width="6" height="14"/>
+</g>
+
+<!-- 벤치 (배경, 축소) -->
+<g transform="translate(650,150) scale(0.55)">
+  <rect class="bpwk-bench-frame" x="-23" y="-26" width="6" height="26"/>
+  <rect class="bpwk-bench-frame" x="17" y="-26" width="6" height="26"/>
+  <rect class="bpwk-bench-seat" x="-25" y="-30" width="50" height="6"/>
+  <rect class="bpwk-bench-seat" x="-25" y="-20" width="50" height="6"/>
+  <rect class="bpwk-bench-seat" x="-25" y="-4" width="50" height="6"/>
+  <rect class="bpwk-bench-frame" x="-23" y="2" width="6" height="14"/>
+  <rect class="bpwk-bench-frame" x="17" y="2" width="6" height="14"/>
+</g>
+
+<!-- 전경 가로수 -->
+<g class="bpwk-tree" style="transform-origin:100px 355px;">
+  <rect class="bpwk-trunk" x="93" y="355" width="12" height="40"/>
+  <circle class="bpwk-canopy-dark" cx="100" cy="344" r="30"/>
+  <circle class="bpwk-canopy-mid" cx="88" cy="334" r="20"/>
+  <circle class="bpwk-canopy-light" cx="80" cy="327" r="12"/>
+</g>
+<g class="bpwk-tree" style="transform-origin:790px 378px;">
+  <rect class="bpwk-trunk" x="783" y="378" width="12" height="38"/>
+  <circle class="bpwk-canopy-dark" cx="790" cy="366" r="28"/>
+  <circle class="bpwk-canopy-mid" cx="800" cy="357" r="18"/>
+  <circle class="bpwk-canopy-light" cx="806" cy="350" r="10"/>
+</g>
+</svg>
+</body>
+</html>

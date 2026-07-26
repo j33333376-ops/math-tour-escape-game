@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수학 개념 어드벤처 - 연립일차방정식</title>
+    <style>
+        /* 기본 레이아웃 제어 및 초기화 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0d1611;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 16:9 고정 해상도 뷰포트 컨테이너 */
+        #game-view {
+            position: relative;
+            width: 100vw;
+            height: 56.25vw; /* 16:9 비율 유지 */
+            max-width: 1600px;
+            max-height: 900px;
+            background-color: #000;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.8);
+        }
+
+        /* 배경 레이어 및 래퍼 구역 */
+        #background-wrapper {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* AI 수로 테마 CSS 대체 배경 */
+        .custom-fallback-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #7ec8e3 0%, #bfe6f2 35%, #8c6239 65%, #4a3319 100%);
+        }
+        .fallback-water-stream {
+            position: absolute;
+            bottom: 0;
+            left: 55%;
+            transform: translateX(-50%);
+            width: 260px;
+            height: 450px;
+            background: linear-gradient(to right, #29a1b8, #5ecde0, #29a1b8);
+            clip-path: polygon(30% 0, 70% 0, 100% 100%, 0 100%);
+            opacity: 0.85;
+        }
+
+        /* 캐릭터 레이어 및 배치 시스템 */
+        #characters-layer {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 140px 130px 140px;
+        }
+
+        .character-frame {
+            position: relative;
+            width: 260px;
+            height: 320px;
+            transition: filter 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
+            pointer-events: none;
+        }
+
+        /* 캐릭터 캡션/설명 요소 절대 숨김 제어 */
+        .character-frame p, .character-frame small, .character-frame figcaption, 
+        .character-frame .caption, .character-frame .description, 
+        .character-frame .hint, .character-frame .label {
+            display: none !important;
+        }
+
+        /* 대화 주체 상태에 따른 하이라이트 클래스 */
+        .active-speaker {
+            filter: brightness(1.12) saturate(1.08);
+            opacity: 1;
+            transform: scale(1.04);
+        }
+
+        .inactive-speaker {
+            filter: brightness(0.48) saturate(0.7);
+            opacity: 0.72;
+            transform: scale(1.0);
+        }
+
+        /* 메인 게임 인터페이스 레이어 (Grid 분할) */
+        #interface-layer {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            display: grid;
+            grid-template-rows: 64px 1fr auto;
+            padding: 24px;
+            pointer-events: none;
+        }
+
+        /* 상단 HUD 정보창 */
+        #hud-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 25, 20, 0.85);
+            padding: 0 24px;
+            border-radius: 12px;
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            pointer-events: auto;
+        }
+        .hud-title { font-weight: bold; color: #ffd700; font-size: 1.05rem; }
+        .hud-status { font-size: 0.95rem; background: #2a4433; padding: 4px 14px; border-radius: 20px; border: 1px solid #426b50; }
+
+        /* 중앙 미션/퀴즈 콘텐츠 카드 배치단 */
+        #mission-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        .problem-card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 16px;
+            padding: 28px;
+            width: 100%;
+            max-width: 780px;
+            max-height: 100%;
+            overflow-y: auto;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.5);
+            border: 3px solid #5c432d;
+            display: none;
+            pointer-events: auto;
+        }
+
+        .problem-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1a1a1a;
+            margin-bottom: 18px;
+            line-height: 1.6;
+        }
+
+        /* 엄격한 HTML/CSS 수학 표기법 스타일 규칙 */
+        .math {
+            display: inline-flex;
+            align-items: center;
+            font-style: normal;
+            font-family: 'Times New Roman', serif;
+            font-weight: bold;
+            padding: 0 4px;
+        }
+        
+        .equation-layout {
+            display: block;
+            margin: 14px 0;
+            padding-left: 24px;
+            border-left: 4px solid #8c6239;
+        }
+
+        .bracket-system {
+            display: inline-flex;
+            align-items: center;
+            position: relative;
+            padding-left: 14px;
+            margin: 10px 0;
+        }
+        .bracket-system::before {
+            content: "{";
+            font-size: 3rem;
+            font-family: 'Courier New', monospace;
+            font-weight: 100;
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-54%);
+            color: #222;
+        }
+        .system-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .frac {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0 4px;
+            font-size: 0.95em;
+        }
+        .frac span:first-child {
+            border-bottom: 1.8px solid #000;
+            padding-bottom: 1px;
+        }
+        .frac span:last-child {
+            padding-top: 1px;
+        }
+
+        /* 퀴즈 선택지 격자 및 레이아웃 */
+        .choices-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 22px;
+        }
+        @media (max-width: 720px) {
+            .choices-container { grid-template-columns: 1fr; }
+        }
+
+        .choice-item-btn {
+            background: #ffffff;
+            border: 2px solid #d4c5b9;
+            border-radius: 10px;
+            padding: 16px;
+            min-height: 56px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            white-space: normal;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+        }
+        .choice-item-btn:hover {
+            background: #f4ede6;
+            border-color: #8c6239;
+            transform: translateY(-1px);
+        }
+        .choice-segment-text {
+            margin-left: 8px;
+            color: #2b2b2b;
+            font-size: 1rem;
+        }
+
+        /* 정오답 즉각 피드백 패널 */
+        .response-feedback {
+            margin-top: 18px;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none;
+            line-height: 1.5;
+            font-size: 1.05rem;
+        }
+        .feedback-positive { background: linear-gradient(135deg, #fffaf0, #f3e4bd); color: #3d2a17; border: 2px solid #b38b3d; cursor: pointer; box-shadow: 0 8px 20px rgba(61, 42, 23, .25); animation: gateUnlock .55s ease-out; }
+        .success-stage { display: flex; align-items: center; justify-content: center; gap: 14px; }
+        .answer-seal { flex: 0 0 auto; width: 58px; height: 58px; display: grid; place-items: center; border: 4px double #a51f1f; color: #a51f1f; border-radius: 10px; font-family: serif; font-size: 1.25rem; font-weight: 900; transform: rotate(-7deg); animation: sealStamp .42s cubic-bezier(.2,.9,.25,1.35); }
+        .unlock-copy { text-align: left; line-height: 1.45; }
+        .unlock-title { display: block; color: #8a5a12; font-size: 1.08rem; }
+        .unlock-hint { display: block; margin-top: 3px; color: #6f5a3f; font-size: .82rem; }
+        @keyframes sealStamp { from { opacity: 0; transform: scale(2.1) rotate(-14deg); } to { opacity: 1; transform: scale(1) rotate(-7deg); } }
+        @keyframes gateUnlock { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @media (prefers-reduced-motion: reduce) { .answer-seal, .feedback-positive { animation: none; } }
+        .feedback-negative { background: #ffebee; color: #b71c1c; border: 1px solid #ffcdd2; }
+
+        /* 하단 전용 내러티브 대화 박스 */
+        #dialogue-container {
+            background: rgba(253, 251, 247, 0.96);
+            border: 4px solid #4a3b2c;
+            border-radius: 14px;
+            padding: 22px 32px;
+            min-height: 150px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: auto;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            margin-top: 12px;
+        }
+
+        #speaker-tag {
+            position: absolute;
+            top: -20px;
+            left: 32px;
+            background: #4a3b2c;
+            color: #ffffff;
+            padding: 5px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+        }
+
+        #dialogue-passage {
+            font-size: 1.2rem;
+            line-height: 1.65;
+            color: #2c1e14;
+            margin-top: 10px;
+            word-break: keep-all;
+        }
+
+        .interaction-prompt {
+            align-self: flex-end;
+            font-size: 0.9rem;
+            color: #8c7664;
+            animation: textPulse 1.2s infinite alternate;
+            margin-top: 6px;
+            user-select: none;
+        }
+
+        /* 체크리스트 가시화 컴포넌트 */
+        .check-review-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 18px 0;
+        }
+        .check-review-line {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1rem;
+            color: #2c3e50;
+        }
+        .check-review-line input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #279cb3;
+        }
+
+        /* 다음 게이트웨이 전환 버튼 */
+        .gate-transition-btn {
+            background: #279cb3;
+            color: #ffffff;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+            transition: background 0.2s, transform 0.2s;
+            display: inline-flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .gate-transition-btn:hover {
+            background: #1f7d90;
+            transform: translateY(-1px);
+        }
+
+        @keyframes textPulse {
+            from { opacity: 0.4; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-view">
+    <div id="background-wrapper">
+        <div id="bg-core-fallback" class="custom-fallback-bg" style="display:none;">
+            <div class="fallback-water-stream"></div>
+        </div>
+    </div>
+
+    <div id="characters-layer">
+        <div id="char-dolsoe" class="character-frame"></div>
+        <div id="char-juin" class="character-frame"></div>
+    </div>
+
+    <div id="interface-layer">
+        <div id="hud-bar">
+            <span class="hud-title">수학 개념 어드벤처 🧭</span>
+            <span id="hud-topic">5단원. 연립일차방정식</span>
+            <span id="hud-tracker" class="hud-status">개념 로딩 중</span>
+        </div>
+
+        <div id="mission-center">
+            
+            <div id="card-quiz-1" class="problem-card">
+                <div class="problem-title">
+                    🎯 <strong>[미션 1] 수로 개방 조건 해석하기</strong><br><br>
+                    마님이 조건을 제시합니다. "A수로를 개방한 시간의 <em class="math">2</em>배와 B수로를 개방한 시간의 합이 정확히 <em class="math">12</em>시간이 되어야 물의 양을 맞출 수 있다." <br>
+                    이 상황을 만족하는 미지수가 <em class="math">2</em>개인 일차방정식을 올바르게 구성해 보세요.
+                    <div style="font-size:0.9rem; color:#666; margin-top:6px;">(A수로 개방 시간 = <em class="math">x</em>, B수로 개방 시간 = <em class="math">y</em>)</div>
+                </div>
+                <div class="choices-container">
+                    <button class="choice-item-btn" onclick="processUserChoice(1, false)">
+                        <span class="math">x + y = 12</span>
+                    </button>
+                    <button class="choice-item-btn" onclick="processUserChoice(1, true)">
+                        <span class="math">2x + y = 12</span>
+                    </button>
+                    <button class="choice-item-btn" onclick="processUserChoice(1, false)">
+                        <span class="math">x + 2y = 12</span>
+                    </button>
+                    <button class="choice-item-btn" onclick="processUserChoice(1, false)">
+                        <span class="math">2x - y = 12</span>
+                    </button>
+                </div>
+                <div id="reply-feedback-1" class="response-feedback"></div>
+            </div>
+
+            <div id="card-quiz-2" class="problem-card">
+                <div class="problem-title">
+                    🎯 <strong>[미션 2] 대입법과 가감법 마스터</strong><br><br>
+                    수문을 정밀 조절하기 위해 주어진 미지수가 <em class="math">2</em>개인 연립일차방정식 시스템의 공통인 해(<em class="math">x, y</em>)를 도출해야 합니다. 계산을 완료한 후 정답을 고르세요.
+                    <div class="equation-layout">
+                        <div class="bracket-system">
+                            <div class="system-rows">
+                                <div><em class="math">x + y = 8</em></div>
+                                <div><em class="math">3x + y = 14</em></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="choices-container">
+                    <button class="choice-item-btn" onclick="processUserChoice(2, false)">
+                        <span class="math">x = 2, y = 6</span>
+                    </button>
+                    <button class="choice-item-btn" onclick="processUserChoice(2, true)">
+                        <span class="math">x = 3, y = 5</span>
+                    </button>
+                    <button class="choice-item-btn" onclick="processUserChoice(2, false)">
+                        <span class="math">x = 4, y = 4</span>
+                    </button>
+                    <button class="choice-item-btn" onclick="processUserChoice(2, false)">
+                        <span class="math">x = 1, y = 7</span>
+                    </button>
+                </div>
+                <div id="reply-feedback-2" class="response-feedback"></div>
+            </div>
+
+            <div id="card-quiz-3" class="problem-card">
+                <div class="problem-title">
+                    🌊 <strong>[최종 미션] 대농장 물 뿌리기와 수로 완벽 제어</strong><br><br>
+                    "A수로로 <em class="math">x</em>시간, B수로로 <em class="math">y</em>시간 물을 대어 <strong>총 10시간</strong> 동안 정확히 <strong>150톤</strong>의 물을 채워야 한다. 두 수로의 시간당 유량 관계가 아래와 같을 때, 논의 물높이를 완벽하게 맞추기 위해 각각 몇 시간씩 수문을 열어두어야 하는가?"
+                    <div class="equation-layout">
+                        <div class="bracket-system">
+                            <div class="system-rows">
+                                <div>A수로 시간당 유량: <em class="math">20</em>톤</div>
+                                <div>B수로 시간당 유량: <em class="math">10</em>톤</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="choices-container">
+                    <button class="choice-item-btn" onclick="processUserChoice(3, false)">
+                        <span class="choice-segment-text">A수로: 4시간, B수로: 6시간</span>
+                    </button>
+                    <button class="choice-item-btn" onclick="processUserChoice(3, true)">
+                        <span class="choice-segment-text">A수로: 5시간, B수로: 5시간</span>
+                    </button>
+                    <button class="choice-item-btn" onclick="processUserChoice(3, false)">
+                        <span class="choice-segment-text">A수로: 6시간, B수로: 4시간</span>
+                    </button>
+                    <button class="choice-item-btn" onclick="processUserChoice(3, false)">
+                        <span class="choice-segment-text">A수로: 3시간, B수로: 7시간</span>
+                    </button>
+                </div>
+                <div id="reply-feedback-3" class="response-feedback"></div>
+            </div>
+
+            <div id="card-quiz-finish" class="problem-card">
+                <div class="problem-title" style="color: #279cb3;">✨ 단원 마스터! 오늘 배운 핵심 개념 정리</div>
+                <div class="check-review-box">
+                    <div class="check-review-line">
+                        <input type="checkbox" id="chk-review-1" checked disabled>
+                        <label for="chk-review-1">미지수가 2개인 일차방정식의 정의와 식 세우기</label>
+                    </div>
+                    <div class="check-review-line">
+                        <input type="checkbox" id="chk-review-2" checked disabled>
+                        <label for="chk-review-2">연립일차방정식의 뜻과 대입법·가감법 해법 이해</label>
+                    </div>
+                    <div class="check-review-line">
+                        <input type="checkbox" id="chk-review-3" checked disabled>
+                        <label for="chk-review-3">실생활 연동 문제(수로 유량 계산) 해결 메커니즘 확립</label>
+                    </div>
+                </div>
+                <button class="gate-transition-btn" onclick="navigateToNextGate()">
+                    다음 단원(함수의 개념)으로 이동하기 ➡️
+                </button>
+            </div>
+
+        </div>
+
+        <div id="dialogue-container" onclick="triggerNextDialogue()">
+            <div id="speaker-tag">시스템</div>
+            <div id="dialogue-passage">게임 로딩 중...</div>
+            <div class="interaction-prompt">▼ 마우스 클릭 또는 Enter 키를 입력하세요</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. 대화 시나리오 데이터 아키텍처 정의
+    const scriptFlow = [
+        { speaker: "시스템", text: "돌쇠는 일차부등식으로 예산 안에서 살 수 있는 씨앗의 범위를 정한 뒤, 다음 농사 구역인 대농장 저수지에 도착했습니다." },
+        { speaker: "마님", text: "돌쇠야! 두 수로의 물 유입 속도가 달라 물의 양을 맞추기 어렵구나. 두 조건을 함께 계산해 논에 필요한 물을 채워 보아라." },
+        { speaker: "돌쇠", text: "마님, 걱정 마세유! A수로와 B수로의 수문을 여는 시간을 조절해 보겠어유." },
+        { speaker: "마님", text: "그렇단다. 하지만 미지수가 <em class='math'>x, y</em>로 두 개일 때는 조건식 하나만으로 값을 정하기 어렵지. 먼저 첫 번째 조건부터 식으로 나타내 보자꾸나." },
+        { speaker: "이벤트_퀴즈1", text: "알맞은 연립방정식의 첫 번째 조건 식을 설계해 주세요." },
+        { speaker: "돌쇠", text: "문장의 조건을 식으로 나타내니 <em class='math'>2x + y = 12</em>가 되었어유!" },
+        { speaker: "마님", text: "훌륭하구나. 이렇게 미지수가 2개인 일차방정식 두 개를 한 쌍으로 묶어 공통인 해를 찾는 것을 <strong>연립일차방정식</strong>이라고 부른단다." },
+        { speaker: "돌쇠", text: "그럼 식 두 개를 합쳐서 진짜 공통인 정답 해를 뽑아내려면 어떤 방법을 써야 하나요?" },
+        { speaker: "마님", text: "두 식을 더하거나 빼서 한 미지수를 없애는 가감법이나, 한 식을 다른 식에 넣는 대입법을 쓰면 된단다. 다음 문제를 풀어 보겠느냐?" },
+        { speaker: "이벤트_퀴즈2", text: "가감법 또는 대입법을 활용하여 연립방정식의 공통 해를 계산하세요." },
+        { speaker: "돌쇠", text: "마님 말씀대로 한 미지수를 없애니 남은 값도 차근차근 구할 수 있었어유!" },
+        { speaker: "마님", text: "장하구나! 이제 두 수로의 밸브를 조절해 논에 필요한 물의 양을 맞춰 보자." },
+        { speaker: "이벤트_퀴즈3", text: "농업 용수 조절을 위한 최종 실생활 활용 연립방정식 미션을 해결하세요." },
+        { speaker: "마님", text: "해결했구나! 두 수로를 각각 5시간씩 열면 필요한 150톤의 물을 채울 수 있겠구나. 잘했어, 돌쇠야!" },
+        { speaker: "돌쇠", text: "연립방정식으로 두 수로의 조건을 함께 계산하니 필요한 물의 양을 맞출 수 있었어유!" },
+        { speaker: "시스템", text: "축하합니다! 연립일차방정식 단원의 모든 수학 챌린지 퀘스트를 성공적으로 클리어하셨습니다." },
+        { speaker: "엔딩연결", text: "이곳에서 배운 변수들의 조화로운 균형 관계는 다음 단원인 <strong>'함수의 개념'</strong>에서 두 양 사이의 유기적인 변화와 대응 법칙으로 한 단계 더 발전하게 됩니다. 다음 학습지로 나아갑시다!" }
+    ];
+
+    let currentScriptStage = 0;
+    let freezeDialogueTransition = false;
+
+    // 2. 에셋 컴포넌트 비동기 로드 및 강력한 Iframe 세이프가드 엔진
+    function processAssetDeployment(mode, assetName, srcPath, targetWrapperId) {
+        const frameContainer = document.getElementById(targetWrapperId);
+        if(!frameContainer) return;
+
+        // 1차 Fetch API 로딩 프로토콜 시도
+        fetch(srcPath)
+            .then(res => {
+                if(!res.ok) throw new Error('Asset Load Failure');
+                return res.text();
+            })
+            .then(htmlMarkup => {
+                frameContainer.innerHTML = htmlMarkup;
+                clearCaptionMetadata(frameContainer);
+                if(mode === 'bg') secureBgLayout(frameContainer.firstElementChild);
+            })
+            .catch(() => {
+                // 로컬 환경 자원 차단 대처용 Iframe 대체 파이프라인 가동
+                const backupFrame = document.createElement('iframe');
+                backupFrame.src = srcPath;
+                backupFrame.setAttribute('scrolling', 'no');
+                backupFrame.style.width = '100%';
+                backupFrame.style.height = '100%';
+                backupFrame.style.border = '0';
+                backupFrame.style.overflow = 'hidden';
+
+                if(mode === 'bg') {
+                    let frameSuccessFlag = false;
+                    backupFrame.onload = () => { frameSuccessFlag = true; };
+                    frameContainer.appendChild(backupFrame);
+
+                    // 1초 안전 타임아웃 타이머 가동
+                    setTimeout(() => {
+                        if(!frameSuccessFlag) {
+                            backupFrame.remove();
+                            document.getElementById('bg-core-fallback').style.display = 'block';
+                        }
+                    }, 1000);
+                } else {
+                    frameContainer.appendChild(backupFrame);
+                }
+            });
+    }
+
+    function clearCaptionMetadata(container) {
+        const structuralLabels = container.querySelectorAll('p, small, figcaption, .caption, .description, .hint, .label');
+        structuralLabels.forEach(element => element.style.display = 'none !important');
+    }
+
+    function secureBgLayout(element) {
+        if(!element) return;
+        element.style.position = 'absolute';
+        element.style.inset = '0';
+        element.style.width = '100%';
+        element.style.height = '100%';
+        element.style.overflow = 'hidden';
+    }
+
+    // 초기 엔진 로딩 실행부
+    processAssetDeployment('bg', '수로', 'assets/수로.html', 'background-wrapper');
+    processAssetDeployment('char', '돌쇠', 'assets/돌쇠.html', 'char-dolsoe');
+    processAssetDeployment('char', '마님', 'assets/마님.html', 'char-juin');
+
+    // 3. 인물 상호작용 하이라이트 및 대화 엔진 컨트롤러
+    function syncCharacterFocus(speaker) {
+        const frameDolsoe = document.getElementById('char-dolsoe');
+        const frameJuin = document.getElementById('char-juin');
+
+        frameDolsoe.classList.remove('active-speaker', 'inactive-speaker');
+        frameJuin.classList.remove('active-speaker', 'inactive-speaker');
+
+        if (speaker === "돌쇠") {
+            frameDolsoe.classList.add('active-speaker');
+            frameJuin.classList.add('inactive-speaker');
+        } else if (speaker === "마님") {
+            frameJuin.classList.add('active-speaker');
+            frameDolsoe.classList.add('inactive-speaker');
+        } else {
+            frameDolsoe.style.filter = "brightness(1) opacity(1)";
+            frameJuin.style.filter = "brightness(1) opacity(1)";
+        }
+    }
+
+    function renderActiveStage() {
+        if(currentScriptStage >= scriptFlow.length) return;
+        
+        const currentDialogueNode = scriptFlow[currentScriptStage];
+        
+        // 실시간 퀴즈 시퀀스 가로채기 체크
+        if(currentDialogueNode.speaker.startsWith("이벤트_")) {
+            freezeDialogueTransition = true;
+            document.getElementById('dialogue-container').style.pointerEvents = 'none';
+            document.getElementById('dialogue-container').style.opacity = '0.35';
+            
+            if(currentDialogueNode.speaker === "이벤트_퀴즈1") {
+                deployQuizCard('card-quiz-1', '미션 1: 일차방정식 분석');
+            } else if(currentDialogueNode.speaker === "이벤트_퀴즈2") {
+                deployQuizCard('card-quiz-2', '미션 2: 시스템 방정식 풀이');
+            } else if(currentDialogueNode.speaker === "이벤트_퀴즈3") {
+                deployQuizCard('card-quiz-3', '최종 미션: 수량 균형 조절');
+            }
+            return;
+        }
+
+        if(currentDialogueNode.speaker === "엔딩연결") {
+            freezeDialogueTransition = true;
+            document.getElementById('dialogue-container').style.display = 'none';
+            deployQuizCard('card-quiz-finish', '연립방정식 퀘스트 완료');
+            return;
+        }
+
+        // 일반 텍스트 노드 화면 적용 및 동기화
+        document.getElementById('speaker-tag').innerText = currentDialogueNode.speaker;
+        document.getElementById('dialogue-passage').innerHTML = currentDialogueNode.text;
+        syncCharacterFocus(currentDialogueNode.speaker);
+    }
+
+    function deployQuizCard(elementId, stageTrackerMessage) {
+        document.querySelectorAll('.problem-card').forEach(card => card.style.display = 'none');
+        document.getElementById(elementId).style.display = 'block';
+        document.getElementById('hud-tracker').innerText = stageTrackerMessage;
+    }
+
+    function triggerNextDialogue() {
+        if(freezeDialogueTransition) return;
+        currentScriptStage++;
+        if(currentScriptStage < scriptFlow.length) {
+            renderActiveStage();
+        }
+    }
+
+    // 키보드 입력을 위한 연동 인터페이스 구현
+    document.addEventListener('keydown', (event) => {
+        if(event.key === 'Enter') {
+            triggerNextDialogue();
+        }
+    });
+
+    // 4. 안전 보장형 피드백 제어부
+    function processUserChoice(quizOrderKey, isCorrectOption) {
+        const targetFeedbackPanel = document.getElementById(`reply-feedback-1`);
+        const feedbackSelector = document.getElementById(`reply-feedback-${quizOrderKey}`);
+        feedbackSelector.style.display = 'block';
+
+        if(isCorrectOption) {
+            let corePositivePrompt = "정답입니다! 완벽한 연립방정식 메커니즘을 유도하셨습니다.";
+            if(quizOrderKey === 1) corePositivePrompt = "좋아요! 문제 조건을 관통하는 완벽한 식 설계입니다.";
+            if(quizOrderKey === 2) corePositivePrompt = "멋진 추론이에요! 소거법의 원리를 완벽히 적용하셨군요.";
+            if(quizOrderKey === 3) corePositivePrompt = "미션 완료! 단원 클리어! 훌륭해요! 벼들이 안전하게 자라날 수 있게 되었습니다.";
+            
+            feedbackSelector.className = "response-feedback feedback-positive";
+            feedbackSelector.innerHTML = `<div class="success-stage"><span class="answer-seal">정답</span><span class="unlock-copy"><strong class="unlock-title">🔓 다음 관문 잠금 해제</strong>${corePositivePrompt}<small class="unlock-hint">이 상자를 클릭해 계속하기</small></span></div>`;
+            feedbackSelector.onclick = () => {
+                feedbackSelector.onclick = null;
+                feedbackSelector.style.display = 'none';
+                document.getElementById(`card-quiz-${quizOrderKey}`).style.display = 'none';
+                document.getElementById('dialogue-container').style.pointerEvents = 'auto';
+                document.getElementById('dialogue-container').style.opacity = '1';
+                freezeDialogueTransition = false;
+                currentScriptStage++;
+                renderActiveStage();
+            };
+        } else {
+            feedbackSelector.className = "response-feedback feedback-negative";
+            // 필수 지정 조건 텍스트 엄격 적용 확인 완료
+            feedbackSelector.innerHTML = "아쉽습니다.<br>다시 한번 생각해보세요.";
+            feedbackSelector.onclick = null;
+        }
+    }
+
+    // 다음 교육 모듈 이동 핸들러
+    function navigateToNextGate() {
+        window.location.href = "A05.html";
+    }
+
+    // 최초 시스템 실행 훅
+    window.addEventListener('DOMContentLoaded', () => {
+        renderActiveStage();
+    });
+</script>
+
+</body>
+</html>

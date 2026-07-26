@@ -1,0 +1,144 @@
+<!-- 원본 크기: 700x620 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>영종도 공항전망대</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .apt-svg { display:block; width:100%; height:auto; }
+
+  .apt-tower { fill:url(#aptTowerGrad); }
+  .apt-deck { fill:url(#aptDeckGrad); }
+  .apt-glass { fill:url(#aptGlassGrad); }
+
+  @keyframes aptFly {
+    0% { transform: translate(0,0); }
+    100% { transform: translate(90px,-70px); }
+  }
+  .apt-plane { animation: aptFly 6s ease-in-out infinite alternate; }
+
+  @keyframes aptBlink {
+    0%, 70%, 100% { opacity: 0.3; }
+    35% { opacity: 1; }
+  }
+  .apt-beacon { animation: aptBlink 2.2s ease-in-out infinite; }
+</style>
+</head>
+<body>
+<svg class="apt-svg" viewBox="0 0 700 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="인천국제공항 전망대 타워와 이륙하는 비행기">
+<title>영종도 공항전망대</title>
+<defs>
+  <linearGradient id="aptTowerGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#f2f4f6"/>
+    <stop offset="0.5" stop-color="#dde2e6"/>
+    <stop offset="1" stop-color="#c3cad0"/>
+  </linearGradient>
+  <linearGradient id="aptDeckGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#3f5a72"/>
+    <stop offset="1" stop-color="#2c4258"/>
+  </linearGradient>
+  <linearGradient id="aptGlassGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#a9d4e8"/>
+    <stop offset="1" stop-color="#7cb2cf"/>
+  </linearGradient>
+  <linearGradient id="aptPlaneBody" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#ffffff"/>
+    <stop offset="1" stop-color="#dfe4e8"/>
+  </linearGradient>
+</defs>
+
+<!-- 지면 활주로 힌트 (얇은 띠, 전체 배경 아님) -->
+<rect x="0" y="560" width="700" height="26" fill="#6a6f74"/>
+<g stroke="#e8e8e0" stroke-width="4" stroke-dasharray="26,20" opacity="0.8">
+  <line x1="0" y1="573" x2="700" y2="573"/>
+</g>
+
+<!-- 타워 기단 -->
+<rect x="300" y="500" width="100" height="70" fill="#8b9096"/>
+<rect x="290" y="560" width="120" height="14" fill="#6a6f74"/>
+
+<!-- 타워 몸체 (하단으로 갈수록 넓어지는 테이퍼드 실린더) -->
+<polygon class="apt-tower" points="330,500 370,500 380,150 320,150"/>
+<polygon points="330,500 340,500 345,150 320,150" fill="#c3cad0" opacity="0.6"/>
+
+<!-- 몸체 수평 밴드 (구조 라인) -->
+<g stroke="#b0b7bd" stroke-width="1.5" opacity="0.6">
+  <line x1="322" y1="440" x2="378" y2="440"/>
+  <line x1="324" y1="380" x2="376" y2="380"/>
+  <line x1="326" y1="320" x2="374" y2="320"/>
+  <line x1="328" y1="260" x2="372" y2="260"/>
+  <line x1="329" y1="200" x2="371" y2="200"/>
+</g>
+
+<!-- 관제 전망대 (원반형 상단부) -->
+<ellipse cx="350" cy="150" rx="120" ry="20" fill="#8b9096"/>
+<rect x="230" y="90" width="240" height="60" rx="6" class="apt-deck"/>
+<!-- 전망대 유리 창 (곡면 커튼월) -->
+<g class="apt-glass">
+  <rect x="240" y="100" width="34" height="38" rx="3"/>
+  <rect x="280" y="100" width="34" height="38" rx="3"/>
+  <rect x="320" y="100" width="34" height="38" rx="3"/>
+  <rect x="360" y="100" width="34" height="38" rx="3"/>
+  <rect x="400" y="100" width="34" height="38" rx="3"/>
+</g>
+<g fill="#fff" opacity="0.15">
+  <rect x="244" y="103" width="14" height="30"/>
+  <rect x="324" y="103" width="14" height="30"/>
+  <rect x="404" y="103" width="14" height="30"/>
+</g>
+<ellipse cx="350" cy="90" rx="120" ry="18" fill="#c3cad0"/>
+<rect x="230" y="150" width="240" height="10" fill="#6a7278"/>
+
+<!-- 안테나 / 관제 장비 -->
+<line x1="350" y1="90" x2="350" y2="30" stroke="#8b9096" stroke-width="5"/>
+<circle cx="350" cy="30" r="8" fill="#c94b3f"/>
+<circle class="apt-beacon" cx="350" cy="30" r="12" fill="#ff6a5a"/>
+<line x1="300" y1="90" x2="300" y2="55" stroke="#8b9096" stroke-width="3"/>
+<circle cx="300" cy="55" r="4" fill="#e8b93f"/>
+<line x1="400" y1="90" x2="400" y2="55" stroke="#8b9096" stroke-width="3"/>
+<circle cx="400" cy="55" r="4" fill="#e8b93f"/>
+
+<!-- 관제탑 안내 표지 -->
+<rect x="250" y="200" width="200" height="4" fill="#e8b93f" opacity="0.7"/>
+<text x="350" y="180" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#2c4258" font-weight="bold">인천공항 전망대</text>
+
+<!-- 타워 하단 출입 구조물 -->
+<rect x="270" y="470" width="160" height="30" rx="4" fill="#dde2e6" stroke="#b0b7bd" stroke-width="1"/>
+<rect x="330" y="475" width="40" height="25" fill="#5c7c8e"/>
+
+<!-- ════════════════════════════════
+     이륙 상승하는 비행기
+════════════════════════════════ -->
+<g class="apt-plane">
+  <g transform="translate(80,420) rotate(-18)">
+    <!-- 동체 -->
+    <ellipse cx="0" cy="0" rx="70" ry="13" fill="url(#aptPlaneBody)"/>
+    <!-- 조종석 -->
+    <path d="M62,-4 Q75,0 62,4 Z" fill="#7cb2cf"/>
+    <!-- 주날개 -->
+    <path d="M-10,0 L-55,42 L-40,44 L0,10 Z" fill="#dde2e6"/>
+    <path d="M-10,0 L-55,-42 L-40,-44 L0,-10 Z" fill="#c3cad0"/>
+    <!-- 꼬리날개 -->
+    <path d="M-58,0 L-78,-30 L-66,-30 L-50,-6 Z" fill="#1f4e78"/>
+    <path d="M-58,-4 L-82,-4 L-72,4 L-58,4 Z" fill="#dde2e6"/>
+    <!-- 창문 열 -->
+    <g fill="#4a6a80" opacity="0.7">
+      <circle cx="-30" cy="-1" r="2"/>
+      <circle cx="-18" cy="-1" r="2"/>
+      <circle cx="-6" cy="-1" r="2"/>
+      <circle cx="6" cy="-1" r="2"/>
+      <circle cx="18" cy="-1" r="2"/>
+      <circle cx="30" cy="-1" r="2"/>
+    </g>
+    <!-- 항공사 라인 -->
+    <path d="M-68,3 L68,3" stroke="#1f4e78" stroke-width="2.5" opacity="0.8"/>
+  </g>
+  <!-- 상승 항적선 -->
+  <path d="M-10,470 Q40,450 70,432" fill="none" stroke="#c3cad0" stroke-width="4" opacity="0.35" stroke-linecap="round"/>
+  <path d="M10,485 Q55,462 85,440" fill="none" stroke="#c3cad0" stroke-width="4" opacity="0.25" stroke-linecap="round"/>
+</g>
+</svg>
+</body>
+</html>

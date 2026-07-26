@@ -1,0 +1,154 @@
+<!-- 원본 크기: 640x760 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아라뱃길 수향루</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  *,*::before,*::after{ box-sizing:border-box; }
+  .shy-wrap{ width:100%; max-width:640px; margin:0 auto; }
+  .shy-svg{ display:block; width:100%; height:auto; }
+
+  .shy-lantern{ animation: shy-glow 3.2s ease-in-out infinite; }
+  @keyframes shy-glow{ 0%,100%{ opacity:0.75; } 50%{ opacity:1; } }
+</style>
+</head>
+<body>
+<div class="shy-wrap">
+<svg class="shy-svg" viewBox="0 0 640 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="아라뱃길 수향루 전통 누각">
+<title>수향루</title>
+<defs>
+  <linearGradient id="shy-roof1" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#3c7d63"/>
+    <stop offset="1" stop-color="#245943"/>
+  </linearGradient>
+  <linearGradient id="shy-roof2" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#4a9276"/>
+    <stop offset="1" stop-color="#2a6650"/>
+  </linearGradient>
+  <linearGradient id="shy-pillar" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#8a2620"/>
+    <stop offset="0.5" stop-color="#c0463a"/>
+    <stop offset="1" stop-color="#7c231d"/>
+  </linearGradient>
+  <pattern id="shy-dc" width="40" height="24" patternUnits="userSpaceOnUse">
+    <rect width="40" height="24" fill="#f0e6c8"/>
+    <rect x="0"  width="10" height="24" fill="#2e7d5b"/>
+    <rect x="10" width="10" height="24" fill="#c0392b"/>
+    <rect x="20" width="10" height="24" fill="#2a5c8a"/>
+    <rect x="30" width="10" height="24" fill="#d4a017"/>
+  </pattern>
+</defs>
+
+<!-- 그림자 -->
+<ellipse cx="320" cy="726" rx="270" ry="14" fill="#000000" opacity="0.12"/>
+
+<!-- 석재 기단 (계단식) -->
+<polygon points="60,680 580,680 610,720 30,720" fill="#c9c2b0" stroke="#a89f88" stroke-width="1.5"/>
+<polygon points="80,655 560,655 580,680 60,680" fill="#d7d0bc" stroke="#a89f88" stroke-width="1.5"/>
+<polygon points="105,635 535,635 560,655 80,655" fill="#8a5a34" stroke="#6a4224" stroke-width="1.5"/>
+
+<!-- ============ 1층 ============ -->
+<!-- 기둥 -->
+<g fill="url(#shy-pillar)">
+  <rect x="106" y="520" width="16" height="115"/>
+  <rect x="190" y="520" width="16" height="115"/>
+  <rect x="274" y="520" width="16" height="115"/>
+  <rect x="358" y="520" width="16" height="115"/>
+  <rect x="442" y="520" width="16" height="115"/>
+  <rect x="522" y="520" width="16" height="115"/>
+</g>
+
+<!-- 난간(격자) -->
+<rect x="105" y="590" width="435" height="42" fill="#e8dfc4" stroke="#b8a97c" stroke-width="1.5"/>
+<g stroke="#a83a2e" stroke-width="2.5">
+  <line x1="120" y1="592" x2="120" y2="630"/><line x1="150" y1="592" x2="150" y2="630"/><line x1="180" y1="592" x2="180" y2="630"/>
+  <line x1="210" y1="592" x2="210" y2="630"/><line x1="240" y1="592" x2="240" y2="630"/><line x1="270" y1="592" x2="270" y2="630"/>
+  <line x1="300" y1="592" x2="300" y2="630"/><line x1="330" y1="592" x2="330" y2="630"/><line x1="360" y1="592" x2="360" y2="630"/>
+  <line x1="390" y1="592" x2="390" y2="630"/><line x1="420" y1="592" x2="420" y2="630"/><line x1="450" y1="592" x2="450" y2="630"/>
+  <line x1="480" y1="592" x2="480" y2="630"/><line x1="510" y1="592" x2="510" y2="630"/><line x1="528" y1="592" x2="528" y2="630"/>
+</g>
+<line x1="105" y1="610" x2="540" y2="610" stroke="#a83a2e" stroke-width="2.5"/>
+
+<!-- 현판 -->
+<rect x="270" y="500" width="100" height="30" rx="2" fill="#3c2a1a" stroke="#c9a24a" stroke-width="1.5"/>
+<text x="320" y="521" text-anchor="middle" font-family="serif" font-size="17" fill="#e8c968" font-weight="bold">水香樓</text>
+
+<!-- 단청 띠 -->
+<rect x="150" y="498" width="340" height="20" fill="url(#shy-dc)"/>
+
+<!-- 1층 지붕 -->
+<path d="M50,490 Q110,532 160,522 L480,522 Q530,532 590,490 L575,448 Q520,486 470,479 L170,479 Q120,486 65,448 Z" fill="url(#shy-roof1)" stroke="#1c4433" stroke-width="1.5"/>
+<g stroke="#1c4433" stroke-width="1" opacity="0.45" fill="none">
+  <path d="M75,470 Q120,502 165,494"/>
+  <path d="M565,470 Q520,502 475,494"/>
+</g>
+<rect x="150" y="446" width="340" height="8" fill="#16382a"/>
+<!-- 처마 끝 장식 -->
+<path d="M50,490 Q40,472 55,460 Q52,478 62,486 Z" fill="#16382a"/>
+<path d="M590,490 Q600,472 585,460 Q588,478 578,486 Z" fill="#16382a"/>
+
+<!-- ============ 2층 ============ -->
+<!-- 마루 -->
+<rect x="140" y="438" width="360" height="10" fill="#8a5a34" stroke="#6a4224" stroke-width="1"/>
+
+<!-- 기둥 -->
+<g fill="url(#shy-pillar)">
+  <rect x="144" y="330" width="14" height="108"/>
+  <rect x="230" y="330" width="14" height="108"/>
+  <rect x="316" y="330" width="14" height="108"/>
+  <rect x="398" y="330" width="14" height="108"/>
+  <rect x="484" y="330" width="14" height="108"/>
+</g>
+
+<!-- 난간 -->
+<rect x="142" y="396" width="358" height="38" fill="#e8dfc4" stroke="#b8a97c" stroke-width="1.5"/>
+<g stroke="#a83a2e" stroke-width="2.2">
+  <line x1="156" y1="398" x2="156" y2="432"/><line x1="184" y1="398" x2="184" y2="432"/><line x1="212" y1="398" x2="212" y2="432"/>
+  <line x1="240" y1="398" x2="240" y2="432"/><line x1="268" y1="398" x2="268" y2="432"/><line x1="296" y1="398" x2="296" y2="432"/>
+  <line x1="324" y1="398" x2="324" y2="432"/><line x1="352" y1="398" x2="352" y2="432"/><line x1="380" y1="398" x2="380" y2="432"/>
+  <line x1="408" y1="398" x2="408" y2="432"/><line x1="436" y1="398" x2="436" y2="432"/><line x1="464" y1="398" x2="464" y2="432"/>
+  <line x1="488" y1="398" x2="488" y2="432"/>
+</g>
+<line x1="142" y1="414" x2="500" y2="414" stroke="#a83a2e" stroke-width="2.2"/>
+
+<!-- 청사초롱 -->
+<g class="shy-lantern">
+  <line x1="120" y1="450" x2="120" y2="470" stroke="#5a3a1a" stroke-width="2"/>
+  <ellipse cx="120" cy="482" rx="12" ry="16" fill="#3a6ea8" stroke="#c9a24a" stroke-width="1.5"/>
+  <line x1="120" y1="498" x2="120" y2="506" stroke="#c9a24a" stroke-width="1.5"/>
+</g>
+<g class="shy-lantern">
+  <line x1="520" y1="450" x2="520" y2="470" stroke="#5a3a1a" stroke-width="2"/>
+  <ellipse cx="520" cy="482" rx="12" ry="16" fill="#a83a2e" stroke="#c9a24a" stroke-width="1.5"/>
+  <line x1="520" y1="498" x2="520" y2="506" stroke="#c9a24a" stroke-width="1.5"/>
+</g>
+
+<!-- 단청 띠 (2층) -->
+<rect x="170" y="308" width="300" height="20" fill="url(#shy-dc)"/>
+
+<!-- 2층 지붕 (더 큰 팔작지붕) -->
+<path d="M40,300 Q100,352 165,340 L475,340 Q540,352 600,300 L580,248 Q520,296 465,286 L175,286 Q120,296 60,248 Z" fill="url(#shy-roof2)" stroke="#1c4433" stroke-width="1.5"/>
+<g stroke="#1c4433" stroke-width="1" opacity="0.45" fill="none">
+  <path d="M70,272 Q120,312 170,302"/>
+  <path d="M570,272 Q520,312 470,302"/>
+</g>
+<!-- 용마루 -->
+<rect x="160" y="244" width="320" height="12" fill="#16382a"/>
+<!-- 처마 끝 장식(치미) -->
+<path d="M40,300 Q26,278 46,262 Q42,284 55,296 Z" fill="#16382a"/>
+<path d="M600,300 Q614,278 594,262 Q598,284 585,296 Z" fill="#16382a"/>
+<path d="M160,244 Q150,224 168,214 Q166,232 176,242 Z" fill="#16382a"/>
+<path d="M480,244 Q490,224 472,214 Q474,232 464,242 Z" fill="#16382a"/>
+
+<!-- 지붕 기와선 -->
+<g stroke="#173c2d" stroke-width="0.8" opacity="0.5" fill="none">
+  <path d="M90,264 Q320,320 550,264"/>
+  <path d="M100,280 Q320,332 540,280"/>
+</g>
+</svg>
+</div>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!-- 원본 크기: 1400x380 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>영흥대교</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .yhb-svg { display:block; width:100%; height:auto; }
+  .yhb-wave { animation: yhb-drift 6s ease-in-out infinite; transform-origin: center; }
+  @keyframes yhb-drift {
+    0%,100% { transform: translateX(0); opacity:0.55; }
+    50% { transform: translateX(12px); opacity:0.85; }
+  }
+  .yhb-blink { animation: yhb-blink 2.4s ease-in-out infinite; }
+  @keyframes yhb-blink {
+    0%,100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+<svg class="yhb-svg" viewBox="0 0 1400 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="영흥대교 사장교 전경">
+<title>영흥대교</title>
+<desc>인천 옹진군 영흥도와 선재도를 잇는 사장교. 주탑 2개와 부채꼴 케이블, 상판</desc>
+<defs>
+  <linearGradient id="yhbTower" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#e6e9ec"/>
+    <stop offset="0.5" stop-color="#f8fafb"/>
+    <stop offset="1" stop-color="#cdd3d8"/>
+  </linearGradient>
+  <linearGradient id="yhbDeck" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#5b6470"/>
+    <stop offset="1" stop-color="#3c434c"/>
+  </linearGradient>
+  <linearGradient id="yhbSea" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#7fb6cf"/>
+    <stop offset="1" stop-color="#3f7f9e"/>
+  </linearGradient>
+</defs>
+
+<!-- 교각(바다 속 기둥) -->
+<g fill="#9aa0a6">
+  <polygon points="410,300 450,300 458,352 402,352"/>
+  <polygon points="950,300 990,300 998,352 942,352"/>
+</g>
+<path d="M0,336 C120,322 260,346 400,332 C560,318 700,344 860,330 C1020,316 1160,342 1400,326 L1400,380 L0,380 Z" fill="url(#yhbSea)"/>
+<g class="yhb-wave" fill="none" stroke="#fff" stroke-width="2" opacity="0.6" stroke-linecap="round">
+  <path d="M20,344 C140,334 240,352 360,340 C480,328 580,348 700,338"/>
+  <path d="M760,344 C880,334 980,352 1100,340 C1220,328 1300,348 1380,338"/>
+</g>
+
+<!-- 상판(데크) -->
+<rect x="30" y="248" width="1340" height="26" fill="url(#yhbDeck)"/>
+<rect x="30" y="248" width="1340" height="4" fill="#8a929c"/>
+<!-- 차선 표시 -->
+<g stroke="#e8d94a" stroke-width="2.2" stroke-dasharray="16,12" opacity="0.85">
+  <line x1="40" y1="261" x2="1360" y2="261"/>
+</g>
+<!-- 난간 -->
+<g stroke="#c7ccd1" stroke-width="1.4" opacity="0.85">
+  <line x1="30" y1="246" x2="1370" y2="246"/>
+  <line x1="40" y1="238" x2="40" y2="246"/>
+  <line x1="90" y1="238" x2="90" y2="246"/>
+  <line x1="140" y1="238" x2="140" y2="246"/>
+  <line x1="190" y1="238" x2="190" y2="246"/>
+  <line x1="240" y1="238" x2="240" y2="246"/>
+  <line x1="290" y1="238" x2="290" y2="246"/>
+  <line x1="340" y1="238" x2="340" y2="246"/>
+  <line x1="560" y1="238" x2="560" y2="246"/>
+  <line x1="610" y1="238" x2="610" y2="246"/>
+  <line x1="660" y1="238" x2="660" y2="246"/>
+  <line x1="710" y1="238" x2="710" y2="246"/>
+  <line x1="760" y1="238" x2="760" y2="246"/>
+  <line x1="810" y1="238" x2="810" y2="246"/>
+  <line x1="1060" y1="238" x2="1060" y2="246"/>
+  <line x1="1110" y1="238" x2="1110" y2="246"/>
+  <line x1="1160" y1="238" x2="1160" y2="246"/>
+  <line x1="1210" y1="238" x2="1210" y2="246"/>
+  <line x1="1260" y1="238" x2="1260" y2="246"/>
+  <line x1="1310" y1="238" x2="1310" y2="246"/>
+  <line x1="1360" y1="238" x2="1360" y2="246"/>
+</g>
+
+<!-- 케이블(부채꼴) : 왼쪽 주탑 -->
+<g stroke="#aeb4ba" stroke-width="1.6" opacity="0.9">
+  <line x1="430" y1="70" x2="120" y2="248"/>
+  <line x1="430" y1="70" x2="200" y2="248"/>
+  <line x1="430" y1="70" x2="280" y2="248"/>
+  <line x1="430" y1="70" x2="360" y2="248"/>
+  <line x1="430" y1="70" x2="500" y2="248"/>
+  <line x1="430" y1="70" x2="580" y2="248"/>
+  <line x1="430" y1="70" x2="660" y2="248"/>
+  <line x1="430" y1="70" x2="740" y2="248"/>
+</g>
+<!-- 케이블: 오른쪽 주탑 -->
+<g stroke="#aeb4ba" stroke-width="1.6" opacity="0.9">
+  <line x1="970" y1="70" x2="660" y2="248"/>
+  <line x1="970" y1="70" x2="740" y2="248"/>
+  <line x1="970" y1="70" x2="820" y2="248"/>
+  <line x1="970" y1="70" x2="900" y2="248"/>
+  <line x1="970" y1="70" x2="1040" y2="248"/>
+  <line x1="970" y1="70" x2="1120" y2="248"/>
+  <line x1="970" y1="70" x2="1200" y2="248"/>
+  <line x1="970" y1="70" x2="1280" y2="248"/>
+</g>
+
+<!-- 주탑 1 (좌) -->
+<g>
+  <polygon points="410,252 396,64 414,40 430,64 430,252" fill="url(#yhbTower)" stroke="#b7bcc1" stroke-width="1"/>
+  <polygon points="450,252 464,64 446,40 430,64 430,252" fill="url(#yhbTower)" stroke="#b7bcc1" stroke-width="1" transform="translate(0,0)"/>
+  <rect x="404" y="150" width="52" height="10" fill="#cfd4d8"/>
+  <circle class="yhb-blink" cx="422" cy="38" r="4" fill="#ff5a4a"/>
+</g>
+<!-- 주탑 2 (우) -->
+<g>
+  <polygon points="950,252 936,64 954,40 970,64 970,252" fill="url(#yhbTower)" stroke="#b7bcc1" stroke-width="1"/>
+  <polygon points="990,252 1004,64 986,40 970,64 970,252" fill="url(#yhbTower)" stroke="#b7bcc1" stroke-width="1"/>
+  <rect x="944" y="150" width="52" height="10" fill="#cfd4d8"/>
+  <circle class="yhb-blink" cx="962" cy="38" r="4" fill="#ff5a4a"/>
+</g>
+
+<!-- 상판 하부 그림자 -->
+<rect x="30" y="274" width="1340" height="6" fill="#000" opacity="0.08"/>
+</svg>
+</body>
+</html>

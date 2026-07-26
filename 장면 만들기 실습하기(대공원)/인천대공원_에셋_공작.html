@@ -1,0 +1,141 @@
+<!-- 원본 크기: 660x580 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>공작</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .pc-svg { display:block; width:100%; height:auto; }
+  .pc-fan { animation: pc-fan 6.5s ease-in-out infinite; transform-box:fill-box; transform-origin:50% 88%; }
+  @keyframes pc-fan { 0%,100%{transform:scaleX(0.99) scaleY(0.995);} 50%{transform:scaleX(1.01) scaleY(1.008);} }
+  .pc-shine { animation: pc-shine 5s ease-in-out infinite; }
+  @keyframes pc-shine { 0%,100%{opacity:0.12;} 50%{opacity:0.34;} }
+  .pc-eye { animation: pc-blink 4.8s ease-in-out infinite; transform-box:fill-box; transform-origin:50% 50%; }
+  @keyframes pc-blink { 0%,93%,100%{transform:scaleY(1);} 96.5%{transform:scaleY(0.12);} }
+  .pc-head { animation: pc-head 7s ease-in-out infinite; transform-box:fill-box; transform-origin:50% 100%; }
+  @keyframes pc-head { 0%,100%{transform:rotate(-2.5deg);} 50%{transform:rotate(2.5deg);} }
+  .pc-crest { animation: pc-crest 4s ease-in-out infinite; transform-box:fill-box; transform-origin:50% 100%; }
+  @keyframes pc-crest { 0%,100%{transform:rotate(-2deg);} 50%{transform:rotate(2deg);} }
+</style>
+</head>
+<body>
+<svg class="pc-svg" viewBox="0 0 660 580" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="공작">
+<title>공작</title>
+<desc>화려하고 웅장한 깃털을 활짝 펼쳐 뽐내는 청공작. 눈 무늬(안점)가 가득한 부채꼴 꽁지깃과 파란 목·머리, 왕관 같은 깃.</desc>
+<defs>
+  <radialGradient id="pc-fan" cx="0.5" cy="0.86" r="0.85">
+    <stop offset="0" stop-color="#7cc39a"/><stop offset="0.42" stop-color="#2f9c86"/><stop offset="0.75" stop-color="#1f7a86"/><stop offset="1" stop-color="#175a80"/>
+  </radialGradient>
+  <linearGradient id="pc-body" x1="0" y1="0" x2="0.4" y2="1">
+    <stop offset="0" stop-color="#2f74c0"/><stop offset="0.5" stop-color="#1a55a0"/><stop offset="1" stop-color="#0f3a76"/>
+  </radialGradient>
+  <radialGradient id="pc-head" cx="0.4" cy="0.35" r="0.8">
+    <stop offset="0" stop-color="#3a86d6"/><stop offset="1" stop-color="#123f86"/>
+  </radialGradient>
+  <linearGradient id="pc-leg" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#b7bcc4"/><stop offset="1" stop-color="#8a8f98"/>
+  </linearGradient>
+</defs>
+
+<!-- 그림자 -->
+<ellipse cx="330" cy="548" rx="150" ry="18" fill="#1f4a3a" opacity="0.16"/>
+
+<!-- ===== 부채꼴 꽁지깃 ===== -->
+<g class="pc-fan">
+  <!-- 깃 바탕 부채 -->
+  <path d="M40,456 A298,286 0 0,1 620,456 Z" fill="url(#pc-fan)"/>
+  <path d="M40,456 A298,286 0 0,1 620,456 Z" class="pc-shine" fill="#eafff4"/>
+  <!-- 깃대(방사) -->
+  <g stroke="#8fc48a" stroke-width="2" opacity="0.55" stroke-linecap="round">
+    <line x1="385.7" y1="461.9" x2="567.4" y2="481.0"/>
+    <line x1="385.9" y1="452.5" x2="577.2" y2="440.4"/>
+    <line x1="384.5" y1="443.2" x2="579.8" y2="397.4"/>
+    <line x1="381.6" y1="434.3" x2="574.4" y2="353.3"/>
+    <line x1="377.3" y1="426.0" x2="560.6" y2="309.7"/>
+    <line x1="371.6" y1="418.5" x2="538.3" y2="268.5"/>
+    <line x1="364.8" y1="412.1" x2="507.9" y2="231.6"/>
+    <line x1="357.0" y1="406.9" x2="470.4" y2="200.7"/>
+    <line x1="348.4" y1="403.1" x2="427.0" y2="177.4"/>
+    <line x1="339.3" y1="400.8" x2="379.6" y2="162.9"/>
+    <line x1="330.0" y1="400.0" x2="330.0" y2="158.0"/>
+    <line x1="320.7" y1="400.8" x2="280.4" y2="162.9"/>
+    <line x1="311.6" y1="403.1" x2="233.0" y2="177.4"/>
+    <line x1="303.0" y1="406.9" x2="189.6" y2="200.7"/>
+    <line x1="295.2" y1="412.1" x2="152.1" y2="231.6"/>
+    <line x1="288.4" y1="418.5" x2="121.7" y2="268.5"/>
+    <line x1="282.7" y1="426.0" x2="99.4" y2="309.7"/>
+    <line x1="278.4" y1="434.3" x2="85.6" y2="353.3"/>
+    <line x1="275.5" y1="443.2" x2="80.2" y2="397.4"/>
+    <line x1="274.1" y1="452.5" x2="82.8" y2="440.4"/>
+    <line x1="274.3" y1="461.9" x2="92.6" y2="481.0"/>
+  </g>
+  <!-- 안점(눈무늬) -->
+  <g transform="translate(567.4,481.0) rotate(96.0)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(577.2,440.4) rotate(86.4)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(579.8,397.4) rotate(76.8)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(574.4,353.3) rotate(67.2)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(560.6,309.7) rotate(57.6)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(538.3,268.5) rotate(48.0)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(507.9,231.6) rotate(38.4)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(470.4,200.7) rotate(28.8)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(427.0,177.4) rotate(19.2)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(379.6,162.9) rotate(9.6)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(330.0,158.0) rotate(0.0)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(280.4,162.9) rotate(-9.6)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(233.0,177.4) rotate(-19.2)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(189.6,200.7) rotate(-28.8)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(152.1,231.6) rotate(-38.4)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(121.7,268.5) rotate(-48.0)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(99.4,309.7) rotate(-57.6)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(85.6,353.3) rotate(-67.2)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(80.2,397.4) rotate(-76.8)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(82.8,440.4) rotate(-86.4)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+  <g transform="translate(92.6,481.0) rotate(264.0)"><ellipse cx="0" cy="-2" rx="15" ry="20" fill="#b8923a"/><ellipse cx="0" cy="0" rx="12.5" ry="16.5" fill="#2f7a5a"/><ellipse cx="0" cy="2" rx="9" ry="12.5" fill="#173a72"/><ellipse cx="0" cy="3.5" rx="5.2" ry="7.5" fill="#3aa6bc"/><path d="M-4.4,6.5 A5.2,7.5 0 0,0 4.4,6.5" fill="none" stroke="#e6cc62" stroke-width="2.4"/></g>
+</g>
+
+<!-- ===== 다리 ===== -->
+<g stroke="#7a7f88" stroke-width="1.5">
+  <rect x="312" y="486" width="9" height="52" rx="3" fill="url(#pc-leg)"/>
+  <rect x="340" y="486" width="9" height="52" rx="3" fill="url(#pc-leg)"/>
+</g>
+<g stroke="#7a7f88" stroke-width="4" stroke-linecap="round">
+  <path d="M316,538 l-12,6 M316,538 l0,8 M316,538 l12,6"/>
+  <path d="M345,538 l-12,6 M345,538 l0,8 M345,538 l12,6"/>
+</g>
+
+<!-- ===== 몸통 ===== -->
+<ellipse cx="330" cy="452" rx="62" ry="52" fill="url(#pc-body)" stroke="#0c2f66" stroke-width="3"/>
+<!-- 날개 깃 -->
+<path d="M292,430 C270,438 262,462 274,484 C292,478 306,462 308,442 Z" fill="#2a63b0" stroke="#0c2f66" stroke-width="2"/>
+<g fill="#0f3a76" opacity="0.6"><ellipse cx="300" cy="448" rx="6" ry="4"/><ellipse cx="316" cy="446" rx="6" ry="4"/><ellipse cx="300" cy="466" rx="6" ry="4"/><ellipse cx="316" cy="464" rx="6" ry="4"/></g>
+<ellipse cx="352" cy="440" rx="16" ry="26" fill="#2f74c0" opacity="0.5"/>
+
+<!-- ===== 목 + 머리 ===== -->
+<g class="pc-head">
+  <!-- 목 -->
+  <path d="M310,430 C300,384 300,330 314,286 C320,270 344,270 350,286 C360,330 356,384 350,428 Z"
+        fill="url(#pc-body)" stroke="#0c2f66" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M322,300 C316,344 318,392 326,424" fill="none" stroke="#3f8ad8" stroke-width="3" opacity="0.5"/>
+  <!-- 머리 -->
+  <ellipse cx="332" cy="276" rx="24" ry="26" fill="url(#pc-head)" stroke="#0c2f66" stroke-width="2.5"/>
+  <!-- 눈 흰 무늬 -->
+  <ellipse cx="322" cy="270" rx="4" ry="7" fill="#f4f0e2"/><ellipse cx="322" cy="286" rx="4" ry="6" fill="#f4f0e2"/>
+  <!-- 눈 -->
+  <g class="pc-eye"><circle cx="324" cy="272" r="6" fill="#1c130a"/><circle cx="322" cy="270" r="2" fill="#fff" opacity="0.9"/></g>
+  <!-- 부리 -->
+  <path d="M310,278 C296,278 288,282 288,288 C288,294 298,296 310,292 Z" fill="#d8d2bc" stroke="#a49e86" stroke-width="1.6"/>
+  <path d="M292,288 C298,289 304,289 308,288" fill="none" stroke="#8a856e" stroke-width="1.4"/>
+  <!-- 볏(왕관 깃) -->
+  <g class="pc-crest">
+    <g stroke="#1a55a0" stroke-width="2.4" stroke-linecap="round">
+      <path d="M320,252 C316,236 312,224 310,214"/><path d="M328,250 C326,232 324,220 324,208"/>
+      <path d="M336,250 C338,232 340,220 342,208"/><path d="M344,252 C348,236 352,226 356,216"/>
+    </g>
+    <g fill="#1f6f8a"><ellipse cx="310" cy="212" rx="4.5" ry="6"/><ellipse cx="324" cy="206" rx="4.5" ry="6"/><ellipse cx="342" cy="206" rx="4.5" ry="6"/><ellipse cx="356" cy="214" rx="4.5" ry="6"/></g>
+  </g>
+</g>
+</svg>
+</body>
+</html>

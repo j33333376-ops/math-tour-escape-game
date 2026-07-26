@@ -1,0 +1,141 @@
+<!-- 원본 크기: 1280x670 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인천대공원 정문</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .igp-svg { display:block; width:100%; height:auto; }
+  .igp-title { font-family:'Jua','Malgun Gothic','Apple SD Gothic Neo',sans-serif; }
+</style>
+</head>
+<body>
+<svg class="igp-svg" viewBox="0 0 1280 670" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="인천대공원 정문 상징 조형물">
+<title>인천대공원 정문</title>
+<desc>두 개의 등대 모양 탑과 아치형 기단, 파도 문양, 삼각 박공 안의 등대(종) 형상과 '인천대공원' 현판을 갖춘 정문 상징 조형물.</desc>
+
+<defs>
+  <linearGradient id="igp-blue" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#6fb0dd"/>
+    <stop offset="1" stop-color="#4382b5"/>
+  </linearGradient>
+  <linearGradient id="igp-beam" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#eae1b6"/>
+    <stop offset="1" stop-color="#d6ca94"/>
+  </linearGradient>
+  <linearGradient id="igp-shaft" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#c6c1b1"/>
+    <stop offset="0.18" stop-color="#e3dfd3"/>
+    <stop offset="0.45" stop-color="#efece2"/>
+    <stop offset="0.72" stop-color="#dcd7c8"/>
+    <stop offset="1" stop-color="#bdb7a5"/>
+  </linearGradient>
+  <linearGradient id="igp-pillar" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#e6ddba"/>
+    <stop offset="0.35" stop-color="#f6f1dc"/>
+    <stop offset="1" stop-color="#ddd3ac"/>
+  </linearGradient>
+  <linearGradient id="igp-bell" x1="0" y1="0" x2="0.35" y2="1">
+    <stop offset="0" stop-color="#ffffff"/>
+    <stop offset="1" stop-color="#e8ebe6"/>
+  </linearGradient>
+  <linearGradient id="igp-wave" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#7db4de"/>
+    <stop offset="1" stop-color="#4a8bc0"/>
+  </linearGradient>
+  <pattern id="igp-brick" width="30" height="44" patternUnits="userSpaceOnUse">
+    <g stroke="#b3ad9a" stroke-width="2" fill="none" opacity="0.8">
+      <line x1="0" y1="0" x2="30" y2="0"/>
+      <line x1="0" y1="22" x2="30" y2="22"/>
+      <line x1="0" y1="0" x2="0" y2="22"/>
+      <line x1="15" y1="22" x2="15" y2="44"/>
+    </g>
+  </pattern>
+  <clipPath id="igp-shaftclip">
+    <path d="M192,158 L264,158 L288,440 L168,440 Z"/>
+  </clipPath>
+</defs>
+
+<!-- ===================== 좌우 대칭 기단(아치) ===================== -->
+<g id="igp-base-l">
+  <path d="M22,428 L300,428 L300,648 L138,648 L138,548 C138,520 120,502 95,502 C70,502 52,520 52,548 L52,648 L22,648 Z"
+        fill="url(#igp-beam)" stroke="#f5f0d8" stroke-width="7" stroke-linejoin="round"/>
+  <line x1="26" y1="466" x2="296" y2="466" stroke="#bcb083" stroke-width="2" opacity="0.5"/>
+  <line x1="200" y1="506" x2="296" y2="506" stroke="#bcb083" stroke-width="2" opacity="0.5"/>
+</g>
+<use href="#igp-base-l" transform="translate(1280,0) scale(-1,1)"/>
+
+<!-- ===================== 파도 문양 ===================== -->
+<g id="igp-wave-l">
+  <path d="M40,430 C33,398 55,377 84,382 C93,359 130,355 148,376 C172,368 197,385 196,411 C197,424 190,430 190,430 Z"
+        fill="url(#igp-wave)" stroke="#3f7fb5" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M60,430 C55,407 73,393 93,398 C101,381 127,379 141,394 C159,388 179,401 180,418 C181,424 178,430 178,430 Z"
+        fill="#9ec8e6" opacity="0.55"/>
+  <g fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.9">
+    <path d="M96,423 C88,401 112,392 122,408 C129,419 116,428 106,420 C100,415 104,407 111,410"/>
+    <path d="M150,414 C146,391 118,390 116,410 C114,428 136,435 148,423 C156,414 150,402 139,406"/>
+  </g>
+</g>
+<use href="#igp-wave-l" transform="translate(1280,0) scale(-1,1)"/>
+
+<!-- ===================== 등대 탑(좌) + 대칭 ===================== -->
+<g id="igp-tower-l">
+  <!-- 석축 몸통 -->
+  <path d="M192,158 L264,158 L288,440 L168,440 Z" fill="url(#igp-shaft)" stroke="#ada791" stroke-width="2.5" stroke-linejoin="round"/>
+  <g clip-path="url(#igp-shaftclip)">
+    <rect x="160" y="150" width="140" height="300" fill="url(#igp-brick)"/>
+  </g>
+  <!-- 주황 띠 -->
+  <rect x="188" y="136" width="80" height="24" rx="3" fill="#e8863a" stroke="#c96e28" stroke-width="1.5"/>
+  <!-- 파랑 몸 -->
+  <rect x="197" y="94" width="62" height="44" rx="3" fill="url(#igp-blue)" stroke="#3d78aa" stroke-width="1.5"/>
+  <rect x="203" y="100" width="9" height="32" rx="4" fill="#ffffff" opacity="0.28"/>
+  <!-- 검은 지붕(돔) -->
+  <path d="M205,96 L205,74 Q205,53 228,53 Q251,53 251,74 L251,96 Z" fill="#1c1c1c"/>
+  <ellipse cx="221" cy="70" rx="5" ry="10" fill="#ffffff" opacity="0.15"/>
+</g>
+<use href="#igp-tower-l" transform="translate(1280,0) scale(-1,1)"/>
+
+<!-- ===================== 중앙 기둥(사다리형) ===================== -->
+<g id="igp-pillar-l">
+  <rect x="530" y="430" width="34" height="218" rx="5" fill="url(#igp-pillar)" stroke="#d9cfa0" stroke-width="3"/>
+  <g stroke="#c6bf9c" stroke-width="2" opacity="0.75">
+    <line x1="531" y1="466" x2="563" y2="466"/>
+    <line x1="531" y1="502" x2="563" y2="502"/>
+    <line x1="531" y1="538" x2="563" y2="538"/>
+    <line x1="531" y1="574" x2="563" y2="574"/>
+    <line x1="531" y1="610" x2="563" y2="610"/>
+  </g>
+</g>
+<use href="#igp-pillar-l" transform="translate(1280,0) scale(-1,1)"/>
+
+<!-- ===================== 현판(사다리꼴 보) ===================== -->
+<path d="M180,430 L1100,430 L828,288 L452,288 Z" fill="url(#igp-beam)" stroke="#f5f0d8" stroke-width="10" stroke-linejoin="round"/>
+<line x1="470" y1="300" x2="810" y2="300" stroke="#efe6bf" stroke-width="3" opacity="0.6"/>
+<text class="igp-title" x="640" y="384" text-anchor="middle" font-size="62" letter-spacing="8" fill="#46779f">인천대공원</text>
+
+<!-- ===================== 삼각 박공 + 등대(종) 형상 ===================== -->
+<path d="M640,32 L830,292 L450,292 Z" fill="url(#igp-blue)" stroke="#f5f0d8" stroke-width="10" stroke-linejoin="round"/>
+
+<!-- 등대(종) 몸체 -->
+<path d="M598,158 C554,192 566,240 574,264 C576,272 582,278 596,278 C616,282 664,282 684,278 C698,278 704,272 706,264 C714,240 726,192 682,158 C662,148 618,148 598,158 Z"
+      fill="url(#igp-bell)" stroke="#c2c3ba" stroke-width="2.5"/>
+<!-- 상단 꼭지 -->
+<ellipse cx="640" cy="138" rx="15" ry="17" fill="url(#igp-bell)" stroke="#c2c3ba" stroke-width="2.5"/>
+<!-- 아치형 창 -->
+<path d="M608,266 L608,206 C608,188 622,178 640,178 C658,178 672,188 672,206 L672,266 Z"
+      fill="#3a3f2a" stroke="#f5f0d8" stroke-width="4" stroke-linejoin="round"/>
+<g stroke="#f5f0d8" stroke-width="3" opacity="0.9">
+  <line x1="629" y1="180" x2="629" y2="266"/>
+  <line x1="651" y1="180" x2="651" y2="266"/>
+  <line x1="608" y1="206" x2="672" y2="206"/>
+  <line x1="608" y1="226" x2="672" y2="226"/>
+  <line x1="608" y1="246" x2="672" y2="246"/>
+</g>
+
+</svg>
+</body>
+</html>

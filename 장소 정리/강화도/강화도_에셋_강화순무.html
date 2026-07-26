@@ -1,0 +1,68 @@
+<!-- 원본 크기: 600x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>강화 순무</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .gsm-svg { display:block; width:100%; height:auto; }
+  .gsm-sway { animation: gsm-sway 5s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+  @keyframes gsm-sway { 0%,100% { transform: rotate(-2deg);} 50% { transform: rotate(2deg);} }
+</style>
+</head>
+<body>
+<svg class="gsm-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="강화 순무">
+<title>강화 순무</title>
+<desc>강화도 특산품인 자주색 강화 순무. 둥근 뿌리와 초록 잎.</desc>
+<defs>
+  <radialGradient id="gsmRoot" cx="0.36" cy="0.28" r="0.8">
+    <stop offset="0" stop-color="#c86fc4"/><stop offset="0.55" stop-color="#9c3f96"/><stop offset="1" stop-color="#5f1f5c"/>
+  </radialGradient>
+  <radialGradient id="gsmRoot2" cx="0.4" cy="0.3" r="0.8">
+    <stop offset="0" stop-color="#e8d8ee"/><stop offset="1" stop-color="#b98fc0"/>
+  </radialGradient>
+  <linearGradient id="gsmLeaf" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#7fb84e"/><stop offset="1" stop-color="#3f7a2c"/>
+  </linearGradient>
+</defs>
+<!-- 잎 -->
+<g class="gsm-sway">
+  <path d="M300,250 C250,190 220,120 236,54 C280,96 300,170 300,250 Z" fill="url(#gsmLeaf)" stroke="#2f5f22" stroke-width="3"/>
+  <path d="M236,54 C260,120 286,180 300,250" fill="none" stroke="#a8d478" stroke-width="3.4"/>
+</g>
+<g class="gsm-sway" style="animation-delay:.6s">
+  <path d="M300,250 C350,190 380,120 364,54 C320,96 300,170 300,250 Z" fill="url(#gsmLeaf)" stroke="#2f5f22" stroke-width="3"/>
+  <path d="M364,54 C340,120 314,180 300,250" fill="none" stroke="#a8d478" stroke-width="3.4"/>
+</g>
+<g class="gsm-sway" style="animation-delay:1.2s">
+  <path d="M300,256 C242,222 178,196 138,140 C206,150 268,196 300,256 Z" fill="#5f9c3c" stroke="#2f5f22" stroke-width="3"/>
+  <path d="M138,140 C196,186 262,214 300,256" fill="none" stroke="#a8d478" stroke-width="3"/>
+</g>
+<g class="gsm-sway" style="animation-delay:1.8s">
+  <path d="M300,256 C358,222 422,196 462,140 C394,150 332,196 300,256 Z" fill="#5f9c3c" stroke="#2f5f22" stroke-width="3"/>
+  <path d="M462,140 C404,186 338,214 300,256" fill="none" stroke="#a8d478" stroke-width="3"/>
+</g>
+<!-- 순무 뿌리 -->
+<path d="M300,240 C200,240 148,320 168,412 C186,494 250,548 300,584 C350,548 414,494 432,412 C452,320 400,240 300,240 Z" fill="url(#gsmRoot)" stroke="#4a1748" stroke-width="4"/>
+<path d="M300,300 C244,300 210,352 224,414 C236,470 268,512 300,540 C300,460 300,370 300,300 Z" fill="url(#gsmRoot2)" opacity="0.45"/>
+<!-- 흰 아랫부분 -->
+<path d="M232,470 C258,540 282,566 300,584 C318,566 342,540 368,470 C338,506 262,506 232,470 Z" fill="#f2e8f2" opacity="0.85"/>
+<!-- 결 -->
+<g stroke="#7a2f76" stroke-width="2.4" opacity="0.5" fill="none">
+  <path d="M252,290 C232,352 236,420 258,478"/>
+  <path d="M348,290 C368,352 364,420 342,478"/>
+  <path d="M300,262 C296,340 296,430 300,510"/>
+</g>
+<!-- 잔뿌리 -->
+<g stroke="#c8b0c8" stroke-width="3" stroke-linecap="round" fill="none">
+  <path d="M300,584 C304,600 300,610 296,596"/>
+  <path d="M282,566 C272,584 262,588 268,572"/>
+  <path d="M318,566 C328,584 338,588 332,572"/>
+</g>
+<!-- 하이라이트 -->
+<ellipse cx="252" cy="316" rx="26" ry="42" transform="rotate(-16 252 316)" fill="#ffffff" opacity="0.22"/>
+</svg>
+</body>
+</html>

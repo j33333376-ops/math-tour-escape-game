@@ -1,0 +1,123 @@
+<!-- 원본 크기: 1200x720 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>부평 - 평화의 소녀상</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .pg-svg { display:block; width:100%; height:auto; }
+</style>
+</head>
+<body>
+<svg class="pg-svg" viewBox="0 0 1200 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="평화의 소녀상">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c5e0f2"/><stop offset="100%" stop-color="#eef6fb"/></linearGradient>
+    <linearGradient id="bronze" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8a7a52"/><stop offset="100%" stop-color="#5f5438"/></linearGradient>
+    <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8e4da"/><stop offset="100%" stop-color="#cfc9bb"/></linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1200" height="500" fill="url(#sky)"/>
+  <g fill="#ffffff" opacity="0.7"><ellipse cx="260" cy="80" rx="76" ry="22"/><ellipse cx="940" cy="66" rx="84" ry="24"/></g>
+  <!-- 뒤편 나무와 건물 -->
+  <g opacity="0.55">
+    <rect x="40" y="300" width="150" height="200" fill="#c3ccd3"/>
+    <g fill="#d5dee4"><rect x="58" y="322" width="30" height="26"/><rect x="102" y="322" width="30" height="26"/><rect x="58" y="366" width="30" height="26"/><rect x="102" y="366" width="30" height="26"/><rect x="58" y="410" width="30" height="26"/><rect x="102" y="410" width="30" height="26"/></g>
+    <rect x="1010" y="320" width="150" height="180" fill="#c3ccd3"/>
+    <g fill="#d5dee4"><rect x="1028" y="342" width="30" height="26"/><rect x="1072" y="342" width="30" height="26"/><rect x="1028" y="386" width="30" height="26"/><rect x="1072" y="386" width="30" height="26"/></g>
+  </g>
+  <g transform="translate(220,500)"><rect x="-8" y="0" width="16" height="60" fill="#6a4a2c"/><circle cy="-24" r="46" fill="#5aa653"/><circle cx="-30" cy="0" r="30" fill="#69b55f"/><circle cx="30" cy="0" r="30" fill="#69b55f"/></g>
+  <g transform="translate(980,500)"><rect x="-8" y="0" width="16" height="60" fill="#6a4a2c"/><circle cy="-24" r="46" fill="#5aa653"/><circle cx="-30" cy="0" r="30" fill="#69b55f"/><circle cx="30" cy="0" r="30" fill="#69b55f"/></g>
+
+  <!-- 광장 바닥 -->
+  <rect x="0" y="500" width="1200" height="220" fill="#d9d3c6"/>
+  <rect x="0" y="500" width="1200" height="12" fill="#c4bcab"/>
+  <g stroke="#c4bcab" stroke-width="2" opacity="0.8"><line x1="0" y1="580" x2="1200" y2="580"/><line x1="0" y1="656" x2="1200" y2="656"/><line x1="300" y1="512" x2="260" y2="720"/><line x1="900" y1="512" x2="940" y2="720"/></g>
+
+  <!-- 기단 -->
+  <rect x="420" y="560" width="360" height="34" rx="6" fill="url(#stone)" stroke="#b3ac9c" stroke-width="3"/>
+  <rect x="444" y="536" width="312" height="28" rx="5" fill="#dcd6ca" stroke="#b3ac9c" stroke-width="3"/>
+
+  <!-- 소녀상 : 의자에 앉은 단발머리 소녀 (옆에서 본 앉은 자세, 오른쪽을 바라봄) -->
+  <g>
+    <!-- 소녀의 의자(등받이가 등 뒤로 보임) -->
+    <g stroke="#4d4430" stroke-width="6" stroke-linecap="round" fill="none">
+      <line x1="524" y1="536" x2="524" y2="368"/>
+      <line x1="524" y1="392" x2="540" y2="392"/>
+      <line x1="560" y1="536" x2="560" y2="480"/>
+      <line x1="518" y1="480" x2="566" y2="480"/>
+    </g>
+    <!-- 앉은 몸 실루엣 : 등-엉덩이-허벅지(수평)-정강이(수직) -->
+    <path d="M542,356
+             Q534,368 534,392 L534,462
+             Q534,476 548,478 L606,478
+             L610,478 L610,530 L560,530 L560,478
+             L548,478
+             Q536,477 536,466
+             Z" fill="none"/>
+    <!-- 치마(저고리 아래) : 무릎까지 수평, 아래로 드리움 -->
+    <path d="M534,430 Q532,470 540,474 L616,474 Q622,500 618,534 L556,534 Q548,500 534,474 Z" fill="url(#bronze)" stroke="#4d4430" stroke-width="3.5"/>
+    <!-- 허벅지(무릎 방향 수평 강조) -->
+    <path d="M536,452 Q570,444 612,452 L616,474 L540,474 Z" fill="#8a7a52" stroke="#4d4430" stroke-width="3"/>
+    <!-- 저고리(상체) -->
+    <path d="M536,394 Q534,354 560,346 Q588,354 586,396 Q586,428 584,446 Q560,438 538,446 Q536,414 536,394 Z" fill="#9c8c62" stroke="#4d4430" stroke-width="3.5"/>
+    <!-- 옷고름 -->
+    <path d="M560,370 L552,414 M560,370 L570,408" stroke="#4d4430" stroke-width="3" fill="none"/>
+    <!-- 팔 : 무릎 위에 두 주먹 -->
+    <path d="M542,396 Q532,430 550,452" stroke="#8a7a52" stroke-width="11" fill="none" stroke-linecap="round"/>
+    <path d="M582,398 Q592,428 578,452" stroke="#8a7a52" stroke-width="11" fill="none" stroke-linecap="round"/>
+    <circle cx="556" cy="456" r="10" fill="#8a7a52" stroke="#4d4430" stroke-width="2.5"/>
+    <circle cx="584" cy="456" r="10" fill="#8a7a52" stroke="#4d4430" stroke-width="2.5"/>
+    <!-- 정강이/맨발 : 발꿈치를 살짝 든 모습 -->
+    <g stroke="#8a7a52" stroke-width="12" stroke-linecap="round"><line x1="580" y1="478" x2="580" y2="524"/><line x1="604" y1="478" x2="604" y2="524"/></g>
+    <g fill="#8a7a52" stroke="#4d4430" stroke-width="2.5">
+      <path d="M570,528 Q582,520 596,528 L594,536 L572,536 Z"/>
+      <path d="M594,528 Q606,520 620,528 L618,536 L596,536 Z"/>
+    </g>
+    <!-- 얼굴 -->
+    <circle cx="560" cy="316" r="30" fill="#9c8c62" stroke="#4d4430" stroke-width="3.5"/>
+    <!-- 단발머리 -->
+    <path d="M528,310 Q526,278 560,276 Q594,278 592,310 Q594,330 586,338 L582,312 Q570,296 550,300 L538,338 Q526,330 528,310 Z" fill="#5f5438" stroke="#4d4430" stroke-width="3"/>
+    <!-- 눈, 입 -->
+    <g stroke="#4d4430" stroke-width="2.5" stroke-linecap="round"><line x1="548" y1="318" x2="556" y2="318"/><line x1="566" y1="318" x2="574" y2="318"/><line x1="555" y1="332" x2="565" y2="332"/></g>
+    <!-- 어깨 위 작은 새 -->
+    <g transform="translate(596,342)">
+      <ellipse cx="0" cy="0" rx="12" ry="9" fill="#6f6448" stroke="#4d4430" stroke-width="2.5"/>
+      <circle cx="9" cy="-7" r="6" fill="#6f6448" stroke="#4d4430" stroke-width="2.5"/>
+      <polygon points="15,-7 22,-5 15,-2" fill="#4d4430"/>
+      <path d="M-4,-3 Q-10,-8 -4,-11" stroke="#4d4430" stroke-width="2" fill="none"/>
+    </g>
+  </g>
+
+  <!-- 빈 의자(관람객이 앉는 의자) -->
+  <g stroke="#4d4430" stroke-width="6" stroke-linecap="round" fill="none">
+    <line x1="646" y1="536" x2="646" y2="430"/>
+    <line x1="700" y1="536" x2="700" y2="452"/>
+    <line x1="646" y1="452" x2="700" y2="452"/>
+    <line x1="646" y1="490" x2="700" y2="490"/>
+  </g>
+
+  <!-- 헌화 꽃다발 -->
+  <g transform="translate(478,552)">
+    <path d="M0,0 L26,-10 M0,0 L24,2 M0,0 L20,-20" stroke="#2f855a" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="30" cy="-12" r="7" fill="#e8a0b4"/><circle cx="28" cy="3" r="7" fill="#ffd23f"/><circle cx="24" cy="-24" r="7" fill="#c0392b"/>
+  </g>
+
+  <!-- 나비 -->
+  <g transform="translate(660,380)">
+    <ellipse cx="-6" cy="0" rx="8" ry="5" fill="#ffd23f" transform="rotate(-24)"/>
+    <ellipse cx="6" cy="0" rx="8" ry="5" fill="#ffb35c" transform="rotate(24)"/>
+    <line x1="0" y1="-4" x2="0" y2="6" stroke="#5a4632" stroke-width="2"/>
+  </g>
+
+  <!-- 사인 -->
+  <g transform="translate(600,668)">
+    <rect x="-112" y="-24" width="224" height="44" rx="10" fill="rgba(255,255,255,0.94)" stroke="#5f5438" stroke-width="2.5"/>
+    <text x="0" y="7" text-anchor="middle" font-family="'Jua','Noto Sans KR',sans-serif" font-size="24" font-weight="700" fill="#4d4430">평화의 소녀상</text>
+  </g>
+
+  <!-- 관람객 -->
+  <g fill="#41637a"><circle cx="320" cy="606" r="10"/><rect x="312" y="615" width="16" height="30" rx="6"/></g>
+  <g fill="#7a5a41"><circle cx="880" cy="612" r="10"/><rect x="872" y="621" width="16" height="30" rx="6"/></g>
+</svg>
+</body>
+</html>

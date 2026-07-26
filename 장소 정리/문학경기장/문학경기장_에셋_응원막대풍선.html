@@ -1,0 +1,66 @@
+<!-- 원본 크기: 500x750 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>응원 막대풍선</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .mcb-svg { display:block; width:100%; height:auto; }
+  .mcb-a { animation: mcb-a 1.4s ease-in-out infinite; transform-origin: 50% 100%; transform-box: fill-box; }
+  .mcb-b { animation: mcb-a 1.4s ease-in-out infinite reverse; transform-origin: 50% 100%; transform-box: fill-box; }
+  @keyframes mcb-a { 0%,100% { transform: rotate(-6deg);} 50% { transform: rotate(6deg);} }
+</style>
+</head>
+<body>
+<svg class="mcb-svg" viewBox="0 0 500 750" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="응원 막대풍선">
+<title>응원 막대풍선</title>
+<desc>경기장 응원에 쓰는 빨강·파랑 막대풍선 한 쌍.</desc>
+<defs>
+  <linearGradient id="mcbRed" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#8c1f18"/><stop offset="0.35" stop-color="#e6403a"/>
+    <stop offset="0.55" stop-color="#ff8478"/><stop offset="1" stop-color="#a8241c"/>
+  </linearGradient>
+  <linearGradient id="mcbBlue" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#183f7c"/><stop offset="0.35" stop-color="#2f6fc4"/>
+    <stop offset="0.55" stop-color="#7fb0f0"/><stop offset="1" stop-color="#1f4c96"/>
+  </linearGradient>
+</defs>
+<!-- 파랑 한 쌍 -->
+<g class="mcb-b" transform="translate(0,0)">
+  <g transform="translate(170,0) rotate(-9 170 700)">
+    <rect x="146" y="150" width="48" height="500" rx="24" fill="url(#mcbBlue)" stroke="#12305e" stroke-width="4"/>
+    <path d="M170,150 q0,-42 -20,-58 q34,4 20,58 Z" fill="#2f6fc4" stroke="#12305e" stroke-width="3"/>
+    <rect x="146" y="650" width="48" height="34" rx="12" fill="#12305e"/>
+    <g stroke="#ffffff" stroke-width="4" opacity="0.45">
+      <line x1="160" y1="200" x2="160" y2="620"/>
+    </g>
+    <g fill="#ffffff" opacity="0.9">
+      <circle cx="170" cy="250" r="13"/><circle cx="170" cy="330" r="13"/>
+      <circle cx="170" cy="410" r="13"/><circle cx="170" cy="490" r="13"/>
+    </g>
+  </g>
+</g>
+<!-- 빨강 한 쌍 -->
+<g class="mcb-a">
+  <g transform="rotate(7 250 700)">
+    <rect x="222" y="90" width="52" height="560" rx="26" fill="url(#mcbRed)" stroke="#6e120c" stroke-width="4"/>
+    <path d="M248,90 q0,-46 22,-62 q-36,4 -22,62 Z" fill="#e6403a" stroke="#6e120c" stroke-width="3"/>
+    <rect x="222" y="650" width="52" height="36" rx="12" fill="#6e120c"/>
+    <g stroke="#ffffff" stroke-width="5" opacity="0.45">
+      <line x1="238" y1="140" x2="238" y2="620"/>
+    </g>
+    <g fill="#ffe9a8" opacity="0.95">
+      <path d="M248,190 l7,15 l16,2 l-12,11 l3,16 l-14,-8 l-14,8 l3,-16 l-12,-11 l16,-2 Z"/>
+      <path d="M248,300 l7,15 l16,2 l-12,11 l3,16 l-14,-8 l-14,8 l3,-16 l-12,-11 l16,-2 Z"/>
+      <path d="M248,410 l7,15 l16,2 l-12,11 l3,16 l-14,-8 l-14,8 l3,-16 l-12,-11 l16,-2 Z"/>
+      <path d="M248,520 l7,15 l16,2 l-12,11 l3,16 l-14,-8 l-14,8 l3,-16 l-12,-11 l16,-2 Z"/>
+    </g>
+  </g>
+</g>
+<!-- 손잡이 밴드 -->
+<ellipse cx="250" cy="700" rx="118" ry="26" fill="#3a4048" opacity="0.2"/>
+</svg>
+</body>
+</html>

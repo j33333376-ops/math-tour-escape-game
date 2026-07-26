@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>8퀸 퍼즐</title>
+  <style>
+    :root {
+      /* ===== 공통 디자인 토큰 (전체 퀴즈 공용) ===== */
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #ea580c;
+      --accent-soft: #fff7ed;
+      --border-color: #e2e8f0;
+      --success: #10b981;
+      --error: #ef4444;
+      --radius-card: 16px;
+      --radius-ctrl: 10px;
+      --shadow-card: 0 10px 25px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+    }
+
+    .app-layout {
+      display: flex;
+      width: 100%; height: 100%;
+      padding: 2vh 2vw;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-side {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      width: 38vw;
+      max-width: 440px;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-block h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+
+    .header-block p {
+      margin: 0 0 20px 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .control-group {
+      background: var(--primary-soft);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .control-header label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .col-badge {
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .col-badge.accent { background: var(--accent); }
+    .col-badge.muted  { background: #94a3b8; }
+
+    input[type=range] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+
+    .stat-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .btn-row { display: flex; gap: 8px; }
+
+    .btn-check, .btn-ghost {
+      border-radius: var(--radius-ctrl);
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .btn-check { background: var(--primary); color: #fff; border: none; }
+    .btn-check:hover:not(:disabled) { background: var(--primary-dark); }
+    .btn-check:active:not(:disabled) { transform: translateY(1px); }
+    .btn-ghost { background: var(--card-bg); color: var(--primary-dark); border: 1px solid var(--border-color); }
+    .btn-ghost:hover:not(:disabled) { background: var(--primary-soft); }
+    .btn-ghost:active:not(:disabled) { transform: translateY(1px); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .answer-group { padding-top: 16px; border-top: 2px dashed var(--border-color); }
+
+    .feedback {
+      margin-top: 10px;
+      font-weight: 700;
+      text-align: center;
+      min-height: 20px;
+      font-size: 0.95rem;
+      word-break: keep-all;
+      line-height: 1.45;
+    }
+    .feedback.success { color: var(--success); }
+    .feedback.error   { color: var(--error); }
+    .feedback.info    { color: var(--text-muted); }
+
+    .board-side {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      padding: 10px;
+    }
+
+    .board-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      border: 4px solid var(--border-color);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    @media (orientation: portrait) {
+      .app-layout { flex-direction: column; justify-content: flex-start; padding-top: 2vh; gap: 12px; }
+      .panel-side { width: 96vw; max-width: none; padding: 16px; }
+      .board-side { width: 96vw; flex: 1; padding: 0 0 2vh 0; }
+      .header-block p { margin-bottom: 12px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 520px) {
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.2rem; }
+      .header-block p { display: none; }
+      .control-group { padding: 8px 12px; margin-bottom: 10px; }
+      .stat-row { margin-bottom: 8px; }
+    }
+
+    /* ===================================================================
+       반응형 안전장치 — PC/모바일, 가로/세로 어디서도 잘리지 않게
+       =================================================================== */
+    .app-layout { min-height: 0; min-width: 0; }
+    .board-side { min-height: 0; min-width: 0; }
+
+    /* 패널이 화면보다 길어지면 화면을 밀지 않고 패널 안에서만 스크롤 */
+    .panel-side {
+      max-height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    @media (orientation: portrait) {
+      .panel-side { max-height: 54%; flex: 0 0 auto; }
+      .board-side { flex: 1 1 auto; }
+    }
+
+    /* 폰 가로처럼 세로가 짧은 화면 */
+    @media (orientation: landscape) and (max-height: 560px) {
+      .app-layout { padding: 8px; gap: 10px; }
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.12rem; margin-bottom: 4px; }
+      .header-block p  { display: none; }
+      .stat-row { margin-bottom: 8px; }
+      .answer-group { padding-top: 10px; margin-top: 10px !important; }
+      .feedback { font-size: 0.82rem; margin-top: 6px; min-height: 16px; }
+      .btn-row button { padding: 8px 12px; font-size: 0.85rem; }
+    }
+    @media (orientation: landscape) and (max-height: 430px) {
+      .rule-note, .note { font-size: 0.7rem; padding: 6px 8px; margin-bottom: 8px; line-height: 1.4; }
+      .control-group { padding: 7px 10px; margin-bottom: 8px; }
+      .col-badge { font-size: 0.72rem; padding: 3px 9px; }
+    }
+
+    /* 부가 공통 유틸 (일부 퍼즐에서 사용) */
+    .note {
+      background: var(--accent-soft);
+      border: 1px solid #fed7aa;
+      border-radius: var(--radius-ctrl);
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      color: #9a3412;
+      line-height: 1.5;
+      word-break: keep-all;
+      margin-bottom: 14px;
+    }
+
+    /* ===== 목록(index.html)으로 돌아가는 버튼 ===== */
+    .home-btn {
+      position: fixed;
+      top: max(10px, env(safe-area-inset-top, 0px));
+      left: max(10px, env(safe-area-inset-left, 0px));
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px 8px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+      color: #1e293b;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: transform .18s, box-shadow .18s, color .18s, border-color .18s, background .18s;
+    }
+    .home-btn:hover {
+      background: #fff;
+      color: #1d4ed8;
+      border-color: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px -6px rgba(37, 99, 235, 0.5);
+    }
+    .home-btn:active { transform: translateY(0); }
+    .home-btn:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+    .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* 좁거나 납작한 화면에서는 아이콘만 */
+    @media (max-width: 560px), (orientation: landscape) and (max-height: 430px) {
+      .home-btn { padding: 8px; gap: 0; }
+      .home-btn .label { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+
+    /* ===== 8퀸 퍼즐 전용 ===== */
+    .col-badge.bad { background: var(--error); }
+
+    .board-wrapper {
+      width: min(82vmin, 560px);
+      aspect-ratio: 1 / 1;
+      padding: clamp(8px, 1.6vmin, 14px);
+    }
+
+    .chessboard {
+      display: grid;
+      grid-template-columns: repeat(var(--n, 8), 1fr);
+      grid-template-rows: repeat(var(--n, 8), 1fr);
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 2px rgba(15, 23, 42, 0.14);
+    }
+
+    .cell {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      font-size: clamp(0.7rem, 8vmin, 3.4rem);
+      line-height: 1;
+      color: var(--primary-dark);
+      transition: color .12s, transform .08s;
+    }
+    .cell.light { background: #eef2f8; }
+    .cell.dark  { background: #cbd5e1; }
+
+    /* 공격받는 칸(옅은 빨강) / 호버 미리보기 */
+    .cell::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: transparent;
+      transition: background .12s;
+    }
+    .cell.attacked::before { background: rgba(239, 68, 68, 0.20); }
+    .cell:hover:not(.queen)::before { background: rgba(37, 99, 235, 0.14); }
+
+    /* 퀸 */
+    .cell.queen { color: var(--primary-dark); text-shadow: 0 2px 3px rgba(15, 23, 42, 0.28); }
+    .cell.queen:active { transform: scale(0.9); }
+    .cell.queen.conflict {
+      color: var(--error);
+      box-shadow: inset 0 0 0 clamp(2px, 0.7vmin, 4px) var(--error);
+    }
+
+    .chessboard.done .cell { cursor: default; }
+    .chessboard.done .cell.queen { color: var(--success); animation: qpop .4s ease; }
+    @keyframes qpop { 0% { transform: scale(0.6); } 60% { transform: scale(1.18); } 100% { transform: scale(1); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cell { transition: none; }
+      .chessboard.done .cell.queen { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="home-btn" href="index.html" title="게임 목록으로 돌아가기" aria-label="게임 목록으로 돌아가기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.2V20h13v-9.8"/>
+    </svg>
+    <span class="label">목록</span>
+  </a>
+
+  <div class="app-layout">
+    <div class="panel-side">
+      <div class="header-block">
+        <h2>8퀸 퍼즐</h2>
+        <p>체스판에 퀸 n개를 놓되<br>서로 <b>가로·세로·대각선</b>으로 공격하지 않게 하세요.</p>
+      </div>
+
+      <div class="note">
+        💡 퀸은 상하좌우·대각선 <b>끝까지</b> 공격해요. n=2, 3은 해가 없지만 <b>n=4부터는 항상</b> 해가 있고, 8퀸의 해는 무려 <b>92가지</b>!
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <label>판 크기 (n)</label>
+          <span class="col-badge" id="diffBadge">8 × 8</span>
+        </div>
+        <input type="range" id="diffSlider" min="4" max="8" value="8" step="1">
+      </div>
+
+      <div class="stat-row">
+        <span class="col-badge muted" id="placeBadge">퀸 0 / 8</span>
+        <span class="col-badge accent" id="confBadge">충돌 0</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-ghost" id="hintBtn">💡 힌트</button>
+        <button class="btn-ghost" id="undoBtn">↶ 되돌리기</button>
+        <button class="btn-check" id="resetBtn">🔄 다시 시작</button>
+      </div>
+
+      <div class="answer-group" style="margin-top:16px">
+        <div class="feedback info" id="feedback">빈 칸을 클릭해 퀸을 놓으세요.</div>
+      </div>
+    </div>
+
+    <div class="board-side">
+      <div class="board-wrapper">
+        <div class="chessboard" id="chessboard"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // ==========================================================
+    //  N-퀸 퍼즐 — 같은 행·열·대각선 금지
+    //  n=4~8 모두 해 존재 (해의 수: 2, 10, 4, 40, 92)
+    //  (node 스크립트로 충돌 판정·해 존재·승리 판정·힌트 솔버 검증 완료)
+    // ==========================================================
+    const chessboard = document.getElementById('chessboard');
+    const diffSlider = document.getElementById('diffSlider');
+    const diffBadge  = document.getElementById('diffBadge');
+    const placeBadge = document.getElementById('placeBadge');
+    const confBadge  = document.getElementById('confBadge');
+    const hintBtn    = document.getElementById('hintBtn');
+    const undoBtn    = document.getElementById('undoBtn');
+    const resetBtn   = document.getElementById('resetBtn');
+    const feedback   = document.getElementById('feedback');
+
+    let n = 8;
+    let placed = new Set();   // 퀸이 놓인 칸 인덱스 (r*n + c)
+    let history = [];         // 되돌리기용 상태 스냅샷
+    let finished = false;
+    let cellEls = [];
+
+    function rc(idx) { return [Math.floor(idx / n), idx % n]; }
+    function attacksRC(r1, c1, r2, c2) {
+      return r1 === r2 || c1 === c2 || Math.abs(r1 - r2) === Math.abs(c1 - c2);
+    }
+
+    // 서로 공격하는(충돌) 퀸들의 인덱스 집합
+    function conflictSet() {
+      const qs = [...placed];
+      const bad = new Set();
+      for (let i = 0; i < qs.length; i++) {
+        for (let j = i + 1; j < qs.length; j++) {
+          const [r1, c1] = rc(qs[i]), [r2, c2] = rc(qs[j]);
+          if (attacksRC(r1, c1, r2, c2)) { bad.add(qs[i]); bad.add(qs[j]); }
+        }
+      }
+      return bad;
+    }
+
+    // (r,c)가 (자기 자신 제외) 어떤 퀸에게 공격받는가?
+    function isAttackedCell(r, c) {
+      for (const idx of placed) {
+        const [qr, qc] = rc(idx);
+        if (qr === r && qc === c) continue;
+        if (attacksRC(r, c, qr, qc)) return true;
+      }
+      return false;
+    }
+
+    // 현재 놓인 퀸(충돌 0)을 고정한 채 완성 가능한 해를 찾음 → 힌트용
+    function completeFrom() {
+      if (conflictSet().size !== 0) return null;
+      const rowUsed = new Map();
+      const cols = new Set(), d1 = new Set(), d2 = new Set();
+      for (const idx of placed) {
+        const [r, c] = rc(idx);
+        rowUsed.set(r, c); cols.add(c); d1.add(r - c); d2.add(r + c);
+      }
+      const place = new Array(n).fill(-1);
+      for (const idx of placed) { const [r, c] = rc(idx); place[r] = c; }
+      function bt(r) {
+        if (r === n) return true;
+        if (rowUsed.has(r)) return bt(r + 1);
+        for (let c = 0; c < n; c++) {
+          if (cols.has(c) || d1.has(r - c) || d2.has(r + c)) continue;
+          place[r] = c; cols.add(c); d1.add(r - c); d2.add(r + c);
+          if (bt(r + 1)) return true;
+          place[r] = -1; cols.delete(c); d1.delete(r - c); d2.delete(r + c);
+        }
+        return false;
+      }
+      return bt(0) ? place : null;
+    }
+
+    function setFeedback(t, kind) {
+      feedback.textContent = t;
+      feedback.className = 'feedback ' + kind;
+    }
+
+    function buildBoard() {
+      chessboard.style.setProperty('--n', n);
+      chessboard.innerHTML = '';
+      cellEls = [];
+      for (let i = 0; i < n * n; i++) {
+        const [r, c] = rc(i);
+        const d = document.createElement('div');
+        d.className = 'cell ' + (((r + c) % 2 === 0) ? 'light' : 'dark');
+        d.dataset.i = i;
+        chessboard.appendChild(d);
+        cellEls.push(d);
+      }
+    }
+
+    function update() {
+      const total = placed.size;
+      const cs = conflictSet();
+      const conflicts = cs.size;
+      finished = (total === n && conflicts === 0);
+
+      cellEls.forEach((el, idx) => {
+        const [r, c] = rc(idx);
+        const isQueen = placed.has(idx);
+        let cls = 'cell ' + (((r + c) % 2 === 0) ? 'light' : 'dark');
+        if (isQueen) {
+          cls += ' queen';
+          if (cs.has(idx)) cls += ' conflict';
+        } else if (!finished && isAttackedCell(r, c)) {
+          cls += ' attacked';
+        }
+        el.className = cls;
+        el.textContent = isQueen ? '♛' : '';
+      });
+      chessboard.classList.toggle('done', finished);
+
+      placeBadge.textContent = '퀸 ' + total + ' / ' + n;
+      confBadge.textContent = '충돌 ' + conflicts;
+      confBadge.classList.toggle('bad', conflicts > 0);
+
+      undoBtn.disabled = history.length === 0 || finished;
+      hintBtn.disabled = finished;
+
+      if (finished) {
+        setFeedback('🎉 완성! 퀸 ' + n + '개가 서로 전혀 공격하지 않아요!', 'success');
+      } else if (conflicts > 0) {
+        setFeedback('⚔️ 충돌 ' + conflicts + '개(빨강). 서로 공격하지 않게 옮기세요.', 'error');
+      } else if (total === 0) {
+        setFeedback('빈 칸을 클릭해 퀸(' + n + '개)을 놓으세요.', 'info');
+      } else {
+        setFeedback('좋아요! 충돌 없음 — ' + (n - total) + '개 더 놓으면 완성.', 'info');
+      }
+    }
+
+    function pushHistory() { history.push([...placed]); }
+
+    function onCellClick(idx) {
+      if (finished) return;
+      pushHistory();
+      if (placed.has(idx)) placed.delete(idx);
+      else placed.add(idx);
+      update();
+    }
+
+    function doHint() {
+      if (finished) return;
+      if (conflictSet().size > 0) {
+        setFeedback('먼저 충돌하는(빨간) 퀸을 치워야 힌트를 줄 수 있어요.', 'error');
+        return;
+      }
+      const sol = completeFrom();
+      if (!sol) {
+        setFeedback('지금 놓인 퀸으로는 완성할 수 없어요. 몇 개를 옮겨 보세요.', 'error');
+        return;
+      }
+      const rowsWithQueen = new Set([...placed].map(idx => rc(idx)[0]));
+      let done = false;
+      for (let r = 0; r < n; r++) {
+        if (!rowsWithQueen.has(r)) {
+          pushHistory();
+          placed.add(r * n + sol[r]);
+          done = true;
+          break;
+        }
+      }
+      update();
+      if (done && !finished) {
+        setFeedback('💡 안전한 퀸을 한 개 놓았어요. (' + (n - placed.size) + '개 남음)', 'info');
+      }
+    }
+
+    function undo() {
+      if (finished || history.length === 0) return;
+      placed = new Set(history.pop());
+      update();
+      setFeedback('↶ 한 수 되돌렸어요.', 'info');
+    }
+
+    function reset() {
+      placed = new Set();
+      history = [];
+      finished = false;
+      update();
+    }
+
+    function setN(newN) {
+      n = newN;
+      diffBadge.textContent = n + ' × ' + n;
+      buildBoard();
+      reset();
+    }
+
+    chessboard.addEventListener('click', (e) => {
+      const el = e.target.closest('.cell');
+      if (el) onCellClick(parseInt(el.dataset.i, 10));
+    });
+    diffSlider.addEventListener('input', (e) => setN(parseInt(e.target.value, 10)));
+    hintBtn.addEventListener('click', doHint);
+    undoBtn.addEventListener('click', undo);
+    resetBtn.addEventListener('click', () => { reset(); setFeedback('처음부터 다시! 빈 칸을 클릭해 퀸을 놓으세요.', 'info'); });
+
+    // 시작
+    setN(8);
+
+  </script>
+</body>
+</html>

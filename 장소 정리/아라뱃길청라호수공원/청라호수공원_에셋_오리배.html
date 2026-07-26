@@ -1,0 +1,89 @@
+<!-- 원본 크기: 1000x500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오리배</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .cob-svg { display:block; width:100%; height:auto; }
+  .cob-bob { animation: cob-bob 4.4s ease-in-out infinite; transform-origin: 500px 380px; }
+  @keyframes cob-bob { 0%,100% { transform: translateY(0) rotate(-1.4deg);} 50% { transform: translateY(-8px) rotate(1.4deg);} }
+  .cob-wave { animation: cob-wave 3s ease-in-out infinite; }
+  @keyframes cob-wave { 0%,100% { opacity:0.5; } 50% { opacity:0.95; } }
+</style>
+</head>
+<body>
+<svg class="cob-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="오리배">
+<title>오리배</title>
+<desc>청라호수공원에서 타는 노란 오리 모양 페달보트.</desc>
+<defs>
+  <linearGradient id="cobBody" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffe27a"/><stop offset="0.55" stop-color="#f2c33c"/><stop offset="1" stop-color="#d19a1c"/>
+  </linearGradient>
+  <linearGradient id="cobHead" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff0a8"/><stop offset="1" stop-color="#f0c034"/>
+  </linearGradient>
+</defs>
+<g class="cob-bob">
+  <!-- 몸통 -->
+  <path d="M170,240
+           C170,190 250,158 380,158
+           C560,158 720,182 800,232
+           C860,270 862,340 812,378
+           C752,422 300,428 232,384
+           C182,352 170,300 170,240 Z"
+        fill="url(#cobBody)" stroke="#a87c14" stroke-width="6"/>
+  <!-- 꼬리 -->
+  <path d="M180,258 C136,238 104,206 96,170 C142,180 172,208 190,244 Z" fill="#f2c33c" stroke="#a87c14" stroke-width="5"/>
+  <!-- 좌석 홈 -->
+  <path d="M300,196 C400,178 560,186 660,214 C700,226 706,262 668,272 C560,300 380,296 306,270 C266,256 262,208 300,196 Z"
+        fill="#e0aa24" stroke="#a87c14" stroke-width="4"/>
+  <g fill="#c98f18">
+    <rect x="336" y="212" width="120" height="52" rx="14"/>
+    <rect x="500" y="212" width="120" height="52" rx="14"/>
+  </g>
+  <!-- 차양 -->
+  <path d="M282,142 L692,142 L668,110 L306,110 Z" fill="#e8623c" stroke="#a83f26" stroke-width="4"/>
+  <g fill="#f7f2e6">
+    <path d="M330,142 L378,142 L364,110 L318,110 Z"/>
+    <path d="M426,142 L474,142 L460,110 L414,110 Z"/>
+    <path d="M522,142 L570,142 L556,110 L510,110 Z"/>
+    <path d="M618,142 L666,142 L652,110 L606,110 Z"/>
+  </g>
+  <g stroke="#c4a86c" stroke-width="6" stroke-linecap="round">
+    <line x1="300" y1="142" x2="300" y2="206"/><line x1="674" y1="142" x2="674" y2="212"/>
+  </g>
+  <!-- 목 -->
+  <path d="M760,196 C766,148 786,106 826,86 C864,68 908,84 918,120 C926,152 906,180 872,190 Z"
+        fill="url(#cobHead)" stroke="#a87c14" stroke-width="5"/>
+  <!-- 머리 -->
+  <ellipse cx="860" cy="106" rx="78" ry="66" fill="url(#cobHead)" stroke="#a87c14" stroke-width="5"/>
+  <!-- 부리 -->
+  <path d="M918,102 C960,94 986,106 984,124 C982,142 950,150 916,140 Z" fill="#f2803c" stroke="#b8501c" stroke-width="4.4"/>
+  <path d="M920,124 C946,120 966,124 976,132" fill="none" stroke="#b8501c" stroke-width="3"/>
+  <!-- 눈 -->
+  <circle cx="874" cy="86" r="16" fill="#ffffff" stroke="#a87c14" stroke-width="3"/>
+  <circle cx="878" cy="88" r="9" fill="#2b2318"/>
+  <circle cx="874" cy="83" r="3.4" fill="#ffffff"/>
+  <!-- 볼 -->
+  <ellipse cx="838" cy="122" rx="18" ry="11" fill="#f0805c" opacity="0.4"/>
+  <!-- 날개 -->
+  <path d="M420,222 C470,196 560,196 610,224 C570,262 460,262 420,222 Z" fill="#ffe27a" stroke="#a87c14" stroke-width="4" opacity="0.8"/>
+  <!-- 흘수선 -->
+  <path d="M186,352 C300,388 720,388 828,354" fill="none" stroke="#d19a1c" stroke-width="6" opacity="0.7"/>
+</g>
+<!-- 물결 -->
+<g class="cob-wave" fill="none" stroke="#7fb8dc" stroke-width="10" stroke-linecap="round">
+  <path d="M96,414 q44,-16 88,0 q44,16 88,0"/>
+  <path d="M732,418 q44,-16 88,0 q44,16 88,0"/>
+</g>
+<path d="M110,456 q66,-20 132,0 q66,20 132,0 q66,-20 132,0 q66,20 132,0 q66,-20 132,0"
+      fill="none" stroke="#4d88b8" stroke-width="14" stroke-linecap="round" opacity="0.7"/>
+<g fill="#ffffff" opacity="0.6">
+  <ellipse cx="300" cy="446" rx="30" ry="7"/><ellipse cx="700" cy="450" rx="30" ry="7"/>
+</g>
+</svg>
+</body>
+</html>

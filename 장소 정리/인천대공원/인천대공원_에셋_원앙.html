@@ -1,0 +1,104 @@
+<!-- 원본 크기: 600x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>원앙</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .idw-svg { display:block; width:100%; height:auto; }
+  .idw-bob { animation: idw-bob 4.4s ease-in-out infinite; }
+  @keyframes idw-bob { 0%,100% { transform: translateY(0) rotate(-1deg);} 50% { transform: translateY(-6px) rotate(1deg);} }
+  .idw-ripple { animation: idw-ripple 3.6s ease-in-out infinite; }
+  @keyframes idw-ripple { 0%,100% { opacity:0.35; } 50% { opacity:0.85; } }
+</style>
+</head>
+<body>
+<svg class="idw-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="원앙">
+<title>원앙</title>
+<desc>인천대공원 호수의 원앙 한 쌍.</desc>
+<defs>
+  <linearGradient id="idwCrest" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#3f8f6c"/><stop offset="0.5" stop-color="#7fc4a0"/><stop offset="1" stop-color="#2f6b52"/>
+  </linearGradient>
+  <linearGradient id="idwSail" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f2a03c"/><stop offset="1" stop-color="#c26a1c"/>
+  </linearGradient>
+  <linearGradient id="idwWater" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#9fd0e0"/><stop offset="1" stop-color="#4f90ac"/>
+  </linearGradient>
+</defs>
+<!-- 암컷(뒤) -->
+<g class="idw-bob" style="animation-delay:1.2s">
+  <path d="M118,404 C110,352 152,318 216,316 C280,314 322,340 326,384 C330,424 296,450 232,452 C168,454 124,438 118,404 Z"
+        fill="#9a978c" stroke="#5f5c52" stroke-width="4.4"/>
+  <path d="M300,336 C304,306 300,286 292,268 C314,256 340,266 344,290 C348,316 334,338 314,348 Z"
+        fill="#a8a49a" stroke="#5f5c52" stroke-width="4"/>
+  <circle cx="330" cy="264" r="38" fill="#a8a49a" stroke="#5f5c52" stroke-width="4"/>
+  <path d="M362,262 C388,258 402,268 400,282 C398,296 378,302 358,296 Z" fill="#5f6b74" stroke="#3f4650" stroke-width="3.4"/>
+  <circle cx="344" cy="254" r="10" fill="#2b2318"/>
+  <circle cx="341" cy="250" r="3.4" fill="#ffffff"/>
+  <ellipse cx="342" cy="256" rx="20" ry="9" fill="#ffffff" opacity="0.65"/>
+  <path d="M164,352 C210,336 268,338 306,358 C282,388 208,392 164,352 Z" fill="#b6b2a6" opacity="0.7"/>
+  <g fill="#7d7a70">
+    <ellipse cx="200" cy="374" rx="16" ry="9"/><ellipse cx="242" cy="366" rx="15" ry="8"/>
+    <ellipse cx="282" cy="376" rx="14" ry="8"/>
+  </g>
+</g>
+<!-- 수컷(앞) -->
+<g class="idw-bob">
+  <!-- 몸통 -->
+  <path d="M92,470 C82,412 130,374 206,372 C284,370 336,398 342,448 C348,494 306,524 232,526 C156,528 102,510 92,470 Z"
+        fill="#e8e4d8" stroke="#5f5c52" stroke-width="5"/>
+  <!-- 옆구리 주황 -->
+  <path d="M120,462 C160,436 236,432 288,456 C300,486 254,506 198,506 C150,506 122,490 120,462 Z"
+        fill="#e0a05c" stroke="#a8712c" stroke-width="4"/>
+  <!-- 은행잎 날개 -->
+  <path d="M186,392 C176,344 210,318 246,330 C276,340 284,382 262,414 C240,444 200,438 186,392 Z"
+        fill="url(#idwSail)" stroke="#8c4c14" stroke-width="4.4"/>
+  <path d="M198,394 C192,358 214,338 240,346" fill="none" stroke="#fff0d0" stroke-width="5"/>
+  <path d="M262,414 C284,392 288,352 268,332" fill="none" stroke="#7d3a0c" stroke-width="4"/>
+  <!-- 가슴 밤색 -->
+  <path d="M280,404 C302,392 326,394 340,410 C336,438 314,452 288,450 Z" fill="#8c3a24" stroke="#5f1f12" stroke-width="4"/>
+  <g stroke="#f4ece0" stroke-width="5">
+    <path d="M290,398 L300,442"/><path d="M312,396 L320,444"/>
+  </g>
+  <!-- 목 -->
+  <path d="M312,392 C316,356 312,332 302,312 C328,296 360,308 366,336 C372,366 356,394 334,406 Z"
+        fill="#8c3a24" stroke="#5f1f12" stroke-width="4.4"/>
+  <path d="M306,340 C330,326 356,330 366,346" fill="none" stroke="#f4ece0" stroke-width="7"/>
+  <!-- 머리 -->
+  <circle cx="352" cy="300" r="42" fill="url(#idwCrest)" stroke="#25543f" stroke-width="4.4"/>
+  <!-- 볏 -->
+  <path d="M336,266 C316,238 322,212 348,206 C376,200 396,222 388,250 C382,270 362,278 344,272 Z"
+        fill="#6b3f9c" stroke="#3f2266" stroke-width="4"/>
+  <path d="M388,250 C412,246 430,258 428,276 C426,294 404,302 386,294" fill="#8c3a24" stroke="#5f1f12" stroke-width="4"/>
+  <!-- 흰 눈썹선 -->
+  <path d="M344,286 C368,278 396,282 410,296" fill="none" stroke="#f8f4ea" stroke-width="9" stroke-linecap="round"/>
+  <!-- 부리 -->
+  <path d="M386,306 C412,302 426,312 424,326 C422,340 402,346 382,340 Z" fill="#e6403a" stroke="#a8241c" stroke-width="3.4"/>
+  <circle cx="418" cy="318" r="5" fill="#f8f4ea"/>
+  <!-- 눈 -->
+  <circle cx="366" cy="292" r="10" fill="#2b2318"/>
+  <circle cx="363" cy="288" r="3.4" fill="#ffffff"/>
+</g>
+<!-- 물 -->
+<path d="M20,520 C120,502 480,502 580,520 L580,600 L20,600 Z" fill="url(#idwWater)" opacity="0.85"/>
+<g class="idw-ripple" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round">
+  <path d="M60,540 q40,-12 80,0 q40,12 80,0"/>
+  <path d="M340,548 q40,-12 80,0 q40,12 80,0"/>
+  <path d="M140,574 q46,-12 92,0 q46,12 92,0"/>
+</g>
+<g fill="#ffffff" opacity="0.5">
+  <ellipse cx="230" cy="530" rx="120" ry="10"/>
+</g>
+<!-- 연잎 -->
+<g>
+  <ellipse cx="500" cy="546" rx="62" ry="20" fill="#5f9c4c" stroke="#3f6b30" stroke-width="3.4"/>
+  <path d="M500,546 L468,538 M500,546 L540,540 M500,546 L512,562" stroke="#3f6b30" stroke-width="2.4"/>
+  <ellipse cx="96" cy="562" rx="44" ry="15" fill="#6faa54" stroke="#3f6b30" stroke-width="3"/>
+</g>
+</svg>
+</body>
+</html>

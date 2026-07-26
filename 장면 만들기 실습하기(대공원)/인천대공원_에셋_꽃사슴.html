@@ -1,0 +1,104 @@
+<!-- 원본 크기: 520x460 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>꽃사슴</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .ds-svg { display:block; width:100%; height:auto; }
+  .ds-ear { animation: ds-ear 5s ease-in-out infinite; transform-box:fill-box; transform-origin:50% 100%; }
+  @keyframes ds-ear { 0%,84%,100%{transform:rotate(0);} 90%{transform:rotate(-9deg);} }
+  .ds-eye { animation: ds-blink 5.2s ease-in-out infinite; transform-box:fill-box; transform-origin:50% 50%; }
+  @keyframes ds-blink { 0%,93%,100%{transform:scaleY(1);} 96.5%{transform:scaleY(0.1);} }
+  .ds-tail { animation: ds-tail 3.6s ease-in-out infinite; transform-box:fill-box; transform-origin:0% 50%; }
+  @keyframes ds-tail { 0%,100%{transform:rotate(-8deg);} 50%{transform:rotate(8deg);} }
+  .ds-head { animation: ds-head 7s ease-in-out infinite; transform-box:fill-box; transform-origin:78% 90%; }
+  @keyframes ds-head { 0%,100%{transform:rotate(-1.5deg);} 50%{transform:rotate(1.5deg);} }
+</style>
+</head>
+<body>
+<svg class="ds-svg" viewBox="0 0 520 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="꽃사슴">
+<title>꽃사슴</title>
+<desc>아름다운 흰색 반점 무늬와 우아한 자태를 가진 옆으로 선 꽃사슴. 긴 귀와 순한 눈망울.</desc>
+<defs>
+  <linearGradient id="ds-body" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#d99b5c"/><stop offset="0.6" stop-color="#c68847"/><stop offset="1" stop-color="#a86e34"/>
+  </linearGradient>
+  <linearGradient id="ds-head" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#dca060"/><stop offset="1" stop-color="#bd8244"/>
+  </linearGradient>
+</defs>
+
+<!-- 그림자 -->
+<ellipse cx="290" cy="426" rx="180" ry="18" fill="#5a4326" opacity="0.16"/>
+
+<!-- 먼쪽 다리(어둡게) -->
+<g fill="#b07a3c" stroke="#8a5e2c" stroke-width="2.5">
+  <path d="M232,270 C230,308 228,350 230,388 L226,414 C226,420 238,420 238,414 L242,388 C244,350 246,310 248,274 Z"/>
+  <path d="M372,272 C374,312 374,352 372,390 L376,414 C376,420 388,420 388,414 L384,390 C384,352 386,310 388,278 Z"/>
+</g>
+<g fill="#4a3418"><path d="M226,410 h12 v8 h-12 Z"/><path d="M376,410 h12 v8 h-12 Z"/></g>
+
+<!-- 몸통 -->
+<path d="M176,240 C176,204 200,184 236,180 C286,174 350,174 392,184
+         C420,190 434,206 432,230 C430,258 414,276 386,282
+         C340,290 250,292 210,284 C186,278 176,264 176,240 Z"
+      fill="url(#ds-body)" stroke="#9a6a34" stroke-width="3" stroke-linejoin="round"/>
+<!-- 흰 배 / 엉덩이 -->
+<path d="M214,278 C260,290 340,288 384,280 C388,300 372,306 350,306 C300,308 250,306 224,300 C210,296 208,286 214,278 Z" fill="#f6ecd8"/>
+<ellipse cx="418" cy="234" rx="20" ry="26" fill="#f4ead4" opacity="0.9"/>
+
+<!-- 앞쪽 다리(밝게) -->
+<g fill="url(#ds-body)" stroke="#9a6a34" stroke-width="2.6">
+  <path d="M206,268 C202,306 200,350 202,388 L198,414 C198,420 212,420 212,414 L216,388 C218,348 220,306 224,272 Z"/>
+  <path d="M352,272 C356,312 356,352 354,390 L358,414 C358,420 372,420 372,414 L368,390 C368,350 370,308 372,276 Z"/>
+</g>
+<g fill="#3f2c16"><path d="M198,409 h14 v9 h-14 Z"/><path d="M358,409 h14 v9 h-14 Z"/></g>
+
+<!-- 흰 반점 -->
+<g fill="#f6ecd8">
+  <circle cx="250" cy="204" r="5.5"/><circle cx="286" cy="198" r="5.5"/><circle cx="322" cy="200" r="5.5"/><circle cx="358" cy="204" r="5.5"/><circle cx="392" cy="212" r="5"/>
+  <circle cx="234" cy="228" r="5.5"/><circle cx="270" cy="222" r="5.5"/><circle cx="306" cy="224" r="5.5"/><circle cx="342" cy="226" r="5.5"/><circle cx="378" cy="232" r="5"/>
+  <circle cx="252" cy="250" r="5"/><circle cx="290" cy="248" r="5"/><circle cx="328" cy="250" r="5"/><circle cx="362" cy="254" r="4.6"/>
+</g>
+
+<!-- 꼬리 -->
+<g class="ds-tail">
+  <path d="M430,224 C446,218 456,224 456,236 C456,248 446,256 432,252 C438,244 438,232 430,224 Z" fill="#f4ead4" stroke="#c9a86a" stroke-width="2"/>
+  <path d="M436,228 C444,230 448,238 444,246" fill="none" stroke="#c68847" stroke-width="3"/>
+</g>
+
+<!-- ===== 목 + 머리 ===== -->
+<g class="ds-head">
+  <!-- 목 -->
+  <path d="M198,224 C176,196 156,166 140,140 C132,126 148,116 162,126 C182,152 204,190 224,220 Z"
+        fill="url(#ds-head)" stroke="#9a6a34" stroke-width="3" stroke-linejoin="round"/>
+  <!-- 목 반점 -->
+  <g fill="#f6ecd8" opacity="0.85"><circle cx="176" cy="170" r="4"/><circle cx="196" cy="196" r="4"/></g>
+  <!-- 귀 -->
+  <g class="ds-ear"><path d="M150,120 C132,96 118,64 124,48 C138,58 156,90 164,118 Z" fill="url(#ds-head)" stroke="#9a6a34" stroke-width="2.5"/>
+    <path d="M150,112 C138,92 130,70 132,58 C144,74 154,96 158,112 Z" fill="#e8b98a"/></g>
+  <g class="ds-ear" style="animation-delay:.5s"><path d="M120,124 C96,110 74,86 74,68 C90,72 116,92 132,116 Z" fill="#b07a3c" stroke="#8a5e2c" stroke-width="2.5"/></g>
+  <!-- 머리/얼굴(왼쪽 향함) -->
+  <path d="M150,128 C118,120 90,124 72,140 C58,152 54,168 62,180 C72,194 96,196 120,190
+           C144,184 160,168 162,148 C163,136 158,130 150,128 Z"
+        fill="url(#ds-head)" stroke="#9a6a34" stroke-width="3"/>
+  <!-- 주둥이 밝은 부분 -->
+  <path d="M62,168 C74,186 96,192 116,188 C104,178 88,172 74,166 Z" fill="#efe0c6"/>
+  <!-- 코 -->
+  <ellipse cx="66" cy="166" rx="10" ry="8" fill="#3f2c1e"/>
+  <ellipse cx="63" cy="163" rx="3" ry="2.4" fill="#7a5a4a" opacity="0.7"/>
+  <!-- 입 -->
+  <path d="M72,176 C80,182 90,182 98,178" fill="none" stroke="#7a5a3a" stroke-width="2" stroke-linecap="round"/>
+  <!-- 눈 -->
+  <g class="ds-eye">
+    <ellipse cx="118" cy="150" rx="11" ry="13" fill="#2b1d10"/>
+    <circle cx="114" cy="145" r="3.4" fill="#ffffff" opacity="0.9"/>
+    <g stroke="#2b1d10" stroke-width="2" stroke-linecap="round"><path d="M108,138 l-4,-4 M118,136 l0,-5"/></g>
+  </g>
+</g>
+</svg>
+</body>
+</html>

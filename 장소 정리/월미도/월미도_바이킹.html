@@ -1,0 +1,124 @@
+<!-- 원본 크기: 760x520 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>바이킹</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .vik-svg { display:block; width:100%; height:auto; }
+
+  .vik-tower { stroke:#e63946; stroke-width:9; }
+  .vik-tower-w { stroke:#f4f1ea; stroke-width:9; }
+  .vik-axle { fill:#3a3a3a; }
+  .vik-base { fill:#5a5a5a; }
+  .vik-hull { fill:url(#vikHull); stroke:#5a3018; stroke-width:2.5; }
+  .vik-stripe-a { fill:#e63946; }
+  .vik-stripe-b { fill:#f4d35e; }
+  .vik-shield { fill:#f4f1ea; stroke:#5a3018; stroke-width:1.5; }
+  .vik-shield-dot { fill:#3a6ea5; }
+  .vik-flag { fill:#e63946; }
+
+  #vik-boat {
+    transform-origin: 380px 92px;
+    animation: vik-swing 6s ease-in-out infinite;
+  }
+  @keyframes vik-swing {
+    0%   { transform: rotate(-16deg); }
+    50%  { transform: rotate(16deg); }
+    100% { transform: rotate(-16deg); }
+  }
+</style>
+</head>
+<body>
+<svg class="vik-svg" viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="바이킹 놀이기구 일러스트">
+<title>바이킹</title>
+<desc>진자처럼 좌우로 흔들리는 배 모양 바이킹 놀이기구와 지지 프레임.</desc>
+
+<defs>
+  <linearGradient id="vikHull" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#c96a3a"/>
+    <stop offset="1" stop-color="#8f4620"/>
+  </linearGradient>
+</defs>
+
+<!-- ════════ 지지 프레임 (A자형 양쪽 타워) ════════ -->
+<!-- 좌측 타워 -->
+<g>
+  <line class="vik-tower" x1="90" y1="470" x2="330" y2="90"/>
+  <line class="vik-tower-w" x1="150" y1="470" x2="330" y2="90"/>
+  <line class="vik-tower" x1="90" y1="470" x2="200" y2="230"/>
+  <line class="vik-tower-w" x1="150" y1="470" x2="260" y2="230"/>
+  <line stroke="#3a3a3a" stroke-width="5" x1="115" y1="380" x2="235" y2="380"/>
+  <line stroke="#3a3a3a" stroke-width="5" x1="128" y1="300" x2="248" y2="300"/>
+</g>
+<!-- 우측 타워 -->
+<g>
+  <line class="vik-tower" x1="670" y1="470" x2="430" y2="90"/>
+  <line class="vik-tower-w" x1="610" y1="470" x2="430" y2="90"/>
+  <line class="vik-tower" x1="670" y1="470" x2="560" y2="230"/>
+  <line class="vik-tower-w" x1="610" y1="470" x2="500" y2="230"/>
+  <line stroke="#3a3a3a" stroke-width="5" x1="525" y1="380" x2="645" y2="380"/>
+  <line stroke="#3a3a3a" stroke-width="5" x1="512" y1="300" x2="632" y2="300"/>
+</g>
+
+<!-- 상단 축(axle) -->
+<rect class="vik-axle" x="325" y="86" width="110" height="12" rx="4"/>
+<circle class="vik-axle" cx="330" cy="92" r="10"/>
+<circle class="vik-axle" cx="430" cy="92" r="10"/>
+
+<!-- 깃발 -->
+<g>
+  <line x1="330" y1="88" x2="330" y2="55" stroke="#3a3a3a" stroke-width="2"/>
+  <polygon class="vik-flag" points="330,55 330,72 360,63"/>
+  <line x1="430" y1="88" x2="430" y2="55" stroke="#3a3a3a" stroke-width="2"/>
+  <polygon class="vik-flag" points="430,55 430,72 460,63"/>
+</g>
+
+<!-- 받침대 -->
+<ellipse class="vik-base" cx="120" cy="480" rx="46" ry="12"/>
+<ellipse class="vik-base" cx="640" cy="480" rx="46" ry="12"/>
+
+<!-- ════════ 흔들리는 배 (진자 그룹) ════════ -->
+<g id="vik-boat">
+  <!-- 매달림 팔 -->
+  <line x1="330" y1="92" x2="230" y2="330" stroke="#3a3a3a" stroke-width="8"/>
+  <line x1="430" y1="92" x2="530" y2="330" stroke="#3a3a3a" stroke-width="8"/>
+
+  <!-- 선체(hull) -->
+  <path class="vik-hull" d="M195,330 C195,300 250,280 380,280 C510,280 565,300 565,330 C565,368 505,388 380,388 C255,388 195,368 195,330 Z"/>
+
+  <!-- 뱃머리 장식(용머리, 좌) -->
+  <path fill="#8f4620" stroke="#5a3018" stroke-width="2" d="M195,320 C165,312 145,292 148,268 C160,278 178,290 200,300 Z"/>
+  <circle cx="158" cy="284" r="4" fill="#f4d35e"/>
+  <!-- 선미 장식(우) -->
+  <path fill="#8f4620" stroke="#5a3018" stroke-width="2" d="M565,320 C595,312 615,292 612,268 C600,278 582,290 560,300 Z"/>
+  <circle cx="602" cy="284" r="4" fill="#f4d35e"/>
+
+  <!-- 줄무늬 (하단) -->
+  <path class="vik-stripe-a" d="M210,352 C260,372 500,372 550,352 C505,382 255,382 210,352 Z"/>
+  <path class="vik-stripe-b" d="M205,340 C255,358 505,358 555,340 L555,348 C505,366 255,366 205,348 Z"/>
+
+  <!-- 방패 문양 (측면 장식) -->
+  <g>
+    <circle class="vik-shield" cx="245" cy="322" r="16"/><circle class="vik-shield-dot" cx="245" cy="322" r="6"/>
+    <circle class="vik-shield" cx="300" cy="315" r="16"/><circle class="vik-shield-dot" cx="300" cy="315" r="6"/>
+    <circle class="vik-shield" cx="355" cy="311" r="16"/><circle class="vik-shield-dot" cx="355" cy="311" r="6"/>
+    <circle class="vik-shield" cx="410" cy="311" r="16"/><circle class="vik-shield-dot" cx="410" cy="311" r="6"/>
+    <circle class="vik-shield" cx="465" cy="315" r="16"/><circle class="vik-shield-dot" cx="465" cy="315" r="6"/>
+    <circle class="vik-shield" cx="515" cy="322" r="16"/><circle class="vik-shield-dot" cx="515" cy="322" r="6"/>
+  </g>
+
+  <!-- 좌석 열 (승객석 형태) -->
+  <g fill="#5a3018">
+    <rect x="230" y="288" width="26" height="18" rx="4"/>
+    <rect x="290" y="282" width="26" height="18" rx="4"/>
+    <rect x="350" y="280" width="26" height="18" rx="4"/>
+    <rect x="410" y="282" width="26" height="18" rx="4"/>
+    <rect x="470" y="288" width="26" height="18" rx="4"/>
+  </g>
+</g>
+</svg>
+</body>
+</html>

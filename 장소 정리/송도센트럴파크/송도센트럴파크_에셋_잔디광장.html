@@ -1,0 +1,250 @@
+<!-- 원본 크기: 1280x480 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>송도 센트럴파크 잔디광장</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .jdg-svg { display:block; width:100%; height:auto; }
+  @keyframes jdg-sway { 0%,100%{ transform: rotate(-1.5deg); } 50%{ transform: rotate(1.5deg); } }
+  .jdg-tree { animation: jdg-sway 4.5s ease-in-out infinite; }
+  @keyframes jdg-drift { 0%,100%{ transform: translateX(0); } 50%{ transform: translateX(22px); } }
+  .jdg-cloud { animation: jdg-drift 16s ease-in-out infinite; }
+  @keyframes jdg-kite { 0%,100%{ transform: translate(0,0) rotate(-6deg); } 50%{ transform: translate(-14px,-16px) rotate(6deg); } }
+  .jdg-kite { animation: jdg-kite 7s ease-in-out infinite; transform-origin: center; }
+</style>
+</head>
+<body>
+<svg class="jdg-svg" viewBox="0 0 1280 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="송도 센트럴파크 잔디광장">
+<title>송도 센트럴파크 잔디광장</title>
+<desc>송도 센트럴파크의 넓은 잔디밭. 가로수가 일정한 간격(140)으로 늘어서 있고 뒤로 도심 스카이라인이 보인다.</desc>
+<defs>
+ <linearGradient id="jdg-sky" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#b8e0f2"/><stop offset="0.7" stop-color="#e2f2f7"/><stop offset="1" stop-color="#f4f6e8"/>
+ </linearGradient>
+ <linearGradient id="jdg-grass" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#8fbf62"/><stop offset="1" stop-color="#4f8038"/>
+ </linearGradient>
+ <linearGradient id="jdg-trunk" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0" stop-color="#7d5934"/><stop offset="0.45" stop-color="#966d42"/><stop offset="1" stop-color="#5e4126"/>
+ </linearGradient>
+ <radialGradient id="jdg-leafA" cx="0.36" cy="0.3" r="0.78">
+  <stop offset="0" stop-color="#6fa855"/><stop offset="1" stop-color="#386d33"/>
+ </radialGradient>
+ <radialGradient id="jdg-leafB" cx="0.4" cy="0.32" r="0.78">
+  <stop offset="0" stop-color="#7fb85f"/><stop offset="1" stop-color="#47823d"/>
+ </radialGradient>
+ <linearGradient id="jdg-tower" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#b9cdda"/><stop offset="1" stop-color="#8ea6b6"/>
+ </linearGradient>
+ <linearGradient id="jdg-path" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#e2d9c0"/><stop offset="1" stop-color="#cabf9f"/>
+ </linearGradient>
+</defs>
+
+<!-- 하늘 -->
+<rect x="0" y="0" width="1280" height="200" fill="url(#jdg-sky)"/>
+<g class="jdg-cloud" fill="#ffffff" opacity="0.85">
+ <ellipse cx="250" cy="52" rx="60" ry="19"/><ellipse cx="300" cy="46" rx="40" ry="23"/><ellipse cx="204" cy="58" rx="32" ry="14"/>
+ <ellipse cx="920" cy="40" rx="52" ry="17"/><ellipse cx="964" cy="34" rx="34" ry="20"/>
+</g>
+
+<!-- 도심 스카이라인 -->
+<g fill="url(#jdg-tower)" opacity="0.75">
+ <rect x="40" y="96" width="54" height="104"/>
+ <rect x="108" y="60" width="40" height="140"/>
+ <polygon points="162,200 162,72 186,44 210,72 210,200"/>
+ <rect x="228" y="110" width="46" height="90"/>
+ <rect x="980" y="84" width="48" height="116"/>
+ <rect x="1042" y="52" width="38" height="148"/>
+ <polygon points="1096,200 1096,66 1120,36 1144,66 1144,200"/>
+ <rect x="1162" y="104" width="52" height="96"/>
+ <rect x="1228" y="78" width="40" height="122"/>
+</g>
+<g fill="#ffffff" opacity="0.5">
+ <rect x="52" y="112" width="8" height="10"/><rect x="70" y="112" width="8" height="10"/>
+ <rect x="52" y="136" width="8" height="10"/><rect x="70" y="136" width="8" height="10"/>
+ <rect x="118" y="80" width="8" height="10"/><rect x="132" y="80" width="8" height="10"/>
+ <rect x="118" y="106" width="8" height="10"/><rect x="132" y="106" width="8" height="10"/>
+ <rect x="992" y="100" width="8" height="10"/><rect x="1010" y="100" width="8" height="10"/>
+ <rect x="1052" y="70" width="8" height="10"/><rect x="1066" y="70" width="8" height="10"/>
+ <rect x="1174" y="120" width="8" height="10"/><rect x="1192" y="120" width="8" height="10"/>
+</g>
+
+<!-- 잔디 지면 -->
+<rect x="0" y="196" width="1280" height="284" fill="url(#jdg-grass)"/>
+<rect x="0" y="196" width="1280" height="12" fill="#a6d47c" opacity="0.6"/>
+
+<!-- 예초 줄무늬 -->
+<g opacity="0.4">
+ <rect x="0" y="250" width="1280" height="34" fill="#75a850"/>
+ <rect x="0" y="318" width="1280" height="36" fill="#75a850"/>
+ <rect x="0" y="390" width="1280" height="38" fill="#75a850"/>
+ <rect x="0" y="464" width="1280" height="16" fill="#75a850"/>
+</g>
+
+<!-- 산책로 -->
+<path d="M0,300 C220,286 360,312 600,300 C840,288 1020,312 1280,298 L1280,326 C1020,340 840,316 600,328 C360,340 220,314 0,328 Z" fill="url(#jdg-path)"/>
+<g stroke="#b5a984" stroke-width="1.6" opacity="0.7" fill="none">
+ <path d="M0,314 C220,300 360,326 600,314 C840,302 1020,326 1280,312"/>
+</g>
+
+<!-- 가로수 (x = 100 + 140n) -->
+<g class="jdg-tree" style="transform-origin: 100px 240px; animation-delay: 0.0s;">
+ <ellipse cx="100" cy="242" rx="30" ry="7" fill="#33502a" opacity="0.28"/>
+ <rect x="93" y="196" width="14" height="48" rx="3" fill="url(#jdg-trunk)"/>
+ <path d="M100,214 L87,198" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <path d="M100,206 L113,192" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <circle cx="100" cy="164" r="32" fill="url(#jdg-leafA)"/>
+ <circle cx="81" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="119" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="91" cy="150" r="15" fill="#7cb45e" opacity="0.55"/>
+</g>
+<g class="jdg-tree" style="transform-origin: 240px 240px; animation-delay: 0.3s;">
+ <ellipse cx="240" cy="242" rx="30" ry="7" fill="#33502a" opacity="0.28"/>
+ <rect x="233" y="196" width="14" height="48" rx="3" fill="url(#jdg-trunk)"/>
+ <path d="M240,214 L227,198" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <path d="M240,206 L253,192" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <circle cx="240" cy="164" r="32" fill="url(#jdg-leafA)"/>
+ <circle cx="221" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="259" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="231" cy="150" r="15" fill="#7cb45e" opacity="0.55"/>
+</g>
+<g class="jdg-tree" style="transform-origin: 380px 240px; animation-delay: 0.6s;">
+ <ellipse cx="380" cy="242" rx="30" ry="7" fill="#33502a" opacity="0.28"/>
+ <rect x="373" y="196" width="14" height="48" rx="3" fill="url(#jdg-trunk)"/>
+ <path d="M380,214 L367,198" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <path d="M380,206 L393,192" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <circle cx="380" cy="164" r="32" fill="url(#jdg-leafA)"/>
+ <circle cx="361" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="399" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="371" cy="150" r="15" fill="#7cb45e" opacity="0.55"/>
+</g>
+<g class="jdg-tree" style="transform-origin: 520px 240px; animation-delay: 0.9s;">
+ <ellipse cx="520" cy="242" rx="30" ry="7" fill="#33502a" opacity="0.28"/>
+ <rect x="513" y="196" width="14" height="48" rx="3" fill="url(#jdg-trunk)"/>
+ <path d="M520,214 L507,198" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <path d="M520,206 L533,192" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <circle cx="520" cy="164" r="32" fill="url(#jdg-leafA)"/>
+ <circle cx="501" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="539" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="511" cy="150" r="15" fill="#7cb45e" opacity="0.55"/>
+</g>
+<g class="jdg-tree" style="transform-origin: 660px 240px; animation-delay: 1.2s;">
+ <ellipse cx="660" cy="242" rx="30" ry="7" fill="#33502a" opacity="0.28"/>
+ <rect x="653" y="196" width="14" height="48" rx="3" fill="url(#jdg-trunk)"/>
+ <path d="M660,214 L647,198" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <path d="M660,206 L673,192" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <circle cx="660" cy="164" r="32" fill="url(#jdg-leafA)"/>
+ <circle cx="641" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="679" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="651" cy="150" r="15" fill="#7cb45e" opacity="0.55"/>
+</g>
+<g class="jdg-tree" style="transform-origin: 800px 240px; animation-delay: 1.5s;">
+ <ellipse cx="800" cy="242" rx="30" ry="7" fill="#33502a" opacity="0.28"/>
+ <rect x="793" y="196" width="14" height="48" rx="3" fill="url(#jdg-trunk)"/>
+ <path d="M800,214 L787,198" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <path d="M800,206 L813,192" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <circle cx="800" cy="164" r="32" fill="url(#jdg-leafA)"/>
+ <circle cx="781" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="819" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="791" cy="150" r="15" fill="#7cb45e" opacity="0.55"/>
+</g>
+<g class="jdg-tree" style="transform-origin: 940px 240px; animation-delay: 1.8s;">
+ <ellipse cx="940" cy="242" rx="30" ry="7" fill="#33502a" opacity="0.28"/>
+ <rect x="933" y="196" width="14" height="48" rx="3" fill="url(#jdg-trunk)"/>
+ <path d="M940,214 L927,198" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <path d="M940,206 L953,192" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <circle cx="940" cy="164" r="32" fill="url(#jdg-leafA)"/>
+ <circle cx="921" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="959" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="931" cy="150" r="15" fill="#7cb45e" opacity="0.55"/>
+</g>
+<g class="jdg-tree" style="transform-origin: 1080px 240px; animation-delay: 2.1s;">
+ <ellipse cx="1080" cy="242" rx="30" ry="7" fill="#33502a" opacity="0.28"/>
+ <rect x="1073" y="196" width="14" height="48" rx="3" fill="url(#jdg-trunk)"/>
+ <path d="M1080,214 L1067,198" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <path d="M1080,206 L1093,192" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <circle cx="1080" cy="164" r="32" fill="url(#jdg-leafA)"/>
+ <circle cx="1061" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="1099" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="1071" cy="150" r="15" fill="#7cb45e" opacity="0.55"/>
+</g>
+<g class="jdg-tree" style="transform-origin: 1220px 240px; animation-delay: 2.4s;">
+ <ellipse cx="1220" cy="242" rx="30" ry="7" fill="#33502a" opacity="0.28"/>
+ <rect x="1213" y="196" width="14" height="48" rx="3" fill="url(#jdg-trunk)"/>
+ <path d="M1220,214 L1207,198" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <path d="M1220,206 L1233,192" stroke="#6a4a2c" stroke-width="3.4" stroke-linecap="round"/>
+ <circle cx="1220" cy="164" r="32" fill="url(#jdg-leafA)"/>
+ <circle cx="1201" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="1239" cy="180" r="21" fill="url(#jdg-leafB)"/>
+ <circle cx="1211" cy="150" r="15" fill="#7cb45e" opacity="0.55"/>
+</g>
+
+<!-- 간격 표시 (수열 안내) -->
+<g opacity="0.75">
+ <line x1="100" y1="262" x2="240" y2="262" stroke="#3f5f2c" stroke-width="2"/>
+ <line x1="100" y1="256" x2="100" y2="268" stroke="#3f5f2c" stroke-width="2"/>
+ <line x1="240" y1="256" x2="240" y2="268" stroke="#3f5f2c" stroke-width="2"/>
+ <text x="170" y="282" text-anchor="middle" font-family="sans-serif" font-size="17" font-weight="bold" fill="#2f4a22">140</text>
+ <line x1="240" y1="262" x2="380" y2="262" stroke="#3f5f2c" stroke-width="2"/>
+ <line x1="380" y1="256" x2="380" y2="268" stroke="#3f5f2c" stroke-width="2"/>
+ <text x="310" y="282" text-anchor="middle" font-family="sans-serif" font-size="17" font-weight="bold" fill="#2f4a22">140</text>
+</g>
+
+<!-- 벤치 -->
+<g transform="translate(700,352)">
+ <ellipse cx="0" cy="24" rx="44" ry="7" fill="#33502a" opacity="0.25"/>
+ <rect x="-40" y="0" width="80" height="9" rx="3" fill="#a9743e"/>
+ <rect x="-40" y="-16" width="80" height="8" rx="3" fill="#a9743e"/>
+ <rect x="-34" y="9" width="7" height="16" fill="#6b6b6b"/>
+ <rect x="27" y="9" width="7" height="16" fill="#6b6b6b"/>
+</g>
+<g transform="translate(1010,394)">
+ <ellipse cx="0" cy="24" rx="44" ry="7" fill="#33502a" opacity="0.25"/>
+ <rect x="-40" y="0" width="80" height="9" rx="3" fill="#a9743e"/>
+ <rect x="-40" y="-16" width="80" height="8" rx="3" fill="#a9743e"/>
+ <rect x="-34" y="9" width="7" height="16" fill="#6b6b6b"/>
+ <rect x="27" y="9" width="7" height="16" fill="#6b6b6b"/>
+</g>
+
+<!-- 돗자리와 피크닉 -->
+<g transform="translate(400,412)">
+ <ellipse cx="0" cy="4" rx="72" ry="26" fill="#e05c5c"/>
+ <ellipse cx="0" cy="4" rx="72" ry="26" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.7"/>
+ <g stroke="#ffffff" stroke-width="1.6" opacity="0.55">
+  <line x1="-52" y1="-8" x2="-52" y2="16"/><line x1="-18" y1="-16" x2="-18" y2="24"/>
+  <line x1="18" y1="-16" x2="18" y2="24"/><line x1="52" y1="-8" x2="52" y2="16"/>
+ </g>
+ <rect x="-16" y="-14" width="32" height="20" rx="4" fill="#d9b06a" stroke="#a8834a" stroke-width="1.4"/>
+ <circle cx="34" cy="-2" r="7" fill="#f4e05a"/>
+</g>
+
+<!-- 연 -->
+<g class="jdg-kite" transform="translate(870,120)">
+ <polygon points="0,-26 20,0 0,26 -20,0" fill="#e8623c" stroke="#a83f26" stroke-width="1.6"/>
+ <line x1="0" y1="-26" x2="0" y2="26" stroke="#a83f26" stroke-width="1.2"/>
+ <line x1="-20" y1="0" x2="20" y2="0" stroke="#a83f26" stroke-width="1.2"/>
+ <path d="M0,26 q10,16 -4,28 q14,12 2,26" fill="none" stroke="#f2b33c" stroke-width="2.4"/>
+</g>
+<path d="M870,146 C900,220 920,290 940,360" fill="none" stroke="#ffffff" stroke-width="1.4" opacity="0.7"/>
+
+<!-- 들꽃 -->
+<g fill="#f4e05a" opacity="0.85">
+ <circle cx="90" cy="360" r="3.4"/><circle cx="330" cy="440" r="3.4"/><circle cx="560" cy="368" r="3.4"/>
+ <circle cx="820" cy="452" r="3.4"/><circle cx="1090" cy="366" r="3.4"/><circle cx="1210" cy="440" r="3.4"/>
+</g>
+<g fill="#ffffff" opacity="0.8">
+ <circle cx="180" cy="452" r="3.2"/><circle cx="470" cy="462" r="3.2"/><circle cx="640" cy="392" r="3.2"/>
+ <circle cx="960" cy="458" r="3.2"/><circle cx="1150" cy="384" r="3.2"/>
+</g>
+<g stroke="#4f8038" stroke-width="1.6" opacity="0.5" stroke-linecap="round">
+ <path d="M60,470 C66,458 62,450 70,440"/>
+ <path d="M540,472 C546,460 542,452 550,442"/>
+ <path d="M1240,468 C1246,456 1242,448 1250,438"/>
+</g>
+</svg>
+</body>
+</html>

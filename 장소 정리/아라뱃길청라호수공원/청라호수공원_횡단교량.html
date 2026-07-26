@@ -1,0 +1,124 @@
+<!-- 원본 크기: 1000x380 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>청라호수공원 횡단교량</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  *,*::before,*::after{ box-sizing:border-box; }
+  .cqb-wrap{ width:100%; max-width:1000px; margin:0 auto; }
+  .cqb-svg{ display:block; width:100%; height:auto; }
+
+  .cqb-lamp{ animation: cqb-glow 3s ease-in-out infinite; }
+  @keyframes cqb-glow{ 0%,100%{ opacity:0.75; } 50%{ opacity:1; } }
+
+  .cqb-ripple{ animation: cqb-shimmer 4.5s ease-in-out infinite; }
+  @keyframes cqb-shimmer{ 0%,100%{ opacity:0.2; } 50%{ opacity:0.45; } }
+</style>
+</head>
+<body>
+<div class="cqb-wrap">
+<svg class="cqb-svg" viewBox="0 0 1000 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="청라호수공원 횡단교량 아치 보행교">
+<title>청라호수공원 횡단교량</title>
+<defs>
+  <linearGradient id="cqb-steel" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f2f4f6"/>
+    <stop offset="1" stop-color="#a9b2b9"/>
+  </linearGradient>
+  <linearGradient id="cqb-deck" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#d9d2c0"/>
+    <stop offset="1" stop-color="#b3ab97"/>
+  </linearGradient>
+  <linearGradient id="cqb-water" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#7fbdd8"/>
+    <stop offset="1" stop-color="#2f6d90"/>
+  </linearGradient>
+</defs>
+
+<!-- 호수 수면 -->
+<rect x="0" y="280" width="1000" height="100" fill="url(#cqb-water)"/>
+<g class="cqb-ripple" stroke="#eaf6fb" stroke-width="1.5" fill="none" opacity="0.3">
+  <path d="M20,310 Q60,305 100,310 T180,310 T260,310 T340,310"/>
+  <path d="M420,320 Q460,315 500,320 T580,320 T660,320"/>
+  <path d="M700,335 Q740,330 780,335 T860,335 T940,335"/>
+</g>
+<!-- 램프 반사 -->
+<rect class="cqb-ripple" x="145" y="280" width="10" height="70" fill="#fff0b0" opacity="0.25"/>
+<rect class="cqb-ripple" x="375" y="280" width="10" height="70" fill="#fff0b0" opacity="0.25"/>
+<rect class="cqb-ripple" x="615" y="280" width="10" height="70" fill="#fff0b0" opacity="0.25"/>
+<rect class="cqb-ripple" x="845" y="280" width="10" height="70" fill="#fff0b0" opacity="0.25"/>
+
+<!-- 교각 기초 -->
+<polygon points="30,272 96,272 90,300 34,300" fill="#8f8f8f" stroke="#6e6e6e" stroke-width="1.5"/>
+<polygon points="904,272 970,272 966,300 908,300" fill="#8f8f8f" stroke="#6e6e6e" stroke-width="1.5"/>
+
+<!-- 아치 (튜브형) -->
+<path d="M60,270 L140,194 L220,133 L300,88 L380,57 L460,42 L500,40 L540,42 L620,57 L700,88 L780,133 L860,194 L940,270
+         L940,286 L860,210 L780,149 L700,104 L620,73 L540,58 L500,56 L460,58 L380,73 L300,104 L220,149 L140,210 L60,286 Z"
+      fill="url(#cqb-steel)" stroke="#7c868c" stroke-width="1.5"/>
+<path d="M60,278 L140,202 L220,141 L300,96 L380,65 L460,50 L500,48 L540,50 L620,65 L700,96 L780,141 L860,202 L940,278"
+      fill="none" stroke="#c0272a" stroke-width="3" opacity="0.85"/>
+
+<!-- 행어 케이블 -->
+<g stroke="#8a939a" stroke-width="2">
+  <line x1="140" y1="202" x2="140" y2="260"/>
+  <line x1="220" y1="141" x2="220" y2="260"/>
+  <line x1="300" y1="96"  x2="300" y2="260"/>
+  <line x1="380" y1="65"  x2="380" y2="260"/>
+  <line x1="460" y1="50"  x2="460" y2="260"/>
+  <line x1="540" y1="50"  x2="540" y2="260"/>
+  <line x1="620" y1="65"  x2="620" y2="260"/>
+  <line x1="700" y1="96"  x2="700" y2="260"/>
+  <line x1="780" y1="141" x2="780" y2="260"/>
+  <line x1="860" y1="202" x2="860" y2="260"/>
+</g>
+
+<!-- 보행 데크 -->
+<rect x="40" y="260" width="920" height="20" fill="url(#cqb-deck)" stroke="#8f8672" stroke-width="1.2"/>
+<g stroke="#a89f88" stroke-width="0.7" opacity="0.6">
+  <line x1="80"  y1="260" x2="80"  y2="280"/><line x1="160" y1="260" x2="160" y2="280"/><line x1="240" y1="260" x2="240" y2="280"/>
+  <line x1="320" y1="260" x2="320" y2="280"/><line x1="400" y1="260" x2="400" y2="280"/><line x1="480" y1="260" x2="480" y2="280"/>
+  <line x1="560" y1="260" x2="560" y2="280"/><line x1="640" y1="260" x2="640" y2="280"/><line x1="720" y1="260" x2="720" y2="280"/>
+  <line x1="800" y1="260" x2="800" y2="280"/><line x1="880" y1="260" x2="880" y2="280"/>
+</g>
+
+<!-- 난간 -->
+<line x1="46" y1="234" x2="954" y2="234" stroke="#7c868c" stroke-width="3"/>
+<g stroke="#9aa3aa" stroke-width="2">
+  <line x1="60"  y1="234" x2="60"  y2="260"/><line x1="100" y1="234" x2="100" y2="260"/><line x1="140" y1="234" x2="140" y2="260"/>
+  <line x1="180" y1="234" x2="180" y2="260"/><line x1="220" y1="234" x2="220" y2="260"/><line x1="260" y1="234" x2="260" y2="260"/>
+  <line x1="300" y1="234" x2="300" y2="260"/><line x1="340" y1="234" x2="340" y2="260"/><line x1="380" y1="234" x2="380" y2="260"/>
+  <line x1="420" y1="234" x2="420" y2="260"/><line x1="460" y1="234" x2="460" y2="260"/><line x1="500" y1="234" x2="500" y2="260"/>
+  <line x1="540" y1="234" x2="540" y2="260"/><line x1="580" y1="234" x2="580" y2="260"/><line x1="620" y1="234" x2="620" y2="260"/>
+  <line x1="660" y1="234" x2="660" y2="260"/><line x1="700" y1="234" x2="700" y2="260"/><line x1="740" y1="234" x2="740" y2="260"/>
+  <line x1="780" y1="234" x2="780" y2="260"/><line x1="820" y1="234" x2="820" y2="260"/><line x1="860" y1="234" x2="860" y2="260"/>
+  <line x1="900" y1="234" x2="900" y2="260"/><line x1="940" y1="234" x2="940" y2="260"/>
+</g>
+
+<!-- 가로등 -->
+<g>
+  <line x1="150" y1="260" x2="150" y2="200" stroke="#6e767c" stroke-width="3"/>
+  <circle class="cqb-lamp" cx="150" cy="196" r="7" fill="#ffe08a"/>
+  <circle cx="150" cy="196" r="11" fill="#ffe08a" opacity="0.25"/>
+</g>
+<g>
+  <line x1="380" y1="260" x2="380" y2="200" stroke="#6e767c" stroke-width="3"/>
+  <circle class="cqb-lamp" cx="380" cy="196" r="7" fill="#ffe08a" style="animation-delay:0.7s"/>
+  <circle cx="380" cy="196" r="11" fill="#ffe08a" opacity="0.25"/>
+</g>
+<g>
+  <line x1="620" y1="260" x2="620" y2="200" stroke="#6e767c" stroke-width="3"/>
+  <circle class="cqb-lamp" cx="620" cy="196" r="7" fill="#ffe08a" style="animation-delay:1.4s"/>
+  <circle cx="620" cy="196" r="11" fill="#ffe08a" opacity="0.25"/>
+</g>
+<g>
+  <line x1="850" y1="260" x2="850" y2="200" stroke="#6e767c" stroke-width="3"/>
+  <circle class="cqb-lamp" cx="850" cy="196" r="7" fill="#ffe08a" style="animation-delay:2.1s"/>
+  <circle cx="850" cy="196" r="11" fill="#ffe08a" opacity="0.25"/>
+</g>
+</svg>
+</div>
+</body>
+</html>

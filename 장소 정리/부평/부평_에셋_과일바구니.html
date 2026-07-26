@@ -1,0 +1,95 @@
+<!-- 원본 크기: 600x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>과일 바구니</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .bfb-svg { display:block; width:100%; height:auto; }
+
+</style>
+</head>
+<body>
+<svg class="bfb-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="과일 바구니">
+<title>과일 바구니</title>
+<desc>부평 깡시장의 과일 바구니. 수박, 사과, 귤, 포도가 담긴 모습.</desc>
+<defs>
+  <linearGradient id="bfbBasket" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#c9974e"/><stop offset="1" stop-color="#8a6128"/>
+  </linearGradient>
+  <pattern id="bfbWeave" width="26" height="18" patternUnits="userSpaceOnUse">
+    <rect width="26" height="18" fill="none"/>
+    <path d="M0,9 q6.5,-8 13,0 q6.5,8 13,0" fill="none" stroke="#6e4a1c" stroke-width="2.4" opacity="0.55"/>
+  </pattern>
+  <radialGradient id="bfbApple" cx="0.34" cy="0.28" r="0.8">
+    <stop offset="0" stop-color="#f0705c"/><stop offset="1" stop-color="#a8261c"/>
+  </radialGradient>
+  <radialGradient id="bfbOrange" cx="0.34" cy="0.28" r="0.8">
+    <stop offset="0" stop-color="#ffc45c"/><stop offset="1" stop-color="#d97a1c"/>
+  </radialGradient>
+</defs>
+<ellipse cx="300" cy="556" rx="230" ry="30" fill="#5a4426" opacity="0.22"/>
+<!-- 뒤쪽 과일 -->
+<g>
+  <circle cx="176" cy="284" r="76" fill="#4c8a3c" stroke="#2f5f22" stroke-width="4"/>
+  <g stroke="#2f5f22" stroke-width="7" opacity="0.7" fill="none">
+    <path d="M118,258 q58,-22 116,0"/><path d="M112,300 q64,-18 128,0"/>
+  </g>
+  <path d="M176,208 q-6,-18 -22,-24" fill="none" stroke="#5f7f2c" stroke-width="7" stroke-linecap="round"/>
+  <ellipse cx="146" cy="252" rx="24" ry="15" transform="rotate(-30 146 252)" fill="#ffffff" opacity="0.28"/>
+</g>
+<g>
+  <circle cx="416" cy="296" r="62" fill="url(#bfbApple)" stroke="#7a1a14" stroke-width="4"/>
+  <path d="M416,240 q4,-24 -12,-32" fill="none" stroke="#5f4020" stroke-width="7" stroke-linecap="round"/>
+  <path d="M418,236 q22,-16 40,-6 q-18,20 -40,6 Z" fill="#4c8a3c" stroke="#2f5f22" stroke-width="3"/>
+  <ellipse cx="392" cy="268" rx="20" ry="13" transform="rotate(-30 392 268)" fill="#ffffff" opacity="0.4"/>
+</g>
+<!-- 포도 -->
+<g transform="translate(296,262)">
+  <g fill="#6f4f9c" stroke="#452c66" stroke-width="2.4">
+    <circle cx="0" cy="-40" r="17"/><circle cx="-19" cy="-14" r="17"/><circle cx="19" cy="-14" r="17"/>
+    <circle cx="-38" cy="12" r="17"/><circle cx="0" cy="12" r="17"/><circle cx="38" cy="12" r="17"/>
+    <circle cx="-19" cy="38" r="17"/><circle cx="19" cy="38" r="17"/>
+    <circle cx="0" cy="62" r="17"/>
+  </g>
+  <path d="M0,-58 q-4,-20 -20,-26" fill="none" stroke="#5f4020" stroke-width="6" stroke-linecap="round"/>
+  <path d="M-2,-62 q-24,-14 -42,-4 q20,20 42,4 Z" fill="#4c8a3c" stroke="#2f5f22" stroke-width="3"/>
+  <g fill="#b39cd8" opacity="0.55">
+    <circle cx="-6" cy="-46" r="5"/><circle cx="-25" cy="-20" r="5"/><circle cx="13" cy="-20" r="5"/>
+  </g>
+</g>
+<!-- 바구니 -->
+<path d="M56,368 L544,368 L494,548 C486,566 470,574 452,574 L148,574 C130,574 114,566 106,548 Z"
+      fill="url(#bfbBasket)" stroke="#5e3f14" stroke-width="6" stroke-linejoin="round"/>
+<path d="M56,368 L544,368 L494,548 C486,566 470,574 452,574 L148,574 C130,574 114,566 106,548 Z" fill="url(#bfbWeave)"/>
+<rect x="42" y="342" width="516" height="34" rx="17" fill="#a8763a" stroke="#5e3f14" stroke-width="5"/>
+<!-- 앞줄 과일 -->
+<g>
+  <circle cx="164" cy="452" r="54" fill="url(#bfbOrange)" stroke="#a8560c" stroke-width="4"/>
+  <path d="M164,404 q10,-14 24,-12" fill="none" stroke="#4c8a3c" stroke-width="6" stroke-linecap="round"/>
+  <ellipse cx="146" cy="430" rx="17" ry="11" transform="rotate(-30 146 430)" fill="#ffffff" opacity="0.4"/>
+</g>
+<g>
+  <circle cx="278" cy="466" r="50" fill="url(#bfbApple)" stroke="#7a1a14" stroke-width="4"/>
+  <path d="M278,424 q4,-18 -10,-24" fill="none" stroke="#5f4020" stroke-width="6" stroke-linecap="round"/>
+  <ellipse cx="260" cy="446" rx="16" ry="10" transform="rotate(-30 260 446)" fill="#ffffff" opacity="0.4"/>
+</g>
+<g>
+  <circle cx="384" cy="452" r="54" fill="url(#bfbOrange)" stroke="#a8560c" stroke-width="4"/>
+  <path d="M384,404 q10,-14 24,-12" fill="none" stroke="#4c8a3c" stroke-width="6" stroke-linecap="round"/>
+  <ellipse cx="366" cy="430" rx="17" ry="11" transform="rotate(-30 366 430)" fill="#ffffff" opacity="0.4"/>
+</g>
+<g>
+  <circle cx="470" cy="470" r="42" fill="#e8c23c" stroke="#a8862c" stroke-width="4"/>
+  <ellipse cx="456" cy="452" rx="14" ry="9" transform="rotate(-30 456 452)" fill="#ffffff" opacity="0.4"/>
+</g>
+<!-- 가격표 -->
+<g transform="translate(112,478) rotate(-8)">
+  <rect x="-42" y="-24" width="84" height="48" rx="6" fill="#f8f2e2" stroke="#8c3a24" stroke-width="3.4"/>
+  <text x="0" y="8" text-anchor="middle" font-family="sans-serif" font-size="26" font-weight="bold" fill="#c2452e">5,000</text>
+</g>
+</svg>
+</body>
+</html>

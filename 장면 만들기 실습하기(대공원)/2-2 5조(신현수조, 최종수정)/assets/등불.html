@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>조선시대 대저택 잔치 밤 배경</title>
+    <style>
+        /* 기본 초기화 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #111; /* 화면 바깥 배경 */
+            overflow: hidden;
+            font-family: 'Malgun Gothic', sans-serif;
+        }
+
+        /* 16:9 컨테이너 (그림 영역) */
+        .canvas {
+            position: relative;
+            width: 90vw;
+            max-width: 1200px;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(to bottom, #050a18, #1a2a4a, #3e4f7a); /* 밤하늘 */
+            overflow: hidden;
+            border: 8px solid #3e2723; /* 목재 프레임 느낌 */
+            border-radius: 4px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        /* --- 밤하늘 요소 --- */
+        /* 초승달 */
+        .moon {
+            position: absolute;
+            top: 10%;
+            right: 15%;
+            width: 60px;
+            height: 60px;
+            background-color: transparent;
+            border-radius: 50%;
+            box-shadow: -15px 10px 0 0 #fffde7;
+            filter: blur(1px);
+            opacity: 0.8;
+        }
+
+        /* 별 */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            background-image: 
+                radial-gradient(1px 1px at 10% 20%, #fff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 30% 40%, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 50% 15%, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 70% 30%, #ffffcc, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 85% 45%, #fff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 20% 70%, #fff, rgba(0,0,0,0));
+            opacity: 0.6;
+        }
+
+        /* --- 대저택 실루엣 --- */
+        .mansion-silhouette {
+            position: absolute;
+            bottom: 25%;
+            left: 5%;
+            width: 60%;
+            height: 45%;
+            background-color: #080a10; /* 아주 어두운 밤 색 */
+            /* 기와지붕 곡선 표현 */
+            clip-path: polygon(0% 100%, 0% 40%, 15% 20%, 30% 15%, 50% 10%, 70% 15%, 85% 20%, 100% 40%, 100% 100%);
+            z-index: 1;
+        }
+
+        /* 저택 내부에서 새어나오는 은은한 불빛들 */
+        .mansion-lights {
+            position: absolute;
+            bottom: 30%;
+            left: 15%;
+            width: 40%;
+            height: 20%;
+            background-image: 
+                linear-gradient(to right, #ffcc80 10px, transparent 10px),
+                linear-gradient(to right, #ffcc80 8px, transparent 8px),
+                linear-gradient(to right, #ffcc80 12px, transparent 12px);
+            background-size: 40px 15px, 30px 12px, 50px 18px;
+            background-position: 0 0, 100px 30px, 200px 10px;
+            background-repeat: repeat-x;
+            filter: blur(2px);
+            opacity: 0.5;
+            z-index: 2;
+        }
+
+        /* --- 잔디 마당과 섬돌 --- */
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 35%;
+            background: linear-gradient(to bottom, #1d3521, #132415); /* 어두운 잔디 */
+            z-index: 3;
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        /* 섬돌 (마루 앞 돌계단) */
+        .stepping-stone {
+            position: absolute;
+            bottom: 28%;
+            left: 10%;
+            width: 50%;
+            height: 8%;
+            background-color: #37474f;
+            border-radius: 8px 8px 0 0;
+            z-index: 4;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
+
+        /* --- 가득 켜진 잔치 등불 (청사초롱 컨셉) --- */
+        .lanterns-container {
+            position: absolute;
+            top: 20%;
+            width: 100%;
+            height: 40%;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* 등불 줄 */
+        .lantern-string {
+            position: absolute;
+            width: 120%;
+            left: -10%;
+            height: 2px;
+            background-color: rgba(255,255,255,0.1);
+            transform: rotate(-3deg);
+        }
+
+        /* 개별 등불 스타일 */
+        .lantern {
+            position: absolute;
+            width: 18px;
+            height: 28px;
+            background-color: #ff5722; /* 기본 주황 */
+            border-radius: 3px;
+            box-shadow: 0 0 15px 5px rgba(255, 111, 0, 0.6);
+            animation: lantern-sway 3s infinite ease-in-out alternate;
+        }
+
+        /* 등불 갓 모양 디테일 (CSS pseudo-element) */
+        .lantern::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 2px;
+            width: 14px;
+            height: 5px;
+            background-color: #212121;
+            border-radius: 2px;
+        }
+
+        .lantern::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 4px;
+            width: 10px;
+            height: 8px;
+            background-color: #d32f2f; /* 하단 붉은색 */
+            border-radius: 0 0 50% 50%;
+        }
+
+        /* 등불 배치 (원근감 고려) */
+        .l-1 { top: 22%; left: 15%; animation-delay: 0s; }
+        .l-2 { top: 20%; left: 30%; animation-delay: 0.3s; transform: scale(0.95); }
+        .l-3 { top: 19%; left: 45%; animation-delay: 0.6s; transform: scale(0.9); }
+        .l-4 { top: 18%; left: 60%; animation-delay: 0.1s; transform: scale(0.85); }
+        .l-5 { top: 19%; left: 75%; animation-delay: 0.4s; transform: scale(0.9); }
+        .l-6 { top: 21%; left: 90%; animation-delay: 0.7s; }
+
+        .l-7 { top: 35%; left: 10%; animation-delay: 0.2s; background-color: #ff9800; transform: scale(1.1); }
+        .l-8 { top: 32%; left: 25%; animation-delay: 0.5s; background-color: #f44336; }
+        .l-9 { top: 30%; left: 40%; animation-delay: 0.8s; background-color: #ffeb3b; box-shadow: 0 0 20px 8px rgba(255, 235, 59, 0.5); }
+        .l-10 { top: 31%; left: 55%; animation-delay: 0.3s; background-color: #ff9800; }
+        .l-11 { top: 34%; left: 70%; animation-delay: 0.6s; background-color: #f44336; transform: scale(1.05); }
+        .l-12 { top: 36%; left: 85%; animation-delay: 0.9s; background-color: #ff9800; transform: scale(1.1); }
+
+        /* --- 어깨춤을 추는 마을 사람들 --- */
+        .people-container {
+            position: absolute;
+            bottom: 5%;
+            width: 100%;
+            height: 30%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 25px;
+            z-index: 6;
+            padding-right: 5%; /* 약간 우측으로 치우치게 */
+        }
+
+        /* 사람 기본 스타일 (실루엣) */
+        .person {
+            position: relative;
+            width: 30px;
+            height: 70px;
+            animation: shoulder-dance 1.2s infinite ease-in-out alternate;
+            transform-origin: bottom center;
+        }
+
+        /* 머리 (상투/댕기 표현) */
+        .head {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 15px;
+            height: 15px;
+            background-color: #0a0a0d;
+            border-radius: 50%;
+        }
+
+        /* 머리 위 디테일 (상투) */
+        .head::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 4px;
+            width: 7px;
+            height: 7px;
+            background-color: #0a0a0d;
+            border-radius: 2px;
+        }
+
+        /* 몸통 (한복 도포/치마 실루엣) */
+        .body {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 55px;
+            background-color: #0a0a0d; /* 어두운 한복 */
+            border-radius: 10px 10px 2px 2px / 20px 20px 2px 2px;
+            /* 등불 불빛 반영 (서정적 표현) */
+            box-shadow: 0 -5px 10px rgba(255, 171, 64, 0.2);
+        }
+
+        /* 팔 (어깨춤 동작) */
+        .arm {
+            position: absolute;
+            top: 20px;
+            width: 35px;
+            height: 10px;
+            background-color: #0a0a0d;
+            border-radius: 5px;
+            transform-origin: center;
+        }
+
+        /* 왼쪽 팔 (위로 들기) */
+        .arm-l {
+            left: -20px;
+            transform: rotate(-45deg);
+            animation: arm-sway-l 1.2s infinite ease-in-out alternate;
+        }
+
+        /* 오른쪽 팔 (약간 아래로) */
+        .arm-r {
+            right: -20px;
+            transform: rotate(20deg);
+            animation: arm-sway-r 1.2s infinite ease-in-out alternate;
+        }
+
+        /* 사람별 애니메이션 딜레이 및 약간의 변화 */
+        .p-1 { animation-delay: 0.1s; transform: scale(1.05); }
+        .p-2 { animation-delay: 0.3s; transform: scale(0.98); }
+        .p-2 .body { background-color: #111; } /* 치마 느낌 */
+        .p-2 .arm-l { animation-delay: 0.3s; }
+        .p-2 .arm-r { animation-delay: 0.3s; }
+
+        .p-3 { animation-delay: 0.5s; transform: scale(1.02); }
+        .p-4 { animation-delay: 0.2s; transform: scale(1); }
+        .p-4 .body { background-color: #111; }
+        .p-4 .arm-l { animation-delay: 0.2s; }
+        .p-4 .arm-r { animation-delay: 0.2s; }
+
+        .p-5 { animation-delay: 0.4s; transform: scale(0.95); }
+
+        /* --- 애니메이션 정의 --- */
+        /* 등불 흔들림 */
+        @keyframes lantern-sway {
+            0% { transform: translate(0, 0) rotate(-2deg); }
+            100% { transform: translate(2px, 3px) rotate(3deg); }
+        }
+
+        /* 사람 어깨춤 (몸통) */
+        @keyframes shoulder-dance {
+            0% { transform: translateY(0) rotate(-1deg); }
+            100% { transform: translateY(-3px) rotate(2deg); }
+        }
+
+        /* 사람 왼쪽 팔 흔들림 */
+        @keyframes arm-sway-l {
+            0% { transform: rotate(-40deg) translateY(0); }
+            100% { transform: rotate(-55deg) translateY(-2px); }
+        }
+
+        /* 사람 오른쪽 팔 흔들림 */
+        @keyframes arm-sway-r {
+            0% { transform: rotate(15deg) translateY(0); }
+            100% { transform: rotate(30deg) translateY(-1px); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="canvas">
+        <div class="stars"></div>
+        <div class="moon"></div>
+
+        <div class="mansion-silhouette"></div>
+        <div class="mansion-lights"></div>
+
+        <div class="ground">
+            <div class="stepping-stone"></div>
+        </div>
+
+        <div class="lanterns-container">
+            <div class="lantern-string"></div>
+            <div class="lantern l-1"></div>
+            <div class="lantern l-2"></div>
+            <div class="lantern l-3"></div>
+            <div class="lantern l-4"></div>
+            <div class="lantern l-5"></div>
+            <div class="lantern l-6"></div>
+            <div class="lantern l-7"></div>
+            <div class="lantern l-8"></div>
+            <div class="lantern l-9"></div>
+            <div class="lantern l-10"></div>
+            <div class="lantern l-11"></div>
+            <div class="lantern l-12"></div>
+        </div>
+
+        <div class="people-container">
+            <div class="person p-1">
+                <div class="head"></div>
+                <div class="body"></div>
+                <div class="arm arm-l"></div>
+                <div class="arm arm-r"></div>
+            </div>
+            <div class="person p-2">
+                <div class="head"></div>
+                <div class="body"></div>
+                <div class="arm arm-l"></div>
+                <div class="arm arm-r"></div>
+            </div>
+            <div class="person p-3">
+                <div class="head"></div>
+                <div class="body"></div>
+                <div class="arm arm-l"></div>
+                <div class="arm arm-r"></div>
+            </div>
+            <div class="person p-4">
+                <div class="head"></div>
+                <div class="body"></div>
+                <div class="arm arm-l"></div>
+                <div class="arm arm-r"></div>
+            </div>
+            <div class="person p-5">
+                <div class="head"></div>
+                <div class="body"></div>
+                <div class="arm arm-l"></div>
+                <div class="arm arm-r"></div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

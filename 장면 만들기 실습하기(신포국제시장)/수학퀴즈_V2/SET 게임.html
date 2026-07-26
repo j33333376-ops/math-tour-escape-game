@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>SET 게임</title>
+  <style>
+    :root {
+      /* ===== 공통 디자인 토큰 (전체 퀴즈 공용) ===== */
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #ea580c;
+      --accent-soft: #fff7ed;
+      --border-color: #e2e8f0;
+      --success: #10b981;
+      --error: #ef4444;
+      --radius-card: 16px;
+      --radius-ctrl: 10px;
+      --shadow-card: 0 10px 25px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+    }
+
+    .app-layout {
+      display: flex;
+      width: 100%; height: 100%;
+      padding: 2vh 2vw;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-side {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      width: 38vw;
+      max-width: 440px;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-block h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+
+    .header-block p {
+      margin: 0 0 20px 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .control-group {
+      background: var(--primary-soft);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .control-header label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .col-badge {
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .col-badge.accent { background: var(--accent); }
+    .col-badge.muted  { background: #94a3b8; }
+
+    input[type=range] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+
+    .stat-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .btn-row { display: flex; gap: 8px; }
+
+    .btn-check, .btn-ghost {
+      border-radius: var(--radius-ctrl);
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .btn-check { background: var(--primary); color: #fff; border: none; }
+    .btn-check:hover:not(:disabled) { background: var(--primary-dark); }
+    .btn-check:active:not(:disabled) { transform: translateY(1px); }
+    .btn-ghost { background: var(--card-bg); color: var(--primary-dark); border: 1px solid var(--border-color); }
+    .btn-ghost:hover:not(:disabled) { background: var(--primary-soft); }
+    .btn-ghost:active:not(:disabled) { transform: translateY(1px); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .answer-group { padding-top: 16px; border-top: 2px dashed var(--border-color); }
+
+    .feedback {
+      margin-top: 10px;
+      font-weight: 700;
+      text-align: center;
+      min-height: 20px;
+      font-size: 0.95rem;
+      word-break: keep-all;
+      line-height: 1.45;
+    }
+    .feedback.success { color: var(--success); }
+    .feedback.error   { color: var(--error); }
+    .feedback.info    { color: var(--text-muted); }
+
+    .board-side {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      padding: 10px;
+    }
+
+    .board-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      border: 4px solid var(--border-color);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    @media (orientation: portrait) {
+      .app-layout { flex-direction: column; justify-content: flex-start; padding-top: 2vh; gap: 12px; }
+      .panel-side { width: 96vw; max-width: none; padding: 16px; }
+      .board-side { width: 96vw; flex: 1; padding: 0 0 2vh 0; }
+      .header-block p { margin-bottom: 12px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 520px) {
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.2rem; }
+      .header-block p { display: none; }
+      .control-group { padding: 8px 12px; margin-bottom: 10px; }
+      .stat-row { margin-bottom: 8px; }
+    }
+
+    /* ===== SET 게임 전용 ===== */
+    .board-wrapper { width: 100%; height: 100%; padding: 14px; }
+
+    .set-board {
+      display: grid;
+      grid-template-rows: repeat(3, 1fr);
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      gap: 2.2%;
+      width: 100%;
+      height: 100%;
+    }
+
+    .set-card {
+      position: relative;
+      background: var(--card-bg);
+      border: 3px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.07);
+      cursor: pointer;
+      transition: all 0.16s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6%;
+      min-width: 0;
+      min-height: 0;
+    }
+    .set-card svg { width: 100%; height: 100%; }
+    .set-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .set-card.sel  { border-color: var(--primary); background: var(--primary-soft); transform: translateY(-4px); box-shadow: 0 8px 18px rgba(37,99,235,0.22); }
+    .set-card.good { border-color: var(--success); background: #dcfce7; animation: pop 0.35s; }
+    .set-card.bad  { border-color: var(--error);   background: #fee2e2; animation: shake 0.34s; }
+    .set-card.hint { border-color: var(--accent);  background: var(--accent-soft); }
+    .set-card.gone { opacity: 0; transform: scale(0.7); pointer-events: none; }
+
+    @keyframes pop   { 0%,100% { transform: scale(1);} 45% { transform: scale(1.09);} }
+    @keyframes shake { 0%,100% { transform: translateX(0);} 25% { transform: translateX(-5px);} 75% { transform: translateX(5px);} }
+
+    .rule-note {
+      background: var(--accent-soft);
+      border: 1px solid #fed7aa;
+      border-radius: var(--radius-ctrl);
+      padding: 10px 12px;
+      font-size: 0.8rem;
+      color: #9a3412;
+      line-height: 1.6;
+      word-break: keep-all;
+      margin-bottom: 14px;
+    }
+    .rule-note b { color: #7c2d12; }
+
+    .progress {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .pip {
+      flex: 1;
+      height: 10px;
+      border-radius: 6px;
+      background: var(--border-color);
+      transition: background 0.3s;
+    }
+    .pip.on { background: var(--success); }
+
+    /* ===================================================================
+       반응형 안전장치 — PC/모바일, 가로/세로 어디서도 잘리지 않게
+       =================================================================== */
+    .app-layout { min-height: 0; min-width: 0; }
+    .board-side { min-height: 0; min-width: 0; }
+
+    /* 패널이 화면보다 길어지면 화면을 밀지 않고 패널 안에서만 스크롤 */
+    .panel-side {
+      max-height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    @media (orientation: portrait) {
+      .panel-side { max-height: 54%; flex: 0 0 auto; }
+      .board-side { flex: 1 1 auto; }
+    }
+
+    /* 폰 가로처럼 세로가 짧은 화면 */
+    @media (orientation: landscape) and (max-height: 560px) {
+      .app-layout { padding: 8px; gap: 10px; }
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.12rem; margin-bottom: 4px; }
+      .header-block p  { display: none; }
+      .stat-row { margin-bottom: 8px; }
+      .answer-group { padding-top: 10px; margin-top: 10px !important; }
+      .feedback { font-size: 0.82rem; margin-top: 6px; min-height: 16px; }
+      .btn-row button { padding: 8px 12px; font-size: 0.85rem; }
+    }
+    @media (orientation: landscape) and (max-height: 430px) {
+      .rule-note, .note { font-size: 0.7rem; padding: 6px 8px; margin-bottom: 8px; line-height: 1.4; }
+      .control-group { padding: 7px 10px; margin-bottom: 8px; }
+      .col-badge { font-size: 0.72rem; padding: 3px 9px; }
+    }
+
+    /* ===== 목록(index.html)으로 돌아가는 버튼 ===== */
+    .home-btn {
+      position: fixed;
+      top: max(10px, env(safe-area-inset-top, 0px));
+      left: max(10px, env(safe-area-inset-left, 0px));
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px 8px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+      color: #1e293b;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: transform .18s, box-shadow .18s, color .18s, border-color .18s, background .18s;
+    }
+    .home-btn:hover {
+      background: #fff;
+      color: #1d4ed8;
+      border-color: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px -6px rgba(37, 99, 235, 0.5);
+    }
+    .home-btn:active { transform: translateY(0); }
+    .home-btn:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+    .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* 좁거나 납작한 화면에서는 아이콘만 */
+    @media (max-width: 560px), (orientation: landscape) and (max-height: 430px) {
+      .home-btn { padding: 8px; gap: 0; }
+      .home-btn .label { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="home-btn" href="index.html" title="게임 목록으로 돌아가기" aria-label="게임 목록으로 돌아가기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.2V20h13v-9.8"/>
+    </svg>
+    <span class="label">목록</span>
+  </a>
+
+
+  <div class="app-layout">
+    <div class="panel-side">
+      <div class="header-block">
+        <h2>SET 게임</h2>
+        <p>카드 3장을 골라 SET을 만드세요.<br><b>4개의 SET</b>을 찾으면 성공!</p>
+      </div>
+
+      <div class="rule-note">
+        네 가지 성질 — <b>개수 · 색 · 모양 · 채우기</b> —<br>
+        각각이 <b>셋 다 같거나</b> 또는 <b>셋 다 다르면</b> SET!<br>
+        하나라도 “둘만 같은” 성질이 있으면 SET이 아닙니다.
+      </div>
+
+      <div class="progress" id="progress">
+        <div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div>
+      </div>
+
+      <div class="stat-row">
+        <span class="col-badge" id="foundBadge">찾은 SET 0 / 4</span>
+        <span class="col-badge muted" id="missBadge">실수 0</span>
+        <span class="col-badge accent" id="deckBadge">남은 카드 69</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-ghost" id="hintBtn">💡 힌트</button>
+        <button class="btn-check" id="newBtn">🔄 새 게임</button>
+      </div>
+
+      <div class="answer-group" style="margin-top:16px">
+        <div class="feedback info" id="feedback">카드 3장을 클릭해 보세요.</div>
+      </div>
+    </div>
+
+    <div class="board-side">
+      <div class="board-wrapper">
+        <div class="set-board" id="board"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 빗금 채우기용 패턴 정의 (화면에는 보이지 않음) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <pattern id="stripe0" width="6" height="6" patternUnits="userSpaceOnUse">
+        <line x1="0" y1="0" x2="0" y2="6" stroke="#2563eb" stroke-width="2.4"/>
+      </pattern>
+      <pattern id="stripe1" width="6" height="6" patternUnits="userSpaceOnUse">
+        <line x1="0" y1="0" x2="0" y2="6" stroke="#ea580c" stroke-width="2.4"/>
+      </pattern>
+      <pattern id="stripe2" width="6" height="6" patternUnits="userSpaceOnUse">
+        <line x1="0" y1="0" x2="0" y2="6" stroke="#10b981" stroke-width="2.4"/>
+      </pattern>
+    </defs>
+  </svg>
+
+  <script>
+
+    // ==========================================================
+    //  SET 게임
+    //  카드 = (개수, 색, 모양, 채우기) 각 3가지 → 3^4 = 81장
+    //  세 장이 SET  ⟺  네 성질 각각에서 (a+b+c) % 3 == 0
+    //  (셋 다 같으면 0+0+0, 셋 다 다르면 0+1+2=3 → 둘 다 3의 배수)
+    //  덕분에 "아무 카드 두 장이 주어지면 SET을 완성하는 셋째 카드는 정확히 한 장"
+    // ==========================================================
+    const GOAL = 4;
+    const COLORS = ['#2563eb', '#ea580c', '#10b981'];   // 파랑 · 주황 · 초록
+    const COLOR_KO = ['파랑', '주황', '초록'];
+    const SHAPE_KO = ['마름모', '타원', '물결'];
+    const FILL_KO  = ['빈 것', '빗금', '꽉 찬 것'];
+
+    // 세로 40 x 80 기준 도형
+    const SHAPES = [
+      'M20 3 L37 40 L20 77 L3 40 Z',                                                   // 마름모
+      'M20 3 A17 17 0 0 1 37 20 L37 60 A17 17 0 0 1 3 60 L3 20 A17 17 0 0 1 20 3 Z',    // 타원
+      'M12 4 C30 2, 38 14, 30 28 C22 42, 34 52, 30 66 C27 76, 12 79, 6 70 C0 61, 10 50, 14 38 C18 26, 2 16, 12 4 Z' // 물결
+    ];
+
+    const boardEl   = document.getElementById('board');
+    const foundBadge = document.getElementById('foundBadge');
+    const missBadge = document.getElementById('missBadge');
+    const deckBadge = document.getElementById('deckBadge');
+    const progress  = document.getElementById('progress');
+    const hintBtn   = document.getElementById('hintBtn');
+    const newBtn    = document.getElementById('newBtn');
+    const feedback  = document.getElementById('feedback');
+
+    let deck = [], board = [], selected = [], hinted = [];
+    let found = 0, misses = 0, over = false, busy = false;
+
+    // ---------- 규칙 ----------
+    function isSet(a, b, c) {
+      for (let k = 0; k < 4; k++) {
+        if ((a[k] + b[k] + c[k]) % 3 !== 0) return false;
+      }
+      return true;
+    }
+
+    // 두 장이 주어지면 SET을 완성하는 셋째 카드는 유일하다
+    function thirdCard(a, b) {
+      return [0,1,2,3].map(k => (6 - a[k] - b[k]) % 3);
+    }
+
+    function findSet(cards) {
+      for (let i = 0; i < cards.length - 2; i++)
+        for (let j = i + 1; j < cards.length - 1; j++)
+          for (let k = j + 1; k < cards.length; k++)
+            if (isSet(cards[i], cards[j], cards[k])) return [i, j, k];
+      return null;
+    }
+
+    // ---------- 덱 ----------
+    function shuffle(a) {
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function buildDeck() {
+      const d = [];
+      for (let n = 0; n < 3; n++)
+        for (let c = 0; c < 3; c++)
+          for (let s = 0; s < 3; s++)
+            for (let f = 0; f < 3; f++) d.push([n, c, s, f]);
+      return shuffle(d);
+    }
+
+    // 보드에 SET이 하나도 없으면 3장씩 더 깔아준다 (정식 규칙)
+    function ensureSet() {
+      while (!findSet(board) && deck.length >= 3) {
+        board.push(deck.pop(), deck.pop(), deck.pop());
+      }
+    }
+
+    function newGame() {
+      deck = buildDeck();
+      board = deck.splice(0, 12);
+      selected = []; hinted = [];
+      found = 0; misses = 0; over = false; busy = false;
+      ensureSet();
+      setFeedback('카드 3장을 클릭해 보세요.', 'info');
+      render();
+    }
+
+    function setFeedback(t, k) {
+      feedback.textContent = t;
+      feedback.className = 'feedback ' + k;
+    }
+
+    // ---------- 그리기 ----------
+    function cardSVG(card) {
+      const [n, c, s, f] = card;
+      const color = COLORS[c];
+      const count = n + 1;
+      const startX = [40, 20, 0][n];        // 1개면 가운데, 2개면 조금 안쪽, 3개면 꽉 차게
+
+      let fillAttr;
+      if (f === 0) fillAttr = 'fill="none"';
+      else if (f === 1) fillAttr = 'fill="url(#stripe' + c + ')"';
+      else fillAttr = 'fill="' + color + '"';
+
+      let inner = '';
+      for (let i = 0; i < count; i++) {
+        inner += '<g transform="translate(' + (startX + i * 40) + ',0)">' +
+                 '<path d="' + SHAPES[s] + '" ' + fillAttr +
+                 ' stroke="' + color + '" stroke-width="3" stroke-linejoin="round"/></g>';
+      }
+      return '<svg viewBox="0 0 120 80" preserveAspectRatio="xMidYMid meet">' + inner + '</svg>';
+    }
+
+    function cardName(card) {
+      const [n, c, s, f] = card;
+      return (n + 1) + '개 · ' + COLOR_KO[c] + ' · ' + SHAPE_KO[s] + ' · ' + FILL_KO[f];
+    }
+
+    function render(marks) {
+      boardEl.innerHTML = '';
+      board.forEach((card, i) => {
+        const d = document.createElement('div');
+        d.className = 'set-card';
+        if (selected.includes(i)) d.classList.add('sel');
+        if (hinted.includes(i)) d.classList.add('hint');
+        if (marks && marks.cls && marks.idx.includes(i)) d.classList.add(marks.cls);
+        d.dataset.i = i;
+        d.innerHTML = cardSVG(card);
+        boardEl.appendChild(d);
+      });
+
+      foundBadge.textContent = '찾은 SET ' + found + ' / ' + GOAL;
+      missBadge.textContent = '실수 ' + misses;
+      deckBadge.textContent = '남은 카드 ' + deck.length;
+      [...progress.children].forEach((p, i) => p.classList.toggle('on', i < found));
+      hintBtn.disabled = over || busy;
+    }
+
+    // ---------- 상호작용 ----------
+    boardEl.addEventListener('click', (e) => {
+      if (over || busy) return;
+      const el = e.target.closest('.set-card');
+      if (!el) return;
+      const i = parseInt(el.dataset.i, 10);
+
+      if (selected.includes(i)) {
+        selected = selected.filter(x => x !== i);
+        render();
+        return;
+      }
+      if (selected.length >= 3) return;
+
+      selected.push(i);
+      hinted = [];
+
+      if (selected.length < 3) {
+        setFeedback('카드 ' + selected.length + '장 선택됨.', 'info');
+        render();
+        return;
+      }
+
+      // 3장 모였으면 판정
+      const [i1, i2, i3] = selected;
+      const trio = [board[i1], board[i2], board[i3]];
+      busy = true;
+
+      if (isSet(...trio)) {
+        found++;
+        render({ cls: 'good', idx: selected });
+        setFeedback('✅ SET! ' + explain(trio), 'success');
+        setTimeout(() => {
+          if (found >= GOAL) {
+            over = true; busy = false;
+            selected = [];
+            render();
+            setFeedback('🎉 SET ' + GOAL + '개를 모두 찾았습니다! (실수 ' + misses + '회)', 'success');
+            return;
+          }
+          // 찾은 3장을 덱에서 보충 (보드가 12장보다 많으면 그냥 제거)
+          const sortedIdx = [...selected].sort((a, b) => b - a);
+          sortedIdx.forEach(idx => {
+            if (board.length > 12 || deck.length === 0) board.splice(idx, 1);
+            else board[idx] = deck.pop();
+          });
+          selected = [];
+          ensureSet();
+          busy = false;
+          render();
+          setFeedback('좋아요! 다음 SET을 찾아보세요. (' + found + '/' + GOAL + ')', 'info');
+        }, 850);
+      } else {
+        misses++;
+        render({ cls: 'bad', idx: selected });
+        setFeedback('❌ ' + whyNot(trio), 'error');
+        setTimeout(() => {
+          selected = [];
+          busy = false;
+          render();
+        }, 900);
+      }
+    });
+
+    // 어떤 성질이 규칙을 깼는지 알려준다
+    function whyNot(trio) {
+      const names = ['개수', '색', '모양', '채우기'];
+      const bad = [];
+      for (let k = 0; k < 4; k++) {
+        const [a, b, c] = trio.map(t => t[k]);
+        if ((a + b + c) % 3 !== 0) bad.push(names[k]);
+      }
+      return bad.join('·') + ' 이(가) “둘만 같은” 상태예요.';
+    }
+
+    function explain(trio) {
+      const names = ['개수', '색', '모양', '채우기'];
+      const parts = names.map((nm, k) => {
+        const [a, b, c] = trio.map(t => t[k]);
+        return nm + (a === b && b === c ? ' 같음' : ' 모두 다름');
+      });
+      return parts.join(', ');
+    }
+
+    hintBtn.addEventListener('click', () => {
+      if (over || busy) return;
+      const s = findSet(board);
+      if (!s) { setFeedback('보드에 SET이 없습니다. 카드를 더 깝니다.', 'info'); ensureSet(); render(); return; }
+
+      if (hinted.length === 0) {
+        hinted = [s[0]];
+        setFeedback('이 카드가 들어가는 SET이 있습니다.', 'info');
+      } else if (hinted.length === 1) {
+        hinted = [s[0], s[1]];
+        const t = thirdCard(board[s[0]], board[s[1]]);
+        setFeedback('두 장이 정해지면 나머지 한 장은 딱 하나뿐 — ' + cardName(t) + ' 를 찾으세요!', 'info');
+      } else {
+        hinted = s.slice();
+        setFeedback('정답 SET을 표시했습니다.', 'info');
+      }
+      render();
+    });
+
+    newBtn.addEventListener('click', newGame);
+
+    newGame();
+
+  </script>
+</body>
+</html>

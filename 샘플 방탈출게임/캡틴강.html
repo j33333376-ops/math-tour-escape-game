@@ -1,0 +1,332 @@
+<div class="captain-kang-component" style="display: inline-block; overflow: visible !important;">
+    
+    <style>
+        .ck-stage {
+            position: relative;
+            width: 260px;
+            height: 320px;
+            margin: 0 auto;
+            animation: ck-breatheHuman 4s ease-in-out infinite;
+            overflow: visible !important;
+        }
+
+        @keyframes ck-breatheHuman {
+            0%, 100% { transform: scale(1) translateY(0px); }
+            50% { transform: scale(1.01) translateY(-3px); }
+        }
+
+        /* 두상 기본 상자 */
+        .ck-head-wrapper {
+            position: absolute;
+            top: 55px; /* 선장 모자 높이를 감안해 살짝 아래로 배치 */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 130px;
+            overflow: visible !important;
+        }
+
+        /* 귀 */
+        .ck-ear-l, .ck-ear-r {
+            position: absolute;
+            top: 52px;
+            width: 16px;
+            height: 26px;
+            background-color: #ffdbb5;
+            border: 3.5px solid #8d5b4c;
+            z-index: 2;
+        }
+        .ck-ear-l { left: -11px; border-radius: 50% 0 0 50%; transform: rotate(-10deg); }
+        .ck-ear-r { right: -11px; border-radius: 0 50% 50% 0; transform: rotate(10deg); }
+
+        /* 뒷머리 베이스 (까칠한 괴짜 느낌의 삐죽한 실루엣) */
+        .ck-hair-back {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 124px;
+            height: 70px;
+            background-color: #332211;
+            border: 3.5px solid #1a1108;
+            border-radius: 40px 40px 15px 15px;
+            z-index: 1;
+        }
+
+        /* 목 조인트 */
+        .ck-neck {
+            position: absolute;
+            top: 105px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 40px;
+            background-color: #ffdbb5;
+            border-left: 3.5px solid #8d5b4c;
+            border-right: 3.5px solid #8d5b4c;
+            z-index: 3;
+        }
+
+        /* 얼굴 피부 컨테이너 */
+        .ck-face-skin {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffdbb5;
+            border: 3.5px solid #8d5b4c;
+            border-radius: 50px 50px 60px 60px;
+            z-index: 4;
+            overflow: hidden;
+        }
+
+        /* 짙고 터프한 눈썹 */
+        .ck-eyebrow-l, .ck-eyebrow-r {
+            position: absolute;
+            top: 50px;
+            width: 22px;
+            height: 6px;
+            background-color: #1a1108;
+            border-radius: 3px;
+            z-index: 6;
+        }
+        .ck-eyebrow-l { left: 20px; transform: rotate(-5deg); } /* 까칠한 인상 */
+        .ck-eyebrow-r { right: 20px; transform: rotate(10deg); }
+
+        /* 츤데레 눈매 (한쪽은 살짝 감은 듯 찡긋하는 베테랑의 눈빛) */
+        .ck-eye-l, .ck-eye-r {
+            position: absolute;
+            top: 62px;
+            width: 15px;
+            height: 15px;
+            background-color: #221a15;
+            border-radius: 50%;
+            z-index: 6;
+        }
+        .ck-eye-l::after, .ck-eye-r::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 4px;
+            height: 4px;
+            background-color: #fff;
+            border-radius: 50%;
+        }
+        .ck-eye-l { left: 24px; }
+        .ck-eye-r { 
+            right: 24px; 
+            height: 8px; /* 오른쪽 눈은 살짝 찡그린 느낌 */
+            border-radius: 15px 15px 0 0;
+            top: 66px;
+        }
+
+        /* 얼굴 흉터 디테일 (베테랑 선장의 훈장) */
+        .ck-scar {
+            position: absolute;
+            top: 58px;
+            right: 18px;
+            width: 4px;
+            height: 22px;
+            background-color: #8d5b4c;
+            opacity: 0.6;
+            transform: rotate(25deg);
+            border-radius: 2px;
+            z-index: 6;
+        }
+
+        /* 괴짜 선장의 시그니처: 멋진 콧수염 */
+        .ck-mustache-l, .ck-mustache-r {
+            position: absolute;
+            top: 80px;
+            width: 22px;
+            height: 12px;
+            background-color: #332211;
+            border: 2px solid #1a1108;
+            z-index: 7;
+        }
+        .ck-mustache-l {
+            left: 39px;
+            border-radius: 10px 0 10px 4px;
+            transform: rotate(-10deg);
+        }
+        .ck-mustache-r {
+            right: 39px;
+            border-radius: 0 10px 4px 10px;
+            transform: rotate(10deg);
+        }
+
+        /* 호탕하거나 앙다문 입 */
+        .ck-mouth {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 18px;
+            height: 4px;
+            background-color: #9f1239;
+            border-radius: 2px;
+            z-index: 6;
+        }
+
+        /* ⚓ 선장 모자 (Captain Hat) */
+        .ck-captain-hat {
+            position: absolute;
+            top: -26px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 136px;
+            height: 52px;
+            background-color: #ffffff; /* 클래식한 화이트 탑 */
+            border: 3.5px solid #1e293b;
+            border-radius: 16px 16px 4px 4px;
+            z-index: 10;
+        }
+        /* 모자 하단 네이비 밴드 */
+        .ck-hat-band {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 16px;
+            background-color: #1e293b;
+            z-index: 11;
+        }
+        /* 모자 챙 */
+        .ck-hat-brim {
+            position: absolute;
+            bottom: -7px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 10px;
+            background-color: #0f172a;
+            border-radius: 0 0 10px 10px;
+            z-index: 12;
+        }
+        /* 황금빛 뉵표 (앵커 마크) */
+        .ck-hat-badge {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            width: 10px;
+            height: 10px;
+            background-color: #eab308;
+            border: 1.5px solid #ca8a04;
+            z-index: 13;
+        }
+
+        /* 선장 유니폼 상의 (짙은 바다색 셔츠) */
+        .ck-uniform-top {
+            position: absolute;
+            top: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 124px;
+            height: 110px;
+            background-color: #0f172a;
+            border: 3.5px solid #334155;
+            border-radius: 22px 22px 10px 10px;
+            z-index: 7;
+            overflow: hidden;
+        }
+        /* 마린 스타일 카라 */
+        .ck-collar-l {
+            position: absolute;
+            top: -2px;
+            left: 32px;
+            width: 32px;
+            height: 28px;
+            background-color: #1e293b;
+            border: 3px solid #334155;
+            transform: rotate(-25deg);
+            border-radius: 0 0 6px 0;
+        }
+        .ck-collar-r {
+            position: absolute;
+            top: -2px;
+            right: 32px;
+            width: 32px;
+            height: 28px;
+            background-color: #1e293b;
+            border: 3px solid #334155;
+            transform: rotate(25deg);
+            border-radius: 0 0 0 6px;
+        }
+        /* 선장 제복 견장 */
+        .ck-epaulet-l, .ck-epaulet-r {
+            position: absolute;
+            top: 4px;
+            width: 24px;
+            height: 9px;
+            background-color: #eab308;
+            border: 2px solid #ca8a04;
+            z-index: 8;
+        }
+        .ck-epaulet-l { left: 3px; transform: rotate(-12deg); border-radius: 3px 1px 1px 3px; }
+        .ck-epaulet-r { right: 3px; transform: rotate(12deg); border-radius: 1px 3px 3px 1px; }
+
+        /* 황금색 선장 단추 */
+        .ck-button-1 {
+            position: absolute;
+            top: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background-color: #eab308;
+            border: 1.5px solid #ca8a04;
+            border-radius: 50%;
+            z-index: 10;
+        }
+        .ck-button-2 {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background-color: #eab308;
+            border: 1.5px solid #ca8a04;
+            border-radius: 50%;
+            z-index: 10;
+        }
+    </style>
+
+    <div class="ck-stage">
+        <div class="ck-head-wrapper">
+            <div class="ck-hair-back"></div>
+            <div class="ck-ear-l"></div>
+            <div class="ck-ear-r"></div>
+            <div class="ck-neck"></div>
+            
+            <div class="ck-face-skin">
+                <div class="ck-eyebrow-l"></div>
+                <div class="ck-eyebrow-r"></div>
+                <div class="ck-eye-l"></div>
+                <div class="ck-eye-r"></div>
+                <div class="ck-scar"></div>
+                <div class="ck-mustache-l"></div>
+                <div class="ck-mustache-r"></div>
+                <div class="ck-mouth"></div>
+            </div>
+
+            <div class="ck-captain-hat">
+                <div class="ck-hat-band"></div>
+                <div class="ck-hat-badge"></div>
+                <div class="ck-hat-brim"></div>
+            </div>
+        </div>
+
+        <div class="ck-uniform-top">
+            <div class="ck-collar-l"></div>
+            <div class="ck-collar-r"></div>
+            <div class="ck-epaulet-l"></div>
+            <div class="ck-epaulet-r"></div>
+            <div class="ck-button-1"></div>
+            <div class="ck-button-2"></div>
+        </div>
+    </div>
+</div>

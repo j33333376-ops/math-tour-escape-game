@@ -1,0 +1,98 @@
+<!-- 원본 크기: 500x750 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>홍등</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .cht-svg { display:block; width:100%; height:auto; }
+  .cht-swing { animation: cht-swing 5s ease-in-out infinite; transform-origin: 250px 40px; }
+  @keyframes cht-swing { 0%,100% { transform: rotate(-4deg);} 50% { transform: rotate(4deg);} }
+  .cht-glow { animation: cht-glow 3.4s ease-in-out infinite; }
+  @keyframes cht-glow { 0%,100% { opacity:0.4; } 50% { opacity:0.9; } }
+</style>
+</head>
+<body>
+<svg class="cht-svg" viewBox="0 0 500 750" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="홍등">
+<title>홍등</title>
+<desc>차이나타운 거리의 붉은 등롱. 금색 술이 달린 전통 중국 등.</desc>
+<defs>
+  <linearGradient id="chtLan" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#7a0f0a"/><stop offset="0.25" stop-color="#d4453a"/>
+    <stop offset="0.45" stop-color="#ff7a68"/><stop offset="0.72" stop-color="#c2201a"/>
+    <stop offset="1" stop-color="#6e0c08"/>
+  </linearGradient>
+  <linearGradient id="chtGold" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#8a5f18"/><stop offset="0.35" stop-color="#ffd24f"/>
+    <stop offset="0.6" stop-color="#e8b02c"/><stop offset="1" stop-color="#7a5214"/>
+  </linearGradient>
+  <radialGradient id="chtGlow" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#ffd24f" stop-opacity="0.55"/>
+    <stop offset="1" stop-color="#ffd24f" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<g class="cht-swing">
+  <!-- 매단 줄 -->
+  <line x1="250" y1="20" x2="250" y2="96" stroke="#8a5f18" stroke-width="6"/>
+  <circle cx="250" cy="18" r="10" fill="none" stroke="url(#chtGold)" stroke-width="6"/>
+  <!-- 후광 -->
+  <ellipse class="cht-glow" cx="250" cy="330" rx="230" ry="250" fill="url(#chtGlow)"/>
+  <!-- 상단 테 -->
+  <rect x="176" y="96" width="148" height="34" rx="8" fill="url(#chtGold)" stroke="#5f3f0c" stroke-width="4"/>
+  <g stroke="#5f3f0c" stroke-width="2.4" opacity="0.6">
+    <line x1="200" y1="96" x2="200" y2="130"/><line x1="226" y1="96" x2="226" y2="130"/>
+    <line x1="274" y1="96" x2="274" y2="130"/><line x1="300" y1="96" x2="300" y2="130"/>
+  </g>
+  <!-- 몸통 -->
+  <path d="M250,130
+           C160,130 74,192 74,330
+           C74,468 160,530 250,530
+           C340,530 426,468 426,330
+           C426,192 340,130 250,130 Z"
+        fill="url(#chtLan)" stroke="#5e0a06" stroke-width="6"/>
+  <!-- 세로 살 -->
+  <g fill="none" stroke="#8a1410" stroke-width="4" opacity="0.75">
+    <path d="M250,130 C214,196 200,262 200,330 C200,398 214,464 250,530"/>
+    <path d="M250,130 C286,196 300,262 300,330 C300,398 286,464 250,530"/>
+    <path d="M250,130 C182,190 148,256 148,330 C148,404 182,470 250,530"/>
+    <path d="M250,130 C318,190 352,256 352,330 C352,404 318,470 250,530"/>
+    <path d="M250,130 L250,530"/>
+  </g>
+  <!-- 가로 금테 -->
+  <path d="M84,250 C160,222 340,222 416,250" fill="none" stroke="url(#chtGold)" stroke-width="7"/>
+  <path d="M84,410 C160,438 340,438 416,410" fill="none" stroke="url(#chtGold)" stroke-width="7"/>
+  <!-- 복(福) 문양 -->
+  <g transform="translate(250,330)">
+    <circle r="76" fill="#8a1410" opacity="0.55"/>
+    <circle r="76" fill="none" stroke="#ffd24f" stroke-width="5"/>
+    <g stroke="#ffd24f" stroke-width="9" stroke-linecap="round" fill="none">
+      <path d="M-44,-38 L-4,-38 M-24,-46 L-24,38 M-44,4 L-4,4"/>
+      <path d="M8,-38 L46,-38 M8,-10 L46,-10 M8,18 L46,18 M27,-46 L27,38"/>
+    </g>
+  </g>
+  <!-- 광택 -->
+  <path d="M124,240 C104,300 104,380 124,430" fill="none" stroke="#ffffff" stroke-width="16" opacity="0.25" stroke-linecap="round"/>
+  <!-- 하단 테 -->
+  <rect x="176" y="530" width="148" height="34" rx="8" fill="url(#chtGold)" stroke="#5f3f0c" stroke-width="4"/>
+  <g stroke="#5f3f0c" stroke-width="2.4" opacity="0.6">
+    <line x1="200" y1="530" x2="200" y2="564"/><line x1="226" y1="530" x2="226" y2="564"/>
+    <line x1="274" y1="530" x2="274" y2="564"/><line x1="300" y1="530" x2="300" y2="564"/>
+  </g>
+  <!-- 매듭 -->
+  <circle cx="250" cy="580" r="18" fill="#c2201a" stroke="#7a0f0a" stroke-width="4"/>
+  <!-- 술 -->
+  <g stroke="url(#chtGold)" stroke-width="7" stroke-linecap="round">
+    <line x1="212" y1="592" x2="204" y2="712"/>
+    <line x1="226" y1="596" x2="222" y2="726"/>
+    <line x1="240" y1="598" x2="238" y2="734"/>
+    <line x1="254" y1="598" x2="256" y2="736"/>
+    <line x1="268" y1="596" x2="272" y2="728"/>
+    <line x1="282" y1="592" x2="290" y2="714"/>
+  </g>
+  <rect x="206" y="584" width="88" height="18" rx="9" fill="url(#chtGold)" stroke="#5f3f0c" stroke-width="3.4"/>
+</g>
+</svg>
+</body>
+</html>

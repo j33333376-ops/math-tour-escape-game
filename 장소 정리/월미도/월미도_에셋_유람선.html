@@ -1,0 +1,93 @@
+<!-- 원본 크기: 1000x500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>월미도 유람선</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .wyl-svg { display:block; width:100%; height:auto; }
+  .wyl-bob { animation: wyl-bob 5s ease-in-out infinite; transform-origin: 500px 380px; }
+  @keyframes wyl-bob { 0%,100% { transform: translateY(0) rotate(-1deg);} 50% { transform: translateY(-8px) rotate(1deg);} }
+  .wyl-bulb { animation: wyl-bulb 1.7s ease-in-out infinite; }
+  @keyframes wyl-bulb { 0%,100% { opacity:0.35; } 50% { opacity:1; } }
+</style>
+</head>
+<body>
+<svg class="wyl-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="월미도 유람선">
+<title>월미도 유람선</title>
+<desc>월미도 앞바다를 도는 관광 유람선.</desc>
+<defs>
+  <linearGradient id="wylHull" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#eef1f6"/><stop offset="1" stop-color="#b0bccc"/>
+  </linearGradient>
+  <linearGradient id="wylBand" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#e6407a"/><stop offset="1" stop-color="#a8215a"/>
+  </linearGradient>
+  <linearGradient id="wylRoof" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#7f5fd0"/><stop offset="1" stop-color="#4f2f9c"/>
+  </linearGradient>
+</defs>
+<g class="wyl-bob">
+  <!-- 깃발 줄 -->
+  <path d="M170,124 C330,64 670,64 830,124" fill="none" stroke="#8f9aa4" stroke-width="3.4"/>
+  <g>
+    <path d="M250,88 l24,6 l-22,16 Z" fill="#e6407a"/>
+    <path d="M340,72 l24,6 l-22,16 Z" fill="#ffd94f"/>
+    <path d="M430,66 l24,6 l-22,16 Z" fill="#4fd0c4"/>
+    <path d="M520,66 l24,6 l-22,16 Z" fill="#7f5fd0"/>
+    <path d="M610,74 l24,6 l-22,16 Z" fill="#e6407a"/>
+    <path d="M700,92 l24,6 l-22,16 Z" fill="#ffd94f"/>
+  </g>
+  <!-- 상부 차양 -->
+  <path d="M258,178 L742,178 L716,134 L284,134 Z" fill="url(#wylRoof)" stroke="#3a1f7c" stroke-width="5"/>
+  <rect x="250" y="172" width="500" height="14" rx="7" fill="#9f7fe0"/>
+  <g stroke="#8f9aa4" stroke-width="6" stroke-linecap="round">
+    <line x1="292" y1="186" x2="292" y2="242"/><line x1="708" y1="186" x2="708" y2="242"/>
+  </g>
+  <!-- 상부 승객 -->
+  <g fill="#4a5f7c" opacity="0.75">
+    <g transform="translate(380,186)"><circle cy="-14" r="7"/><path d="M-7,-8 L7,-8 L6,0 L-6,0 Z"/></g>
+    <g transform="translate(440,186)"><circle cy="-12" r="6"/><path d="M-6,-7 L6,-7 L5,0 L-5,0 Z"/></g>
+    <g transform="translate(600,186)"><circle cy="-14" r="7"/><path d="M-7,-8 L7,-8 L6,0 L-6,0 Z"/></g>
+  </g>
+  <!-- 선실 -->
+  <rect x="230" y="242" width="540" height="88" rx="14" fill="url(#wylHull)" stroke="#7d8e9a" stroke-width="5"/>
+  <g fill="#9fd8ea" stroke="#4a6a7c" stroke-width="3.4">
+    <rect x="262" y="264" width="72" height="48" rx="7"/><rect x="350" y="264" width="72" height="48" rx="7"/>
+    <rect x="438" y="264" width="72" height="48" rx="7"/><rect x="526" y="264" width="72" height="48" rx="7"/>
+    <rect x="614" y="264" width="72" height="48" rx="7"/><rect x="702" y="264" width="52" height="48" rx="7"/>
+  </g>
+  <!-- 선체 -->
+  <path d="M140,330 L870,330 C870,330 852,406 790,428 C726,452 274,452 210,428 C148,406 140,330 140,330 Z"
+        fill="url(#wylHull)" stroke="#7d8e9a" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M146,352 L864,352 L854,384 L156,384 Z" fill="url(#wylBand)"/>
+  <text x="500" y="378" text-anchor="middle" font-family="sans-serif" font-size="24" font-weight="bold" fill="#fff2f8">WOLMI CRUISE</text>
+  <path d="M870,330 C912,324 934,308 940,288 C912,292 888,306 870,330 Z" fill="#dde6ee" stroke="#7d8e9a" stroke-width="4.4"/>
+  <!-- 전구 줄 -->
+  <g class="wyl-bulb" fill="#ffd94f">
+    <circle cx="200" cy="342" r="7"/><circle cx="300" cy="342" r="7"/><circle cx="400" cy="342" r="7"/>
+    <circle cx="500" cy="342" r="7"/><circle cx="600" cy="342" r="7"/><circle cx="700" cy="342" r="7"/>
+    <circle cx="800" cy="342" r="7"/>
+  </g>
+  <g class="wyl-bulb" fill="#4fd0c4" style="animation-delay:.85s">
+    <circle cx="250" cy="342" r="6"/><circle cx="350" cy="342" r="6"/><circle cx="450" cy="342" r="6"/>
+    <circle cx="550" cy="342" r="6"/><circle cx="650" cy="342" r="6"/><circle cx="750" cy="342" r="6"/>
+  </g>
+  <!-- 구명튜브 -->
+  <g transform="translate(268,306)">
+    <circle r="22" fill="#e8623c" stroke="#a83f26" stroke-width="4"/>
+    <circle r="10" fill="#f2f6f8" stroke="#a83f26" stroke-width="3"/>
+  </g>
+</g>
+<!-- 물결 -->
+<g fill="none" stroke="#6f8fd0" stroke-width="9" stroke-linecap="round" opacity="0.75">
+  <path d="M92,446 q42,-16 84,0 q42,16 84,0"/>
+  <path d="M736,450 q42,-16 84,0 q42,16 84,0"/>
+</g>
+<path d="M110,480 q66,-20 132,0 q66,20 132,0 q66,-20 132,0 q66,20 132,0 q66,-20 132,0"
+      fill="none" stroke="#3f4f9c" stroke-width="14" stroke-linecap="round" opacity="0.65"/>
+</svg>
+</body>
+</html>

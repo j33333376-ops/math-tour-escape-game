@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차이나타운 체험학습앱 - B03</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* Reset & Base */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #f5f0e6;
+            font-family: 'Noto Sans KR', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Game Container (16:9 Aspect Ratio) */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f3ebd9;
+            background-image: linear-gradient(rgba(245, 240, 230, 0.85), rgba(245, 240, 230, 0.85)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none"/><path d="M0 0h100v100H0z" fill="%238c3030" fill-opacity=".015"/></svg>');
+            border: 4px double #8c3030;
+            outline: 2px solid #d4af37;
+            outline-offset: -8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        /* UI Upper Bar */
+        .stage-header {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(45, 55, 72, 0.85);
+            border: 1px solid #d4af37;
+            padding: 8px 32px;
+            border-radius: 4px;
+            color: #d4af37;
+            font-family: 'Nanum Myeongjo', serif;
+            font-weight: bold;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Scenery Stage Viewport */
+        #stage-viewport {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Character Component Wrappers */
+        .character-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            overflow: visible;
+            bottom: 60px;
+            z-index: 5;
+        }
+        .character-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            overflow: hidden;
+        }
+        #char-seoyeon { right: 180px; }
+        #char-minwoo { right: 40px; transform: scaleX(-1); }
+
+        /* Type 3 UI: Quiz Container */
+        .quiz-container {
+            position: absolute;
+            top: 85px;
+            left: 40px;
+            width: 520px;
+            height: 385px;
+            background: #fdfaf4;
+            border: 2px solid #8c3030;
+            outline: 1px solid #d4af37;
+            outline-offset: -5px;
+            border-radius: 4px;
+            padding: 22px;
+            z-index: 10;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .quiz-page {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .quiz-title {
+            font-family: 'Nanum Myeongjo', serif;
+            color: #8c3030;
+            font-size: 1.25rem;
+            font-weight: bold;
+            border-bottom: 2px dashed #d4af37;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        /* Interactive Card Slide Mechanics */
+        .puzzle-flow-view {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .puzzle-card {
+            width: 100%;
+            background: rgba(245, 240, 230, 0.7);
+            border: 1px solid #d4af37;
+            border-radius: 6px;
+            padding: 16px 20px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1rem;
+            text-align: center;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.03);
+            display: none;
+        }
+        .puzzle-card.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .puzzle-card strong {
+            font-family: 'Nanum Myeongjo', serif;
+            color: #8c3030;
+            font-size: 1.15rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .puzzle-card code {
+            display: inline-block;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 1.4rem;
+            background: #ffffff;
+            padding: 6px 16px;
+            border-radius: 4px;
+            border: 1px solid #d4af37;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+
+        /* Randomized Spawning Numbers */
+        .random-hint-number {
+            position: absolute;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: rgba(140, 48, 48, 0.65);
+            background: rgba(253, 250, 244, 0.5);
+            border: 1px dashed rgba(212, 175, 55, 0.6);
+            padding: 2px 8px;
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 2;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Lock Input UI Setup */
+        .input-group-wrapper {
+            border-top: 1px solid #d4af37;
+            padding-top: 10px;
+            margin-top: 8px;
+        }
+
+        .lock-labels {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 4px;
+        }
+
+        .lock-labels span {
+            width: 44px;
+            text-align: center;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.75rem;
+            color: #8c3030;
+            font-weight: bold;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .quiz-input {
+            width: 220px;
+            height: 38px;
+            border: 2px solid #8c3030;
+            border-radius: 4px;
+            padding: 0 10px;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 1.3rem;
+            font-weight: bold;
+            letter-spacing: 12px;
+            text-align: center;
+            color: #2d3748;
+            background-color: #ffffff;
+        }
+
+        .btn-action {
+            background-color: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-weight: bold;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-action:hover {
+            background-color: #661f1f;
+        }
+
+        .click-hint-notice {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #a0aec0;
+            margin-top: 4px;
+            animation: pulse 2s infinite;
+        }
+
+        /* Feedback Alerts */
+        .feedback-msg {
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-top: 4px;
+            height: 18px;
+        }
+        .feedback-success { color: #2f855a; }
+        .feedback-error { color: #c53030; }
+
+        /* Navigation Buttons */
+        .btn-nav {
+            position: absolute;
+            background-color: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-weight: bold;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+            transition: background-color 0.2s ease;
+            z-index: 25;
+        }
+        .btn-nav:hover { background-color: #661f1f; }
+        #btn-prev { left: 20px; bottom: 20px; }
+        #btn-next { right: 20px; bottom: 20px; display: none; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- Stage Title -->
+        <div class="stage-header">개항기 무역창고의 암호 퍼즐</div>
+
+        <div id="stage-viewport">
+            <!-- Randomly spawned numbers container framework (상상플랫폼 왼편 구역 연출) -->
+            <div id="random-numbers-zone"></div>
+
+            <!-- Building Frame Asset (상상플랫폼: 원본 1280x460 -> s=0.55 적용 후 배치) -->
+            <div style="position: absolute; left: 40px; bottom: 130px; width: 704px; height: 253px; overflow: hidden; z-index: 1; border-radius: 4px; box-shadow: inset 0 0 10px rgba(0,0,0,0.15);">
+                <iframe src="B_상상플랫폼.html" scrolling="no" style="border: 0; width: 1280px; height: 460px; transform: scale(0.55); transform-origin: top left; opacity: 0.65;"></iframe>
+            </div>
+
+            <!-- Quiz Main Framework -->
+            <div class="quiz-container">
+                <!-- Page 1: Guide Scene View -->
+                <div id="page-guide" class="quiz-page">
+                    <div class="quiz-title">🔐 개항의 비밀 숫자를 찾아라!</div>
+                    <div class="quiz-content" style="display: flex; flex-direction: column; justify-content: center;">
+                        <p style="margin-bottom: 12px; font-weight: bold; text-align: center;">오래된 창고에서 4자리 자물쇠가 발견되었습니다.</p>
+                        <p style="margin-bottom: 8px; text-align: center;">주변 무대에 숨겨진 힌트 숫자를 조합해 자물쇠를 풀어보세요.</p>
+                        <p style="color: #8c3030; font-weight: bold; text-align: center; margin-top: 15px;">💡 문제를 클릭하면 다음 단서가 제공됩니다!</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <button class="btn-action" onclick="showQuizPage()">암호 해독 시작</button>
+                    </div>
+                </div>
+
+                <!-- Page 2: Core Interative Pagination Sequence Puzzle View -->
+                <div id="page-game" class="quiz-page" style="display: none;">
+                    <div class="quiz-title">🔒 순서에 맞춰 암호를 분석하세요</div>
+                    
+                    <!-- Click-to-advance interactive structural card engine area -->
+                    <div class="puzzle-flow-view" onclick="advancePuzzleCard()">
+                        <!-- Card 1 -->
+                        <div id="puzzle-q1" class="puzzle-card active">
+                            <strong>① 첫 번째 문제</strong>
+                            <code>□ + 3 = 4</code>
+                            <p style="font-size:0.85rem; color:#4a5568;">정답 숫자가 왼쪽 배경에 나타났습니다.</p>
+                        </div>
+                        <!-- Card 2 -->
+                        <div id="puzzle-q2" class="puzzle-card">
+                            <strong>② 두 번째 문제</strong>
+                            <code>12 ÷ 3 + 4 = □</code>
+                            <p style="font-size:0.85rem; color:#4a5568;">연산 결과에 알맞은 숫자를 확인해 보세요.</p>
+                        </div>
+                        <!-- Card 3 -->
+                        <div id="puzzle-q3" class="puzzle-card">
+                            <strong>③ 세 번째 문제</strong>
+                            <code style="letter-spacing: 2px;">■■■■<br>■■■■</code>
+                            <p style="font-size:0.85rem; color:#4a5568;">격자 내 검은 네모의 개수를 세어보세요.</p>
+                        </div>
+                        <!-- Card 4 -->
+                        <div id="puzzle-q4" class="puzzle-card">
+                            <strong>④ 네 번째 문제</strong>
+                            <code style="letter-spacing: 4px;">▲ ▲ ▲</code>
+                            <p style="font-size:0.85rem; color:#4a5568;">나열된 삼각형의 총개수를 세어보세요.</p>
+                        </div>
+                    </div>
+                    <div class="click-hint-notice">💡 박스를 터치하거나 클릭하면 다음 문제로 바뀝니다.</div>
+
+                    <!-- Input validation interactive system area -->
+                    <div class="input-group-wrapper">
+                        <div class="lock-labels">
+                            <span>문제1</span>
+                            <span>문제2</span>
+                            <span>문제3</span>
+                            <span>문제4</span>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="secret-code" class="quiz-input" maxlength="4" placeholder="••••" onkeydown="if(event.key==='Enter') verifyQuizAnswer()">
+                            <button class="btn-action" onclick="verifyQuizAnswer()">확인</button>
+                        </div>
+                        <div id="feedback-log" class="feedback-msg"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Character Inject Framework Subsystem -->
+            <div id="char-seoyeon" class="character-wrapper">
+                <iframe src="서연.html" scrolling="no"></iframe>
+            </div>
+
+            <div id="char-minwoo" class="character-wrapper">
+                <iframe src="민우.html" scrolling="no"></iframe>
+            </div>
+        </div>
+
+        <!-- Navigation Footers -->
+        <button id="btn-prev" class="btn-nav" onclick="moveToUrl('B02.html')">이전으로</button>
+        <button id="btn-next" class="btn-nav" onclick="moveToUrl('index.html')">다음으로</button>
+    </div>
+
+    <script>
+        const targetAnswer = "1883";
+        let currentCardIndex = 1;
+        const totalCards = 4;
+
+        function showQuizPage() {
+            document.getElementById("page-guide").style.display = "none";
+            document.getElementById("page-game").style.display = "flex";
+            spawnRandomNumbers();
+        }
+
+        // Logic for skipping or turning individual cards sequentially
+        function advancePuzzleCard() {
+            document.getElementById(`puzzle-q${currentCardIndex}`).classList.remove("active");
+            currentCardIndex++;
+            if (currentCardIndex > totalCards) {
+                currentCardIndex = 1; // Loop back around to item 1
+            }
+            document.getElementById(`puzzle-q${currentCardIndex}`).classList.add("active");
+        }
+
+        // Generate and position structural values dynamically outside leftwards
+        function spawnRandomNumbers() {
+            const container = document.getElementById("random-numbers-zone");
+            container.innerHTML = ""; // Clear pool
+            
+            // Core puzzle results target list
+            const answersPool = ["1", "8", "8", "3"];
+            
+            answersPool.forEach(num => {
+                const el = document.createElement("div");
+                el.className = "random-hint-number";
+                el.innerText = num;
+
+                // Restrict spatial footprint layout exclusively inside the left scenery coordinates
+                const minX = 45;
+                const maxX = 500;
+                const minY = 100;
+                const maxY = 430;
+
+                const randX = Math.floor(Math.random() * (maxX - minX)) + minX;
+                const randY = Math.floor(Math.random() * (maxY - minY)) + minY;
+
+                el.style.left = `${randX}px`;
+                el.style.top = `${randY}px`;
+                
+                container.appendChild(el);
+            });
+        }
+
+        function verifyQuizAnswer() {
+            const inputField = document.getElementById("secret-code");
+            const feedbackBox = document.getElementById("feedback-log");
+            const nextButton = document.getElementById("btn-next");
+
+            if (inputField.value.trim() === targetAnswer) {
+                feedbackBox.className = "feedback-msg feedback-success";
+                feedbackBox.innerText = "🎉 정답입니다! 1883년 개항의 비밀 자물쇠가 풀렸습니다.";
+                inputField.disabled = true;
+                nextButton.style.display = "block";
+            } else {
+                feedbackBox.className = "feedback-msg feedback-error";
+                feedbackBox.innerText = "❌ 비밀번호가 다릅니다. 숫자를 순서대로 재정렬해 보세요.";
+                inputField.value = "";
+                inputField.focus();
+            }
+        }
+
+        function moveToUrl(url) {
+            if (url && url.trim() !== "") {
+                window.location.href = url;
+            }
+        }
+    </script>
+</body>
+</html>

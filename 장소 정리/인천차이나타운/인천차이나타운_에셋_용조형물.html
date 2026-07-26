@@ -1,0 +1,129 @@
+<!-- 원본 크기: 1000x500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>용 조형물</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .cyd-svg { display:block; width:100%; height:auto; }
+  .cyd-wave { animation: cyd-wave 6s ease-in-out infinite; transform-origin: 500px 260px; }
+  @keyframes cyd-wave { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-10px);} }
+  .cyd-pearl { animation: cyd-pearl 3s ease-in-out infinite; }
+  @keyframes cyd-pearl { 0%,100% { opacity:0.55; transform: scale(1);} 50% { opacity:1; transform: scale(1.08);} }
+</style>
+</head>
+<body>
+<svg class="cyd-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="용 조형물">
+<title>용 조형물</title>
+<desc>차이나타운 벽화거리의 황금 용 조형물.</desc>
+<defs>
+  <linearGradient id="cydBody" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffe27a"/><stop offset="0.4" stop-color="#e8b02c"/>
+    <stop offset="0.75" stop-color="#c9871c"/><stop offset="1" stop-color="#8a5a10"/>
+  </linearGradient>
+  <linearGradient id="cydFin" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ff8478"/><stop offset="1" stop-color="#c2201a"/>
+  </linearGradient>
+  <radialGradient id="cydPearl" cx="0.36" cy="0.3" r="0.8">
+    <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#ffe9a8"/><stop offset="1" stop-color="#f2a03c"/>
+  </radialGradient>
+</defs>
+<g class="cyd-wave">
+  <!-- 몸통 (물결치는 곡선) -->
+  <path d="M92,300
+           C150,190 250,180 306,262
+           C356,336 440,346 490,282
+           C540,218 630,214 680,278
+           C724,334 796,336 838,286"
+        fill="none" stroke="#8a5a10" stroke-width="66" stroke-linecap="round"/>
+  <path d="M92,300
+           C150,190 250,180 306,262
+           C356,336 440,346 490,282
+           C540,218 630,214 680,278
+           C724,334 796,336 838,286"
+        fill="none" stroke="url(#cydBody)" stroke-width="52" stroke-linecap="round"/>
+  <!-- 등지느러미 -->
+  <g fill="url(#cydFin)" stroke="#8c1f18" stroke-width="3">
+    <path d="M150,232 l-16,-40 l38,20 Z"/>
+    <path d="M226,190 l-8,-44 l34,28 Z"/>
+    <path d="M300,232 l4,-44 l30,32 Z"/>
+    <path d="M396,318 l14,-42 l28,36 Z"/>
+    <path d="M486,282 l-4,-44 l32,28 Z"/>
+    <path d="M568,226 l-4,-44 l34,26 Z"/>
+    <path d="M652,232 l6,-44 l30,32 Z"/>
+    <path d="M744,320 l16,-42 l28,36 Z"/>
+  </g>
+  <!-- 비늘 -->
+  <g fill="none" stroke="#8a5a10" stroke-width="3" opacity="0.6">
+    <path d="M126,262 q14,16 0,32"/><path d="M170,238 q14,16 0,32"/><path d="M214,224 q14,16 0,32"/>
+    <path d="M258,232 q14,16 0,32"/><path d="M302,268 q14,16 0,32"/><path d="M346,306 q14,16 0,32"/>
+    <path d="M436,318 q14,-16 0,-32"/><path d="M480,290 q14,-16 0,-32"/><path d="M524,254 q14,-16 0,-32"/>
+    <path d="M568,232 q14,-16 0,-32"/><path d="M612,226 q14,16 0,32"/><path d="M656,248 q14,16 0,32"/>
+    <path d="M700,292 q14,16 0,32"/><path d="M744,320 q14,-16 0,-32"/><path d="M788,318 q14,-16 0,-32"/>
+  </g>
+  <!-- 발 -->
+  <g fill="url(#cydBody)" stroke="#8a5a10" stroke-width="4">
+    <path d="M256,306 C240,346 244,380 264,394 C276,376 292,362 310,356 C296,338 282,320 256,306 Z"/>
+    <path d="M596,326 C580,366 584,400 604,414 C616,396 632,382 650,376 C636,358 622,340 596,326 Z"/>
+  </g>
+  <g stroke="#8c1f18" stroke-width="4" stroke-linecap="round" fill="none">
+    <path d="M264,394 l-14,20 M278,392 l-4,24 M294,384 l8,22"/>
+    <path d="M604,414 l-14,20 M618,412 l-4,24 M634,404 l8,22"/>
+  </g>
+  <!-- 머리 -->
+  <g transform="translate(870,270)">
+    <path d="M-46,20 C-62,-14 -40,-52 4,-58 C56,-64 92,-34 90,6 C88,44 50,66 8,60 C-20,56 -38,42 -46,20 Z"
+          fill="url(#cydBody)" stroke="#8a5a10" stroke-width="5"/>
+    <!-- 주둥이 -->
+    <path d="M60,-14 C96,-22 118,-8 116,12 C114,32 88,42 58,34 Z" fill="#f2c14e" stroke="#8a5a10" stroke-width="4.4"/>
+    <path d="M92,22 C104,32 100,44 86,44" fill="none" stroke="#8a5a10" stroke-width="4" stroke-linecap="round"/>
+    <!-- 수염 -->
+    <g stroke="#c2201a" stroke-width="6" fill="none" stroke-linecap="round">
+      <path d="M112,4 C136,-6 152,-26 146,-48"/>
+      <path d="M108,26 C132,36 152,32 160,14"/>
+    </g>
+    <!-- 뿔 -->
+    <g fill="url(#cydBody)" stroke="#8a5a10" stroke-width="4">
+      <path d="M14,-56 C4,-92 18,-116 42,-114 C34,-96 34,-74 40,-56 Z"/>
+      <path d="M52,-58 C56,-92 78,-108 96,-98 C80,-84 70,-70 68,-54 Z"/>
+    </g>
+    <!-- 갈기 -->
+    <path d="M-40,-18 C-72,-30 -96,-22 -104,4 C-78,0 -58,6 -44,18 Z" fill="url(#cydFin)" stroke="#8c1f18" stroke-width="3.4"/>
+    <path d="M-30,28 C-62,34 -80,54 -74,76 C-54,60 -34,54 -18,54 Z" fill="url(#cydFin)" stroke="#8c1f18" stroke-width="3.4"/>
+    <!-- 눈 -->
+    <circle cx="42" cy="-22" r="16" fill="#ffffff" stroke="#8a5a10" stroke-width="3"/>
+    <circle cx="46" cy="-20" r="8" fill="#1f1408"/>
+    <circle cx="42" cy="-25" r="3" fill="#ffffff"/>
+    <!-- 이빨 -->
+    <g fill="#ffffff">
+      <path d="M70,32 l6,14 l8,-12 Z"/><path d="M88,34 l6,14 l8,-12 Z"/>
+    </g>
+  </g>
+  <!-- 꼬리 -->
+  <g transform="translate(78,304)">
+    <path d="M14,-4 C-24,-24 -58,-14 -70,16 C-40,10 -14,18 6,32 Z" fill="url(#cydFin)" stroke="#8c1f18" stroke-width="4"/>
+    <path d="M10,10 C-28,10 -52,34 -50,62 C-26,44 -4,38 12,40 Z" fill="url(#cydFin)" stroke="#8c1f18" stroke-width="4"/>
+  </g>
+</g>
+<!-- 여의주 -->
+<g transform="translate(240,120)">
+  <circle class="cyd-pearl" r="58" fill="#ffe9a8" opacity="0.5"/>
+  <circle r="40" fill="url(#cydPearl)" stroke="#c9871c" stroke-width="4"/>
+  <ellipse cx="-13" cy="-14" rx="14" ry="9" transform="rotate(-30 -13 -14)" fill="#ffffff" opacity="0.8"/>
+  <g stroke="#f2a03c" stroke-width="4" stroke-linecap="round" class="cyd-pearl">
+    <line x1="0" y1="-56" x2="0" y2="-72"/><line x1="0" y1="56" x2="0" y2="72"/>
+    <line x1="-56" y1="0" x2="-72" y2="0"/><line x1="56" y1="0" x2="72" y2="0"/>
+    <line x1="-40" y1="-40" x2="-52" y2="-52"/><line x1="40" y1="40" x2="52" y2="52"/>
+    <line x1="-40" y1="40" x2="-52" y2="52"/><line x1="40" y1="-40" x2="52" y2="-52"/>
+  </g>
+</g>
+<!-- 구름 -->
+<g fill="#ffffff" opacity="0.7">
+  <path d="M120,440 q26,-26 52,-8 q22,-24 48,-4 q26,-6 32,16 q-84,10 -132,-4 Z"/>
+  <path d="M700,432 q24,-24 48,-6 q20,-22 44,-2 q24,-6 30,14 q-78,10 -122,-6 Z"/>
+</g>
+</svg>
+</body>
+</html>

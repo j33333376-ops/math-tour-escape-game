@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>알파벳 TF 퍼즐</title>
+<style>
+  :root{
+    --bg1:#fdf6ec; --bg2:#f4ead5; --ink:#3d3227; --line:#c9b79c;
+    --accent:#e07a3f; --accent2:#5b8def; --panel:#fffdf8; --shadow:rgba(80,60,30,.18);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; height:100%;}
+  body{
+    font-family:"Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif;
+    background:radial-gradient(circle at 50% -10%, #fff9f0, var(--bg1) 45%, var(--bg2));
+    color:var(--ink); display:flex; flex-direction:column; min-height:100%;
+    overflow-x:hidden;
+  }
+  header{
+    padding:10px 14px 6px; display:flex; flex-wrap:wrap; align-items:center;
+    gap:8px 14px; justify-content:center; position:relative;
+  }
+  .title{font-size:clamp(18px,4.4vw,26px); font-weight:800; letter-spacing:-.5px; margin-right:4px;}
+  .title span{color:var(--accent);}
+  .group{display:flex; align-items:center; gap:6px; background:var(--panel);
+    border:1px solid var(--line); border-radius:999px; padding:4px; box-shadow:0 2px 6px var(--shadow);}
+  .group .lbl{font-size:12px; color:#8a7a63; padding:0 6px 0 8px; font-weight:700;}
+  button{
+    font-family:inherit; cursor:pointer; border:none; background:transparent; color:var(--ink);
+    font-weight:700; border-radius:999px; padding:8px 12px; font-size:14px; transition:.12s;
+    white-space:nowrap;
+  }
+  button:active{transform:translateY(1px) scale(.98);}
+  .seg{border-radius:999px; padding:7px 14px; font-size:15px;}
+  .lvl.on{background:var(--accent2); color:#fff; box-shadow:0 2px 6px rgba(91,141,239,.4);}
+  .util{background:var(--panel); border:1px solid var(--line); box-shadow:0 2px 5px var(--shadow); font-size:13px;}
+  .util:hover{background:#fff;}
+  .stats{display:flex; gap:14px; align-items:center; font-size:13px; font-weight:700; color:#6f5f48;}
+  .stats b{color:var(--ink); font-variant-numeric:tabular-nums;}
+
+  main{flex:1; display:flex; flex-direction:column; align-items:center; padding:2px 8px 0;}
+  .stage{position:relative; width:100%; max-width:820px; flex:1; display:flex;}
+  svg{width:100%; height:100%; touch-action:none; display:block;}
+  .silhouette{fill:#efe2c8; stroke:#c2ab84; stroke-width:.09; stroke-dasharray:.35 .28;
+    stroke-linejoin:round; filter:drop-shadow(0 .12px .35px rgba(120,95,55,.25));}
+  .guide{fill:rgba(255,255,255,.0); stroke:#a98f66; stroke-width:.07; stroke-dasharray:.28 .22;
+    stroke-linejoin:round; opacity:0; transition:opacity .25s; pointer-events:none;}
+  .guide.flash{opacity:1; stroke:var(--accent); stroke-width:.14; animation:pulse 1.6s ease;}
+  @keyframes pulse{0%,100%{opacity:.25;}50%{opacity:1;}}
+  .piece{cursor:grab;}
+  .piece polygon{
+    stroke:#4a3a26; stroke-width:.075; stroke-linejoin:round;
+    transition:filter .1s;
+  }
+  .piece.selected{filter:drop-shadow(0 0 .45px rgba(0,0,0,.55));}
+  .piece.selected polygon{stroke:#241c10; stroke-width:.14;}
+  .piece.placed polygon{stroke:#3a2c18; stroke-width:.05;}
+
+  .actionbar{display:flex; gap:10px; align-items:center; justify-content:center;
+    padding:8px; flex-wrap:wrap;}
+  .big{background:var(--panel); border:1px solid var(--line); box-shadow:0 3px 8px var(--shadow);
+    font-size:15px; padding:11px 16px; display:flex; align-items:center; gap:7px;}
+  .big:hover{background:#fff;}
+  .big .ic{font-size:18px; line-height:1;}
+  .big.hint{background:linear-gradient(180deg,#ffe9a8,#ffd873); border-color:#e8bf58;}
+  .hintmsg{min-height:18px; font-size:13px; color:#8a7a63; font-weight:700; text-align:center;}
+
+  .overlay{position:absolute; inset:0; display:none; align-items:flex-end; justify-content:center;
+    padding-bottom:6%; background:rgba(40,30,15,.14); backdrop-filter:blur(.5px); z-index:5; border-radius:16px;}
+  .overlay.show{display:flex; animation:fade .3s;}
+  @keyframes fade{from{opacity:0;}to{opacity:1;}}
+  .card{background:var(--panel); border-radius:20px; padding:26px 30px; text-align:center;
+    box-shadow:0 12px 40px rgba(60,40,15,.4); max-width:88%; animation:pop .4s cubic-bezier(.2,1.3,.4,1);}
+  @keyframes pop{from{transform:scale(.7); opacity:0;}to{transform:scale(1); opacity:1;}}
+  .card .stars{font-size:34px; color:#f6c744; letter-spacing:4px;}
+  .card h2{margin:6px 0 4px; font-size:26px;}
+  .card p{margin:2px 0 16px; color:#6f5f48; font-weight:700;}
+  .card .row{display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+  .card button{padding:11px 18px; font-size:15px;}
+  .card .primary{background:var(--accent); color:#fff;}
+  .card .secondary{background:#eee5d3;}
+  #confetti{position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:4; display:none;}
+  #confetti.show{display:block;}
+
+  .toast{position:fixed; left:50%; bottom:14%; transform:translateX(-50%); background:#3d3227;
+    color:#fff; padding:9px 16px; border-radius:999px; font-size:13px; font-weight:700;
+    opacity:0; transition:opacity .25s; pointer-events:none; z-index:20;}
+  .toast.show{opacity:.95;}
+  footer{text-align:center; font-size:11px; color:#a2916f; padding:4px 0 8px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="title">알파벳 <span>TF</span> 퍼즐</div>
+  <div class="group" role="group" aria-label="글자 선택">
+    <span class="lbl">글자</span>
+    <button class="lvl seg" data-lvl="T">T</button>
+    <button class="lvl seg" data-lvl="F">F</button>
+  </div>
+  <div class="group">
+    <button class="util" id="btnHintTop">💡 힌트</button>
+    <button class="util" id="btnSolve">정답 보기</button>
+    <button class="util" id="btnShuffle">다시 섞기</button>
+    <button class="util" id="btnReset">처음부터</button>
+    <button class="util" id="btnSound">🔊 소리</button>
+  </div>
+  <div class="stats">
+    <span>시간 <b id="timeVal">0:00</b></span>
+    <span>채움 <b id="fillVal">0%</b></span>
+    <span>힌트 <b id="hintVal">0</b></span>
+  </div>
+</header>
+
+<main>
+  <div class="stage">
+    <svg id="svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <g id="silhouetteLayer"></g>
+      <g id="guideLayer"></g>
+      <g id="pieceLayer"></g>
+    </svg>
+    <canvas id="confetti"></canvas>
+    <div class="overlay" id="overlay">
+      <div class="card">
+        <div class="stars">★★★</div>
+        <h2 id="winTitle">완성!</h2>
+        <p id="winSub"></p>
+        <div class="row">
+          <button class="primary" id="winAgain">다시 풀기</button>
+          <button class="secondary" id="winNext">다음 글자 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actionbar">
+    <button class="big" id="btnRotate"><span class="ic">↻</span> 회전</button>
+    <button class="big" id="btnFlip"><span class="ic">⇋</span> 뒤집기</button>
+    <button class="big hint" id="btnHint"><span class="ic">💡</span> 힌트</button>
+  </div>
+  <div class="hintmsg" id="hintMsg">조각을 끌어 글자 안을 빈틈없이 채우면 완성이에요. 배치 방법은 여러 가지일 수 있어요. 조각을 한 번 누르면 <b>회전·뒤집기</b>할 수 있어요.</div>
+</main>
+
+<footer>알파벳 TF 퍼즐 · T는 4조각, F는 5조각 · 정해진 답이 아니라 글자를 꽉 채우면 정답!</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ---------------- Puzzle data (y-down, integer letter coords) ----------------
+   Piece shapes reconstructed from the physical TF-puzzle photo.
+   T = 4 pieces: triangle + parallelogram + corner piece (bar->stem) + rectangle.
+   F = 5 pieces: corner triangle + slanted top arm + spine parallelogram + mid arm + lower spine.
+   WIN = pieces completely tile the letter outline in ANY arrangement (grid-snap + coverage). */
+const OFFSET={x:8,y:2};
+const PALETTE=['#ef6f6c','#f6a740','#f7cf3f','#69c06a','#3fbcd0','#7a7bd8'];
+const PUZZLES={
+  T:{ label:'T', count:4, vb:[0,0,22,15], letterH:6,
+      outline:[[0,0],[6,0],[6,2],[4,2],[4,6],[2,6],[2,2],[0,2]],
+      pieces:[
+        [[0,0],[2,0],[0,2]],
+        [[2,0],[4,0],[2,2],[0,2]],
+        [[4,0],[6,0],[6,2],[4,2],[4,4],[2,4],[2,2]],
+        [[2,4],[4,4],[4,6],[2,6]],
+      ]},
+  F:{ label:'F', count:5, vb:[0,0,22,16], letterH:8,
+      outline:[[0,0],[6,0],[6,2],[2,2],[2,4],[5,4],[5,6],[2,6],[2,8],[0,8]],
+      pieces:[
+        [[0,0],[2,2],[0,2]],
+        [[0,0],[6,0],[6,2],[2,2]],
+        [[0,2],[2,2],[2,4],[0,6]],
+        [[2,4],[5,4],[5,6],[2,6]],
+        [[0,6],[2,4],[2,8],[0,8]],
+      ]},
+};
+
+/* ---------------- Geometry helpers ---------------- */
+function centroidOf(poly){let a=0,cx=0,cy=0;for(let i=0;i<poly.length;i++){const p=poly[i],q=poly[(i+1)%poly.length];const cr=p[0]*q[1]-q[0]*p[1];a+=cr;cx+=(p[0]+q[0])*cr;cy+=(p[1]+q[1])*cr;}a/=2;return[cx/(6*a),cy/(6*a)];}
+function rotflipPt(pt,rot,flip){const f=flip?-1:1;const x=pt[0]*f,y=pt[1];const rad=rot*Math.PI/2,c=Math.cos(rad),s=Math.sin(rad);return[x*c-y*s,x*s+y*c];}
+function transformedLocal(p){ return p.local.map(v=>rotflipPt(v,p.rot,p.flip)); }
+function pointInPoly(x,y,poly){let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i][0],yi=poly[i][1],xj=poly[j][0],yj=poly[j][1];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))inside=!inside;}return inside;}
+function ptsStr(poly){return poly.map(p=>p[0].toFixed(3)+","+p[1].toFixed(3)).join(" ");}
+const SVGNS="http://www.w3.org/2000/svg";
+
+/* ---------------- State ---------------- */
+const svg=document.getElementById('svg');
+const silhouetteLayer=document.getElementById('silhouetteLayer');
+const guideLayer=document.getElementById('guideLayer');
+const pieceLayer=document.getElementById('pieceLayer');
+let level='T';
+let pieces=[], selected=null;
+let hintCount=0, startTime=null, timerId=null, won=false;
+let soundOn=true, audioCtx=null;
+
+/* ---------------- Build a level ---------------- */
+function buildLevel(lv){
+  level=lv; won=false; selected=null; hintCount=0;
+  const pz=PUZZLES[lv];
+  svg.setAttribute('viewBox', pz.vb.join(' '));
+  silhouetteLayer.innerHTML=''; guideLayer.innerHTML=''; pieceLayer.innerHTML='';
+  pieces=[];
+
+  const sil=document.createElementNS(SVGNS,'polygon');
+  sil.setAttribute('class','silhouette');
+  sil.setAttribute('points', ptsStr(pz.outline.map(p=>[p[0]+OFFSET.x,p[1]+OFFSET.y])));
+  silhouetteLayer.appendChild(sil);
+
+  pz.pieces.forEach((verts,i)=>{
+    const cen=centroidOf(verts);
+    const local=verts.map(v=>[v[0]-cen[0], v[1]-cen[1]]);
+    // solution (home) outline for hints
+    const g=document.createElementNS(SVGNS,'polygon');
+    g.setAttribute('class','guide');
+    g.setAttribute('points', ptsStr(verts.map(v=>[v[0]+OFFSET.x, v[1]+OFFSET.y])));
+    guideLayer.appendChild(g);
+
+    const gp=document.createElementNS(SVGNS,'g');
+    gp.setAttribute('class','piece');
+    const poly=document.createElementNS(SVGNS,'polygon');
+    poly.setAttribute('points', ptsStr(local));
+    poly.setAttribute('fill', PALETTE[i%PALETTE.length]);
+    gp.appendChild(poly);
+    pieceLayer.appendChild(gp);
+    const piece={ id:i, local, baseC:cen, color:PALETTE[i%PALETTE.length], el:gp, poly, guideEl:g,
+                  cx:0, cy:0, rot:0, flip:false,
+                  homeCx:cen[0]+OFFSET.x, homeCy:cen[1]+OFFSET.y };
+    attachPointer(piece);
+    gp.addEventListener('dblclick', ()=>{ if(!won){selectPiece(piece); rotatePiece();} });
+    pieces.push(piece);
+  });
+
+  scatter();
+  resetTimer();
+  refreshFill();
+  hideOverlay();
+}
+
+/* ---------------- Scatter ---------------- */
+function anchors(){
+  const pz=PUZZLES[level], VW=pz.vb[2], VH=pz.vb[3], midY=OFFSET.y+pz.letterH/2;
+  return [
+    {x:3.4,y:midY},{x:VW-3.4,y:midY},
+    {x:6,y:VH-2.4},{x:11,y:VH-2.4},{x:16,y:VH-2.4},
+  ];
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function scatter(){
+  const an=shuffle(anchors().slice());
+  pieces.forEach((p,i)=>{
+    const a=an[i%an.length];
+    p.cx=a.x+(Math.random()*0.6-0.3);
+    p.cy=a.y+(Math.random()*0.6-0.3);
+    p.rot=Math.floor(Math.random()*4);
+    p.flip=false;
+    snapToGrid(p);
+  });
+  selected=null;
+  render(); refreshFill();
+}
+
+/* ---------------- Grid snap ---------------- */
+function snapToGrid(p){
+  const rc=rotflipPt(p.baseC, p.rot, p.flip);
+  p.cx=Math.round(p.cx-rc[0])+rc[0];
+  p.cy=Math.round(p.cy-rc[1])+rc[1];
+}
+function absVerts(p){ return transformedLocal(p).map(v=>[Math.round(v[0]+p.cx), Math.round(v[1]+p.cy)]); }
+
+/* ---------------- Coverage / win ---------------- */
+function checkFill(){
+  const pz=PUZZLES[level];
+  const outline=pz.outline.map(v=>[v[0]+OFFSET.x, v[1]+OFFSET.y]);
+  const polys=pieces.map(absVerts);
+  let minx=Infinity,maxx=-Infinity,miny=Infinity,maxy=-Infinity;
+  outline.forEach(v=>{minx=Math.min(minx,v[0]);maxx=Math.max(maxx,v[0]);miny=Math.min(miny,v[1]);maxy=Math.max(maxy,v[1]);});
+  let total=0,exact=0,spill=0;
+  for(let x=minx-1;x<=maxx+1;x+=0.25){
+    for(let y=miny-1;y<=maxy+1;y+=0.25){
+      const px=x+0.1, py=y+0.05;
+      const inT=pointInPoly(px,py,outline);
+      let c=0; for(const poly of polys) if(pointInPoly(px,py,poly)) c++;
+      if(inT){ total++; if(c===1)exact++; }
+      else if(c>0) spill++;
+    }
+  }
+  return { fill: total?exact/total:0, spill, win: total>0 && exact===total && spill===0 };
+}
+function refreshFill(){
+  const r=checkFill();
+  document.getElementById('fillVal').textContent = Math.round(r.fill*100)+'%';
+  return r;
+}
+
+/* ---------------- Rendering ---------------- */
+function render(){
+  pieces.forEach(p=>{
+    p.el.setAttribute('transform',
+      'translate('+p.cx+' '+p.cy+') rotate('+(p.rot*90)+') scale('+(p.flip?-1:1)+' 1)');
+    p.el.classList.toggle('selected', selected===p);
+  });
+}
+
+/* ---------------- Pointer / drag ---------------- */
+function toSvg(e){
+  const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY;
+  const m=svg.getScreenCTM(); if(!m)return[0,0];
+  const q=pt.matrixTransform(m.inverse()); return [q.x,q.y];
+}
+function attachPointer(p){
+  p.el.addEventListener('pointerdown', e=>{
+    if(won)return; e.preventDefault();
+    resumeAudio(); startTimer(); selectPiece(p);
+    const s=toSvg(e); p._off=[p.cx-s[0], p.cy-s[1]]; p._drag=true;
+    try{p.el.setPointerCapture(e.pointerId);}catch(_){}
+    p.el.style.cursor='grabbing';
+  });
+  p.el.addEventListener('pointermove', e=>{
+    if(!p._drag)return; const s=toSvg(e);
+    p.cx=s[0]+p._off[0]; p.cy=s[1]+p._off[1]; render();
+  });
+  const end=e=>{ if(!p._drag)return; p._drag=false; p.el.style.cursor='grab';
+    try{p.el.releasePointerCapture(e.pointerId);}catch(_){}
+    snapToGrid(p); render(); afterMove();
+  };
+  p.el.addEventListener('pointerup', end);
+  p.el.addEventListener('pointercancel', end);
+}
+function selectPiece(p){
+  selected=p;
+  pieceLayer.appendChild(p.el);
+  render();
+}
+function afterMove(){
+  const r=refreshFill();
+  playSnap();
+  if(r.win) doWin();
+}
+
+/* ---------------- Actions ---------------- */
+function rotatePiece(){
+  if(!selected){toast('먼저 조각을 선택하세요');return;}
+  selected.rot=(selected.rot+1)%4; snapToGrid(selected); render(); afterMove();
+}
+function flipPiece(){
+  if(!selected){toast('먼저 조각을 선택하세요');return;}
+  selected.flip=!selected.flip; snapToGrid(selected); render(); afterMove();
+}
+function isAtHome(p){
+  return Math.abs(p.cx-p.homeCx)<0.15 && Math.abs(p.cy-p.homeCy)<0.15 && (p.rot%4)===0 && !p.flip;
+}
+function showHint(){
+  if(won)return;
+  // flash the solution outline of a piece that is not yet at a home position
+  let p = (selected && !isAtHome(selected)) ? selected : pieces.find(x=>!isAtHome(x));
+  if(!p) p = pieces[hintCount % pieces.length];
+  hintCount++; document.getElementById('hintVal').textContent=hintCount;
+  const g=p.guideEl;
+  g.classList.remove('flash'); void g.offsetWidth; g.classList.add('flash');
+  setTimeout(()=>g.classList.remove('flash'), 1600);
+  hintMsg.innerHTML='반짝이는 자리는 한 가지 예시예요. 꼭 그 자리가 아니어도 글자를 꽉 채우면 정답이에요.';
+}
+function solveAll(){
+  pieces.forEach(p=>{ p.cx=p.homeCx; p.cy=p.homeCy; p.rot=0; p.flip=false; });
+  selected=null; render(); const r=refreshFill(); if(r.win) doWin();
+}
+
+/* ---------------- Win ---------------- */
+function doWin(){
+  if(won)return;
+  won=true; stopTimer(); playWin(); launchConfetti();
+  pieces.forEach(p=>p.el.classList.add('placed'));
+  const secs=elapsedSeconds();
+  document.getElementById('winSub').textContent =
+    '알파벳 '+PUZZLES[level].label+' 을(를) '+PUZZLES[level].count+'조각으로 꽉 채웠어요! · '+fmt(secs);
+  document.getElementById('winNext').textContent = (level==='T'?'다음 글자 (F) →':'다시 T로 →');
+  document.getElementById('overlay').classList.add('show');
+}
+function hideOverlay(){ document.getElementById('overlay').classList.remove('show');
+  document.getElementById('confetti').classList.remove('show');
+  pieces.forEach(p=>p.el.classList.remove('placed')); }
+
+/* ---------------- Timer ---------------- */
+function startTimer(){ if(startTime===null && !won){ startTime=Date.now(); timerId=setInterval(updateTimer,500);} }
+function stopTimer(){ if(timerId){clearInterval(timerId); timerId=null;} }
+function resetTimer(){ stopTimer(); startTime=null; document.getElementById('timeVal').textContent='0:00'; }
+function elapsedSeconds(){ return startTime?Math.floor((Date.now()-startTime)/1000):0; }
+function updateTimer(){ document.getElementById('timeVal').textContent=fmt(elapsedSeconds()); }
+function fmt(s){ const m=Math.floor(s/60); const r=s%60; return m+':'+String(r).padStart(2,'0'); }
+
+/* ---------------- Audio ---------------- */
+function resumeAudio(){ if(!soundOn)return; try{ if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended')audioCtx.resume(); }catch(_){}}
+function beep(freq,dur,type,vol,when){ if(!soundOn||!audioCtx)return;
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+  o.type=type||'sine'; o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination);
+  const t=audioCtx.currentTime+(when||0);
+  g.gain.setValueAtTime(vol||0.15,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.start(t); o.stop(t+dur+0.02);
+}
+function playSnap(){ resumeAudio(); beep(520,0.06,'triangle',0.12,0); }
+function playWin(){ resumeAudio(); [523,659,784,1047].forEach((f,i)=>beep(f,0.28,'triangle',0.2,i*0.13)); }
+
+/* ---------------- Confetti ---------------- */
+function launchConfetti(){
+  const cv=document.getElementById('confetti'); cv.classList.add('show');
+  const rect=cv.getBoundingClientRect(); cv.width=rect.width; cv.height=rect.height;
+  const ctx=cv.getContext('2d');
+  const N=120, parts=[];
+  for(let i=0;i<N;i++)parts.push({
+    x:Math.random()*cv.width, y:-20-Math.random()*cv.height*0.5,
+    vx:(Math.random()-0.5)*2.4, vy:2+Math.random()*3.2,
+    s:5+Math.random()*7, rot:Math.random()*6.28, vr:(Math.random()-0.5)*0.3,
+    c:PALETTE[Math.floor(Math.random()*PALETTE.length)]
+  });
+  let frames=0;
+  (function anim(){
+    frames++; ctx.clearRect(0,0,cv.width,cv.height);
+    parts.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=0.04; p.rot+=p.vr;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle=p.c;
+      ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6); ctx.restore(); });
+    if(frames<220 && document.getElementById('overlay').classList.contains('show'))requestAnimationFrame(anim);
+    else ctx.clearRect(0,0,cv.width,cv.height);
+  })();
+}
+
+/* ---------------- Toast ---------------- */
+let toastId=null;
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastId); toastId=setTimeout(()=>t.classList.remove('show'),1400); }
+
+/* ---------------- UI wiring ---------------- */
+const hintMsg=document.getElementById('hintMsg');
+function setLevel(lv){ document.querySelectorAll('.lvl').forEach(b=>b.classList.toggle('on', b.dataset.lvl===lv)); buildLevel(lv); }
+
+document.querySelectorAll('.lvl').forEach(b=>b.addEventListener('click',()=>setLevel(b.dataset.lvl)));
+document.getElementById('btnRotate').addEventListener('click',rotatePiece);
+document.getElementById('btnFlip').addEventListener('click',flipPiece);
+document.getElementById('btnHint').addEventListener('click',showHint);
+document.getElementById('btnHintTop').addEventListener('click',showHint);
+document.getElementById('btnSolve').addEventListener('click',solveAll);
+document.getElementById('btnShuffle').addEventListener('click',()=>{ if(won)return; scatter(); });
+document.getElementById('btnReset').addEventListener('click',()=>buildLevel(level));
+document.getElementById('btnSound').addEventListener('click',e=>{ soundOn=!soundOn;
+  e.currentTarget.textContent=(soundOn?'🔊':'🔇')+' 소리'; if(soundOn)resumeAudio(); });
+document.getElementById('winAgain').addEventListener('click',()=>buildLevel(level));
+document.getElementById('winNext').addEventListener('click',()=>setLevel(level==='T'?'F':'T'));
+
+window.addEventListener('keydown',e=>{
+  if(e.key==='r'||e.key==='R'){rotatePiece();}
+  else if(e.key==='f'||e.key==='F'){flipPiece();}
+  else if(e.key==='h'||e.key==='H'){showHint();}
+});
+window.addEventListener('resize',()=>{ const cv=document.getElementById('confetti');
+  const r=cv.getBoundingClientRect(); cv.width=r.width; cv.height=r.height; });
+
+/* ---------------- Init ---------------- */
+setLevel('T');
+
+/* debug hook for automated testing */
+window.__tf={
+  solveAll, buildLevel, setLevel,
+  get state(){const r=checkFill();return {level,fill:Math.round(r.fill*100),spill:r.spill,won};},
+  count(){return pieces.length;},
+  screenOf(x,y){const m=svg.getScreenCTM();const pt=svg.createSVGPoint();pt.x=x;pt.y=y;const q=pt.matrixTransform(m);return{x:q.x,y:q.y};},
+  pieceInfo(i){const p=pieces[i];return{cx:p.cx,cy:p.cy,rot:p.rot,flip:p.flip,home:{cx:p.homeCx,cy:p.homeCy}};},
+  place(i,cx,cy,rot,flip){const p=pieces[i];p.cx=cx;p.cy=cy;p.rot=((rot%4)+4)%4;p.flip=!!flip;snapToGrid(p);render();const r=refreshFill();if(r.win)doWin();return r;},
+  grab(i){const p=pieces[i];const av=absVerts(p);const xs=av.map(v=>v[0]),ys=av.map(v=>v[1]);
+    const minx=Math.min(...xs),maxx=Math.max(...xs),miny=Math.min(...ys),maxy=Math.max(...ys);
+    for(let gx=minx+0.15;gx<maxx;gx+=0.2)for(let gy=miny+0.15;gy<maxy;gy+=0.2){if(pointInPoly(gx,gy,av)){const s=svg.getScreenCTM();const pt=svg.createSVGPoint();pt.x=gx;pt.y=gy;const q=pt.matrixTransform(s);return{x:q.x,y:q.y,gx,gy};}}
+    return null;}
+};
+</script>
+</body>
+</html>

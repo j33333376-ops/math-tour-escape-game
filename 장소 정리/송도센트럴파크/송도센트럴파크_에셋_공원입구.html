@@ -1,0 +1,113 @@
+<!-- 원본 크기: 1280x520 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>송도 센트럴파크 공원입구</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .gpe-svg { display:block; width:100%; height:auto; }
+  @keyframes gpe-glint { 0%{opacity:0;} 45%{opacity:0;} 55%{opacity:0.35;} 65%{opacity:0;} 100%{opacity:0;} }
+  .gpe-glint { animation: gpe-glint 6s ease-in-out infinite; }
+  @keyframes gpe-flag { 0%,100%{ transform: skewX(-4deg); } 50%{ transform: skewX(4deg); } }
+  .gpe-flag { animation: gpe-flag 3.4s ease-in-out infinite; transform-box: fill-box; transform-origin: left center; }
+</style>
+</head>
+<body>
+<svg class="gpe-svg" viewBox="0 0 1280 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="송도 센트럴파크 공원입구">
+<title>송도 센트럴파크 공원입구</title>
+<desc>석조 기둥과 아치 사인보드로 이루어진 센트럴파크 입구, 뒤로 보이는 송도 고층빌딩 실루엣</desc>
+<defs>
+ <linearGradient id="gpe-bld1" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#bcd4e6"/><stop offset="1" stop-color="#9db8cf"/>
+ </linearGradient>
+ <linearGradient id="gpe-bld2" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#a8c8de"/><stop offset="1" stop-color="#89a9c4"/>
+ </linearGradient>
+ <linearGradient id="gpe-stone" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0" stop-color="#c9c2b2"/><stop offset="0.5" stop-color="#e2dbc9"/><stop offset="1" stop-color="#c0b8a6"/>
+ </linearGradient>
+ <linearGradient id="gpe-path" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#e7e0d0"/><stop offset="1" stop-color="#d3c9b4"/>
+ </linearGradient>
+</defs>
+
+<!-- 배경 고층빌딩 실루엣 (원경) -->
+<g opacity="0.55">
+ <rect x="40" y="120" width="90" height="280" fill="url(#gpe-bld2)"/>
+ <rect x="150" y="80" width="70" height="320" fill="url(#gpe-bld1)"/>
+ <polygon points="150,80 185,50 220,80" fill="#9db8cf"/>
+ <rect x="990" y="100" width="80" height="300" fill="url(#gpe-bld1)"/>
+ <rect x="1090" y="140" width="100" height="260" fill="url(#gpe-bld2)"/>
+ <polygon points="1090,140 1140,105 1190,140" fill="#9db8cf"/>
+</g>
+<!-- 배경 고층빌딩 실루엣 (근경) -->
+<g opacity="0.8">
+ <rect x="0" y="180" width="60" height="220" fill="url(#gpe-bld1)"/>
+ <rect x="1210" y="160" width="70" height="240" fill="url(#gpe-bld2)"/>
+</g>
+<rect class="gpe-glint" x="150" y="80" width="6" height="320" fill="#fff"/>
+<rect class="gpe-glint" x="1090" y="140" width="6" height="260" fill="#fff" style="animation-delay:2s;"/>
+
+<!-- 보행로 -->
+<polygon points="0,520 1280,520 1120,400 160,400" fill="url(#gpe-path)"/>
+<polygon points="160,400 1120,400 1090,392 190,392" fill="#fff" opacity="0.3"/>
+
+<!-- 화단 (좌) -->
+<ellipse cx="120" cy="470" rx="140" ry="34" fill="#5a8a4a"/>
+<g fill="#d8506a"><circle cx="70" cy="462" r="8"/><circle cx="100" cy="470" r="7"/><circle cx="140" cy="460" r="8"/></g>
+<g fill="#e8c840"><circle cx="90" cy="475" r="6"/><circle cx="160" cy="472" r="7"/></g>
+<g fill="#f0f0f0"><circle cx="55" cy="475" r="5"/><circle cx="180" cy="465" r="6"/></g>
+
+<!-- 화단 (우) -->
+<ellipse cx="1160" cy="470" rx="140" ry="34" fill="#5a8a4a"/>
+<g fill="#d8506a"><circle cx="1210" cy="462" r="8"/><circle cx="1180" cy="470" r="7"/><circle cx="1140" cy="460" r="8"/></g>
+<g fill="#e8c840"><circle cx="1190" cy="475" r="6"/><circle cx="1120" cy="472" r="7"/></g>
+<g fill="#f0f0f0"><circle cx="1225" cy="475" r="5"/><circle cx="1100" cy="465" r="6"/></g>
+
+<!-- 가로수 (좌우) -->
+<g>
+ <rect x="235" y="330" width="14" height="70" fill="#7a5a3a"/>
+ <circle cx="242" cy="300" r="34" fill="#4a7a3a"/>
+ <circle cx="222" cy="315" r="24" fill="#5a8a4a"/>
+ <circle cx="262" cy="315" r="24" fill="#5a8a4a"/>
+</g>
+<g>
+ <rect x="1031" y="330" width="14" height="70" fill="#7a5a3a"/>
+ <circle cx="1038" cy="300" r="34" fill="#4a7a3a"/>
+ <circle cx="1018" cy="315" r="24" fill="#5a8a4a"/>
+ <circle cx="1058" cy="315" r="24" fill="#5a8a4a"/>
+</g>
+
+<!-- 좌측 석조 기둥 -->
+<rect x="470" y="230" width="60" height="230" fill="url(#gpe-stone)" stroke="#a89c84" stroke-width="1.5"/>
+<rect x="460" y="215" width="80" height="20" fill="#e6dfcd" stroke="#a89c84" stroke-width="1.5"/>
+<rect x="465" y="205" width="70" height="12" fill="#d8cfb8"/>
+
+<!-- 우측 석조 기둥 -->
+<rect x="750" y="230" width="60" height="230" fill="url(#gpe-stone)" stroke="#a89c84" stroke-width="1.5"/>
+<rect x="740" y="215" width="80" height="20" fill="#e6dfcd" stroke="#a89c84" stroke-width="1.5"/>
+<rect x="745" y="205" width="70" height="12" fill="#d8cfb8"/>
+
+<!-- 상단 아치 빔 & 사인보드 -->
+<rect x="470" y="180" width="340" height="34" rx="4" fill="url(#gpe-stone)" stroke="#a89c84" stroke-width="1.5"/>
+<rect x="486" y="150" width="308" height="52" rx="6" fill="#2f5d3a" stroke="#1f3d26" stroke-width="2"/>
+<text x="640" y="184" text-anchor="middle" font-family="sans-serif" font-size="26" font-weight="bold" fill="#fff">송도 센트럴파크</text>
+<text x="640" y="141" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#2f5d3a" font-weight="bold" letter-spacing="1">SONGDO CENTRAL PARK</text>
+
+<!-- 깃발 -->
+<g class="gpe-flag">
+ <line x1="470" y1="205" x2="470" y2="150" stroke="#7a7264" stroke-width="3"/>
+ <polygon points="470,152 512,160 470,172" fill="#d8506a"/>
+</g>
+<g class="gpe-flag" style="animation-delay:1.2s; transform-origin: 810px 150px;">
+ <line x1="810" y1="205" x2="810" y2="150" stroke="#7a7264" stroke-width="3"/>
+ <polygon points="810,152 852,160 810,172" fill="#3a6ab0"/>
+</g>
+
+<!-- 하단 그림자 -->
+<ellipse cx="640" cy="462" rx="180" ry="10" fill="#000" opacity="0.08"/>
+</svg>
+</body>
+</html>
