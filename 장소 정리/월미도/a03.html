@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>월미도 MATHTOUR - 월미전통정원</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&family=Noto+Serif+KR:wght@600;700&family=Pretendard:wght@400;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+        }
+
+        /* 게임 무대 컨테이너 (16:9 비율 고정) */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f5f0e6;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid #d4af37;
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 상단 스테이지 표시바 */
+        #stage-header {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #d4af37;
+            padding: 5px 14px;
+            border-radius: 4px;
+            color: #d4af37;
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            z-index: 10;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        /* 무대 요소 Layer */
+        #stage-area {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        /* 등장인물 Wrapper (퀴즈 상자와 안 겹치게 양끝 배치 및 크기 최적화) */
+        .char-wrapper {
+            position: absolute;
+            bottom: 0;
+            overflow: visible;
+            pointer-events: none;
+        }
+
+        #char-민우 {
+            left: 10px;
+            width: 220px;
+            height: 290px;
+            z-index: 2;
+        }
+
+        #char-서연 {
+            right: 10px;
+            width: 220px;
+            height: 290px;
+            z-index: 2;
+        }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            background: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 8px 18px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 20;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .btn-nav:hover {
+            background: #661f1f;
+        }
+
+        .btn-nav:active {
+            transform: scale(0.98);
+        }
+
+        #btn-prev {
+            left: 15px;
+            bottom: 12px;
+        }
+
+        #btn-next {
+            right: 15px;
+            bottom: 12px;
+            display: none; /* 퀴즈 성공 시 노출 */
+        }
+
+        /* 퀴즈 컨테이너 오버레이 (화면 중앙 고정 및 높이 자동 맞춤) */
+        .quiz-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            width: 480px;
+            max-height: 96%;
+        }
+
+        /* 키오스크 메인 UI 스타일 (슬림화) */
+        .kiosk-container {
+            width: 100%;
+            background-color: #f7f4ed;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            border: 2px solid #8c3030;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8c3030, #5a1c0f);
+            color: #f7f4ed;
+            padding: 8px 12px;
+            text-align: center;
+            border-bottom: 2px solid #d4af37;
+        }
+
+        .header h1 {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ffecb3;
+            margin-bottom: 2px;
+        }
+
+        .header p {
+            font-size: 0.68rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* 담장 시각화 뷰어 축소 */
+        .wall-viewer-card {
+            background-color: #eae3d2;
+            border: 1px solid #c5b8a0;
+            border-radius: 8px;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .wall-frame {
+            width: 100%;
+            height: 65px;
+            background-color: #e0d5c1;
+            border-radius: 4px;
+            border: 1.5px solid #6d5d4b;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .wall-frame.material-흙담 { background-color: #d1b894; }
+        .wall-frame.material-돌담 { background-color: #9e9a93; }
+
+        .wall-roof {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background: #3a3835;
+            border-bottom: 1.5px solid #d4af37;
+            z-index: 2;
+        }
+
+        .pattern-overlay {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 12px);
+            display: grid;
+            align-items: center;
+            justify-items: center;
+            z-index: 1;
+            padding: 2px;
+        }
+
+        .pattern-overlay.layout-가로형 {
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: 1fr;
+        }
+
+        .pattern-overlay.layout-격자형 {
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+        }
+
+        .pattern-overlay.layout-지그재그형 {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 2px 6px;
+        }
+
+        .zigzag-row {
+            display: flex;
+            width: 100%;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .zigzag-row.shift {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        .pattern-item {
+            font-size: 0.95rem;
+            filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.2));
+        }
+
+        /* 색상 스타일 */
+        .color-황토색 { color: #c87a29; }
+        .color-회색 { color: #5a6268; }
+        .color-백색 { color: #ffffff; text-shadow: 0 0 2px #888; }
+        .color-청색 { color: #1a5276; }
+
+        /* 카테고리 옵션 버튼 컴팩트화 */
+        .category-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #8c3030;
+            margin-bottom: 2px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3px;
+        }
+
+        .options-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .options-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+
+        .option-btn {
+            background-color: #ffffff;
+            border: 1px solid #c5b8a0;
+            border-radius: 4px;
+            padding: 3px 0;
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: #4a3e3d;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            outline: none;
+            text-align: center;
+        }
+
+        .option-btn.selected {
+            background-color: #8c3030;
+            color: #ffffff;
+            border-color: #5a1c0f;
+            box-shadow: 0 1px 3px rgba(140, 48, 48, 0.3);
+        }
+
+        .selection-summary {
+            background-color: #eae3d2;
+            border: 1px dashed #a89882;
+            border-radius: 4px;
+            padding: 4px;
+            text-align: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #2b2623;
+        }
+
+        /* 미션 섹션 슬림화 */
+        .mission-section {
+            background-color: #e2dbca;
+            border-radius: 6px;
+            padding: 6px;
+            border: 1px solid #8c3030;
+        }
+
+        .mission-tab {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 3px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            border: 1px solid #8c3030;
+            background-color: #fff;
+            color: #8c3030;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background-color: #8c3030;
+            color: #fff;
+        }
+
+        .mission-title {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: #5a1c0f;
+            margin-bottom: 4px;
+            line-height: 1.25;
+        }
+
+        .mission-input-group {
+            display: flex;
+            gap: 4px;
+        }
+
+        .mission-input {
+            flex: 1;
+            padding: 3px 6px;
+            border: 1px solid #a89882;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            text-align: center;
+            background: #fff;
+        }
+
+        .submit-btn {
+            background-color: #8c3030;
+            color: #ffffff;
+            border: none;
+            border-radius: 3px;
+            padding: 0 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .feedback-message {
+            margin-top: 4px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .feedback-message.correct { color: #1b5e20; }
+        .feedback-message.incorrect { color: #b71c1c; }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 배경 이미지 -->
+        <img src="월미전통정원.png" alt="월미전통정원 배경" class="bg-img">
+
+        <!-- 상단 스테이지 표시바 -->
+        <div id="stage-header">월미도 MATHTOUR — 월미전통정원</div>
+
+        <!-- 무대 요소 (등장인물 양쪽 끝 배치) -->
+        <div id="stage-area">
+            <!-- 민우 (왼쪽 배치) -->
+            <div class="char-wrapper" id="char-민우">
+                <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:100%; height:100%; pointer-events:none;"></iframe>
+            </div>
+
+            <!-- 서연 (오른쪽 배치, 반전) -->
+            <div class="char-wrapper" id="char-서연">
+                <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:100%; height:100%; transform: scaleX(-1); pointer-events:none;"></iframe>
+            </div>
+        </div>
+
+        <!-- 중앙 수학 퀴즈 컨테이너 -->
+        <div class="quiz-container">
+            <div class="kiosk-container">
+                <div class="header">
+                    <h1>🏯 월미전통정원 수학 투어</h1>
+                    <p>전통 담장 심화 경우의 수 (곱의 법칙 & 합의 법칙)</p>
+                </div>
+
+                <div class="content">
+                    <!-- 실시간 라이브 뷰어 -->
+                    <div class="wall-viewer-card">
+                        <div id="wallFrame" class="wall-frame material-흙담">
+                            <div class="wall-roof"></div>
+                            <div id="patternOverlay" class="pattern-overlay layout-가로형"></div>
+                        </div>
+                    </div>
+
+                    <!-- 1. 문양 선택 -->
+                    <div class="category">
+                        <div class="category-title">1. 기초 문양 선택 (4종)</div>
+                        <div class="options-grid">
+                            <button class="option-btn selected" data-category="pattern" data-value="꽃" data-symbol="🌸">꽃</button>
+                            <button class="option-btn" data-category="pattern" data-value="격자" data-symbol="▦">격자</button>
+                            <button class="option-btn" data-category="pattern" data-value="문자" data-symbol="囍">문자</button>
+                            <button class="option-btn" data-category="pattern" data-value="기하학" data-symbol="◈">기하학</button>
+                        </div>
+                    </div>
+
+                    <!-- 2. 색상 선택 -->
+                    <div class="category">
+                        <div class="category-title">2. 색상 선택 (4종)</div>
+                        <div class="options-grid">
+                            <button class="option-btn selected" data-category="color" data-value="황토색">황토색</button>
+                            <button class="option-btn" data-category="color" data-value="회색">회색</button>
+                            <button class="option-btn" data-category="color" data-value="백색">백색</button>
+                            <button class="option-btn" data-category="color" data-value="청색">청색</button>
+                        </div>
+                    </div>
+
+                    <!-- 3. 배치 방식 선택 -->
+                    <div class="category">
+                        <div class="category-title">3. 배치 방식 (3종)</div>
+                        <div class="options-grid cols-3">
+                            <button class="option-btn selected" data-category="layout" data-value="가로형">가로형</button>
+                            <button class="option-btn" data-category="layout" data-value="격자형">격자형</button>
+                            <button class="option-btn" data-category="layout" data-value="지그재그형">지그재그형</button>
+                        </div>
+                    </div>
+
+                    <!-- 4. 담장 재질 선택 -->
+                    <div class="category">
+                        <div class="category-title">4. 담장 재질 (2종)</div>
+                        <div class="options-grid cols-2">
+                            <button class="option-btn selected" data-category="material" data-value="흙담">흙담</button>
+                            <button class="option-btn" data-category="material" data-value="돌담">돌담</button>
+                        </div>
+                    </div>
+
+                    <!-- 현황 요약 -->
+                    <div class="selection-summary" id="summaryText">
+                        문양: 꽃 | 색상: 황토색 | 배치: 가로형 | 재질: 흙담
+                    </div>
+
+                    <!-- 수학 미션 영역 -->
+                    <div class="mission-section">
+                        <div class="mission-tab">
+                            <button class="tab-btn active" onclick="switchMission(1)">미션 1 (곱의 법칙)</button>
+                            <button class="tab-btn" onclick="switchMission(2)">미션 2 (합의 법칙)</button>
+                        </div>
+
+                        <div id="missionContent" class="mission-title">
+                            <!-- 동적 미션 텍스트 -->
+                        </div>
+
+                        <div class="mission-input-group">
+                            <input type="number" id="answerInput" class="mission-input" placeholder="정답 숫자 입력" min="0">
+                            <button class="submit-btn" onclick="checkAnswer()">확인</button>
+                        </div>
+                        <div id="feedback" class="feedback-message"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 네비게이션 버튼 -->
+        <button id="btn-prev" class="btn-nav" onclick="goPrev()">이전</button>
+        <button id="btn-next" class="btn-nav" onclick="goNext()">다음</button>
+    </div>
+
+    <script>
+        let currentMission = 1;
+
+        const currentSelection = {
+            pattern: '꽃',
+            symbol: '🌸',
+            color: '황토색',
+            layout: '가로형',
+            material: '흙담'
+        };
+
+        // 옵션 클릭 리스너
+        document.querySelectorAll('.option-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const category = this.dataset.category;
+                const value = this.dataset.value;
+
+                document.querySelectorAll(`.option-btn[data-category="${category}"]`).forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+
+                this.classList.add('selected');
+                currentSelection[category] = value;
+
+                if (category === 'pattern') {
+                    currentSelection.symbol = this.dataset.symbol;
+                }
+
+                renderWall();
+                updateSummary();
+            });
+        });
+
+        // 담장 오버레이 렌더링
+        function renderWall() {
+            const overlay = document.getElementById('patternOverlay');
+            const frame = document.getElementById('wallFrame');
+            overlay.innerHTML = '';
+
+            frame.className = `wall-frame material-${currentSelection.material}`;
+            overlay.className = `pattern-overlay layout-${currentSelection.layout}`;
+
+            if (currentSelection.layout === '지그재그형') {
+                const row1 = document.createElement('div');
+                row1.className = 'zigzag-row';
+                for (let i = 0; i < 4; i++) {
+                    const item = document.createElement('div');
+                    item.className = `pattern-item color-${currentSelection.color}`;
+                    item.textContent = currentSelection.symbol;
+                    row1.appendChild(item);
+                }
+
+                const row2 = document.createElement('div');
+                row2.className = 'zigzag-row shift';
+                for (let i = 0; i < 3; i++) {
+                    const item = document.createElement('div');
+                    item.className = `pattern-item color-${currentSelection.color}`;
+                    item.textContent = currentSelection.symbol;
+                    row2.appendChild(item);
+                }
+
+                overlay.appendChild(row1);
+                overlay.appendChild(row2);
+
+            } else {
+                const count = currentSelection.layout === '격자형' ? 8 : 4;
+                for (let i = 0; i < count; i++) {
+                    const item = document.createElement('div');
+                    item.className = `pattern-item color-${currentSelection.color}`;
+                    item.textContent = currentSelection.symbol;
+                    overlay.appendChild(item);
+                }
+            }
+        }
+
+        function updateSummary() {
+            document.getElementById('summaryText').textContent = 
+                `문양: ${currentSelection.pattern} | 색상: ${currentSelection.color} | 배치: ${currentSelection.layout} | 재질: ${currentSelection.material}`;
+        }
+
+        // 미션 탭 전환 및 문구 제어
+        function switchMission(num) {
+            currentMission = num;
+            document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === num - 1);
+            });
+
+            const missionContent = document.getElementById('missionContent');
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = '';
+            document.getElementById('answerInput').value = '';
+
+            if (num === 1) {
+                missionContent.innerHTML = "💡 <b>[미션 1 - 곱의 법칙]</b><br>문양 4종, 색상 4종, 배치 3종, 재질 2종을 조합하여 하나의 담장을 만들 때, 만들 수 있는 <b>서로 다른 담장 디자인의 총 가짓수</b>는?";
+            } else {
+                missionContent.innerHTML = "💡 <b>[미션 2 - 합의 법칙]</b><br>민우는 <b>'흙담'</b>만, 서연이는 <b>'돌담'</b>만 사용하여 디자인을 만듭니다. 두 사람이 만들 수 있는 총 디자인 가짓수의 합은?";
+            }
+        }
+
+        // 정답 검증
+        function checkAnswer() {
+            const inputVal = parseInt(document.getElementById('answerInput').value.trim(), 10);
+            const feedback = document.getElementById('feedback');
+            const btnNext = document.getElementById('btn-next');
+
+            if (isNaN(inputVal)) {
+                feedback.className = "feedback-message incorrect";
+                feedback.textContent = "정답 숫자를 입력해주세요!";
+                return;
+            }
+
+            if (currentMission === 1) {
+                if (inputVal === 96) {
+                    feedback.className = "feedback-message correct";
+                    feedback.textContent = "🎉 정답입니다! (4 × 4 × 3 × 2 = 96가지)";
+                    btnNext.style.display = "block";
+                } else {
+                    feedback.className = "feedback-message incorrect";
+                    feedback.textContent = "다시 계산해보세요. (힌트: 4 × 4 × 3 × 2)";
+                }
+            } else {
+                if (inputVal === 96) {
+                    feedback.className = "feedback-message correct";
+                    feedback.textContent = "🎉 정답입니다! (민우 48가지 + 서연 48가지 = 96가지)";
+                    btnNext.style.display = "block";
+                } else {
+                    feedback.className = "feedback-message incorrect";
+                    feedback.textContent = "다시 계산해보세요. (힌트: 민우 경우의 수 + 서연 경우의 수)";
+                }
+            }
+        }
+
+        function goPrev() {
+            window.location.href = "a02.html";
+        }
+
+        function goNext() {
+            window.location.href = "a04.html";
+        }
+
+        // 초기화
+        window.onload = function() {
+            renderWall();
+            switchMission(1);
+        };
+    </script>
+</body>
+</html>

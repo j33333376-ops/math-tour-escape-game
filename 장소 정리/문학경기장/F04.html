@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>신포국제시장 - 문학경기장 암벽등반장</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #1a1614;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      overflow: hidden;
+    }
+
+    /* 16:9 비율 고정 게임 컨테이너 */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #f5f0e6;
+      overflow: hidden;
+      border: 2px solid #d4af37;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.85);
+    }
+
+    /* 빨려 들어가는 연출 효과 (Vortex Exit Effect) */
+    #game-container.vortex-exit {
+      animation: vortexExit 0.8s ease-in-out forwards;
+    }
+
+    @keyframes vortexExit {
+      0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+        filter: blur(0px);
+      }
+      50% {
+        filter: blur(3px);
+      }
+      100% {
+        transform: scale(0) rotate(720deg);
+        opacity: 0;
+        filter: blur(10px);
+      }
+    }
+
+    /* 배경 이미지 */
+    .bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    /* 배경 가독성 보정 오버레이 */
+    .bg-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 10, 5, 0.3);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* 스테이지 상단 표시바 */
+    #stage-bar {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid #d4af37;
+      padding: 6px 16px;
+      border-radius: 4px;
+      color: #d4af37;
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+
+    /* 캐릭터 래퍼 공통 규격 (260x320 고정) */
+    .char-wrapper {
+      position: absolute;
+      bottom: 20px;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      z-index: 3;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5));
+    }
+
+    /* 캐릭터 배치 (좌/우 분리) */
+    #char-민우 {
+      left: 40px;
+    }
+
+    #char-서연 {
+      right: 40px;
+    }
+
+    .char-wrapper iframe {
+      border: 0;
+      width: 260px;
+      height: 320px;
+      transform: scale(1);
+      transform-origin: bottom left;
+      pointer-events: none;
+    }
+
+    /* 서연 캐릭터 좌우 반전 (민우를 바라보도록 연출) */
+    #char-서연 iframe {
+      transform: scaleX(-1);
+      transform-origin: bottom center;
+    }
+
+    /* 유형 1: 상황 설명 박스 (양피지/오래된 종이 컨셉) */
+    .situation-box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -55%);
+      z-index: 10;
+      width: 58%;
+      max-width: 620px;
+      background: #f5f0e6;
+      border: 2px solid #8c3030;
+      outline: 1px solid #d4af37;
+      outline-offset: -5px;
+      padding: 26px 32px;
+      border-radius: 4px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+      color: #2d3748;
+      text-align: center;
+    }
+
+    .situation-title {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #8c3030;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #d4af37;
+    }
+
+    .situation-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      letter-spacing: -0.02em;
+      word-break: keep-all;
+      color: #2d3748;
+    }
+
+    .highlight {
+      color: #8c3030;
+      font-weight: 700;
+      font-family: 'Nanum Gothic Coding', monospace;
+    }
+
+    /* 공통 네비게이션 이동 버튼 */
+    .btn-nav {
+      position: absolute;
+      bottom: 20px;
+      z-index: 10;
+      background-color: #8c3030;
+      color: #ffffff;
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      padding: 10px 24px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn-nav:hover {
+      background-color: #661f1f;
+    }
+
+    .btn-nav:active {
+      transform: scale(0.96);
+    }
+
+    #btn-prev {
+      left: 20px;
+    }
+
+    #btn-next {
+      right: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 배경 이미지 및 세피아 톤 보정 오버레이 -->
+    <img src="암벽등반4.png" alt="문학경기장 인공암벽등반장" class="bg-img">
+    <div class="bg-overlay"></div>
+
+    <!-- 스테이지 상단 표시바 -->
+    <div id="stage-bar">신포국제시장 : 문학경기장 암벽등반장</div>
+
+    <!-- 등장인물: 민우 (좌측) -->
+    <div class="char-wrapper" id="char-민우">
+      <iframe src="등장인물_민우.html" scrolling="no" title="민우"></iframe>
+    </div>
+
+    <!-- 등장인물: 서연 (우측) -->
+    <div class="char-wrapper" id="char-서연">
+      <iframe src="등장인물_서연.html" scrolling="no" title="서연"></iframe>
+    </div>
+
+    <!-- 상황 설명 박스 -->
+    <div class="situation-box">
+      <div class="situation-title">문학경기장 탐방 완료</div>
+      <div class="situation-text">
+        문학경기장에 위치한 인공암벽등반장에 도착한 민우와 서연이는 성공적으로 암벽등반을 마쳤습니다.<br><br>
+        직접 암벽을 오르며 <span class="highlight">3x3, 4x4, 5x5</span> 최단경로 규칙을 깨달았고, 문학경기장에서 다양한 수학적 요소들을 알 수 있어서 보람찬 시간이었습니다.
+      </div>
+    </div>
+
+    <!-- 네비게이션 버튼 -->
+    <button type="button" class="btn-nav" id="btn-prev" onclick="goToUrl('F03.html')">이전</button>
+    <button type="button" class="btn-nav" id="btn-next" onclick="triggerVortexExit('End.html')">End</button>
+  </div>
+
+  <script>
+    // 일반 URL 이동
+    function goToUrl(url) {
+      if (url) {
+        window.location.href = url;
+      }
+    }
+
+    // 다음(End) 버튼 클릭 시 빨려들어가는 효과 실행 후 페이지 이동
+    function triggerVortexExit(targetUrl) {
+      const container = document.getElementById('game-container');
+      
+      // 빨려들어가는 애니메이션 클래스 적용
+      container.classList.add('vortex-exit');
+
+      // 애니메이션(800ms) 완료 직전 지정된 URL로 이동
+      setTimeout(function() {
+        if (targetUrl) {
+          window.location.href = targetUrl;
+        }
+      }, 750);
+    }
+  </script>
+</body>
+</html>

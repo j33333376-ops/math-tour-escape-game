@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문학경기장 MATHTOUR - STAGE 03</title>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #0f172a;
+      font-family: 'Pretendard', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* 게임 컨테이너 (16:9 비율) */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #f8fafc;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      border-radius: 12px;
+    }
+
+    /* 배경 이미지 */
+    .bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      filter: brightness(0.9);
+    }
+
+    /* 상단 스테이지 표시바 */
+    .top-bar {
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      right: 20px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 10;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .top-bar-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .top-bar-title .badge {
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    .progress-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #64748b;
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    .progress-bar-bg {
+      width: 120px;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      width: 30%;
+      height: 100%;
+      background: #2563eb;
+      border-radius: 4px;
+    }
+
+    /* 카드형 상황 설명 박스 (유형 1) */
+    .situation-box {
+      position: absolute;
+      top: 85px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 82%;
+      max-width: 760px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 24px 30px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      z-index: 10;
+      text-align: center;
+    }
+
+    .situation-tag {
+      display: inline-block;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: #2563eb;
+      background: rgba(37, 99, 235, 0.1);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    .situation-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .situation-desc {
+      font-size: 15px;
+      color: #334155;
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+      word-break: keep-all;
+    }
+
+    .situation-desc .highlight {
+      color: #2563eb;
+      font-weight: 600;
+    }
+
+    /* 공통 이동 버튼 */
+    .btn-nav {
+      position: absolute;
+      background-color: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Pretendard', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      transition: all 0.2s ease;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-nav:hover {
+      background-color: #1d4ed8;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-nav:active {
+      transform: translateY(0);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 배경 이미지 -->
+    <img src="인천SSG랜더스필드 내부.png" alt="인천SSG랜더스필드 내부" class="bg-img">
+
+    <!-- 상단 진행바 -->
+    <div class="top-bar">
+      <div class="top-bar-title">
+        <span class="badge">STAGE 03</span>
+        <span>문학경기장 MATHTOUR</span>
+      </div>
+      <div class="progress-box">
+        <span>PROGRESS</span>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill"></div>
+        </div>
+        <span>30%</span>
+      </div>
+    </div>
+
+    <!-- 상황 연출 설명 카드 -->
+    <div class="situation-box">
+      <span class="situation-tag">SYSTEM ALERT</span>
+      <h2 class="situation-title">고장 난 전광판 점검</h2>
+      <p class="situation-desc">
+        경기장에 들어서자 거대한 전광판에 알 수 없는 이상 수식과 오류 화면이 깜빡이고 있습니다.<br>
+        <span class="highlight">민우:</span> "전광판 시스템이 엉켜버렸어! 수수께끼 공식을 풀어야만 복구할 수 있을 것 같아."<br>
+        <span class="highlight">서연:</span> "암호를 정확하게 계산해서 경기장 시스템을 정상으로 돌려놓자!"
+      </p>
+    </div>
+
+    <!-- 등장인물: 민우 (260x320 고정, scale 0.85 적용) -->
+    <div class="char-wrapper" id="char-민우" style="position:absolute; left:140px; bottom:20px; width:221px; height:272px; overflow:visible; z-index:3;">
+      <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.85); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 서연 (260x320 고정, scale 0.85 & 좌우반전 적용) -->
+    <div class="char-wrapper" id="char-서연" style="position:absolute; right:140px; bottom:20px; width:221px; height:272px; overflow:visible; z-index:3;">
+      <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.85) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 공통 이동 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="location.href='A02.html'">
+      &#9664; 이전
+    </button>
+    <button class="btn-nav" id="btn-next" onclick="location.href='A04.html'">
+      다음 &#9654;
+    </button>
+  </div>
+
+</body>
+</html>

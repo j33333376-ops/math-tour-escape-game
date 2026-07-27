@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>월미도 매쓰투어 - 놀이공원 시설물 설계</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%);
+            color: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1020px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 3px solid #38bdf8;
+        }
+
+        /* 헤더 디자인 */
+        header {
+            background: linear-gradient(90deg, #0284c7, #06b6d4);
+            color: white;
+            padding: 16px 24px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 25%;
+            background-color: #38bdf8;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 메인 레이아웃 */
+        .main-content {
+            display: flex;
+            flex-direction: row;
+            padding: 20px;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 840px) {
+            .main-content {
+                flex-direction: column;
+                padding: 12px;
+                gap: 16px;
+            }
+        }
+
+        /* Canvas 영역 */
+        .canvas-wrapper {
+            position: relative;
+            flex: 0 0 auto;
+            background-color: #f0fdf4;
+            border: 2px solid #cbd5e1;
+            border-radius: 16px;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.05);
+            touch-action: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            border-radius: 14px;
+        }
+
+        /* 제어 패널 */
+        .control-panel {
+            flex: 1;
+            width: 100%;
+            min-width: 290px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #f0f9ff;
+            border: 2px solid #bae6fd;
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .mission-badge {
+            display: inline-block;
+            background-color: #0284c7;
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .mission-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #0369a1;
+            margin-bottom: 10px;
+        }
+
+        .mission-desc {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #334155;
+            margin-bottom: 16px;
+            word-break: keep-all;
+        }
+
+        /* 인터랙션 영역 */
+        .interactive-area {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        /* 미션 1 드래그 아이콘 영역 */
+        .drag-items-container {
+            display: flex;
+            justify-content: space-around;
+            gap: 8px;
+        }
+
+        .drag-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 6px;
+            border: 2px dashed #0284c7;
+            border-radius: 10px;
+            background: #e0f2fe;
+            cursor: grab;
+            transition: all 0.2s;
+            flex: 1;
+            touch-action: none;
+        }
+
+        .drag-item.placed {
+            opacity: 0.4;
+            border-style: solid;
+            border-color: #94a3b8;
+            background: #f1f5f9;
+            cursor: default;
+        }
+
+        .drag-item .emoji {
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
+        .drag-item .label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #0369a1;
+        }
+
+        /* 미션 3 슬라이더 */
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 15px;
+            color: #0f172a;
+        }
+
+        input[type=range] {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            accent-color: #0284c7;
+            cursor: pointer;
+        }
+
+        /* 미션 4 좌표 입력 */
+        .input-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 800;
+            color: #0284c7;
+        }
+
+        .input-group input {
+            width: 65px;
+            height: 44px;
+            text-align: center;
+            border: 2px solid #93c5fd;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: #0284c7;
+        }
+
+        /* 버튼 디자인 */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #0284c7;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 4px 6px rgba(2, 132, 199, 0.2);
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: #0369a1;
+        }
+
+        .btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .btn:disabled {
+            background-color: #cbd5e1;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* 알림 메시지 영역 */
+        .msg-box {
+            font-size: 13px;
+            font-weight: 600;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: none;
+            line-height: 1.4;
+        }
+
+        .msg-box.success {
+            display: block;
+            background-color: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .msg-box.error {
+            display: block;
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+        }
+
+        /* 이미지 힌트 모달 */
+        #hint-modal {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            padding: 20px;
+        }
+
+        .hint-content {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            border: 2px solid #38bdf8;
+        }
+
+        .hint-title-large {
+            font-size: 16px;
+            font-weight: 800;
+            color: #0284c7;
+            margin-bottom: 16px;
+            line-height: 1.5;
+            word-break: keep-all;
+        }
+
+        .hint-img-wrapper {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 120px;
+        }
+
+        .hint-img-wrapper img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            display: block;
+        }
+
+        /* 최종 완성 모달 */
+        #success-modal {
+            position: absolute;
+            inset: 0;
+            background: rgba(2, 132, 199, 0.94);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .modal-title {
+            font-size: 38px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 12px;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-desc {
+            font-size: 18px;
+            margin-bottom: 28px;
+            opacity: 0.95;
+        }
+
+        #confetti-canvas {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 101;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <header>
+        <div class="header-title">
+            <span>🎡 월미도 매쓰투어 : 시설물 설계</span>
+            <span id="stage-text">Step 1 / 4</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <!-- Canvas 좌표평면 영역 -->
+        <div class="canvas-wrapper" id="canvas-wrapper">
+            <canvas id="gridCanvas" width="500" height="600"></canvas>
+        </div>
+
+        <!-- 미션 제어 패널 -->
+        <div class="control-panel">
+            <div>
+                <span class="mission-badge" id="mission-badge">미션 1</span>
+                <div class="mission-title" id="mission-title">놀이기구 배치하기</div>
+                <div class="mission-desc" id="mission-desc">
+                    좌표평면에 각각의 놀이기구를 바르게 올려놓으세요.<br>
+                    • 회전목마 P(−2, 0)<br>
+                    • 바이킹 Q(4, 6)<br>
+                    • 디스코팡팡 R(0, −2)
+                </div>
+
+                <div class="msg-box" id="msg-box"></div>
+
+                <!-- 인터랙션 UI -->
+                <div class="interactive-area" id="interactive-area"></div>
+            </div>
+
+            <button class="btn" id="next-btn" disabled onclick="nextMission()">다음 단계로</button>
+        </div>
+    </div>
+
+    <!-- 이미지 힌트 모달 -->
+    <div id="hint-modal">
+        <div class="hint-content">
+            <div class="hint-title-large">💡 좌표평면에서의 내분점의 좌표를 구하는 식을 참고해서 다시 생각해볼까?</div>
+            <div class="hint-img-wrapper">
+                <img id="hint-formula-img" src="" alt="선분의 내분점 공식 이미지">
+            </div>
+            <button class="btn" onclick="closeHint()">확인 후 다시 풀어보기</button>
+        </div>
+    </div>
+
+    <!-- 최종 성공 모달 -->
+    <div id="success-modal">
+        <div class="modal-title">🎉 모든 시설 설치 완료!</div>
+        <div class="modal-desc">축하합니다! 월미도 놀이공원의 모든 시설물 설계가 성공적으로 마무리되었습니다.</div>
+        <button class="btn" style="width: auto; padding: 14px 36px; background-color: #ffffff; color: #0284c7;" onclick="location.reload()">처음부터 다시하기</button>
+    </div>
+    <canvas id="confetti-canvas"></canvas>
+</div>
+
+<script>
+    // ==========================================
+    // [설정] 내분점 공식 이미지 경로 변수
+    // ==========================================
+    const FORMULA_IMAGE_SRC = 'formula.png';
+
+    // --- 좌표계 및 Canvas 설정 ---
+    const canvas = document.getElementById('gridCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // x축: -3 ~ 5, y축: -3 ~ 7
+    const minX = -3, maxX = 5;
+    const minY = -3, maxY = 7;
+
+    const scale = 52; 
+    const originX = 65 + 3 * scale; // x = 0
+    const originY = 40 + 7 * scale; // y = 0
+
+    let currentMission = 1;
+
+    // 객체 데이터
+    const items = {
+        P: { name: '회전목마', target: [-2, 0], icon: '🎠', placed: false, curPos: null },
+        Q: { name: '바이킹', target: [4, 6], icon: '🚢', placed: false, curPos: null },
+        R: { name: '디스코팡팡', target: [0, -2], icon: '🎡', placed: false, curPos: null },
+        A: { name: '안내소', target: [-1, -1], icon: 'ℹ️', placed: false },
+        M: { name: '매점', target: [2, 4], icon: '🛒', placed: false },
+        T: { name: '화장실', target: [3, 4], icon: '🚻', placed: false }
+    };
+
+    let sliderVal = 1.0;
+    let draggingKey = null;
+
+    // 힌트 이미지 적용
+    document.getElementById('hint-formula-img').src = FORMULA_IMAGE_SRC;
+
+    // --- 좌표 변환 ---
+    function gridToCanvas(gx, gy) {
+        return {
+            x: originX + gx * scale,
+            y: originY - gy * scale
+        };
+    }
+
+    function canvasToGrid(cx, cy) {
+        return {
+            x: (cx - originX) / scale,
+            y: (originY - cy) / scale
+        };
+    }
+
+    // --- Canvas 그리기 ---
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 1. Grid 그리드선
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 1;
+
+        for (let x = minX; x <= maxX; x++) {
+            const p = gridToCanvas(x, 0);
+            ctx.beginPath();
+            ctx.moveTo(p.x, 0);
+            ctx.lineTo(p.x, canvas.height);
+            ctx.stroke();
+        }
+
+        for (let y = minY; y <= maxY; y++) {
+            const p = gridToCanvas(0, y);
+            ctx.beginPath();
+            ctx.moveTo(0, p.y);
+            ctx.lineTo(canvas.width, p.y);
+            ctx.stroke();
+        }
+
+        // 2. X, Y 축
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 2.5;
+
+        // X축
+        ctx.beginPath();
+        ctx.moveTo(0, originY);
+        ctx.lineTo(canvas.width, originY);
+        ctx.stroke();
+
+        // Y축
+        ctx.beginPath();
+        ctx.moveTo(originX, 0);
+        ctx.lineTo(originX, canvas.height);
+        ctx.stroke();
+
+        // 3. 정수점 눈금 및 숫자 라벨링
+        ctx.fillStyle = '#0f172a';
+        ctx.font = '700 13px "Noto Sans KR", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+
+        for (let x = minX; x <= maxX; x++) {
+            const p = gridToCanvas(x, 0);
+            ctx.beginPath();
+            ctx.moveTo(p.x, originY - 5);
+            ctx.lineTo(p.x, originY + 5);
+            ctx.stroke();
+
+            if (x === 0) {
+                ctx.fillText('O', p.x - 14, originY + 6);
+            } else {
+                ctx.fillText(x.toString(), p.x, originY + 6);
+            }
+        }
+
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        for (let y = minY; y <= maxY; y++) {
+            if (y === 0) continue;
+            const p = gridToCanvas(0, y);
+            ctx.beginPath();
+            ctx.moveTo(originX - 5, p.y);
+            ctx.lineTo(originX + 5, p.y);
+            ctx.stroke();
+
+            ctx.fillText(y.toString(), originX - 8, p.y);
+        }
+
+        // 4. 보조 선분 표시
+        if (currentMission >= 2 && items.P.placed && items.R.placed) {
+            drawLine(items.P.target, items.R.target, '#64748b', [5, 5]);
+        }
+        if (currentMission >= 3 && items.P.placed && items.Q.placed) {
+            drawLine(items.P.target, items.Q.target, '#0284c7', []);
+        }
+        if (currentMission >= 4 && items.Q.placed && items.R.placed) {
+            drawLine(items.Q.target, items.R.target, '#8b5cf6', [5, 5]);
+        }
+
+        // 5. 미션 3 슬라이더 실시간 내분점 시각화 (m : 1)
+        if (currentMission === 3 && items.P.placed && items.Q.placed) {
+            const m = sliderVal;
+            const ratio = m / (m + 1);
+            const nx = items.P.target[0] + ratio * (items.Q.target[0] - items.P.target[0]);
+            const ny = items.P.target[1] + ratio * (items.Q.target[1] - items.P.target[1]);
+            const pos = gridToCanvas(nx, ny);
+
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 9, 0, Math.PI * 2);
+            ctx.fillStyle = '#0284c7';
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            ctx.fillStyle = '#0284c7';
+            ctx.font = '800 13px "Noto Sans KR"';
+            ctx.textAlign = 'left';
+            ctx.fillText(`${m.toFixed(1)} : 1`, pos.x + 12, pos.y - 10);
+        }
+
+        // 6. 설치 완료된 시설물 그리기
+        Object.keys(items).forEach(key => {
+            const item = items[key];
+            if (item.placed) {
+                const pos = gridToCanvas(item.target[0], item.target[1]);
+                ctx.font = '28px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(item.icon, pos.x, pos.y);
+
+                ctx.font = '800 12px "Noto Sans KR"';
+                ctx.fillStyle = '#0f172a';
+                ctx.fillText(`${item.name}(${item.target[0]},${item.target[1]})`, pos.x, pos.y + 24);
+            }
+        });
+
+        // 7. 드래그 중인 아이콘
+        if (draggingKey && items[draggingKey].curPos) {
+            const p = items[draggingKey].curPos;
+            ctx.font = '34px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(items[draggingKey].icon, p.x, p.y);
+        }
+    }
+
+    function drawLine(p1, p2, color, dash) {
+        const pos1 = gridToCanvas(p1[0], p1[1]);
+        const pos2 = gridToCanvas(p2[0], p2[1]);
+        ctx.save();
+        ctx.beginPath();
+        ctx.setLineDash(dash);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2.5;
+        ctx.moveTo(pos1.x, pos1.y);
+        ctx.lineTo(pos2.x, pos2.y);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    // --- 미션 진행 및 UI 변경 ---
+    function setMission(missionNum) {
+        currentMission = missionNum;
+        document.getElementById('stage-text').innerText = `Step ${missionNum} / 4`;
+        document.getElementById('progress-bar').style.width = `${missionNum * 25}%`;
+        document.getElementById('mission-badge').innerText = `미션 ${missionNum}`;
+        document.getElementById('next-btn').disabled = true;
+        hideMsg();
+
+        const interactiveArea = document.getElementById('interactive-area');
+
+        if (missionNum === 1) {
+            document.getElementById('mission-title').innerText = '놀이기구 배치하기';
+            document.getElementById('mission-desc').innerHTML =
+                '좌표평면에 각각의 놀이기구를 바르게 올려놓으세요.<br>' +
+                '• <b>회전목마 P(−2, 0)</b><br>' +
+                '• <b>바이킹 Q(4, 6)</b><br>' +
+                '• <b>디스코팡팡 R(0, −2)</b>';
+            renderMission1UI();
+        } else if (missionNum === 2) {
+            document.getElementById('mission-title').innerText = '안내소 설치 (중점)';
+            document.getElementById('mission-desc').innerHTML =
+                '선분 PR의 <b>중점</b>을 찾아 좌표평면을 클릭하여 안내소(ℹ️)를 설치하세요.<br>' +
+                '• P(−2, 0), R(0, −2)';
+            interactiveArea.innerHTML = '<div style="text-align:center; color:#64748b; font-size:14px; font-weight:500;">좌표평면 상의 중점 위치를 직접 클릭하세요.</div>';
+        } else if (missionNum === 3) {
+            document.getElementById('mission-title').innerText = '매점 설치 (내분점)';
+            document.getElementById('mission-desc').innerHTML =
+                '슬라이더를 조절하여 선분 PQ를 <b>2 : 1</b>로 내분하는 위치에 매점(🛒)을 설치하세요.<br>' +
+                '• P(−2, 0), Q(4, 6)';
+            interactiveArea.innerHTML = `
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span>비율 m : 1</span>
+                        <span id="slider-val" style="color:#0284c7;">m = 1.0</span>
+                    </div>
+                    <input type="range" id="m-slider" min="0.2" max="5.0" step="0.2" value="1.0" oninput="updateSlider(this.value)">
+                </div>
+                <button class="btn" style="margin-top:14px;" onclick="checkMission3()">설치</button>
+            `;
+        } else if (missionNum === 4) {
+            document.getElementById('mission-title').innerText = '화장실 설치 (내분점 공식)';
+            document.getElementById('mission-desc').innerHTML =
+                '선분 QR을 <b>1 : 3</b>으로 내분하는 점에 화장실(🚻)을 설치하려고 할 때, 화장실의 좌표를 입력하세요.<br>' +
+                '• Q(4, 6), R(0, −2)';
+            interactiveArea.innerHTML = `
+                <div class="input-group">
+                    <span>(</span>
+                    <input type="number" id="ans-x" placeholder="x">
+                    <span>,</span>
+                    <input type="number" id="ans-y" placeholder="y">
+                    <span>)</span>
+                </div>
+                <button class="btn" style="margin-top:14px;" onclick="checkMission4()">화장실 설치하기</button>
+            `;
+        }
+        draw();
+    }
+
+    function renderMission1UI() {
+        const area = document.getElementById('interactive-area');
+        area.innerHTML = `
+            <div class="drag-items-container">
+                <div class="drag-item ${items.P.placed ? 'placed' : ''}" data-key="P" id="drag-P">
+                    <span class="emoji">🎠</span>
+                    <span class="label">회전목마</span>
+                </div>
+                <div class="drag-item ${items.Q.placed ? 'placed' : ''}" data-key="Q" id="drag-Q">
+                    <span class="emoji">🚢</span>
+                    <span class="label">바이킹</span>
+                </div>
+                <div class="drag-item ${items.R.placed ? 'placed' : ''}" data-key="R" id="drag-R">
+                    <span class="emoji">🎡</span>
+                    <span class="label">디스코팡팡</span>
+                </div>
+            </div>
+        `;
+        setupPointerDrag();
+    }
+
+    // --- 드래그 앤 드롭 구현 ---
+    function setupPointerDrag() {
+        ['P', 'Q', 'R'].forEach(key => {
+            const el = document.getElementById(`drag-${key}`);
+            if (!el || items[key].placed) return;
+
+            const handlePointerDown = (e) => {
+                e.preventDefault();
+                draggingKey = key;
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                items[key].curPos = {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+                draw();
+
+                const handlePointerMove = (moveEvent) => {
+                    if (!draggingKey) return;
+                    const mClientX = moveEvent.touches ? moveEvent.touches[0].clientX : moveEvent.clientX;
+                    const mClientY = moveEvent.touches ? moveEvent.touches[0].clientY : moveEvent.clientY;
+                    items[draggingKey].curPos = {
+                        x: mClientX - rect.left,
+                        y: mClientY - rect.top
+                    };
+                    draw();
+                };
+
+                const handlePointerUp = (upEvent) => {
+                    if (!draggingKey) return;
+                    const uClientX = upEvent.changedTouches ? upEvent.changedTouches[0].clientX : upEvent.clientX;
+                    const uClientY = upEvent.changedTouches ? upEvent.changedTouches[0].clientY : upEvent.clientY;
+
+                    const cX = uClientX - rect.left;
+                    const cY = uClientY - rect.top;
+                    const gPos = canvasToGrid(cX, cY);
+                    const target = items[draggingKey].target;
+
+                    // 오차범위 0.2 검증
+                    if (Math.abs(gPos.x - target[0]) <= 0.2 && Math.abs(gPos.y - target[1]) <= 0.2) {
+                        items[draggingKey].placed = true;
+                        showMsg(`${items[draggingKey].name} 올바른 위치에 배치 완료!`, 'success');
+                    } else {
+                        showMsg(`올바른 좌표가 아닙니다. (${gPos.x.toFixed(1)}, ${gPos.y.toFixed(1)})`, 'error');
+                    }
+
+                    items[draggingKey].curPos = null;
+                    draggingKey = null;
+
+                    window.removeEventListener('mousemove', handlePointerMove);
+                    window.removeEventListener('mouseup', handlePointerUp);
+                    window.removeEventListener('touchmove', handlePointerMove);
+                    window.removeEventListener('touchend', handlePointerUp);
+
+                    renderMission1UI();
+
+                    if (items.P.placed && items.Q.placed && items.R.placed) {
+                        showMsg('모든 놀이기구가 바르게 배치되었습니다!', 'success');
+                        document.getElementById('next-btn').disabled = false;
+                    }
+                    draw();
+                };
+
+                window.addEventListener('mousemove', handlePointerMove);
+                window.addEventListener('mouseup', handlePointerUp);
+                window.addEventListener('touchmove', handlePointerMove, { passive: false });
+                window.addEventListener('touchend', handlePointerUp);
+            };
+
+            el.addEventListener('mousedown', handlePointerDown);
+            el.addEventListener('touchstart', handlePointerDown, { passive: false });
+        });
+    }
+
+    // --- 미션 2 클릭 검증 ---
+    canvas.addEventListener('click', (e) => {
+        if (currentMission !== 2) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const cx = e.clientX - rect.left;
+        const cy = e.clientY - rect.top;
+        const gridPos = canvasToGrid(cx, cy);
+
+        const target = items.A.target;
+        if (Math.abs(gridPos.x - target[0]) <= 0.3 && Math.abs(gridPos.y - target[1]) <= 0.3) {
+            items.A.placed = true;
+            showMsg('정답입니다! 중점 (−1, −1) 위치에 안내소가 설치되었습니다.', 'success');
+            document.getElementById('next-btn').disabled = false;
+            draw();
+        } else {
+            showMsg(`중점 위치가 아닙니다. 클릭 좌표: (${gridPos.x.toFixed(1)}, ${gridPos.y.toFixed(1)})`, 'error');
+        }
+    });
+
+    // --- 미션 3 슬라이더 조작 ---
+    function updateSlider(val) {
+        sliderVal = parseFloat(val);
+        document.getElementById('slider-val').innerText = `m = ${sliderVal.toFixed(1)}`;
+        draw();
+    }
+
+    function checkMission3() {
+        if (Math.abs(sliderVal - 2.0) < 0.01) {
+            items.M.placed = true;
+            showMsg('정답입니다! 2:1 내분점 (2, 4) 위치에 매점이 설치되었습니다.', 'success');
+            document.getElementById('next-btn').disabled = false;
+        } else {
+            showMsg('2 : 1 내분점이 아닙니다. 슬라이더를 m = 2.0에 맞춰보세요.', 'error');
+        }
+        draw();
+    }
+
+    // --- 미션 4 검증 및 오답 힌트 팝업 ---
+    function checkMission4() {
+        const inputX = parseFloat(document.getElementById('ans-x').value);
+        const inputY = parseFloat(document.getElementById('ans-y').value);
+
+        if (inputX === items.T.target[0] && inputY === items.T.target[1]) {
+            items.T.placed = true;
+            showMsg('정답입니다! 1:3 내분점 (3, 4) 위치에 화장실이 설치되었습니다.', 'success');
+            document.getElementById('next-btn').disabled = false;
+            draw();
+        } else {
+            // 1회 오답 입력 시 즉시 힌트 팝업
+            showMsg('오답입니다. 힌트 창에서 공식을 확인해 보세요.', 'error');
+            document.getElementById('hint-modal').style.display = 'flex';
+        }
+    }
+
+    function closeHint() {
+        document.getElementById('hint-modal').style.display = 'none';
+    }
+
+    // --- 알림 메세지 제어 ---
+    function showMsg(text, type) {
+        const box = document.getElementById('msg-box');
+        box.innerText = text;
+        box.className = `msg-box ${type}`;
+    }
+
+    function hideMsg() {
+        const box = document.getElementById('msg-box');
+        box.style.display = 'none';
+    }
+
+    function nextMission() {
+        if (currentMission < 4) {
+            setMission(currentMission + 1);
+        } else {
+            document.getElementById('success-modal').style.display = 'flex';
+            startConfetti();
+        }
+    }
+
+    // --- 축하 폭죽 애니메이션 ---
+    function startConfetti() {
+        const cCanvas = document.getElementById('confetti-canvas');
+        cCanvas.width = window.innerWidth;
+        cCanvas.height = window.innerHeight;
+        const cCtx = cCanvas.getContext('2d');
+
+        const particles = [];
+        const colors = ['#38bdf8', '#0284c7', '#f43f5e', '#eab308', '#22c55e', '#a855f7'];
+
+        for (let i = 0; i < 120; i++) {
+            particles.push({
+                x: cCanvas.width / 2,
+                y: cCanvas.height / 2,
+                vx: (Math.random() - 0.5) * 16,
+                vy: (Math.random() - 0.5) * 16 - 4,
+                size: Math.random() * 8 + 4,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                life: 120
+            });
+        }
+
+        function animateConfetti() {
+            cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
+            let active = false;
+
+            particles.forEach(p => {
+                if (p.life > 0) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.25;
+                    p.life--;
+                    active = true;
+
+                    cCtx.fillStyle = p.color;
+                    cCtx.beginPath();
+                    cCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    cCtx.fill();
+                }
+            });
+
+            if (active) requestAnimationFrame(animateConfetti);
+        }
+
+        animateConfetti();
+    }
+
+    // 초기화 및 시작
+    setMission(1);
+</script>
+</body>
+</html>

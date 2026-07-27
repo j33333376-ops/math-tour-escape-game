@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>월미도 MATHTOUR - B01</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #1a1815;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+            overflow: hidden;
+        }
+
+        /* 16:9 메인 게임 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f5f0e6;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            border: 2px solid #d4af37;
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 오버레이 효과 (약간의 클래식 톤 추가) */
+        .bg-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.4) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* 상단 스테이지 표시바 */
+        #top-bar {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(20, 15, 10, 0.75);
+            border: 1px solid #d4af37;
+            padding: 8px 18px;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+        }
+
+        #top-bar .stage-title {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #d4af37;
+            letter-spacing: 1px;
+        }
+
+        /* 캐릭터 레이아웃 */
+        .char-wrapper {
+            position: absolute;
+            overflow: visible;
+            z-index: 3;
+            transition: filter 0.3s ease;
+        }
+
+        /* 상황 설명 박스 (양피지 / 낡은 종이 스타일) */
+        .situation-box {
+            position: absolute;
+            top: 75px;
+            right: 40px;
+            width: 440px;
+            background: #f5f0e6;
+            background-image: radial-gradient(#e6dcbf 15%, transparent 16%);
+            background-size: 16px 16px;
+            border: 2px solid #8c3030;
+            outline: 1px solid #d4af37;
+            outline-offset: -5px;
+            padding: 28px 24px 24px 24px;
+            border-radius: 4px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            z-index: 10;
+        }
+
+        .situation-header {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #8c3030;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 8px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .situation-header::after {
+            content: "❖";
+            color: #d4af37;
+            font-size: 14px;
+        }
+
+        .situation-text {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #2b231d;
+            letter-spacing: -0.02em;
+            word-break: keep-all;
+        }
+
+        .situation-text p {
+            margin-bottom: 12px;
+        }
+
+        .situation-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 공통 이동 버튼 스타일 */
+        .btn-nav {
+            position: absolute;
+            background: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: all 0.2s ease;
+            z-index: 15;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-nav:hover {
+            background: #661f1f;
+            border-color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.7);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        /* 빨려 들어가는 다음 이동 애니메이션 효과 */
+        @keyframes vortexSuck {
+            0% {
+                transform: scale(1) rotate(0deg);
+                filter: brightness(1) blur(0px);
+                opacity: 1;
+            }
+            50% {
+                filter: brightness(1.5) blur(2px);
+            }
+            100% {
+                transform: scale(0) rotate(720deg);
+                filter: brightness(2) blur(10px);
+                opacity: 0;
+            }
+        }
+
+        .vortex-active {
+            animation: vortexSuck 1.2s ease-in-out forwards;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 배경 이미지 -->
+        <img src="월미도전망대.png" alt="월미도전망대" class="bg-img" onerror="this.style.display='none'; document.getElementById('game-container').style.backgroundColor='#3a2e2b';">
+        <div class="bg-overlay"></div>
+
+        <!-- 상단 스테이지 표시바 -->
+        <div id="top-bar">
+            <span class="stage-title">월미도 MATHTOUR ❖ B01. 월미도를 바라보며</span>
+        </div>
+
+        <!-- 캐릭터 배치 (왼쪽 공간에 민우, 서연 나란히 배치) -->
+        <!-- 등장인물: 민우 (가장 왼쪽) -->
+        <div class="char-wrapper" id="char-민우" style="left: 60px; bottom: 30px; width: 260px; height: 320px;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 등장인물: 서연 (민우의 오른쪽 옆) -->
+        <div class="char-wrapper" id="char-서연" style="left: 280px; bottom: 30px; width: 260px; height: 320px;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 우측 상황 설명 박스 -->
+        <div class="situation-box">
+            <div class="situation-header">상황 연출</div>
+            <div class="situation-text">
+                <p>민우와 서연이는 방금 둘러본 월미전통정원의 아늑하고 아기자기한 매력에 푹 빠져 서로 만족감을 나누고 있습니다.</p>
+                <p>고즈넉한 정원을 뒤로하고, 시원한 바닷바람을 맞으며 다음 탐방 코스에 대해 이야기를 나누는 두 사람.</p>
+                <p><strong>"다음 장소로는 월미도 전체와 탁 트인 바다를 한눈에 담을 수 있는 전망대에 올라가 보는 건 어떨까?"</strong></p>
+                <p>민우의 제안에 서연이도 기분 좋게 고개를 끄덕이며, 월미도의 풍경 속으로 발걸음을 옮깁니다.</p>
+            </div>
+        </div>
+
+        <!-- 이동 버튼 -->
+        <button id="btn-prev" class="btn-nav" onclick="goUrl('index.html')">◀ 이전</button>
+        <button id="btn-next" class="btn-nav" onclick="goNextWithVortex('B02.html')">다음 ▶</button>
+    </div>
+
+    <script>
+        function goUrl(url) {
+            window.location.href = url;
+        }
+
+        // 다음 페이지 이동 시 빨려들어가는 연출 효과
+        function goNextWithVortex(url) {
+            const container = document.getElementById('game-container');
+            container.classList.add('vortex-active');
+            
+            setTimeout(() => {
+                window.location.href = url;
+            }, 1100);
+        }
+    </script>
+</body>
+</html>

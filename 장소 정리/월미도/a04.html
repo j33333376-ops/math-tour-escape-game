@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>월미도 MATHTOUR - 대화 장면</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background-color: #f5f0e6;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid #d4af37;
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 상단 스테이지 표시바 (a03과 규격 통일) */
+        #stage-header {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #d4af37;
+            padding: 5px 14px;
+            border-radius: 4px;
+            color: #d4af37;
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            z-index: 10;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        /* 무대 요소 Layer */
+        #stage-area {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        /* 등장인물 Wrapper (a03 장면과 완전히 동일한 배치) */
+        .char-wrapper {
+            position: absolute;
+            bottom: 0;
+            overflow: visible;
+            pointer-events: none;
+            transition: filter 0.25s ease;
+        }
+
+        .char-wrapper.inactive {
+            filter: brightness(0.55);
+        }
+
+        #char-민우 {
+            left: 10px;
+            width: 220px;
+            height: 290px;
+            z-index: 2;
+        }
+
+        #char-서연 {
+            right: 10px;
+            width: 220px;
+            height: 290px;
+            z-index: 2;
+        }
+
+        /* 공통 이동 버튼 (a03 규격 통일) */
+        .btn-nav {
+            position: absolute;
+            z-index: 20;
+            background: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 8px 18px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn-nav:hover {
+            background: #661f1f;
+        }
+
+        .btn-nav:active {
+            transform: scale(0.98);
+        }
+
+        #btn-prev {
+            left: 15px;
+            bottom: 12px;
+        }
+
+        #btn-next, #btn-skip {
+            right: 15px;
+            bottom: 12px;
+        }
+
+        /* 대화창 UI (유형 2) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 80px);
+            max-width: 960px;
+            height: 140px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 2px solid #d4af37;
+            border-radius: 6px;
+            padding: 16px 24px;
+            z-index: 12;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 16px;
+            color: #ffffff;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            word-break: keep-all;
+        }
+
+        .click-indicator {
+            position: absolute;
+            right: 20px;
+            bottom: 12px;
+            color: #d4af37;
+            font-size: 12px;
+            font-family: 'Noto Sans KR', sans-serif;
+            animation: blink 1.2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- 배경 이미지 -->
+    <img src="월미전통정원.png" alt="월미전통정원 배경" class="bg-img">
+
+    <!-- 상단 스테이지 표시바 -->
+    <div id="stage-header">월미도 MATHTOUR — 월미전통정원</div>
+
+    <!-- 무대 요소 (a03 장면과 완전히 동일한 캐릭터 배치) -->
+    <div id="stage-area">
+        <!-- 민우 (왼쪽 배치) -->
+        <div class="char-wrapper" id="char-민우">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:100%; height:100%; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 서연 (오른쪽 배치, 좌우 반전) -->
+        <div class="char-wrapper" id="char-서연">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:100%; height:100%; transform: scaleX(-1); pointer-events:none;"></iframe>
+        </div>
+    </div>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-name">화자</div>
+        <div id="dialogue-text">대사 내용이 들어갑니다.</div>
+        <div class="click-indicator">▼ 클릭하여 계속</div>
+    </div>
+
+    <!-- 탐색 버튼 그룹 (대화 종료 시 노출) -->
+    <button id="btn-prev" class="btn-nav" style="display: none;" onclick="location.href='a03.html'">이전</button>
+    <button id="btn-next" class="btn-nav" style="display: none;" onclick="location.href='index.html'">End</button>
+
+    <!-- 스킵 버튼 (대화 진행 중 노출) -->
+    <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+</div>
+
+<script>
+    // 대화 스크립트 데이터
+    const dialogues = [
+        {
+            speaker: "서연",
+            text: "휴, 아까 퀴즈는 생각보다 까다로웠어! 그래도 덕분에 길을 찾는 경우의 수를 정확하게 구해냈네.",
+            target: "char-서연"
+        },
+        {
+            speaker: "민우",
+            text: "맞아. 핵심은 '합의 법칙'과 '곱의 법칙'을 언제 어떻게 적용하느냐였지.",
+            target: "char-민우"
+        },
+        {
+            speaker: "서연",
+            text: "동시에 일어나지 않는 선택지들을 나눌 때는 각각을 더하는 합의 법칙을 쓰고, 연달아 일어나는 단계별 선택은 곱의 법칙을 사용하는 거잖아?",
+            target: "char-서연"
+        },
+        {
+            speaker: "민우",
+            text: "정확해! 그런데 재미있는 건, 계산 방향이나 관점을 어떻게 두느냐에 따라 합으로 풀수도, 곱으로 풀수도 있다는 점이야.",
+            target: "char-민우"
+        },
+        {
+            speaker: "서연",
+            text: "아, 여러 갈래로 갈라지는 사건 전체를 크게 합으로 묶어서 더할 수도 있고, 각 갈래마다 묶음으로 곱해서 한 번에 계산할 수도 있다는 뜻이구나?",
+            target: "char-서연"
+        },
+        {
+            speaker: "민우",
+            text: "응! 결국 표현하는 방식과 관점의 차이일 뿐, 전체 경우의 수를 꼼꼼하게 빠짐없이 셈한다는 근본 원리는 완전히 같은 과정인 셈이지.",
+            target: "char-민우"
+        },
+        {
+            speaker: "서연",
+            text: "그렇게 생각하니까 수학적 법칙이 훨씬 입체적으로 느껴진다. 근대 개항기 건축물들 속에 숨겨진 수학을 찾아내는 보람이 있네!",
+            target: "char-서연"
+        },
+        {
+            speaker: "민우",
+            text: "좋아, 이번 탐험에서 얻은 깨달음을 가지고 다음 장소로 계속 이동해 볼까?",
+            target: "char-민우"
+        }
+    ];
+
+    let currentIndex = 0;
+
+    // 대화 업데이트 함수
+    function updateDialogue() {
+        if (currentIndex < dialogues.length) {
+            const current = dialogues[currentIndex];
+            
+            // 대화 텍스트 및 화자 이름 반영
+            document.getElementById("speaker-name").innerText = current.speaker;
+            document.getElementById("dialogue-text").innerText = current.text;
+
+            // 말하는 캐릭터 강조, 나머지 비활성화 처리
+            const charWrappers = document.querySelectorAll('.char-wrapper');
+            charWrappers.forEach(wrapper => {
+                if (wrapper.id === current.target) {
+                    wrapper.classList.remove('inactive');
+                } else {
+                    wrapper.classList.add('inactive');
+                }
+            });
+        } else {
+            finishDialogue();
+        }
+    }
+
+    // 다음 대화로 진행
+    function advanceDialogue() {
+        currentIndex++;
+        updateDialogue();
+    }
+
+    // 스킵 처리
+    function skipDialogue() {
+        finishDialogue();
+    }
+
+    // 대화 종료 시 UI 변경
+    function finishDialogue() {
+        // 대화창 및 스킵 버튼 숨기기
+        document.getElementById("dialogue-box").style.display = "none";
+        document.getElementById("btn-skip").style.display = "none";
+
+        // 모든 캐릭터 밝기 복구
+        const charWrappers = document.querySelectorAll('.char-wrapper');
+        charWrappers.forEach(wrapper => {
+            wrapper.classList.remove('inactive');
+        });
+
+        // 이전 / 다음(End) 이동 버튼 표시
+        document.getElementById("btn-prev").style.display = "block";
+        document.getElementById("btn-next").style.display = "block";
+    }
+
+    // 최초 실행
+    window.onload = function() {
+        updateDialogue();
+    };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>월미도 MATHTOUR - B03</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #1a1612;
+            color: #2d3748;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+        }
+
+        /* 16:9 메인 게임 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f5f0e6;
+            border: 4px solid #d4af37;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 근대 개항기 상단 표시바 */
+        #top-bar {
+            position: absolute;
+            top: 12px;
+            left: 16px;
+            right: 16px;
+            height: 40px;
+            background: rgba(20, 15, 10, 0.75);
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 10;
+        }
+
+        .stage-title {
+            font-family: 'Nanum Myeongjo', serif;
+            font-weight: 700;
+            color: #d4af37;
+            font-size: 16px;
+        }
+
+        .stage-step {
+            font-family: 'Nanum Gothic Coding', monospace;
+            color: #f5f0e6;
+            font-size: 14px;
+        }
+
+        /* 메인 무대 레이아웃 */
+        #stage-area {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            display: flex;
+            padding-top: 60px;
+        }
+
+        /* 좌측 캐릭터 영역 (민우, 서연 나란히 배치) */
+        #left-character-area {
+            position: relative;
+            width: 32%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .char-wrapper {
+            position: absolute;
+            bottom: 20px;
+            width: 260px;
+            height: 320px;
+            overflow: visible;
+        }
+
+        /* 우측 수학 퀴즈 영역 */
+        #right-quiz-area {
+            position: relative;
+            width: 68%;
+            height: 100%;
+            padding: 10px 16px 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+
+        /* 퀴즈 컨테이너 내부 오버라이드 및 스타일 재정의 */
+        .quiz-card {
+            width: 100%;
+            height: 100%;
+            background: rgba(245, 240, 230, 0.95);
+            border: 2px solid #8c3030;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .quiz-inner-content {
+            display: flex;
+            flex: 1;
+            padding: 12px;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            flex: 0 0 auto;
+            background-color: #ffffff;
+            border: 2px solid #d4af37;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .control-panel {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #fffdf9;
+            border: 1px solid #d4af37;
+            border-radius: 6px;
+            padding: 12px;
+            overflow-y: auto;
+        }
+
+        .mission-badge {
+            display: inline-block;
+            background-color: #8c3030;
+            color: #ffffff;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 3px;
+            margin-bottom: 6px;
+        }
+
+        .mission-title {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #8c3030;
+            margin-bottom: 6px;
+        }
+
+        .mission-desc {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #2d3748;
+            margin-bottom: 10px;
+            word-break: keep-all;
+        }
+
+        .interactive-area {
+            background: #fdfbf7;
+            border-radius: 6px;
+            padding: 10px;
+            border: 1px dashed #d4af37;
+            margin-bottom: 10px;
+        }
+
+        /* 드래그 아이콘 세트 */
+        .drag-items-container {
+            display: flex;
+            justify-content: space-around;
+            gap: 6px;
+        }
+
+        .drag-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 4px;
+            border: 1px dashed #8c3030;
+            border-radius: 4px;
+            background: #f5f0e6;
+            cursor: grab;
+            transition: all 0.2s;
+            flex: 1;
+            touch-action: none;
+        }
+
+        .drag-item.placed {
+            opacity: 0.4;
+            border-style: solid;
+            border-color: #a0aec0;
+            background: #edf2f7;
+            cursor: default;
+        }
+
+        .drag-item .emoji {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .drag-item .label {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            color: #8c3030;
+        }
+
+        /* 슬라이더 & 입력폼 개항기 톤 적용 */
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 12px;
+            color: #2d3748;
+        }
+
+        input[type=range] {
+            width: 100%;
+            height: 6px;
+            accent-color: #8c3030;
+            cursor: pointer;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #8c3030;
+        }
+
+        .input-group input {
+            width: 50px;
+            height: 34px;
+            text-align: center;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            background: #ffffff;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #8c3030;
+        }
+
+        /* 공통 버튼 구조 규칙 준수 */
+        .btn-nav {
+            position: absolute;
+            bottom: 20px;
+            background-color: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-weight: bold;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 20;
+            transition: background-color 0.2s;
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        #btn-prev {
+            left: 20px;
+        }
+
+        #btn-next {
+            right: 20px;
+            display: none;
+        }
+
+        /* 퀴즈 내 확인 버튼 */
+        .quiz-action-btn {
+            width: 100%;
+            padding: 8px;
+            background-color: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .quiz-action-btn:hover:not(:disabled) {
+            background-color: #661f1f;
+        }
+
+        .quiz-action-btn:disabled {
+            background-color: #cbd5e1;
+            border-color: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        /* 메시지 박스 */
+        .msg-box {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 6px 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            display: none;
+            line-height: 1.4;
+        }
+
+        .msg-box.success {
+            display: block;
+            background-color: #f0fff4;
+            color: #276749;
+            border: 1px solid #9ae6b4;
+        }
+
+        .msg-box.error {
+            display: block;
+            background-color: #fff5f5;
+            color: #9b2c2c;
+            border: 1px solid #feb2b2;
+        }
+
+        /* 모달 레이어 */
+        #hint-modal, #success-modal {
+            position: absolute;
+            inset: 0;
+            background: rgba(20, 15, 10, 0.85);
+            backdrop-filter: blur(2px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: #f5f0e6;
+            border: 2px solid #d4af37;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-card .title {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #8c3030;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .hint-img-wrapper {
+            background: #ffffff;
+            border: 1px dashed #d4af37;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100px;
+        }
+
+        .hint-img-wrapper img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        #confetti-canvas {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 91;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- 상단 진행 상황 표시바 -->
+    <div id="top-bar">
+        <span class="stage-title">월미도 MATHTOUR : 놀이공원 시설물 설계</span>
+        <span class="stage-step" id="stage-text">Step 1 / 4</span>
+    </div>
+
+    <!-- 메인 무대 -->
+    <div id="stage-area">
+        <!-- 좌측 캐릭터 영역 (민우, 서연 나란히 배치) -->
+        <div id="left-character-area">
+            <!-- 민우 캐릭터 wrapper -->
+            <div class="char-wrapper" id="char-민우" style="left: 10px;">
+                <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.85); transform-origin:bottom left; pointer-events:none;"></iframe>
+            </div>
+            <!-- 서연 캐릭터 wrapper -->
+            <div class="char-wrapper" id="char-서연" style="left: 120px;">
+                <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.85); transform-origin:bottom left; pointer-events:none;"></iframe>
+            </div>
+        </div>
+
+        <!-- 우측 퀴즈 컨테이너 -->
+        <div id="right-quiz-area">
+            <div class="quiz-card">
+                <div class="quiz-inner-content">
+                    <!-- 좌표평면 Canvas -->
+                    <div class="canvas-wrapper">
+                        <canvas id="gridCanvas" width="360" height="420"></canvas>
+                    </div>
+
+                    <!-- 미션 제어 패널 -->
+                    <div class="control-panel">
+                        <div>
+                            <span class="mission-badge" id="mission-badge">미션 1</span>
+                            <div class="mission-title" id="mission-title">놀이기구 배치하기</div>
+                            <div class="mission-desc" id="mission-desc">
+                                좌표평면에 각각의 놀이기구를 바르게 올려놓으세요.<br>
+                                • <b>회전목마 P(−2, 0)</b><br>
+                                • <b>바이킹 Q(4, 6)</b><br>
+                                • <b>디스코팡팡 R(0, −2)</b>
+                            </div>
+
+                            <div class="msg-box" id="msg-box"></div>
+
+                            <!-- 인터랙션 영역 -->
+                            <div class="interactive-area" id="interactive-area"></div>
+                        </div>
+
+                        <button class="quiz-action-btn" id="quiz-step-btn" disabled onclick="nextMission()">다음 단계를 향해</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 공통 이동 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="goPrev()">이전</button>
+    <button class="btn-nav" id="btn-next" onclick="goNext()">다음</button>
+
+    <!-- 힌트 모달 -->
+    <div id="hint-modal">
+        <div class="modal-card">
+            <div class="title">💡 좌표평면에서의 내분점 공식 참고하기</div>
+            <div class="hint-img-wrapper">
+                <img id="hint-formula-img" src="formula.png" alt="선분의 내분점 공식 이미지">
+            </div>
+            <button class="quiz-action-btn" onclick="closeHint()">확인 후 다시 풀어보기</button>
+        </div>
+    </div>
+
+    <!-- 최종 성공 모달 -->
+    <div id="success-modal">
+        <div class="modal-card">
+            <div class="title" style="font-size: 20px;">🎉 모든 시설 설치 완료!</div>
+            <p style="font-size: 13px; color: #2d3748; margin-bottom: 16px;">축하합니다! 월미도 놀이공원의 모든 시설물 설계가 성공적으로 마무리되었습니다.</p>
+            <button class="quiz-action-btn" onclick="finishQuiz()">설계 완성 확인</button>
+        </div>
+    </div>
+    <canvas id="confetti-canvas"></canvas>
+</div>
+
+<script>
+    // --- 페이지 이동 로직 ---
+    const prevUrl = "B02.html";
+    const nextUrl = "B04.html";
+
+    function goPrev() {
+        if (prevUrl) {
+            window.location.href = prevUrl;
+        }
+    }
+
+    function goNext() {
+        if (nextUrl) {
+            window.location.href = nextUrl;
+        } else {
+            window.location.href = "index.html";
+        }
+    }
+
+    // --- 수학 퀴즈 로직 ---
+    const FORMULA_IMAGE_SRC = 'formula.png';
+    const canvas = document.getElementById('gridCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const minX = -3, maxX = 5;
+    const minY = -3, maxY = 7;
+
+    const scale = 36;
+    const originX = 40 + 3 * scale; // x = 0
+    const originY = 25 + 7 * scale; // y = 0
+
+    let currentMission = 1;
+
+    const items = {
+        P: { name: '회전목마', target: [-2, 0], icon: '🎠', placed: false, curPos: null },
+        Q: { name: '바이킹', target: [4, 6], icon: '🚢', placed: false, curPos: null },
+        R: { name: '디스코팡팡', target: [0, -2], icon: '🎡', placed: false, curPos: null },
+        A: { name: '안내소', target: [-1, -1], icon: 'ℹ️', placed: false },
+        M: { name: '매점', target: [2, 4], icon: '🛒', placed: false },
+        T: { name: '화장실', target: [3, 4], icon: '🚻', placed: false }
+    };
+
+    let sliderVal = 1.0;
+    let draggingKey = null;
+
+    document.getElementById('hint-formula-img').src = FORMULA_IMAGE_SRC;
+
+    function gridToCanvas(gx, gy) {
+        return {
+            x: originX + gx * scale,
+            y: originY - gy * scale
+        };
+    }
+
+    function canvasToGrid(cx, cy) {
+        return {
+            x: (cx - originX) / scale,
+            y: (originY - cy) / scale
+        };
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 1. Grid
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1;
+
+        for (let x = minX; x <= maxX; x++) {
+            const p = gridToCanvas(x, 0);
+            ctx.beginPath();
+            ctx.moveTo(p.x, 0);
+            ctx.lineTo(p.x, canvas.height);
+            ctx.stroke();
+        }
+
+        for (let y = minY; y <= maxY; y++) {
+            const p = gridToCanvas(0, y);
+            ctx.beginPath();
+            ctx.moveTo(0, p.y);
+            ctx.lineTo(canvas.width, p.y);
+            ctx.stroke();
+        }
+
+        // 2. X, Y 축
+        ctx.strokeStyle = '#8c3030';
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+        ctx.moveTo(0, originY);
+        ctx.lineTo(canvas.width, originY);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(originX, 0);
+        ctx.lineTo(originX, canvas.height);
+        ctx.stroke();
+
+        // 3. 눈금 및 라벨
+        ctx.fillStyle = '#2d3748';
+        ctx.font = '700 10px "Nanum Gothic Coding", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+
+        for (let x = minX; x <= maxX; x++) {
+            const p = gridToCanvas(x, 0);
+            ctx.beginPath();
+            ctx.moveTo(p.x, originY - 3);
+            ctx.lineTo(p.x, originY + 3);
+            ctx.stroke();
+
+            if (x === 0) {
+                ctx.fillText('O', p.x - 10, originY + 4);
+            } else {
+                ctx.fillText(x.toString(), p.x, originY + 4);
+            }
+        }
+
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        for (let y = minY; y <= maxY; y++) {
+            if (y === 0) continue;
+            const p = gridToCanvas(0, y);
+            ctx.beginPath();
+            ctx.moveTo(originX - 3, p.y);
+            ctx.lineTo(originX + 3, p.y);
+            ctx.stroke();
+
+            ctx.fillText(y.toString(), originX - 5, p.y);
+        }
+
+        // 4. 보조 선분
+        if (currentMission >= 2 && items.P.placed && items.R.placed) {
+            drawLine(items.P.target, items.R.target, '#a0aec0', [4, 4]);
+        }
+        if (currentMission >= 3 && items.P.placed && items.Q.placed) {
+            drawLine(items.P.target, items.Q.target, '#8c3030', []);
+        }
+        if (currentMission >= 4 && items.Q.placed && items.R.placed) {
+            drawLine(items.Q.target, items.R.target, '#d4af37', [4, 4]);
+        }
+
+        // 5. 실시간 내분점 시각화 (m : 1)
+        if (currentMission === 3 && items.P.placed && items.Q.placed) {
+            const m = sliderVal;
+            const ratio = m / (m + 1);
+            const nx = items.P.target[0] + ratio * (items.Q.target[0] - items.P.target[0]);
+            const ny = items.P.target[1] + ratio * (items.Q.target[1] - items.P.target[1]);
+            const pos = gridToCanvas(nx, ny);
+
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#8c3030';
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            ctx.fillStyle = '#8c3030';
+            ctx.font = '700 10px "Nanum Gothic Coding"';
+            ctx.textAlign = 'left';
+            ctx.fillText(`${m.toFixed(1)}:1`, pos.x + 8, pos.y - 8);
+        }
+
+        // 6. 설치된 시설물
+        Object.keys(items).forEach(key => {
+            const item = items[key];
+            if (item.placed) {
+                const pos = gridToCanvas(item.target[0], item.target[1]);
+                ctx.font = '20px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(item.icon, pos.x, pos.y);
+
+                ctx.font = '700 9px "Nanum Gothic Coding"';
+                ctx.fillStyle = '#2d3748';
+                ctx.fillText(`${item.name}(${item.target[0]},${item.target[1]})`, pos.x, pos.y + 16);
+            }
+        });
+
+        // 7. 드래그 아이콘
+        if (draggingKey && items[draggingKey].curPos) {
+            const p = items[draggingKey].curPos;
+            ctx.font = '24px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(items[draggingKey].icon, p.x, p.y);
+        }
+    }
+
+    function drawLine(p1, p2, color, dash) {
+        const pos1 = gridToCanvas(p1[0], p1[1]);
+        const pos2 = gridToCanvas(p2[0], p2[1]);
+        ctx.save();
+        ctx.beginPath();
+        ctx.setLineDash(dash);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.moveTo(pos1.x, pos1.y);
+        ctx.lineTo(pos2.x, pos2.y);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function setMission(missionNum) {
+        currentMission = missionNum;
+        document.getElementById('stage-text').innerText = `Step ${missionNum} / 4`;
+        document.getElementById('mission-badge').innerText = `미션 ${missionNum}`;
+        document.getElementById('quiz-step-btn').disabled = true;
+        hideMsg();
+
+        const interactiveArea = document.getElementById('interactive-area');
+
+        if (missionNum === 1) {
+            document.getElementById('mission-title').innerText = '놀이기구 배치하기';
+            document.getElementById('mission-desc').innerHTML =
+                '좌표평면에 각각의 놀이기구를 바르게 올려놓으세요.<br>' +
+                '• <b>회전목마 P(−2, 0)</b><br>' +
+                '• <b>바이킹 Q(4, 6)</b><br>' +
+                '• <b>디스코팡팡 R(0, −2)</b>';
+            renderMission1UI();
+        } else if (missionNum === 2) {
+            document.getElementById('mission-title').innerText = '안내소 설치 (중점)';
+            document.getElementById('mission-desc').innerHTML =
+                '선분 PR의 <b>중점</b>을 찾아 좌표평면을 클릭하여 안내소(ℹ️)를 설치하세요.<br>' +
+                '• P(−2, 0), R(0, −2)';
+            interactiveArea.innerHTML = '<div style="text-align:center; color:#718096; font-size:11px; font-weight:500;">좌표평면 상의 중점 위치를 직접 클릭하세요.</div>';
+        } else if (missionNum === 3) {
+            document.getElementById('mission-title').innerText = '매점 설치 (내분점)';
+            document.getElementById('mission-desc').innerHTML =
+                '슬라이더를 조절하여 선분 PQ를 <b>2 : 1</b>로 내분하는 위치에 매점(🛒)을 설치하세요.<br>' +
+                '• P(−2, 0), Q(4, 6)';
+            interactiveArea.innerHTML = `
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <span>비율 m : 1</span>
+                        <span id="slider-val" style="color:#8c3030;">m = 1.0</span>
+                    </div>
+                    <input type="range" id="m-slider" min="0.2" max="5.0" step="0.2" value="1.0" oninput="updateSlider(this.value)">
+                </div>
+                <button class="quiz-action-btn" style="margin-top:10px;" onclick="checkMission3()">설치</button>
+            `;
+        } else if (missionNum === 4) {
+            document.getElementById('mission-title').innerText = '화장실 설치 (내분점 공식)';
+            document.getElementById('mission-desc').innerHTML =
+                '선분 QR을 <b>1 : 3</b>으로 내분하는 점에 화장실(🚻)을 설치하려고 할 때, 화장실의 좌표를 입력하세요.<br>' +
+                '• Q(4, 6), R(0, −2)';
+            interactiveArea.innerHTML = `
+                <div class="input-group">
+                    <span>(</span>
+                    <input type="number" id="ans-x" placeholder="x">
+                    <span>,</span>
+                    <input type="number" id="ans-y" placeholder="y">
+                    <span>)</span>
+                </div>
+                <button class="quiz-action-btn" style="margin-top:10px;" onclick="checkMission4()">화장실 설치하기</button>
+            `;
+        }
+        draw();
+    }
+
+    function renderMission1UI() {
+        const area = document.getElementById('interactive-area');
+        area.innerHTML = `
+            <div class="drag-items-container">
+                <div class="drag-item ${items.P.placed ? 'placed' : ''}" data-key="P" id="drag-P">
+                    <span class="emoji">🎠</span>
+                    <span class="label">회전목마</span>
+                </div>
+                <div class="drag-item ${items.Q.placed ? 'placed' : ''}" data-key="Q" id="drag-Q">
+                    <span class="emoji">🚢</span>
+                    <span class="label">바이킹</span>
+                </div>
+                <div class="drag-item ${items.R.placed ? 'placed' : ''}" data-key="R" id="drag-R">
+                    <span class="emoji">🎡</span>
+                    <span class="label">디스코팡팡</span>
+                </div>
+            </div>
+        `;
+        setupPointerDrag();
+    }
+
+    function setupPointerDrag() {
+        ['P', 'Q', 'R'].forEach(key => {
+            const el = document.getElementById(`drag-${key}`);
+            if (!el || items[key].placed) return;
+
+            const handlePointerDown = (e) => {
+                e.preventDefault();
+                draggingKey = key;
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                items[key].curPos = {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+                draw();
+
+                const handlePointerMove = (moveEvent) => {
+                    if (!draggingKey) return;
+                    const mClientX = moveEvent.touches ? moveEvent.touches[0].clientX : moveEvent.clientX;
+                    const mClientY = moveEvent.touches ? moveEvent.touches[0].clientY : moveEvent.clientY;
+                    items[draggingKey].curPos = {
+                        x: mClientX - rect.left,
+                        y: mClientY - rect.top
+                    };
+                    draw();
+                };
+
+                const handlePointerUp = (upEvent) => {
+                    if (!draggingKey) return;
+                    const uClientX = upEvent.changedTouches ? upEvent.changedTouches[0].clientX : upEvent.clientX;
+                    const uClientY = upEvent.changedTouches ? upEvent.changedTouches[0].clientY : upEvent.clientY;
+
+                    const cX = uClientX - rect.left;
+                    const cY = uClientY - rect.top;
+                    const gPos = canvasToGrid(cX, cY);
+                    const target = items[draggingKey].target;
+
+                    if (Math.abs(gPos.x - target[0]) <= 0.4 && Math.abs(gPos.y - target[1]) <= 0.4) {
+                        items[draggingKey].placed = true;
+                        showMsg('올바른 위치에 설치되었습니다!', 'success');
+                    } else {
+                        showMsg('정확한 좌표 위치에 배치해 주세요.', 'error');
+                    }
+
+                    items[draggingKey].curPos = null;
+                    draggingKey = null;
+                    renderMission1UI();
+                    draw();
+
+                    if (items.P.placed && items.Q.placed && items.R.placed) {
+                        showMsg('모든 주요 놀이기구가 성공적으로 배치되었습니다!', 'success');
+                        document.getElementById('quiz-step-btn').disabled = false;
+                    }
+
+                    window.removeEventListener('pointermove', handlePointerMove);
+                    window.removeEventListener('pointerup', handlePointerUp);
+                    window.removeEventListener('touchmove', handlePointerMove);
+                    window.removeEventListener('touchend', handlePointerUp);
+                };
+
+                window.addEventListener('pointermove', handlePointerMove);
+                window.addEventListener('pointerup', handlePointerUp);
+                window.addEventListener('touchmove', handlePointerMove, { passive: false });
+                window.addEventListener('touchend', handlePointerUp);
+            };
+
+            el.addEventListener('pointerdown', handlePointerDown);
+            el.addEventListener('touchstart', handlePointerDown, { passive: false });
+        });
+    }
+
+    // Canvas 클릭 처리 (미션 2 안내소 클릭)
+    canvas.addEventListener('click', (e) => {
+        if (currentMission !== 2 || items.A.placed) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const cX = e.clientX - rect.left;
+        const cY = e.clientY - rect.top;
+        const gPos = canvasToGrid(cX, cY);
+
+        const target = items.A.target; // [-1, -1]
+        if (Math.abs(gPos.x - target[0]) <= 0.4 && Math.abs(gPos.y - target[1]) <= 0.4) {
+            items.A.placed = true;
+            draw();
+            showMsg('정답입니다! 선분 PR의 중점 (−1, −1)에 안내소가 설치되었습니다.', 'success');
+            document.getElementById('quiz-step-btn').disabled = false;
+        } else {
+            showMsg('중점의 위치가 아닙니다. P와 R의 좌표를 이용해 중점을 구해보세요.', 'error');
+        }
+    });
+
+    function updateSlider(val) {
+        sliderVal = parseFloat(val);
+        document.getElementById('slider-val').innerText = `m = ${sliderVal.toFixed(1)}`;
+        draw();
+    }
+
+    function checkMission3() {
+        if (Math.abs(sliderVal - 2.0) < 0.05) {
+            items.M.placed = true;
+            draw();
+            showMsg('정답입니다! 2 : 1 내분점에 매점이 성공적으로 설치되었습니다.', 'success');
+            document.getElementById('quiz-step-btn').disabled = false;
+        } else {
+            showMsg('2 : 1 내분점 위치가 아닙니다. 슬라이더를 2.0으로 맞춰보세요.', 'error');
+        }
+    }
+
+    function checkMission4() {
+        const xInput = document.getElementById('ans-x').value.trim();
+        const yInput = document.getElementById('ans-y').value.trim();
+
+        if (xInput === '' || yInput === '') {
+            showMsg('x좌표와 y좌표를 모두 입력해 주세요.', 'error');
+            return;
+        }
+
+        const x = parseFloat(xInput);
+        const y = parseFloat(yInput);
+
+        if (x === items.T.target[0] && y === items.T.target[1]) {
+            items.T.placed = true;
+            draw();
+            showMsg('정답입니다! (3, 4) 위치에 화장실이 설치되었습니다.', 'success');
+            document.getElementById('quiz-step-btn').disabled = false;
+            setTimeout(() => {
+                document.getElementById('success-modal').style.display = 'flex';
+            }, 800);
+        } else {
+            showMsg('오답입니다. 힌트를 확인해 보세요.', 'error');
+            openHint();
+        }
+    }
+
+    function nextMission() {
+        if (currentMission < 4) {
+            setMission(currentMission + 1);
+        }
+    }
+
+    function showMsg(txt, type) {
+        const box = document.getElementById('msg-box');
+        box.innerText = txt;
+        box.className = `msg-box ${type}`;
+    }
+
+    function hideMsg() {
+        const box = document.getElementById('msg-box');
+        box.className = 'msg-box';
+        box.style.display = 'none';
+    }
+
+    function openHint() {
+        document.getElementById('hint-modal').style.display = 'flex';
+    }
+
+    function closeHint() {
+        document.getElementById('hint-modal').style.display = 'none';
+    }
+
+    function finishQuiz() {
+        document.getElementById('success-modal').style.display = 'none';
+        // 정답 성공 후 다음 버튼 노출
+        document.getElementById('btn-next').style.display = 'block';
+    }
+
+    // 초기화 실행
+    setMission(1);
+</script>
+</body>
+</html>
