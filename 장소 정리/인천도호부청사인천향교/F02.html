@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천도호부청사·인천향교 MATHTOUR - F02</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+        }
+
+        /* 16:9 메인 게임 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background-color: #f5f0e6;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            border: 2px solid #d4af37;
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 상단 스테이지 표시바 */
+        #top-bar {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.65);
+            border: 1px solid #d4af37;
+            padding: 8px 18px;
+            border-radius: 4px;
+            color: #d4af37;
+            font-family: 'Nanum Myeongjo', serif;
+            font-weight: bold;
+            font-size: 16px;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+        }
+
+        /* 캐릭터 레이어 (z-index: 3) */
+        .char-wrapper {
+            position: absolute;
+            z-index: 3;
+            transition: filter 0.2s ease, transform 0.2s ease;
+        }
+
+        .char-wrapper.inactive {
+            filter: brightness(0.55);
+        }
+
+        /* 대화창 UI (z-index: 10) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            max-width: 720px;
+            height: 160px;
+            background: rgba(0, 0, 0, 0.82);
+            border: 2px solid #d4af37;
+            border-radius: 6px;
+            padding: 20px 25px;
+            z-index: 10;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed rgba(212, 175, 55, 0.4);
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 16px;
+            color: #ffffff;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            word-break: keep-all;
+        }
+
+        #click-prompt {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 12px;
+            color: #d4af37;
+            animation: blink 1.2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* 공통 이동 버튼 스타일 (z-index: 11) */
+        .btn-nav {
+            position: absolute;
+            z-index: 11;
+            background-color: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next, #btn-skip {
+            right: 20px;
+            bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <img src="투호놀이장.png" alt="투호놀이장 배경" class="bg-img">
+
+    <div id="top-bar">인천도호부청사 · 전통놀이 체험장</div>
+
+    <div class="char-wrapper" id="char-서연" style="left: 60px; bottom: 30px; width: 260px; height: 320px; overflow: visible;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <div class="char-wrapper" id="char-민우" style="left: 210px; bottom: 20px; width: 260px; height: 320px; overflow: visible;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <div class="char-wrapper" id="char-투호장" style="right: 80px; bottom: 25px; width: 260px; height: 320px; overflow: visible;">
+        <iframe src="등장인물_투호장.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-name">안내문</div>
+        <div id="dialogue-text">대화를 불러오는 중입니다...</div>
+        <div id="click-prompt">▼ 클릭하여 계속</div>
+    </div>
+
+    <button id="btn-prev" class="btn-nav" onclick="goPrev()">이전</button>
+    <button id="btn-skip" class="btn-nav" onclick="finishDialogue()">건너뛰기</button>
+    <button id="btn-next" class="btn-nav" onclick="goNext()" style="display: none;">다음</button>
+</div>
+
+<script>
+    // 대화 스크립트 데이터
+    const dialogues = [
+        {
+            speaker: "안내문",
+            text: "이곳의 화살 6개는 색깔과 문양이 모두 다르니, 경기에 쓸 화살 3개를 신중하게 고르시오.",
+            target: null
+        },
+        {
+            speaker: "투호장",
+            text: "어서 오시게. 투호 경기에 참여하려는 유생들인가?",
+            target: "char-투호장"
+        },
+        {
+            speaker: "민우",
+            text: "네! 화살통에 가지런히 꽂힌 화살들이 정말 아름다워요. 색깔과 깃털 장식이 전부 다르네요.",
+            target: "char-민우"
+        },
+        {
+            speaker: "서연",
+            text: "안내문을 보니 서로 다른 화살 6개 중에서 경기에 사용할 3개를 골라야 하는 것 같아요.",
+            target: "char-서연"
+        },
+        {
+            speaker: "투호장",
+            text: "허허, 맞게 보았네. 수많은 경우 중 지혜롭게 화살을 선택해 보게나!",
+            target: "char-투호장"
+        }
+    ];
+
+    let currentIndex = 0;
+
+    // 대화 업데이트 함수
+    function updateDialogue() {
+        const current = dialogues[currentIndex];
+        
+        // 텍스트 및 화자 갱신
+        document.getElementById("speaker-name").innerText = current.speaker;
+        document.getElementById("dialogue-text").innerText = current.text;
+
+        // 인물 강조 (밝기 조절)
+        const charWrappers = document.querySelectorAll('.char-wrapper');
+        charWrappers.forEach(wrapper => {
+            if (current.target && wrapper.id === current.target) {
+                wrapper.classList.remove('inactive');
+            } else {
+                wrapper.classList.add('inactive');
+            }
+        });
+
+        // 화자가 '안내문' 등 특정 인물이 아닐 경우 모든 캐릭터 동일하게 보이기
+        if (!current.target) {
+            charWrappers.forEach(wrapper => wrapper.classList.remove('inactive'));
+        }
+    }
+
+    // 대화 진행 함수
+    function advanceDialogue() {
+        currentIndex++;
+        if (currentIndex < dialogues.length) {
+            updateDialogue();
+        } else {
+            finishDialogue();
+        }
+    }
+
+    // 대화 종료 및 버튼 상태 변경
+    function finishDialogue() {
+        // 대화창 숨기기
+        document.getElementById("dialogue-box").style.display = "none";
+        document.getElementById("btn-skip").style.display = "none";
+        
+        // 모든 캐릭터 밝기 복구
+        const charWrappers = document.querySelectorAll('.char-wrapper');
+        charWrappers.forEach(wrapper => wrapper.classList.remove('inactive'));
+
+        // 다음 버튼 표시
+        document.getElementById("btn-next").style.display = "block";
+    }
+
+    // 페이지 이동 함수
+    function goPrev() {
+        window.location.href = "F01.html";
+    }
+
+    function goNext() {
+        window.location.href = "F03.html";
+    }
+
+    // 초기화
+    window.onload = function() {
+        updateDialogue();
+    };
+</script>
+
+</body>
+</html>

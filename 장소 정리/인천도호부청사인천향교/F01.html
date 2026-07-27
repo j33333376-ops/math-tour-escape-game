@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천도호부청사·인천향교 MATHTOUR - F01</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+        }
+
+        /* 게임 컨테이너 (16:9 비율) */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background-color: #f5f0e6;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid #d4af37;
+        }
+
+        /* 배경 이미지 */
+        #bg-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 스테이지 상단 표시바 */
+        #top-bar {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.65);
+            border: 1px solid #d4af37;
+            padding: 8px 20px;
+            border-radius: 4px;
+            color: #d4af37;
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        /* 캐릭터 레이어 무대 */
+        #stage-characters {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+        }
+
+        /* 캐릭터 래퍼 공통 */
+        .char-wrapper {
+            position: absolute;
+            transition: filter 0.25s ease;
+        }
+
+        .char-wrapper.inactive {
+            filter: brightness(0.55);
+        }
+
+        /* 공통 버튼 스타일 */
+        .btn-nav {
+            position: absolute;
+            z-index: 20;
+            background-color: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        .btn-nav:active {
+            transform: scale(0.98);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next, #btn-skip {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        /* 대화창 UI (유형 2) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 82%;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            padding: 20px 28px;
+            z-index: 10;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        #speaker-container {
+            margin-bottom: 10px;
+        }
+
+        #speaker-name {
+            display: inline-block;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #d4af37;
+            border-bottom: 1px solid #d4af37;
+            padding-bottom: 3px;
+        }
+
+        #dialogue-text {
+            color: #ffffff;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            word-break: keep-all;
+        }
+
+        #click-prompt {
+            position: absolute;
+            right: 20px;
+            bottom: 12px;
+            color: #d4af37;
+            font-size: 12px;
+            animation: blink 1.2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <img id="bg-image" src="투호놀이장.png" alt="인천도호부관아 투호장 배경">
+
+    <div id="top-bar">인천도호부청사 · 투호 연회장의 시작</div>
+
+    <div id="stage-characters">
+        <div class="char-wrapper" id="char-민우" style="left: 60px; bottom: 30px; width: 260px; height: 320px; overflow: visible;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <div class="char-wrapper" id="char-서연" style="left: 210px; bottom: 40px; width: 247px; height: 304px; overflow: visible;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.95); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <div class="char-wrapper" id="char-투호장" style="left: 730px; bottom: 35px; width: 273px; height: 336px; overflow: visible;">
+            <iframe src="등장인물_투호장.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1.05) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+    </div>
+
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-container">
+            <span id="speaker-name">화자</span>
+        </div>
+        <div id="dialogue-text">대화 내용이 이곳에 표시됩니다.</div>
+        <div id="click-prompt">▼ 클릭하여 계속</div>
+    </div>
+
+    <button id="btn-prev" class="btn-nav" onclick="goPrev()">이전</button>
+    <button id="btn-skip" class="btn-nav" onclick="finishDialogue()">건너뛰기</button>
+    <button id="btn-next" class="btn-nav" style="display: none;" onclick="goNext()">다음</button>
+</div>
+
+<script>
+    // URL 정의
+    const prevUrl = "index.html";
+    const nextUrl = "F02.html";
+
+    // 대화 스크립트 데이터
+    const dialogues = [
+        {
+            speaker: "해설",
+            text: "인천도호부관아 마당 한가운데 전통 투호 항아리가 놓여 있고, 밝은 표정의 부사가 학생들을 맞이하고 있다.",
+            target: null
+        },
+        {
+            speaker: "투호장",
+            text: "도호부관아 투호 연회에 온 것을 환영한다!",
+            target: "char-투호장"
+        },
+        {
+            speaker: "투호장",
+            text: "경기에 앞서, 수학의 이치로 너만의 화살을 준비해 보거라.",
+            target: "char-투호장"
+        },
+        {
+            speaker: "민우",
+            text: "수학의 이치로 화살을 준비한다고요? 투호에도 수학 공식이 숨어있는 건가요?",
+            target: "char-민우"
+        },
+        {
+            speaker: "서연",
+            text: "재밌겠는데! 민우야, 차근차근 문제를 해결해서 꼭 연회에서 승리하자.",
+            target: "char-서연"
+        },
+        {
+            speaker: "투호장",
+            text: "좋은 기세로다! 자, 그럼 첫 번째 시련을 맞이할 준비가 되었느냐?",
+            target: "char-투호장"
+        }
+    ];
+
+    let currentIndex = 0;
+
+    // 대화 및 화면 상태 갱신 함수
+    function updateDialogue() {
+        const currentData = dialogues[currentIndex];
+
+        // 화자 및 대사 표시
+        document.getElementById("speaker-name").innerText = currentData.speaker;
+        document.getElementById("dialogue-text").innerText = currentData.text;
+
+        // 모든 캐릭터 비활성화(어둡게) 후 말하는 캐릭터만 활성화(밝게)
+        const allChars = document.querySelectorAll(".char-wrapper");
+        allChars.forEach(char => char.classList.add("inactive"));
+
+        if (currentData.target) {
+            const activeChar = document.getElementById(currentData.target);
+            if (activeChar) {
+                activeChar.classList.remove("inactive");
+            }
+        } else {
+            // 해설 등 대상 지정이 없는 경우 모두 약간 밝게 또는 원상태 보존
+            allChars.forEach(char => char.classList.remove("inactive"));
+        }
+    }
+
+    // 대화 진행 함수
+    function advanceDialogue() {
+        currentIndex++;
+        if (currentIndex < dialogues.length) {
+            updateDialogue();
+        } else {
+            finishDialogue();
+        }
+    }
+
+    // 대화 종료 및 버튼 상태 전환
+    function finishDialogue() {
+        // 대화창 숨김
+        document.getElementById("dialogue-box").style.display = "none";
+        document.getElementById("btn-skip").style.display = "none";
+
+        // 모든 캐릭터 밝기 복구
+        const allChars = document.querySelectorAll(".char-wrapper");
+        allChars.forEach(char => char.classList.remove("inactive"));
+
+        // '다음' 버튼 표시
+        const btnNext = document.getElementById("btn-next");
+        btnNext.style.display = "block";
+        if (!nextUrl) {
+            btnNext.innerText = "End";
+        }
+    }
+
+    // 이전 이동
+    function goPrev() {
+        if (prevUrl) {
+            window.location.href = prevUrl;
+        }
+    }
+
+    // 다음 이동
+    function goNext() {
+        if (nextUrl) {
+            window.location.href = nextUrl;
+        }
+    }
+
+    // 초기 실행
+    window.onload = function() {
+        updateDialogue();
+    };
+</script>
+
+</body>
+</html>

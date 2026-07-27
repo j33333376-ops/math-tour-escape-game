@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>송도센트럴파크 MATHTOUR - E04</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #1a2619;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #3e4a3d;
+    }
+
+    /* 16:9 비율 고정 게임 컨테이너 */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #f2f7f2;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+    }
+
+    /* 배경 iframe (HTML 배경 에셋) */
+    .bg-iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1066px;
+      height: 600px;
+      border: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* 상단 나무 팻말 스테이지 바 */
+    .stage-bar {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      background: linear-gradient(135deg, #6d4c41, #4a332a);
+      color: #fdfbf7;
+      padding: 8px 20px;
+      border-radius: 12px;
+      font-family: 'Gowun Batang', serif;
+      font-size: 16px;
+      font-weight: bold;
+      border: 2px solid #8aa171;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stage-bar::before {
+      content: '🌿';
+      font-size: 14px;
+    }
+
+    /* 캐릭터 랩퍼 및 프레임 */
+    .char-wrapper {
+      position: absolute;
+      z-index: 3;
+      transition: filter 0.3s ease;
+      bottom: 60px;
+    }
+
+    .char-wrapper.inactive {
+      filter: brightness(0.55);
+    }
+
+    .char-wrapper iframe {
+      border: 0;
+      width: 260px;
+      height: 320px;
+      transform-origin: bottom left;
+      pointer-events: none;
+    }
+
+    /* 유형 2: 대화창 스타일 */
+    #dialogue-box {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 88%;
+      height: 140px;
+      background: rgba(45, 90, 39, 0.88);
+      border: 3px solid #6d4c41;
+      border-radius: 16px;
+      padding: 16px 24px;
+      color: #fdfbf7;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      z-index: 10;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      user-select: none;
+    }
+
+    #speaker-name {
+      font-family: 'Gowun Batang', serif;
+      font-size: 20px;
+      font-weight: bold;
+      color: #f4a261;
+      margin-bottom: 8px;
+      display: inline-block;
+      border-bottom: 2px solid #8aa171;
+      padding-bottom: 2px;
+    }
+
+    #dialogue-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+      color: #fdfbf7;
+      word-break: keep-all;
+    }
+
+    .click-prompt {
+      position: absolute;
+      right: 20px;
+      bottom: 12px;
+      font-size: 13px;
+      color: #8aa171;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* 공통 이동 버튼 스타일 */
+    .btn-nav {
+      position: absolute;
+      padding: 10px 24px;
+      background-color: #2d5a27;
+      color: #ffffff;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 4px 6px rgba(45, 90, 39, 0.3);
+      cursor: pointer;
+      z-index: 10;
+      transition: background-color 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-nav:hover {
+      background-color: #6d4c41;
+      transform: translateY(-2px);
+    }
+
+    .btn-nav:active {
+      transform: translateY(0);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+    }
+
+    #btn-next, #btn-skip {
+      right: 20px;
+      bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="game-container">
+  <!-- 배경 이미지 (HTML 에셋) -->
+  <iframe src="송도센트럴파크_인천도시역사관.html" class="bg-iframe" scrolling="no"></iframe>
+
+  <!-- 스테이지 상단 표시바 -->
+  <div class="stage-bar">송도센트럴파크 MATHTOUR - 인천도시역사관</div>
+
+  <!-- 등장인물: 민우 -->
+  <div class="char-wrapper" id="char-민우" style="left: 220px; width: 260px; height: 320px;">
+    <iframe src="등장인물_민우.html" scrolling="no"></iframe>
+  </div>
+
+  <!-- 등장인물: 서연 (좌우 반전하여 민우를 바라봄) -->
+  <div class="char-wrapper" id="char-서연" style="left: 580px; width: 260px; height: 320px;">
+    <iframe src="등장인물_서연.html" scrolling="no" style="transform: scaleX(-1);"></iframe>
+  </div>
+
+  <!-- 대화창 (유형 2) -->
+  <div id="dialogue-box" onclick="advanceDialogue()">
+    <div id="speaker-name">민우</div>
+    <div id="dialogue-text">대화를 불러오는 중입니다...</div>
+    <div class="click-prompt">클릭하여 계속 ▼</div>
+  </div>
+
+  <!-- 이동 버튼 -->
+  <button id="btn-prev" class="btn-nav" style="display: none;" onclick="goToUrl('E03.html')">이전</button>
+  <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+  <button id="btn-next" class="btn-nav" style="display: none;" onclick="goToUrl('index.html')">End</button>
+</div>
+
+<script>
+  // 대화 데이터 관리
+  const dialogues = [
+    {
+      speaker: "민우",
+      text: "와, 인천도시역사관에서 인천의 과거부터 지금까지의 발전 과정을 직접 확인하니까 정말 감회가 새로워!",
+      target: "char-민우"
+    },
+    {
+      speaker: "서연",
+      text: "맞아. 작은 항구 도시에서 시작해서 이렇게 멋진 첨단 국제도시 송도까지 이어지다니, 마치 시간에 따른 성장 공식을 직접 눈으로 본 기분이야.",
+      target: "char-서연"
+    },
+    {
+      speaker: "민우",
+      text: "건물과 거리 하나하나에도 수학적 비율과 계획이 숨어있다는 걸 알고 나니, 도시 전체가 하나의 커다란 수학 박물관처럼 느껴져.",
+      target: "char-서연"
+    },
+    {
+      speaker: "서연",
+      text: "후후, 오늘 매스투어 정말 보람찼지? 이제 역사관 문을 나섰으니 센트럴파크의 시원한 바람을 쐬면서 오늘 탐험을 마무리하자!",
+      target: "char-서연"
+    },
+    {
+      speaker: "민우",
+      text: "좋아! 다음번 매스투어 탐험도 벌써부터 기대된다. 함께 힘차게 출발해 볼까?",
+      target: "char-민우"
+    }
+  ];
+
+  let currentIndex = 0;
+
+  // 대화 진행 함수
+  function advanceDialogue() {
+    if (currentIndex < dialogues.length) {
+      const current = dialogues[currentIndex];
+      
+      // 대화 내용 및 화자 업데이트
+      document.getElementById("speaker-name").innerText = current.speaker;
+      document.getElementById("dialogue-text").innerText = current.text;
+
+      // 캐릭터 하이라이트 (말하는 캐릭터만 밝게, 나머지는 어둡게)
+      const allChars = document.querySelectorAll(".char-wrapper");
+      allChars.forEach(char => {
+        if (char.id === current.target) {
+          char.classList.remove("inactive");
+        } else {
+          char.classList.add("inactive");
+        }
+      });
+
+      currentIndex++;
+    } else {
+      // 대화 종료 처리
+      endDialogue();
+    }
+  }
+
+  // 대화 종료 시 UI 전환
+  function endDialogue() {
+    document.getElementById("dialogue-box").style.display = "none";
+    document.getElementById("btn-skip").style.display = "none";
+
+    // 모든 캐릭터 어둡기 해제
+    const allChars = document.querySelectorAll(".char-wrapper");
+    allChars.forEach(char => char.classList.remove("inactive"));
+
+    // Navigation 버튼 표시 (이전 / End)
+    document.getElementById("btn-prev").style.display = "flex";
+    document.getElementById("btn-next").style.display = "flex";
+  }
+
+  // 건너뛰기 기능
+  function skipDialogue() {
+    endDialogue();
+  }
+
+  // URL 이동 함수
+  function goToUrl(url) {
+    window.location.href = url;
+  }
+
+  // 초기화: 첫 대화 실행
+  window.onload = function() {
+    advanceDialogue();
+  };
+</script>
+
+</body>
+</html>

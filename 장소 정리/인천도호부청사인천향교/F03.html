@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천도호부청사·인천향교 MATHTOUR - F03</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+        }
+
+        /* 게임 컨테이너 (16:9 비율) */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background-color: #f5f0e6;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            border: 2px solid #d4af37;
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 스테이지 상단 표시바 */
+        #top-bar {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 20, 20, 0.85);
+            border: 1px solid #d4af37;
+            border-radius: 20px;
+            padding: 6px 24px;
+            z-index: 10;
+            color: #d4af37;
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* 등장인물 감싸는 Wrapper 및 필터 */
+        .char-wrapper {
+            position: absolute;
+            overflow: visible;
+            z-index: 3;
+            transition: filter 0.2s ease;
+        }
+
+        /* 공통 버튼 디자인 */
+        .btn-nav {
+            position: absolute;
+            background-color: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            z-index: 10;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        .btn-nav:active {
+            transform: scale(0.98);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next {
+            right: 20px;
+            bottom: 20px;
+            display: none; /* 정답을 맞추기 전에는 숨김 */
+        }
+
+        /* 중앙 수학 퀴즈 컨테이너 */
+        .quiz-container {
+            position: absolute;
+            top: 52%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 520px;
+            background: rgba(245, 240, 230, 0.94);
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            padding: 18px;
+            z-index: 10;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .quiz-header {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 18px;
+            font-weight: bold;
+            color: #8c3030;
+            margin-bottom: 8px;
+            text-align: center;
+            border-bottom: 1px dashed #d4af37;
+            padding-bottom: 5px;
+            width: 100%;
+        }
+
+        .quiz-desc {
+            font-size: 13px;
+            color: #2d3748;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            text-align: center;
+            word-break: keep-all;
+        }
+
+        /* 화살 선택 인터페이스 */
+        .arrow-board {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            background: rgba(140, 48, 48, 0.08);
+            padding: 8px;
+            border-radius: 6px;
+            width: 100%;
+        }
+
+        .arrow-item {
+            width: 38px;
+            height: 38px;
+            border: 2px solid #8c3030;
+            background-color: #fff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+            color: #8c3030;
+        }
+
+        .arrow-item.selected {
+            background-color: #8c3030;
+            color: #ffffff;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        /* 대나무 바구니 영역 */
+        .basket-area {
+            width: 100%;
+            height: 50px;
+            border: 2px dashed #d4af37;
+            background: rgba(212, 175, 55, 0.15);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .basket-label {
+            position: absolute;
+            top: -9px;
+            left: 12px;
+            background-color: #f5f0e6;
+            padding: 0 6px;
+            font-size: 11px;
+            color: #8c3030;
+            font-weight: bold;
+        }
+
+        .basket-slot {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #d4af37;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-weight: bold;
+            font-size: 13px;
+            color: #8c3030;
+        }
+
+        /* 입력 폼 영역 */
+        .quiz-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .quiz-input-group label {
+            font-size: 13px;
+            font-weight: bold;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .quiz-input {
+            width: 70px;
+            padding: 5px 8px;
+            border: 1px solid #8c3030;
+            border-radius: 4px;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 15px;
+            text-align: center;
+            outline: none;
+        }
+
+        .btn-submit {
+            background-color: #8c3030;
+            color: #fff;
+            border: 1px solid #d4af37;
+            padding: 5px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover {
+            background-color: #661f1f;
+        }
+
+        /* 메시지 출력 */
+        #quiz-msg {
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            min-height: 16px;
+            text-align: center;
+        }
+
+        .msg-success { color: #2e7d32; }
+        .msg-error { color: #c62828; }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <img src="투호놀이장.png" alt="투호놀이장 배경" class="bg-img">
+
+        <div id="top-bar">인천도호부청사 · 투호 체험장</div>
+
+        <div class="char-wrapper" id="char-민우" style="left: 40px; bottom: 30px; width: 234px; height: 288px;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <div class="char-wrapper" id="char-서연" style="left: 170px; bottom: 25px; width: 234px; height: 288px;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <div class="char-wrapper" id="char-투호장" style="left: 800px; bottom: 30px; width: 247px; height: 304px;">
+            <iframe src="등장인물_투호장.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.95) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <div class="quiz-container">
+            <div class="quiz-header">투호 화살 고르기 미션</div>
+            <div class="quiz-desc">
+                총 6개의 서로 다른 화살 중 순서에 상관없이 3개를 바구니에 담아보고,<br>
+                선택 가능한 모든 경우의 수를 구하시오!
+            </div>
+
+            <div class="arrow-board">
+                <div class="arrow-item" onclick="toggleArrow(1)">A</div>
+                <div class="arrow-item" onclick="toggleArrow(2)">B</div>
+                <div class="arrow-item" onclick="toggleArrow(3)">C</div>
+                <div class="arrow-item" onclick="toggleArrow(4)">D</div>
+                <div class="arrow-item" onclick="toggleArrow(5)">E</div>
+                <div class="arrow-item" onclick="toggleArrow(6)">F</div>
+            </div>
+
+            <div class="basket-area">
+                <div class="basket-label">대나무 바구니 (3개 선택)</div>
+                <div class="basket-slot" id="slot-0">-</div>
+                <div class="basket-slot" id="slot-1">-</div>
+                <div class="basket-slot" id="slot-2">-</div>
+            </div>
+
+            <div class="quiz-input-group">
+                <label for="ans-input">모든 경우의 수:</label>
+                <input type="number" id="ans-input" class="quiz-input" placeholder="답" min="0">
+                <button type="button" class="btn-submit" onclick="checkAnswer()">정답 확인</button>
+            </div>
+
+            <div id="quiz-msg"></div>
+        </div>
+
+        <button id="btn-prev" class="btn-nav" onclick="goPrev()">이전</button>
+        <button id="btn-next" class="btn-nav" onclick="goNext()">다음</button>
+    </div>
+
+    <script>
+        // 선택된 화살 목록 (최대 3개)
+        const selectedArrows = [];
+        const arrowNames = ['', 'A', 'B', 'C', 'D', 'E', 'F'];
+
+        // 화살 클릭 토글 함수
+        function toggleArrow(id) {
+            const index = selectedArrows.indexOf(id);
+            const items = document.querySelectorAll('.arrow-item');
+
+            if (index > -1) {
+                // 이미 선택된 경우 해제
+                selectedArrows.splice(index, 1);
+                items[id - 1].classList.remove('selected');
+            } else {
+                // 새로 선택하는 경우 (최대 3개 제한)
+                if (selectedArrows.length >= 3) {
+                    alert('화살은 최대 3개까지만 바구니에 담을 수 있습니다.');
+                    return;
+                }
+                selectedArrows.push(id);
+                items[id - 1].classList.add('selected');
+            }
+            updateBasketUI();
+        }
+
+        // 바구니 UI 갱신
+        function updateBasketUI() {
+            for (let i = 0; i < 3; i++) {
+                const slot = document.getElementById(`slot-${i}`);
+                if (i < selectedArrows.length) {
+                    slot.innerText = arrowNames[selectedArrows[i]];
+                    slot.style.borderColor = '#8c3030';
+                    slot.style.backgroundColor = '#fff';
+                } else {
+                    slot.innerText = '-';
+                    slot.style.borderColor = '#d4af37';
+                    slot.style.backgroundColor = 'rgba(255, 255, 255, 0.6)';
+                }
+            }
+        }
+
+        // 정답 판정 (6C3 = 20)
+        function checkAnswer() {
+            const userAns = document.getElementById('ans-input').value.trim();
+            const msgEl = document.getElementById('quiz-msg');
+
+            if (selectedArrows.length < 3) {
+                msgEl.className = 'msg-error';
+                msgEl.innerText = '화살 3개를 바구니에 먼저 담아보세요!';
+                return;
+            }
+
+            if (userAns === '') {
+                msgEl.className = 'msg-error';
+                msgEl.innerText = '경우의 수 답을 입력해주세요.';
+                return;
+            }
+
+            // 정답 검증 (6개 중 3개를 고르는 조합: 6C3 = 20)
+            if (parseInt(userAns, 10) === 20) {
+                msgEl.className = 'msg-success';
+                msgEl.innerText = '정답입니다! (6개 중 3개를 고르는 조합: ₆C₃ = 20가지)';
+                document.getElementById('btn-next').style.display = 'block';
+            } else {
+                msgEl.className = 'msg-error';
+                msgEl.innerText = '틀렸습니다. 서로 다른 6개 중 3개를 순서 없이 고르는 경우의 수를 다시 계산해보세요.';
+            }
+        }
+
+        // 페이지 이동 함수
+        function goPrev() {
+            window.location.href = 'F02.html';
+        }
+
+        function goNext() {
+            window.location.href = 'F04.html';
+        }
+    </script>
+</body>
+</html>
