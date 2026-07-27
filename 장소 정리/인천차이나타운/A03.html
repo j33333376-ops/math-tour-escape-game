@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>인천차이나타운 MATHTOUR - A03</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #1a1614;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #2d3748;
+    }
+
+    /* 16:9 메인 컨테이너 */
+    #game-container {
+      width: 1066px;
+      height: 600px;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      background-color: #f5f0e6;
+      border: 3px solid #d4af37;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+      overflow: hidden;
+    }
+
+    /* 스테이지 상단 표시바 */
+    .top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 40px;
+      background: rgba(20, 15, 12, 0.85);
+      border-bottom: 2px solid #d4af37;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 20;
+    }
+
+    .top-bar .title {
+      font-family: 'Nanum Myeongjo', serif;
+      color: #d4af37;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .top-bar .subtitle {
+      font-family: 'Nanum Gothic Coding', monospace;
+      color: #ffffff;
+      font-size: 0.9rem;
+    }
+
+    /* 등장인물 Wrapper */
+    .char-wrapper {
+      position: absolute;
+      z-index: 3;
+      transition: filter 0.2s;
+    }
+
+    /* 에셋 Wrapper */
+    .asset-wrapper {
+      position: absolute;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    /* 퀴즈 메인 컨테이너 */
+    .quiz-container {
+      position: absolute;
+      top: 48px;
+      left: 170px;
+      width: 726px;
+      height: 535px;
+      background: rgba(245, 240, 230, 0.95);
+      border: 2px solid #8c3030;
+      border-radius: 8px;
+      box-shadow: inset 0 0 10px rgba(140, 48, 48, 0.2);
+      padding: 12px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+    }
+
+    .quiz-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    .quiz-container::-webkit-scrollbar-thumb {
+      background: #8c3030;
+      border-radius: 3px;
+    }
+
+    .step-section {
+      background: #fff;
+      border: 1px solid #d4af37;
+      border-radius: 6px;
+      padding: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .step-title {
+      font-family: 'Nanum Myeongjo', serif;
+      color: #8c3030;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-bottom: 2px solid #8c3030;
+      padding-bottom: 4px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* 1단계 갤러리 */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .gallery-card {
+      background: #fdfbf7;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 4px;
+      text-align: center;
+    }
+
+    .gallery-card svg {
+      width: 100%;
+      height: 65px;
+      border-radius: 3px;
+      background: #f4eae1;
+      border: 1px solid #d4af37;
+    }
+
+    .gallery-card .mural-title {
+      font-size: 0.7rem;
+      font-weight: bold;
+      color: #8c3030;
+      margin: 2px 0;
+    }
+
+    .gallery-card .hero-tags {
+      font-size: 0.65rem;
+      color: #555;
+      background: #eae3d2;
+      border-radius: 2px;
+      padding: 1px;
+      font-family: 'Nanum Gothic Coding', monospace;
+    }
+
+    /* 카운팅 버튼 */
+    .hero-btn-group {
+      display: flex;
+      justify-content: space-around;
+      gap: 4px;
+    }
+
+    .hero-btn {
+      flex: 1;
+      background: #8c3030;
+      color: #fff;
+      border: 1px solid #d4af37;
+      padding: 4px 0;
+      font-size: 0.75rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .hero-btn:hover {
+      background: #661f1f;
+    }
+
+    /* 1&2단계 한 화면 레이아웃 */
+    .combined-step {
+      display: flex;
+      gap: 10px;
+    }
+
+    .table-container {
+      flex: 0.8;
+    }
+
+    .freq-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+      text-align: center;
+    }
+
+    .freq-table th, .freq-table td {
+      border: 1px solid #d4af37;
+      padding: 4px 2px;
+    }
+
+    .freq-table th {
+      background: #8c3030;
+      color: #fff;
+      font-family: 'Nanum Gothic Coding', monospace;
+    }
+
+    .freq-table td {
+      background: #fff;
+      font-family: 'Nanum Gothic Coding', monospace;
+    }
+
+    .chart-stage {
+      flex: 1.2;
+      position: relative;
+    }
+
+    /* SVG 차트 영역 */
+    #chart-svg {
+      width: 100%;
+      height: 180px;
+      background: #fdfbf7;
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      touch-action: none;
+    }
+
+    .histogram-bar {
+      fill: #8c3030;
+      fill-opacity: 0.75;
+      stroke: #8c3030;
+      stroke-width: 1.5;
+      cursor: ns-resize;
+      transition: fill-opacity 0.1s;
+    }
+
+    .histogram-bar:hover {
+      fill-opacity: 0.95;
+      fill: #d4af37;
+    }
+
+    .bar-hitbox {
+      fill: transparent;
+      cursor: ns-resize;
+    }
+
+    .polygon-point {
+      fill: #2d3748;
+      stroke: #d4af37;
+      stroke-width: 2;
+      r: 5;
+      cursor: pointer;
+      transition: r 0.2s, fill 0.2s;
+    }
+
+    .polygon-point:hover {
+      r: 7;
+      fill: #8c3030;
+    }
+
+    .polygon-point.active {
+      fill: #d4af37;
+    }
+
+    /* 점선(stroke-dasharray)을 제거하여 실선으로 변경 */
+    .polygon-line {
+      stroke: #8c3030;
+      stroke-width: 3;
+      fill: none;
+    }
+
+    /* 컨트롤 버튼들 */
+    .btn-action {
+      background: #8c3030;
+      color: white;
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-action:hover {
+      background: #661f1f;
+    }
+    .btn-action:disabled {
+      background: #ccc;
+      border-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    /* 최종 4단계 미션 */
+    .final-mission {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #eae3d2;
+      padding: 6px 12px;
+      border-radius: 4px;
+    }
+
+    .final-mission input[type="text"] {
+      width: 70px;
+      padding: 3px;
+      text-align: center;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-weight: bold;
+      border: 1px solid #8c3030;
+      border-radius: 4px;
+    }
+
+    /* 네비게이션 버튼 */
+    .btn-nav {
+      position: absolute;
+      background: #8c3030;
+      color: white;
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      padding: 8px 20px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      cursor: pointer;
+      z-index: 30;
+      transition: background 0.2s;
+    }
+
+    .btn-nav:hover {
+      background: #661f1f;
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 12px;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 12px;
+      display: none;
+    }
+
+    /* 성공 메시지 레이어 */
+    #success-modal {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: #d4af37;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
+    }
+
+    #success-modal h2 {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    #success-modal p {
+      color: #fff;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 상단 표시바 -->
+    <div class="top-bar">
+      <span class="title">인천차이나타운 MATHTOUR</span>
+      <span class="subtitle">STAGE A03 : 삼국지 벽화 통계 전술 지도</span>
+    </div>
+
+    <!-- 에셋: 인천차이나타운 삼국지 벽화거리 -->
+    <div class="asset-wrapper" style="left: 0px; bottom: 0px; width: 1066px; height: 600px;">
+      <iframe src="인천차이나타운_삼국지벽화거리.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(1.066, 1.2); transform-origin:top left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 민우 (좌측) -->
+    <div class="char-wrapper" id="char-민우" style="left: -20px; bottom: 0px; width: 208px; height: 256px;">
+      <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.8); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 서연 (우측) -->
+    <div class="char-wrapper" id="char-서연" style="right: -20px; bottom: 0px; width: 208px; height: 256px;">
+      <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.8) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 메인 퀴즈 컨테이너 -->
+    <div class="quiz-container">
+      
+      <!-- 1단계: 인물 일러스트 기반 벽화 갤러리 -->
+      <div class="step-section">
+        <div class="step-title">
+          <span>1단계: AI 가상 벽화 탐험 & 등장 횟수 수집</span>
+          <span style="font-size: 0.75rem; color: #666; font-weight: normal;">* 각 영웅 버튼을 클릭해 횟수를 카운트하세요!</span>
+        </div>
+        <div class="gallery-grid">
+          
+          <!-- 벽화 1: 도원결의 -->
+          <div class="gallery-card">
+            <svg viewBox="0 0 100 65">
+              <path d="M 0 50 Q 50 40 100 50 L 100 65 L 0 65 Z" fill="#c3a682"/>
+              <circle cx="20" cy="15" r="10" fill="#f8b195" opacity="0.6"/>
+              <circle cx="80" cy="18" r="12" fill="#f8b195" opacity="0.6"/>
+              
+              <g transform="translate(38, 15)">
+                <path d="M 8 3 L 16 3 L 18 9 L 6 9 Z" fill="#2d3748"/>
+                <circle cx="12" cy="13" r="5" fill="#fce0c6"/>
+                <path d="M 10 16 Q 12 21 14 16 Z" fill="#2d3748"/>
+                <path d="M 5 19 L 19 19 L 22 40 L 2 40 Z" fill="#8c3030"/>
+                <path d="M 10 19 L 14 19 L 14 40 L 10 40 Z" fill="#d4af37"/>
+              </g>
+
+              <g transform="translate(10, 18)">
+                <path d="M 6 5 Q 12 0 18 5 L 18 10 L 6 10 Z" fill="#2d5a27"/>
+                <circle cx="12" cy="14" r="5" fill="#e89d82"/>
+                <path d="M 9 17 Q 12 28 15 17 Z" fill="#1a1a1a"/>
+                <path d="M 4 20 L 20 20 L 22 38 L 2 38 Z" fill="#2d5a27"/>
+              </g>
+
+              <g transform="translate(66, 18)">
+                <circle cx="12" cy="14" r="6" fill="#f3d0b2"/>
+                <circle cx="12" cy="18" r="5" fill="#2d3748"/>
+                <path d="M 3 20 L 21 20 L 23 38 L 1 38 Z" fill="#2d3748"/>
+              </g>
+            </svg>
+            <div class="mural-title">1. 도원결의</div>
+            <div class="hero-tags">유비, 관우, 장비</div>
+          </div>
+
+          <!-- 벽화 2: 지략 대결 -->
+          <div class="gallery-card">
+            <svg viewBox="0 0 100 65">
+              <rect width="100" height="65" fill="#eddcc4"/>
+              <line x1="10" y1="52" x2="90" y2="52" stroke="#8c3030" stroke-width="2"/>
+              
+              <g transform="translate(18, 14)">
+                <path d="M 7 0 L 17 0 L 19 10 L 5 10 Z" fill="#2d3748"/>
+                <rect x="10" y="2" width="4" height="8" fill="#d4af37"/>
+                <circle cx="12" cy="14" r="5" fill="#fce0c6"/>
+                <path d="M 4 20 L 20 20 L 23 42 L 1 42 Z" fill="#ffffff" stroke="#ccc" stroke-width="0.5"/>
+                <path d="M 18 24 Q 26 20 22 30 Z" fill="#e2e2e2" stroke="#888" stroke-width="0.5"/>
+              </g>
+
+              <g transform="translate(58, 14)">
+                <path d="M 6 8 Q 12 0 18 8 Z" fill="#8c3030"/>
+                <rect x="11" y="0" width="2" height="6" fill="#d4af37"/>
+                <circle cx="12" cy="14" r="5" fill="#fce0c6"/>
+                <path d="M 9 17 Q 12 21 15 17 Z" fill="#2d3748"/>
+                <path d="M 4 20 L 20 20 L 22 42 L 2 42 Z" fill="#4a2c40"/>
+                <path d="M 8 20 L 16 20 L 16 35 L 8 35 Z" fill="#8c3030"/>
+              </g>
+            </svg>
+            <div class="mural-title">2. 지략 대결</div>
+            <div class="hero-tags">제갈량, 조조</div>
+          </div>
+
+          <!-- 벽화 3: 삼고초려 -->
+          <div class="gallery-card">
+            <svg viewBox="0 0 100 65">
+              <path d="M 50 12 L 95 30 L 55 30 Z" fill="#a67c52"/>
+              <rect x="60" y="30" width="30" height="25" fill="#d8c29d"/>
+              
+              <g transform="translate(18, 16)">
+                <path d="M 8 3 L 16 3 L 18 9 L 6 9 Z" fill="#2d3748"/>
+                <circle cx="12" cy="13" r="5" fill="#fce0c6"/>
+                <path d="M 10 16 Q 12 21 14 16 Z" fill="#2d3748"/>
+                <path d="M 5 19 L 19 19 L 22 40 L 2 40 Z" fill="#8c3030"/>
+                <circle cx="12" cy="24" r="3" fill="#d4af37"/>
+              </g>
+
+              <g transform="translate(48, 18)">
+                <path d="M 7 0 L 17 0 L 19 10 L 5 10 Z" fill="#2d3748"/>
+                <circle cx="12" cy="14" r="5" fill="#fce0c6"/>
+                <path d="M 4 20 L 20 20 L 22 38 L 2 38 Z" fill="#ffffff" stroke="#aaa" stroke-width="0.5"/>
+              </g>
+            </svg>
+            <div class="mural-title">3. 삼고초려</div>
+            <div class="hero-tags">유비, 제갈량</div>
+          </div>
+
+          <!-- 벽화 4: 장판교 전투 -->
+          <div class="gallery-card">
+            <svg viewBox="0 0 100 65">
+              <rect x="0" y="45" width="100" height="8" fill="#8d5b4c"/>
+              
+              <g transform="translate(15, 12)">
+                <circle cx="12" cy="14" r="6" fill="#f3d0b2"/>
+                <circle cx="12" cy="18" r="5" fill="#2d3748"/>
+                <path d="M 3 20 L 21 20 L 23 38 L 1 38 Z" fill="#2d3748"/>
+                <line x1="22" y1="2" x2="22" y2="40" stroke="#444" stroke-width="2"/>
+                <path d="M 20 2 L 22 -4 L 24 2 Z" fill="#d4af37"/>
+              </g>
+
+              <g transform="translate(62, 16)">
+                <path d="M 6 8 Q 12 0 18 8 Z" fill="#8c3030"/>
+                <circle cx="12" cy="14" r="5" fill="#fce0c6"/>
+                <path d="M 4 20 L 20 20 L 22 36 L 2 36 Z" fill="#4a2c40"/>
+              </g>
+            </svg>
+            <div class="mural-title">4. 장판교 전투</div>
+            <div class="hero-tags">장비, 조조</div>
+          </div>
+
+          <!-- 벽화 5: 적벽 대승 -->
+          <div class="gallery-card">
+            <svg viewBox="0 0 100 65">
+              <path d="M 0 65 Q 20 30 40 65 Q 60 25 80 65 Q 100 35 100 65 Z" fill="#e74c3c" opacity="0.5"/>
+              <path d="M 10 65 Q 30 40 50 65 Q 70 35 90 65 Z" fill="#f1c40f" opacity="0.7"/>
+
+              <g transform="translate(20, 15)">
+                <path d="M 8 3 L 16 3 L 18 9 L 6 9 Z" fill="#2d3748"/>
+                <circle cx="12" cy="13" r="5" fill="#fce0c6"/>
+                <path d="M 10 16 Q 12 21 14 16 Z" fill="#2d3748"/>
+                <path d="M 5 19 L 19 19 L 22 39 L 2 39 Z" fill="#8c3030"/>
+              </g>
+
+              <g transform="translate(55, 12)">
+                <path d="M 6 5 Q 12 0 18 5 L 18 10 L 6 10 Z" fill="#2d5a27"/>
+                <circle cx="12" cy="14" r="5" fill="#e89d82"/>
+                <path d="M 9 17 Q 12 28 15 17 Z" fill="#1a1a1a"/>
+                <path d="M 4 20 L 20 20 L 22 40 L 2 40 Z" fill="#2d5a27"/>
+                <line x1="23" y1="5" x2="23" y2="42" stroke="#d4af37" stroke-width="1.5"/>
+                <path d="M 21 5 Q 28 0 25 15 Z" fill="#ccc"/>
+              </g>
+            </svg>
+            <div class="mural-title">5. 적벽 대승</div>
+            <div class="hero-tags">유비, 관우</div>
+          </div>
+
+        </div>
+
+        <!-- 카운트 조작 버튼 -->
+        <div class="hero-btn-group">
+          <button class="hero-btn" onclick="addCount('유비')">유비 +1</button>
+          <button class="hero-btn" onclick="addCount('관우')">관우 +1</button>
+          <button class="hero-btn" onclick="addCount('장비')">장비 +1</button>
+          <button class="hero-btn" onclick="addCount('제갈량')">제갈량 +1</button>
+          <button class="hero-btn" onclick="addCount('조조')">조조 +1</button>
+          <button class="hero-btn" style="background:#555;" onclick="resetCount()">초기화</button>
+        </div>
+      </div>
+
+      <!-- 2단계 & 3단계: 도수분포표 + 인터랙티브 히스토그램 -->
+      <div class="step-section combined-step">
+        <div class="table-container">
+          <table class="freq-table" id="freq-table">
+            <thead>
+              <tr>
+                <th>영웅(계급)</th>
+                <th>도수(회)</th>
+                <th class="relative-col" style="display:none;">상대도수</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>유비</td><td id="freq-유비">0</td><td class="relative-col rel-val" style="display:none;">0.00</td></tr>
+              <tr><td>관우</td><td id="freq-관우">0</td><td class="relative-col rel-val" style="display:none;">0.00</td></tr>
+              <tr><td>장비</td><td id="freq-장비">0</td><td class="relative-col rel-val" style="display:none;">0.00</td></tr>
+              <tr><td>제갈량</td><td id="freq-제갈량">0</td><td class="relative-col rel-val" style="display:none;">0.00</td></tr>
+              <tr><td>조조</td><td id="freq-조조">0</td><td class="relative-col rel-val" style="display:none;">0.00</td></tr>
+              <tr style="background:#f5f0e6; font-weight:bold;">
+                <td>합계</td><td id="freq-total">0</td><td class="relative-col" id="rel-total" style="display:none;">1.00</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="font-size: 0.65rem; color: #777; margin-top: 4px;">* 정답 힌트: 유비3, 관우2, 장비2, 제갈량2, 조조2</div>
+        </div>
+
+        <div class="chart-stage">
+          <svg id="chart-svg" viewBox="0 0 350 180">
+            <g id="grid-lines" stroke="#e0e0e0" stroke-width="1"></g>
+            <g id="y-axis-labels" font-size="9" fill="#666" text-anchor="end"></g>
+            <g id="bars-group"></g>
+            <polyline id="polygon-line" class="polygon-line" points=""></polyline>
+            <g id="points-group"></g>
+            <g id="x-axis-labels" font-size="9" fill="#333" text-anchor="middle"></g>
+          </svg>
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+            <span id="step2-status" style="font-size: 0.7rem; font-weight: bold; color: #8c3030;">[2단계] 막대를 클릭/드래그해 표와 맞추세요.</span>
+            <div style="display:flex; gap: 4px;">
+              <button class="btn-action" id="btn-check-hist" onclick="checkHistogram()">히스토그램 검증</button>
+              <button class="btn-action" id="btn-draw-poly" onclick="togglePolygonDraw()" disabled>선 연결하기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4단계: 상대도수 미션 및 최종 제출 -->
+      <div class="step-section final-mission">
+        <div style="font-size: 0.8rem;">
+          <button class="btn-action" id="btn-toggle-rel" onclick="toggleRelativeFrequency()" disabled>4단계: 상대도수 보기 켜기</button>
+          <span style="margin-left: 8px;"><strong>미션:</strong> 전체 등장 횟수 중 <strong>'유비'</strong>의 상대도수는?</span>
+        </div>
+        <div>
+          <input type="text" id="ans-input" placeholder="0.00" disabled>
+          <button class="btn-action" id="btn-submit-final" onclick="submitFinalAnswer()" disabled>정답 제출</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 네비게이션 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="location.href='A02.html'">이전</button>
+    <button class="btn-nav" id="btn-next" onclick="location.href='A04.html'">다음</button>
+
+    <!-- 성공 모달 -->
+    <div id="success-modal">
+      <h2>🎉 축하합니다! 🎉</h2>
+      <p>삼국지 통계 전술 지도를 완벽하게 완성했습니다!</p>
+      <button class="btn-action" style="margin-top: 15px; padding: 8px 20px; font-size: 1rem;" onclick="location.href='A04.html'">다음 단계로 이동</button>
+    </div>
+  </div>
+
+  <script>
+    const heroes = ['유비', '관우', '장비', '제갈량', '조조'];
+    const heroCounts = { '유비': 0, '관우': 0, '장비': 0, '제갈량': 0, '조조': 0 };
+    const userBarHeights = { '유비': 0, '관우': 0, '장비': 0, '제갈량': 0, '조조': 0 };
+    const clickedPoints = Array(7).fill(false);
+
+    const svgWidth = 350;
+    const svgHeight = 180;
+    const paddingLeft = 35;
+    const paddingBottom = 25;
+    const paddingTop = 15;
+    const chartHeight = svgHeight - paddingBottom - paddingTop;
+    const chartWidth = svgWidth - paddingLeft - 10;
+    const maxFreq = 5;
+    const barWidth = chartWidth / 5;
+
+    let isHistogramCorrect = false;
+    let isPolygonConnected = false;
+    let isRelativeMode = false;
+    let activeDragHero = null;
+
+    window.onload = () => {
+      renderAxes();
+      renderBars();
+      renderXLabels();
+      setupGlobalDragEvents();
+    };
+
+    function addCount(hero) {
+      heroCounts[hero]++;
+      updateTable();
+    }
+
+    function resetCount() {
+      heroes.forEach(h => heroCounts[h] = 0);
+      updateTable();
+    }
+
+    function updateTable() {
+      let total = 0;
+      heroes.forEach(h => {
+        document.getElementById(`freq-${h}`).innerText = heroCounts[h];
+        total += heroCounts[h];
+      });
+      document.getElementById('freq-total').innerText = total;
+
+      if (isRelativeMode && total > 0) {
+        let relElements = document.querySelectorAll('.rel-val');
+        heroes.forEach((h, idx) => {
+          let rel = (heroCounts[h] / total).toFixed(2);
+          relElements[idx].innerText = rel;
+        });
+      }
+    }
+
+    function renderAxes() {
+      const gridGroup = document.getElementById('grid-lines');
+      const yLabelGroup = document.getElementById('y-axis-labels');
+      gridGroup.innerHTML = '';
+      yLabelGroup.innerHTML = '';
+
+      for (let i = 0; i <= maxFreq; i++) {
+        let y = svgHeight - paddingBottom - (i / maxFreq) * chartHeight;
+        
+        let line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', paddingLeft);
+        line.setAttribute('y1', y);
+        line.setAttribute('x2', svgWidth - 10);
+        line.setAttribute('y2', y);
+        line.setAttribute('stroke', i === 0 ? '#333' : '#e0e0e0');
+        gridGroup.appendChild(line);
+
+        let text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', paddingLeft - 5);
+        text.setAttribute('y', y + 3);
+        text.textContent = isRelativeMode ? (i / maxFreq).toFixed(1) : i;
+        yLabelGroup.appendChild(text);
+      }
+    }
+
+    function renderXLabels() {
+      const xLabelGroup = document.getElementById('x-axis-labels');
+      xLabelGroup.innerHTML = '';
+
+      heroes.forEach((hero, idx) => {
+        let x = paddingLeft + idx * barWidth + barWidth / 2;
+        let text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', x);
+        text.setAttribute('y', svgHeight - 8);
+        text.textContent = hero;
+        xLabelGroup.appendChild(text);
+      });
+    }
+
+    function getSvgY(clientY) {
+      const svg = document.getElementById('chart-svg');
+      const pt = svg.createSVGPoint();
+      pt.y = clientY;
+      const svgP = pt.matrixTransform(svg.getScreenCTM().inverse());
+      return svgP.y;
+    }
+
+    function updateBarFromY(hero, svgY) {
+      if (isHistogramCorrect) return;
+      let chartY = (svgHeight - paddingBottom) - svgY;
+      let newVal = Math.round((chartY / chartHeight) * maxFreq);
+      newVal = Math.max(0, Math.min(maxFreq, newVal));
+
+      if (userBarHeights[hero] !== newVal) {
+        userBarHeights[hero] = newVal;
+        renderBars();
+      }
+    }
+
+    function renderBars() {
+      const barsGroup = document.getElementById('bars-group');
+      barsGroup.innerHTML = '';
+
+      heroes.forEach((hero, idx) => {
+        let x = paddingLeft + idx * barWidth;
+        let val = userBarHeights[hero];
+        let h = (val / maxFreq) * chartHeight;
+        let y = svgHeight - paddingBottom - h;
+
+        let hitBox = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        hitBox.setAttribute('x', x);
+        hitBox.setAttribute('y', paddingTop);
+        hitBox.setAttribute('width', barWidth);
+        hitBox.setAttribute('height', chartHeight);
+        hitBox.setAttribute('class', 'bar-hitbox');
+
+        let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', x + 3);
+        rect.setAttribute('y', y);
+        rect.setAttribute('width', barWidth - 6);
+        rect.setAttribute('height', Math.max(2, h));
+        rect.setAttribute('class', 'histogram-bar');
+
+        let valText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        valText.setAttribute('x', x + barWidth / 2);
+        valText.setAttribute('y', y - 4);
+        valText.setAttribute('font-size', '9');
+        valText.setAttribute('font-weight', 'bold');
+        valText.setAttribute('fill', '#8c3030');
+        valText.setAttribute('text-anchor', 'middle');
+        valText.textContent = val > 0 ? val : '';
+
+        const startDrag = (e) => {
+          if (isHistogramCorrect) return;
+          activeDragHero = hero;
+          let clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          updateBarFromY(hero, getSvgY(clientY));
+        };
+
+        hitBox.addEventListener('mousedown', startDrag);
+        rect.addEventListener('mousedown', startDrag);
+        hitBox.addEventListener('touchstart', startDrag, { passive: true });
+        rect.addEventListener('touchstart', startDrag, { passive: true });
+
+        barsGroup.appendChild(hitBox);
+        barsGroup.appendChild(rect);
+        if (val > 0) barsGroup.appendChild(valText);
+      });
+    }
+
+    function setupGlobalDragEvents() {
+      const handleMove = (e) => {
+        if (!activeDragHero || isHistogramCorrect) return;
+        let clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        updateBarFromY(activeDragHero, getSvgY(clientY));
+      };
+
+      const handleEnd = () => {
+        activeDragHero = null;
+      };
+
+      window.addEventListener('mousemove', handleMove);
+      window.addEventListener('touchmove', handleMove, { passive: true });
+      window.addEventListener('mouseup', handleEnd);
+      window.addEventListener('touchend', handleEnd);
+    }
+
+    function checkHistogram() {
+      let totalCollected = Object.values(heroCounts).reduce((a, b) => a + b, 0);
+      if (totalCollected === 0) {
+        alert("먼저 1단계에서 영웅 버튼을 눌러 데이터를 수집해 주세요!");
+        return;
+      }
+
+      let match = heroes.every(h => heroCounts[h] === userBarHeights[h]);
+
+      if (match) {
+        isHistogramCorrect = true;
+        document.getElementById('step2-status').innerText = "✓ 히스토그램 완성! [3단계] 중점을 클릭해 점을 찍으세요.";
+        document.getElementById('step2-status').style.color = "#2b6cb0";
+        document.getElementById('btn-check-hist').disabled = true;
+        document.getElementById('btn-draw-poly').disabled = false;
+        
+        renderPolygonPoints();
+      } else {
+        alert("히스토그램 막대 높이가 1단계 수집 데이터와 일치하지 않습니다. 다시 맞춰보세요!");
+      }
+    }
+
+    function renderPolygonPoints() {
+      const pointsGroup = document.getElementById('points-group');
+      pointsGroup.innerHTML = '';
+
+      const pointCoords = [];
+      pointCoords.push({ x: paddingLeft - barWidth / 2, y: svgHeight - paddingBottom, idx: 0 });
+      
+      heroes.forEach((hero, idx) => {
+        let x = paddingLeft + idx * barWidth + barWidth / 2;
+        let val = userBarHeights[hero];
+        let y = svgHeight - paddingBottom - (val / maxFreq) * chartHeight;
+        pointCoords.push({ x, y, idx: idx + 1 });
+      });
+
+      pointCoords.push({ x: paddingLeft + 5 * barWidth + barWidth / 2, y: svgHeight - paddingBottom, idx: 6 });
+
+      pointCoords.forEach((pt) => {
+        let circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', pt.x);
+        circle.setAttribute('cy', pt.y);
+        circle.setAttribute('class', `polygon-point ${clickedPoints[pt.idx] ? 'active' : ''}`);
+
+        circle.onclick = () => {
+          clickedPoints[pt.idx] = !clickedPoints[pt.idx];
+          renderPolygonPoints();
+          if (isPolygonConnected) updatePolygonLine();
+        };
+
+        pointsGroup.appendChild(circle);
+      });
+    }
+
+    function togglePolygonDraw() {
+      let allClicked = clickedPoints.every(p => p === true);
+      if (!allClicked) {
+        alert("양 끝점(도수 0)을 포함하여 7개의 모든 중점을 찍어주어야 선을 연결할 수 있습니다!");
+        return;
+      }
+
+      isPolygonConnected = true;
+      updatePolygonLine();
+      document.getElementById('step2-status').innerText = "✓ 도수분포다각형 완성! [4단계] 미션에 도전하세요.";
+      document.getElementById('btn-toggle-rel').disabled = false;
+    }
+
+    function updatePolygonLine() {
+      const polyline = document.getElementById('polygon-line');
+      let coords = [];
+      coords.push(`${paddingLeft - barWidth / 2},${svgHeight - paddingBottom}`);
+      heroes.forEach((hero, idx) => {
+        let x = paddingLeft + idx * barWidth + barWidth / 2;
+        let val = userBarHeights[hero];
+        let y = svgHeight - paddingBottom - (val / maxFreq) * chartHeight;
+        coords.push(`${x},${y}`);
+      });
+      coords.push(`${paddingLeft + 5 * barWidth + barWidth / 2},${svgHeight - paddingBottom}`);
+
+      polyline.setAttribute('points', coords.join(' '));
+    }
+
+    function toggleRelativeFrequency() {
+      isRelativeMode = !isRelativeMode;
+      const relCols = document.querySelectorAll('.relative-col');
+      
+      relCols.forEach(col => {
+        col.style.display = isRelativeMode ? 'table-cell' : 'none';
+      });
+
+      document.getElementById('btn-toggle-rel').innerText = isRelativeMode ? "상대도수 보기 끄기" : "4단계: 상대도수 보기 켜기";
+      document.getElementById('ans-input').disabled = !isRelativeMode;
+      document.getElementById('btn-submit-final').disabled = !isRelativeMode;
+
+      renderAxes();
+      updateTable();
+    }
+
+    function submitFinalAnswer() {
+      let total = Object.values(heroCounts).reduce((a, b) => a + b, 0);
+      if (total === 0) return;
+
+      let correctRel = (heroCounts['유비'] / total).toFixed(2);
+      let userAns = document.getElementById('ans-input').value.trim();
+
+      if (userAns === correctRel) {
+        document.getElementById('success-modal').style.display = 'flex';
+        document.getElementById('btn-next').style.display = 'block';
+      } else {
+        alert(`아쉽습니다! 유비의 상대도수는 (유비 등장 횟수 / 전체 총합) = ${heroCounts['유비']}/${total} = ${correctRel} 입니다. 다시 입력해 주세요.`);
+      }
+    }
+  </script>
+</body>
+</html>

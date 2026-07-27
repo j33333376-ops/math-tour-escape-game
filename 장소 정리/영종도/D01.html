@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>영종도 MATHTOUR - 영종씨사이드 레일바이크</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      overflow: hidden;
+      color: #f8fafc;
+    }
+
+    /* 게임 컨테이너 (16:9 비율) */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #0f172a;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      transition: transform 0.8s ease-in, filter 0.8s ease-in, opacity 0.8s ease-in;
+    }
+
+    /* 다음 장면 전환 시 빨려들어가는 연출 */
+    #game-container.warp-effect {
+      transform: scale(0) rotate(720deg);
+      filter: blur(12px) brightness(2.5);
+      opacity: 0;
+    }
+
+    /* 배경 이미지 */
+    .bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      filter: brightness(0.85);
+    }
+
+    /* 은은한 배경 오버레이 */
+    .bg-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.1) 0%, rgba(15, 23, 42, 0.65) 100%);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* 상단 헤더 바 */
+    .top-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 48px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      border-bottom: 2px solid #38bdf8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .top-header .title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.15rem;
+      color: #38bdf8;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .top-header .title::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background-color: #38bdf8;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #38bdf8;
+    }
+
+    .top-header .sector-info {
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+      font-weight: 700;
+    }
+
+    /* 캐릭터 영역 */
+    .char-wrapper {
+      position: absolute;
+      overflow: visible;
+      z-index: 3;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
+    }
+
+    .char-wrapper iframe {
+      border: 0;
+      width: 260px;
+      height: 320px;
+      transform-origin: bottom left;
+      pointer-events: none;
+    }
+
+    /* 캐릭터 명찰 */
+    .char-nametag {
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 0.85rem;
+      padding: 2px 14px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* 유형 1: 상황 설명 박스 (글래스모피즘 스타일) */
+    .situation-box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 580px;
+      padding: 30px 36px;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(56, 189, 248, 0.1);
+      border-radius: 12px;
+      z-index: 5;
+      text-align: center;
+    }
+
+    .situation-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.45rem;
+      color: #38bdf8;
+      margin-bottom: 18px;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .situation-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 1rem;
+      line-height: 1.75;
+      color: #f1f5f9;
+      text-align: justify;
+      word-break: keep-all;
+    }
+
+    .situation-highlight {
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    /* 공통 이동 버튼 */
+    .btn-nav {
+      position: absolute;
+      background: rgba(15, 23, 42, 0.85);
+      border: 2px solid #38bdf8;
+      color: #38bdf8;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 10px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      outline: none;
+    }
+
+    .btn-nav:hover {
+      background: #38bdf8;
+      color: #0f172a;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="game-container">
+  <!-- 배경 이미지 -->
+  <img src="영종씨사이드 레일바이크.png" alt="영종씨사이드 레일바이크 배경" class="bg-img">
+  <div class="bg-overlay"></div>
+
+  <!-- 스테이지 상단 표시바 -->
+  <header class="top-header">
+    <div class="title">영종도 MATHTOUR</div>
+    <div class="sector-info">STAGE 01. 영종씨사이드 레일바이크</div>
+  </header>
+
+  <!-- 등장 인물: 민우 (좌측) -->
+  <div class="char-wrapper" id="char-민우" style="left: 40px; bottom: 30px; width: 234px; height: 288px;">
+    <div class="char-nametag">민우</div>
+    <iframe src="등장인물_민우.html" scrolling="no" style="transform: scale(0.9);"></iframe>
+  </div>
+
+  <!-- 등장 인물: 서연 (우측) -->
+  <div class="char-wrapper" id="char-서연" style="right: 40px; bottom: 30px; width: 234px; height: 288px;">
+    <div class="char-nametag">서연</div>
+    <iframe src="등장인물_서연.html" scrolling="no" style="transform: scale(0.9) scaleX(-1); transform-origin: bottom center;"></iframe>
+  </div>
+
+  <!-- 상황 설명 박스 (유형 1) -->
+  <main class="situation-box">
+    <div class="situation-title">영종씨사이드 레일바이크</div>
+    <div class="situation-text">
+      민우와 서연이는 영종도의 자랑인 <span class="situation-highlight">영종씨사이드 레일바이크</span>에 도착했습니다.<br><br>
+      인천의 아름다운 서해바다와 인천대교를 감상하며 달릴 수 있는 해안 체험 코스로, <span class="situation-highlight">왕복 약 5.6km</span>를 주행하며 다양한 속도로 운행합니다.<br><br>
+      신나게 레일바이크를 타며 그 속에 숨겨진 재미있는 수학의 원리를 함께 찾아볼까요?
+    </div>
+  </main>
+
+  <!-- 공통 이동 버튼 -->
+  <button class="btn-nav" id="btn-prev" onclick="goUrl('index.html')">&#9664; 이전</button>
+  <button class="btn-nav" id="btn-next" onclick="triggerWarpAndNavigate('D02.html')">다음 &#9654;</button>
+</div>
+
+<script>
+  // 빨려들어가는 전환 연출 후 다음 URL 이동
+  function triggerWarpAndNavigate(url) {
+    const container = document.getElementById('game-container');
+    container.classList.add('warp-effect');
+    
+    setTimeout(() => {
+      window.location.href = url;
+    }, 750);
+  }
+
+  // 이전 URL 이동
+  function goUrl(url) {
+    window.location.href = url;
+  }
+</script>
+
+</body>
+</html>

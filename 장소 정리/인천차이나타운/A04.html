@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>인천차이나타운 MATHTOUR - 삼국지 벽화거리</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #2d3748;
+    }
+
+    /* 16:9 가로 고정 스테이지 컨테이너 */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background: #f5f0e6;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      border: 3px solid #d4af37;
+    }
+
+    /* 상단 스테이지 바 */
+    #stage-header {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      z-index: 10;
+      background: rgba(20, 15, 10, 0.75);
+      border: 1px solid #d4af37;
+      padding: 8px 18px;
+      border-radius: 4px;
+      color: #d4af37;
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 16px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    /* 에셋 (건물/장소) 레이어 (z-index: 1) */
+    .bg-asset-wrapper {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 1000px;
+      height: 500px;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .bg-asset-wrapper iframe {
+      border: 0;
+      width: 1000px;
+      height: 500px;
+      transform: scale(1);
+      transform-origin: top left;
+      pointer-events: none;
+    }
+
+    /* 인물 레이어 (z-index: 3) */
+    .char-wrapper {
+      position: absolute;
+      bottom: 20px;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      z-index: 3;
+      filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.4));
+    }
+
+    .char-wrapper iframe {
+      border: 0;
+      width: 260px;
+      height: 320px;
+      transform: scale(1);
+      transform-origin: bottom left;
+      pointer-events: none;
+    }
+
+    #char-민우 {
+      left: 60px;
+    }
+
+    #char-서연 {
+      right: 60px;
+    }
+
+    /* 상황 설명 상자 (양피지/오래된 종이 컨셉) (z-index: 10) */
+    .situation-box {
+      position: absolute;
+      top: 65px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 82%;
+      max-width: 880px;
+      background: #f5f0e6;
+      border: 2px solid #8c3030;
+      box-shadow: 0 0 0 4px #d4af37, 0 8px 20px rgba(0, 0, 0, 0.4);
+      padding: 22px 30px;
+      border-radius: 6px;
+      z-index: 10;
+      text-align: center;
+    }
+
+    .situation-title {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 21px;
+      font-weight: bold;
+      color: #8c3030;
+      margin-bottom: 12px;
+      border-bottom: 1px dashed #d4af37;
+      padding-bottom: 6px;
+      display: inline-block;
+    }
+
+    .situation-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      color: #2d3748;
+      word-break: keep-all;
+    }
+
+    .situation-text span.speaker {
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-weight: bold;
+      color: #8c3030;
+    }
+
+    /* 네비게이션 버튼 (z-index: 10) */
+    .btn-nav {
+      position: absolute;
+      background-color: #8c3030;
+      color: #ffffff;
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      padding: 10px 24px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn-nav:hover {
+      background-color: #661f1f;
+      transform: translateY(-2px);
+    }
+
+    .btn-nav:active {
+      transform: translateY(0);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 스테이지 상단 표시바 -->
+    <div id="stage-header">인천차이나타운 MATHTOUR | 삼국지 벽화거리</div>
+
+    <!-- 상황 설명 박스 -->
+    <div class="situation-box">
+      <div class="situation-title">학습을 마치며</div>
+      <div class="situation-text">
+        삼국지 벽화거리를 천천히 거닐며 유비, 관우, 장비의 흥미진진한 역사적 사건들을 살펴보았습니다.<br><br>
+        <span class="speaker">민우:</span> "벽화에 담긴 삼국지 이야기들을 둘러보면서 역사의 흐름을 익히니 정말 재미있었어!"<br>
+        <span class="speaker">서연:</span> "맞아! 단순히 읽기만 한 게 아니라, 다양한 수량 자료를 정리하고 해석해보니까 수학이 훨씬 친근하게 느껴졌어."
+      </div>
+    </div>
+
+    <!-- 에셋: 인천차이나타운_삼국지벽화거리 (W: 1000, H: 500 원본 규격 기준) -->
+    <div class="bg-asset-wrapper">
+      <iframe src="인천차이나타운_삼국지벽화거리.html" scrolling="no" title="삼국지 벽화거리 배경"></iframe>
+    </div>
+
+    <!-- 등장인물: 민우 (좌측) -->
+    <div class="char-wrapper" id="char-민우">
+      <iframe src="등장인물_민우.html" scrolling="no" title="민우"></iframe>
+    </div>
+
+    <!-- 등장인물: 서연 (우측, 좌우 반전하여 민우를 바라보도록 설정) -->
+    <div class="char-wrapper" id="char-서연">
+      <iframe src="등장인물_서연.html" scrolling="no" style="transform: scale(1) scaleX(-1); transform-origin: bottom left;" title="서연"></iframe>
+    </div>
+
+    <!-- 이동 버튼 -->
+    <button id="btn-prev" class="btn-nav" onclick="goPrev()">이전</button>
+    <!-- 마지막 페이지이므로 다음 버튼 대신 End 버튼 표시 -->
+    <button id="btn-next" class="btn-nav" onclick="goEnd()">End</button>
+  </div>
+
+  <script>
+    function goPrev() {
+      window.location.href = 'A03.html';
+    }
+
+    function goEnd() {
+      alert('인천차이나타운 MATHTOUR 탐험을 모두 마쳤습니다!');
+      window.location.href = 'index.html';
+    }
+  </script>
+
+</body>
+</html>

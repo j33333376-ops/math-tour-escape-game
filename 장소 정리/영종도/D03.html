@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>영종도 MATHTOUR - D03 레일바이크 그래프 미션</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    :root {
+      --navy: #0b1e2c;
+      --blue: #00f0ff;
+      --sky: #122b3f;
+      --sea: #00a8e8;
+      --foam: #0b0c10;
+      --orange: #ff8c42;
+      --red: #ff003c;
+      --green: #00ff88;
+      --yellow: #ffd700;
+      --text: #e0ffff;
+      --muted: #8ab4f8;
+      --card: rgba(11, 20, 32, 0.92);
+      --shadow: 0 8px 32px rgba(0, 240, 255, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #ffffff;
+      overflow: hidden;
+    }
+
+    /* 게임 컨테이너 (1066px * 600px, 16:9) */
+    #game-container {
+      position: relative;
+      width: 1066px;
+      height: 600px;
+      aspect-ratio: 16 / 9;
+      background-color: #0b0c10;
+      overflow: hidden;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
+    }
+
+    /* 배경 이미지 */
+    .bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      filter: brightness(0.7) contrast(1.05);
+    }
+
+    /* 사이버 글로우 오버레이 */
+    .cyber-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(11, 12, 16, 0.3) 0%, rgba(11, 12, 16, 0.6) 100%),
+                  radial-gradient(circle at 50% 50%, transparent 60%, rgba(0, 240, 255, 0.1) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* 상단 헤더 바 */
+    #header-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 38px;
+      background: rgba(11, 12, 16, 0.85);
+      border-bottom: 2px solid #00f0ff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 20;
+      backdrop-filter: blur(5px);
+    }
+
+    .header-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.05rem;
+      color: #00f0ff;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-status {
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 0.8rem;
+      color: #e0ffff;
+      background: rgba(0, 240, 255, 0.15);
+      padding: 3px 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 240, 255, 0.4);
+    }
+
+    /* 캐릭터 및 에셋 배치 */
+    .char-wrapper {
+      position: absolute;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      transition: filter 0.3s ease, opacity 0.3s ease;
+    }
+
+    .char-wrapper.inactive {
+      filter: brightness(0.55);
+    }
+
+    /* 네비게이션 버튼 공통 스타일 */
+    .btn-nav {
+      position: absolute;
+      background: transparent;
+      border: 2px solid #00f0ff;
+      color: #00f0ff;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 0.95rem;
+      padding: 8px 22px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 10px #00f0ff;
+      z-index: 30;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-nav:hover {
+      background: #00f0ff;
+      color: #000000;
+      box-shadow: 0 0 20px #00f0ff;
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+      display: none; /* 마지막 미션까지 성공해야 나타남 */
+      border-color: #00ff88;
+      color: #00ff88;
+      box-shadow: 0 0 10px #00ff88;
+    }
+
+    #btn-next:hover {
+      background: #00ff88;
+      color: #000;
+      box-shadow: 0 0 20px #00ff88;
+    }
+
+    #btn-skip {
+      right: 20px;
+      bottom: 20px;
+    }
+
+    /* 대화창 (유형 2 비주얼 노벨 모드) */
+    #dialogue-box {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 820px;
+      height: 125px;
+      background: rgba(11, 18, 28, 0.92);
+      border: 2px solid #00f0ff;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3), inset 0 0 15px rgba(0, 240, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 15px 22px;
+      z-index: 25;
+      cursor: pointer;
+    }
+
+    #speaker-tag {
+      display: inline-block;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.05rem;
+      color: #00f0ff;
+      margin-bottom: 6px;
+      text-shadow: 0 0 6px rgba(0, 240, 255, 0.5);
+    }
+
+    #dialogue-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #ffffff;
+      letter-spacing: 0.03em;
+    }
+
+    .dialogue-tip {
+      position: absolute;
+      right: 15px;
+      bottom: 8px;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 0.75rem;
+      color: #00f0ff;
+      opacity: 0.7;
+      animation: blink 1.2s infinite alternate;
+    }
+
+    @keyframes blink {
+      0% { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+
+    /* 퀴즈 메인 컨테이너 */
+    #quiz-container {
+      position: absolute;
+      top: 45px;
+      left: 33px;
+      width: 1000px;
+      height: 535px;
+      background: rgba(11, 16, 25, 0.94);
+      border: 2px solid #00f0ff;
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.25);
+      backdrop-filter: blur(12px);
+      z-index: 15;
+      display: none;
+      padding: 12px 16px;
+      overflow-y: auto;
+      color: var(--text);
+    }
+
+    /* 커스텀 스크롤바 */
+    #quiz-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    #quiz-container::-webkit-scrollbar-track {
+      background: rgba(0, 240, 255, 0.05);
+    }
+    #quiz-container::-webkit-scrollbar-thumb {
+      background: #00f0ff;
+      border-radius: 3px;
+    }
+
+    /* 퀴즈 내장 스타일 */
+    .app {
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .hero {
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 240, 255, 0.15);
+      background: linear-gradient(180deg, #122b3f 0%, #0b1e2c 100%);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      position: relative;
+      min-height: 80px;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 3;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid #00f0ff;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #00f0ff;
+      font-family: 'Nanum Gothic Coding', monospace;
+    }
+
+    h1 {
+      margin: 4px 0 2px;
+      font-size: 1.3rem;
+      line-height: 1.2;
+      font-family: 'Black Han Sans', sans-serif;
+      color: #ffffff;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-copy p {
+      margin: 0;
+      font-size: 0.82rem;
+      color: #e0ffff;
+      opacity: 0.9;
+    }
+
+    .section {
+      margin-top: 10px;
+      background: rgba(15, 23, 36, 0.85);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 1rem;
+      font-family: 'Black Han Sans', sans-serif;
+      color: #00f0ff;
+    }
+
+    .tiny {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-family: 'Nanum Gothic Coding', monospace;
+    }
+
+    .missions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .mission-card {
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      background: rgba(10, 20, 32, 0.8);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: left;
+      transition: 0.2s all;
+      cursor: pointer;
+      color: #e0ffff;
+    }
+
+    .mission-card:hover {
+      border-color: #00f0ff;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+    }
+
+    .mission-card.active {
+      border-color: #00f0ff;
+      background: rgba(0, 240, 255, 0.15);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    }
+
+    .mission-no {
+      display: inline-grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #00f0ff;
+      color: #000;
+      font-weight: 900;
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+      font-family: 'Black Han Sans', sans-serif;
+    }
+
+    .mission-card strong {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 3px;
+      color: #fff;
+    }
+
+    .mission-card span {
+      display: block;
+      font-size: 0.78rem;
+      line-height: 1.4;
+      color: var(--muted);
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 260px;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      background: #080d14;
+      overflow: hidden;
+      height: 230px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 230px;
+      touch-action: none;
+    }
+
+    .canvas-label {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      display: flex;
+      gap: 10px;
+      background: rgba(11, 16, 25, 0.88);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-family: 'Nanum Gothic Coding', monospace;
+    }
+
+    .legend {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .legend-line {
+      width: 18px;
+      height: 0;
+      border-top: 2px solid;
+    }
+
+    .legend-line.target {
+      border-top-color: #8ab4f8;
+      border-top-style: dashed;
+    }
+
+    .legend-line.actual {
+      border-top-color: #ff003c;
+    }
+
+    .side-panel {
+      display: grid;
+      gap: 8px;
+    }
+
+    .status-card {
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(10, 22, 36, 0.8);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+    }
+
+    .status-card h3 {
+      margin: 0 0 8px;
+      font-size: 0.85rem;
+      color: #00f0ff;
+      font-family: 'Black Han Sans', sans-serif;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .metric {
+      border-radius: 6px;
+      padding: 6px 8px;
+      background: rgba(15, 28, 44, 0.9);
+      border: 1px solid rgba(0, 240, 255, 0.15);
+    }
+
+    .metric small {
+      display: block;
+      color: var(--muted);
+      font-size: 0.68rem;
+      font-family: 'Nanum Gothic Coding', monospace;
+      margin-bottom: 2px;
+    }
+
+    .metric strong {
+      font-size: 0.92rem;
+      font-family: 'Nanum Gothic Coding', monospace;
+      color: #00f0ff;
+    }
+
+    .feedback {
+      min-height: 52px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      color: #e0ffff;
+    }
+
+    .feedback.perfect {
+      background: rgba(0, 255, 136, 0.15);
+      border-color: #00ff88;
+      color: #00ff88;
+    }
+
+    .feedback.good {
+      background: rgba(255, 215, 0, 0.15);
+      border-color: #ffd700;
+      color: #ffd700;
+    }
+
+    .feedback.warning {
+      background: rgba(255, 0, 60, 0.15);
+      border-color: #ff003c;
+      color: #ff003c;
+    }
+
+    .control-panel {
+      margin-top: 8px;
+      border-radius: 10px;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, rgba(11, 30, 44, 0.95), rgba(8, 126, 139, 0.3));
+      border: 1px solid #00f0ff;
+      color: white;
+    }
+
+    .control-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .speed-display {
+      font-size: 1.4rem;
+      font-weight: 900;
+      font-family: 'Nanum Gothic Coding', monospace;
+      color: #00f0ff;
+    }
+
+    .speed-display small {
+      font-size: 0.8rem;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 32px;
+      background: transparent;
+      accent-color: #00f0ff;
+      cursor: pointer;
+    }
+
+    .range-end {
+      font-weight: 700;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      font-family: 'Nanum Gothic Coding', monospace;
+      color: var(--muted);
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-weight: 700;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: 0.15s all;
+    }
+
+    .btn.primary {
+      background: #00f0ff;
+      color: #000;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+    }
+
+    .btn.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #e0ffff;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+    }
+
+    .btn.success {
+      background: #00ff88;
+      color: #000;
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      box-shadow: none !important;
+    }
+
+    .countdown {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(5, 12, 20, 0.85);
+      z-index: 100;
+      color: #00f0ff;
+      font-size: 80px;
+      font-family: 'Black Han Sans', sans-serif;
+      text-shadow: 0 0 30px #00f0ff;
+      backdrop-filter: blur(4px);
+    }
+
+    .countdown.show {
+      display: grid;
+    }
+
+    .results {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .results.show {
+      display: block;
+    }
+
+    .result-banner {
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
+      margin-bottom: 10px;
+      background: rgba(11, 24, 38, 0.9);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+    }
+
+    .result-banner.success {
+      background: rgba(0, 255, 136, 0.12);
+      border-color: #00ff88;
+    }
+
+    .result-banner.retry {
+      background: rgba(255, 0, 60, 0.12);
+      border-color: #ff003c;
+    }
+
+    .result-banner h2 {
+      margin: 0 0 4px;
+      font-size: 1.15rem;
+      font-family: 'Black Han Sans', sans-serif;
+    }
+
+    .score {
+      font-size: 2.2rem;
+      font-weight: 900;
+      font-family: 'Nanum Gothic Coding', monospace;
+      color: #00f0ff;
+      margin: 4px 0;
+    }
+
+    .segment-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .segment {
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 8px;
+      padding: 8px;
+      background: rgba(10, 18, 28, 0.8);
+    }
+
+    .segment.worst {
+      border-color: #ff003c;
+      background: rgba(255, 0, 60, 0.1);
+    }
+
+    .segment strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.78rem;
+      color: #fff;
+    }
+
+    .segment .seg-score {
+      font-size: 1.1rem;
+      font-weight: 900;
+      font-family: 'Nanum Gothic Coding', monospace;
+      color: #00f0ff;
+    }
+
+    .segment p {
+      font-size: 0.75rem;
+      line-height: 1.4;
+      color: var(--muted);
+      margin: 4px 0 0;
+    }
+
+    .help {
+      margin-top: 8px;
+      border-radius: 8px;
+      background: rgba(0, 240, 255, 0.05);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      padding: 8px 10px;
+      font-size: 0.78rem;
+    }
+
+    .help summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: #00f0ff;
+    }
+
+    .help ul {
+      margin: 6px 0 0;
+      padding-left: 16px;
+      line-height: 1.5;
+      color: #e0ffff;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 배경 이미지 -->
+    <img src="영종씨사이드 레일바이크.png" class="bg-img" alt="영종도 씨사이드파크 레일바이크">
+    <div class="cyber-overlay"></div>
+
+    <!-- 상단 헤더 바 -->
+    <header id="header-bar">
+      <div class="header-title">
+        <span>⚡ STAGE D03</span>
+        <span style="color:#ffffff;">::</span>
+        <span>영종도 씨사이드파크 레일바이크</span>
+      </div>
+      <div class="header-status">
+        MISSION: GRAPH CONTROL
+      </div>
+    </header>
+
+    <!-- 등장 인물 : 민우 (좌측) -->
+    <div class="char-wrapper" id="char-민우" style="left: 30px; bottom: 15px; z-index: 3;">
+      <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장 인물 : 서연 (우측, 좌우 반전) -->
+    <div class="char-wrapper" id="char-서연" style="right: 30px; bottom: 15px; z-index: 3;">
+      <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 대화창 UI (비주얼 노벨 모드) -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+      <div id="speaker-tag">민우</div>
+      <div id="dialogue-text">대사를 로딩 중입니다...</div>
+      <div class="dialogue-tip">클릭하여 계속 ▼</div>
+    </div>
+
+    <!-- 공통 네비게이션 버튼 -->
+    <a href="D02.html" class="btn-nav" id="btn-prev">◀ 이전</a>
+    <button class="btn-nav" id="btn-skip" onclick="finishDialogue()">건너뛰기 ⏩</button>
+    <a href="D04.html" class="btn-nav" id="btn-next">다음 구역 (D04) ▶</a>
+
+    <!-- 퀴즈 컨테이너 -->
+    <div id="quiz-container">
+      <div class="app">
+        <header class="hero">
+          <div class="hero-copy">
+            <span class="eyebrow">🌊 영종도 씨사이드파크 매쓰투어</span>
+            <h1>레일바이크 그래프 미션</h1>
+            <p>목표 속력 그래프를 살펴보고, 15초 동안 속력 레버를 움직여 그래프를 따라가세요!</p>
+          </div>
+        </header>
+
+        <section class="section">
+          <div class="section-title">
+            <h2>1. 미션 선택</h2>
+            <span class="tiny">순서대로 미션을 하나씩 완성해 보세요.</span>
+          </div>
+          <div class="missions" id="missionCards"></div>
+        </section>
+
+        <main class="section" style="margin-top:10px;">
+          <div class="section-title">
+            <h2>2. 목표 그래프 따라가기</h2>
+            <span class="tiny" id="missionDescription"></span>
+          </div>
+
+          <div class="dashboard">
+            <div>
+              <div class="canvas-wrap">
+                <canvas id="graph" role="img" aria-label="목표 속력과 실제 속력을 보여주는 속력-시간 그래프"></canvas>
+                <div class="canvas-label">
+                  <span class="legend"><i class="legend-line target"></i>목표 그래프</span>
+                  <span class="legend"><i class="legend-line actual"></i>내 그래프</span>
+                </div>
+              </div>
+
+              <div class="control-panel">
+                <div class="control-top">
+                  <div>
+                    <div style="font-weight:800; font-size:0.9rem;">속력 레버</div>
+                    <div style="font-size:0.75rem; opacity:0.82;">목표 그래프의 높이에 맞춰 움직이세요.</div>
+                  </div>
+                  <div class="speed-display"><span id="speedValue">0.0</span> <small>m/s</small></div>
+                </div>
+                <div class="slider-row">
+                  <span class="range-end">0</span>
+                  <label class="sr-only" for="speedSlider">현재 속력 조절</label>
+                  <input id="speedSlider" type="range" min="0" max="10" step="0.1" value="0"
+                         aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" aria-valuetext="0 미터 매 초" />
+                  <span class="range-end">10 m/s</span>
+                </div>
+                <div class="actions">
+                  <button class="btn primary" id="startBtn">주행 시작</button>
+                  <button class="btn secondary" id="resetBtn">처음부터</button>
+                </div>
+              </div>
+            </div>
+
+            <aside class="side-panel">
+              <div class="status-card">
+                <h3>실시간 주행 정보</h3>
+                <div class="metric-grid">
+                  <div class="metric"><small>현재 시간</small><strong id="timeValue">0.0초</strong></div>
+                  <div class="metric"><small>남은 시간</small><strong id="remainValue">15.0초</strong></div>
+                  <div class="metric"><small>목표 속력</small><strong id="targetValue">0.0 m/s</strong></div>
+                  <div class="metric"><small>현재 일치도</small><strong id="liveAccuracy">-</strong></div>
+                </div>
+              </div>
+              <div class="feedback" id="feedback" aria-live="polite">목표 그래프를 먼저 살펴보세요.</div>
+              <details class="help">
+                <summary>그래프 읽기 도움말</summary>
+                <ul>
+                  <li>그래프가 올라가면 속력이 빨라져요.</li>
+                  <li>그래프가 내려가면 속력이 느려져요.</li>
+                  <li>그래프가 수평이면 같은 속력을 유지해요.</li>
+                  <li>그래프가 가파를수록 속력이 더 빠르게 변해요.</li>
+                </ul>
+              </details>
+            </aside>
+          </div>
+        </main>
+
+        <section class="section results" id="results" aria-live="polite">
+          <div class="result-banner" id="resultBanner">
+            <h2 id="resultTitle"></h2>
+            <div class="score" id="finalScore">0%</div>
+            <p id="resultMessage" style="font-size:0.85rem; color:#e0ffff;"></p>
+          </div>
+
+          <div class="section-title">
+            <h2>3. 내 주행 결과 살펴보기</h2>
+            <span class="tiny">가장 차이가 큰 구간은 빨간색으로 표시돼요.</span>
+          </div>
+
+          <div class="segment-grid" id="segmentGrid"></div>
+
+          <div class="actions">
+            <button class="btn secondary" id="retryBtn">다시 도전하기</button>
+            <button class="btn success" id="nextBtnQuiz" disabled>다음 미션으로 이동</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- 카운트다운 레이어 -->
+    <div class="countdown" id="countdown" aria-live="assertive"></div>
+  </div>
+
+  <script>
+    /* --- 자연스러운 스토리 대화 시스템 --- */
+    const dialogues = [
+      { speaker: "민우", text: "와, 영종도 씨사이드파크 레일바이크에 드디어 도착했어! 탁 트인 바다가 보여서 기분 진짜 좋다!", target: "char-민우" },
+      { speaker: "서연", text: "그냥 타는 것보다 '레일바이크 그래프 미션'에 도전해보는 건 어때? 속력 레버를 맞춰서 목표 그래프를 완벽하게 따라가는 거지!", target: "char-서연" },
+      { speaker: "민우", text: "좋아! 그래프가 올라가면 속력을 높이고, 내려가면 줄이면 되겠네. 총 3개 구간 미션이지?", target: "char-민우" },
+      { speaker: "서연", text: "응! 각 미션에서 85% 이상 목표를 맞춰서 3개 미션을 모두 성공해보자!", target: "char-서연" }
+    ];
+
+    let currentDialogueIndex = 0;
+
+    function updateDialogueUI() {
+      if (currentDialogueIndex >= dialogues.length) {
+        finishDialogue();
+        return;
+      }
+
+      const d = dialogues[currentDialogueIndex];
+      document.getElementById("speaker-tag").textContent = d.speaker;
+      document.getElementById("speaker-tag").style.color = (d.speaker === "민우") ? "#00f0ff" : "#ffd700";
+      document.getElementById("dialogue-text").textContent = d.text;
+
+      const minwoo = document.getElementById("char-민우");
+      const seoyeon = document.getElementById("char-서연");
+
+      if (d.speaker === "민우") {
+        minwoo.classList.remove("inactive");
+        seoyeon.classList.add("inactive");
+      } else {
+        seoyeon.classList.remove("inactive");
+        minwoo.classList.add("inactive");
+      }
+    }
+
+    function advanceDialogue() {
+      currentDialogueIndex++;
+      updateDialogueUI();
+    }
+
+    function finishDialogue() {
+      document.getElementById("dialogue-box").style.display = "none";
+      document.getElementById("btn-skip").style.display = "none";
+      
+      const minwoo = document.getElementById("char-민우");
+      const seoyeon = document.getElementById("char-서연");
+      minwoo.style.filter = "brightness(0.65)";
+      seoyeon.style.filter = "brightness(0.65)";
+
+      const quizBox = document.getElementById("quiz-container");
+      quizBox.style.display = "block";
+
+      if (window.resizeCanvasQuiz) {
+        window.resizeCanvasQuiz();
+      }
+    }
+
+    updateDialogueUI();
+
+
+    /* --- 퀴즈 및 미션 로직 --- */
+    (() => {
+      "use strict";
+
+      const DURATION = 15;
+      const MAX_SPEED = 10;
+      const SAMPLE_INTERVAL = 100;
+      const SUCCESS_SCORE = 85;
+
+      // 미션 클리어 상태 저장 (3개 미션 완수 여부 체크)
+      const completedMissions = [false, false, false];
+
+      const missions = [
+        {
+          title: "바다 전망 구간",
+          summary: "일정하게 빨라지고, 같은 속력을 유지한 뒤, 일정하게 느려져요.",
+          segmentNames: ["속력 높이기", "속력 유지하기", "속력 낮추기"],
+          target(t){
+            if(t <= 5) return 1.6 * t;
+            if(t <= 10) return 8;
+            return Math.max(0, 8 - 1.6 * (t - 10));
+          }
+        },
+        {
+          title: "오르막길 구간",
+          summary: "처음에는 천천히, 뒤로 갈수록 빠르게 속력을 높이는 곡선이 나와요.",
+          segmentNames: ["점점 빠르게 높이기", "속력 유지하기", "점점 천천히 낮추기"],
+          target(t){
+            if(t <= 5){
+              const x = t / 5;
+              return 8 * x * x;
+            }
+            if(t <= 10) return 8;
+            const x = (t - 10) / 5;
+            return 8 * (1 - Math.sqrt(x));
+          }
+        },
+        {
+          title: "안전거리 유지 구간",
+          summary: "곡선의 가파르기가 달라지고, 가운데 구간에서도 속력이 조금씩 변해요.",
+          segmentNames: ["점점 천천히 높이기", "안전거리 맞추기", "점점 빠르게 낮추기"],
+          target(t){
+            if(t <= 5){
+              const x = t / 5;
+              return 8 * Math.sqrt(x);
+            }
+            if(t <= 10){
+              const x = (t - 5) / 5;
+              return 8 - 1.2 * Math.sin(Math.PI * x);
+            }
+            const x = (t - 10) / 5;
+            return 8 * (1 - x * x);
+          }
+        }
+      ];
+
+      const els = {
+        canvas: document.getElementById("graph"),
+        missionCards: document.getElementById("missionCards"),
+        missionDescription: document.getElementById("missionDescription"),
+        speedSlider: document.getElementById("speedSlider"),
+        speedValue: document.getElementById("speedValue"),
+        startBtn: document.getElementById("startBtn"),
+        resetBtn: document.getElementById("resetBtn"),
+        timeValue: document.getElementById("timeValue"),
+        remainValue: document.getElementById("remainValue"),
+        targetValue: document.getElementById("targetValue"),
+        liveAccuracy: document.getElementById("liveAccuracy"),
+        feedback: document.getElementById("feedback"),
+        countdown: document.getElementById("countdown"),
+        results: document.getElementById("results"),
+        resultBanner: document.getElementById("resultBanner"),
+        resultTitle: document.getElementById("resultTitle"),
+        finalScore: document.getElementById("finalScore"),
+        resultMessage: document.getElementById("resultMessage"),
+        segmentGrid: document.getElementById("segmentGrid"),
+        retryBtn: document.getElementById("retryBtn"),
+        nextBtnQuiz: document.getElementById("nextBtnQuiz")
+      };
+
+      const ctx = els.canvas.getContext("2d");
+      let selectedMission = 0;
+      let running = false;
+      let startTime = 0;
+      let lastSample = 0;
+      let samples = [];
+      let animationId = null;
+      let currentTime = 0;
+
+      function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
+      function targetAt(t){ return clamp(missions[selectedMission].target(clamp(t,0,DURATION)),0,MAX_SPEED); }
+
+      function buildMissionCards(){
+        els.missionCards.innerHTML = "";
+        missions.forEach((m,i) => {
+          const btn = document.createElement("button");
+          btn.className = "mission-card" + (i === selectedMission ? " active" : "");
+          
+          let statusText = m.summary;
+          if (completedMissions[i]) {
+            statusText = "✅ 클리어 완료!";
+          }
+
+          btn.innerHTML = `
+            <span class="mission-no">${i+1}</span>
+            <strong>${m.title}</strong>
+            <span>${statusText}</span>`;
+          btn.setAttribute("aria-pressed", String(i === selectedMission));
+          btn.addEventListener("click", () => {
+            if(running) return;
+            selectedMission = i;
+            resetMission(false);
+            buildMissionCards();
+            updateMissionText();
+          });
+          els.missionCards.appendChild(btn);
+        });
+      }
+
+      function updateMissionText(){
+        els.missionDescription.textContent = `미션 ${selectedMission+1}: ${missions[selectedMission].summary}`;
+      }
+
+      function setMissionButtonsDisabled(disabled){
+        [...els.missionCards.children].forEach(b => b.disabled = disabled);
+      }
+
+      function resizeCanvas(){
+        const rect = els.canvas.getBoundingClientRect();
+        const dpr = Math.max(1, window.devicePixelRatio || 1);
+        els.canvas.width = Math.round(rect.width * dpr);
+        els.canvas.height = Math.round(rect.height * dpr);
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+        drawGraph();
+      }
+      window.resizeCanvasQuiz = resizeCanvas;
+
+      function graphBox(){
+        const w = els.canvas.clientWidth;
+        const h = els.canvas.clientHeight;
+        return {left:45, right:w-15, top:25, bottom:h-30, width:w-60, height:h-55};
+      }
+      function xFor(t,b){ return b.left + (t/DURATION)*b.width; }
+      function yFor(v,b){ return b.bottom - (v/MAX_SPEED)*b.height; }
+
+      function drawGraph(){
+        const w = els.canvas.clientWidth;
+        const h = els.canvas.clientHeight;
+        if(!w || !h) return;
+        ctx.clearRect(0,0,w,h);
+        const b = graphBox();
+
+        ctx.fillStyle = "#080d14";
+        ctx.fillRect(0,0,w,h);
+
+        ctx.strokeStyle = "rgba(0, 240, 255, 0.12)";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3,4]);
+        for(let t=0;t<=DURATION;t+=1){
+          const x=xFor(t,b);
+          ctx.beginPath();ctx.moveTo(x,b.top);ctx.lineTo(x,b.bottom);ctx.stroke();
+        }
+        for(let v=0;v<=MAX_SPEED;v+=2){
+          const y=yFor(v,b);
+          ctx.beginPath();ctx.moveTo(b.left,y);ctx.lineTo(b.right,y);ctx.stroke();
+        }
+        ctx.setLineDash([]);
+
+        [5,10].forEach(t=>{
+          const x=xFor(t,b);
+          ctx.fillStyle="rgba(0,240,255,.05)";
+          const next=xFor(t+5,b);
+          ctx.fillRect(x,b.top,next-x,b.height);
+          ctx.strokeStyle="#00f0ff";
+          ctx.lineWidth=1;
+          ctx.setLineDash([5,4]);
+          ctx.beginPath();ctx.moveTo(x,b.top);ctx.lineTo(x,b.bottom);ctx.stroke();
+          ctx.setLineDash([]);
+        });
+
+        ctx.strokeStyle="#00f0ff";
+        ctx.lineWidth=1.5;
+        ctx.beginPath();
+        ctx.moveTo(b.left,b.top);ctx.lineTo(b.left,b.bottom);ctx.lineTo(b.right,b.bottom);ctx.stroke();
+
+        ctx.fillStyle="#8ab4f8";
+        ctx.font="11px 'Nanum Gothic Coding', monospace";
+        ctx.textAlign="center";
+        [0,5,10,15].forEach(t=>ctx.fillText(`${t}초`,xFor(t,b),b.bottom+16));
+        ctx.textAlign="right";
+        [0,2,4,6,8,10].forEach(v=>ctx.fillText(String(v),b.left-6,yFor(v,b)+4));
+
+        // 목표 그래프
+        ctx.strokeStyle="#8ab4f8";
+        ctx.lineWidth=2.5;
+        ctx.setLineDash([6,5]);
+        ctx.beginPath();
+        for(let i=0;i<=300;i++){
+          const t=DURATION*i/300;
+          const x=xFor(t,b), y=yFor(targetAt(t),b);
+          i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // 결과 영역 오차 시각화
+        if(samples.length>1 && !running && currentTime >= DURATION){
+          ctx.fillStyle="rgba(255,0,60,.2)";
+          ctx.beginPath();
+          samples.forEach((s,i)=>{
+            const x=xFor(s.t,b), y=yFor(s.actual,b);
+            i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+          });
+          for(let i=samples.length-1;i>=0;i--){
+            const s=samples[i];
+            ctx.lineTo(xFor(s.t,b),yFor(s.target,b));
+          }
+          ctx.closePath();ctx.fill();
+        }
+
+        // 실제 내 그래프
+        if(samples.length){
+          ctx.strokeStyle="#ff003c";
+          ctx.lineWidth=3;
+          ctx.lineJoin="round";
+          ctx.lineCap="round";
+          ctx.beginPath();
+          samples.forEach((s,i)=>{
+            const x=xFor(s.t,b), y=yFor(s.actual,b);
+            i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+          });
+          ctx.stroke();
+        }
+
+        // 현재 진행점
+        if(running){
+          const t=clamp(currentTime,0,DURATION);
+          const x=xFor(t,b);
+          ctx.strokeStyle="rgba(0, 240, 255, 0.6)";
+          ctx.lineWidth=1;ctx.setLineDash([3,3]);
+          ctx.beginPath();ctx.moveTo(x,b.top);ctx.lineTo(x,b.bottom);ctx.stroke();
+          ctx.setLineDash([]);
+
+          const tv=targetAt(t);
+          const av=parseFloat(els.speedSlider.value);
+          ctx.fillStyle="#8ab4f8";ctx.beginPath();ctx.arc(x,yFor(tv,b),4,0,Math.PI*2);ctx.fill();
+          ctx.fillStyle="#ff003c";ctx.beginPath();ctx.arc(x,yFor(av,b),5,0,Math.PI*2);ctx.fill();
+        }
+      }
+
+      function updateSliderUI(){
+        const v=parseFloat(els.speedSlider.value);
+        els.speedValue.textContent=v.toFixed(1);
+        els.speedSlider.setAttribute("aria-valuenow",String(v));
+      }
+
+      function feedbackFor(diff,actual,target){
+        els.feedback.className="feedback";
+        if(diff <= .45){
+          els.feedback.textContent="아주 좋아요! 목표와 거의 같습니다.";
+          els.feedback.classList.add("perfect");
+        }else if(diff <= 1.2){
+          els.feedback.textContent="잘하고 있어요! 조금만 더 맞춰 보세요.";
+          els.feedback.classList.add("good");
+        }else{
+          els.feedback.textContent=actual>target ? "속력을 조금 낮춰 보세요!" : "속력을 조금 높여 보세요!";
+          els.feedback.classList.add("warning");
+        }
+      }
+
+      function computeAccuracy(data){
+        if(!data.length) return 0;
+        const mse=data.reduce((sum,s)=>sum+(s.target-s.actual)**2,0)/data.length;
+        const rmse=Math.sqrt(mse);
+        return clamp(100*(1-rmse/MAX_SPEED),0,100);
+      }
+
+      function tick(now){
+        if(!running) return;
+        currentTime = Math.min(DURATION,(now-startTime)/1000);
+        const actual=parseFloat(els.speedSlider.value);
+        const target=targetAt(currentTime);
+
+        if(now-lastSample >= SAMPLE_INTERVAL || samples.length===0){
+          samples.push({t:currentTime,actual,target});
+          lastSample=now;
+        }
+
+        const partial=computeAccuracy(samples);
+        els.timeValue.textContent=`${currentTime.toFixed(1)}초`;
+        els.remainValue.textContent=`${Math.max(0,DURATION-currentTime).toFixed(1)}초`;
+        els.targetValue.textContent=`${target.toFixed(1)} m/s`;
+        els.liveAccuracy.textContent=`${Math.round(partial)}%`;
+        feedbackFor(Math.abs(actual-target),actual,target);
+
+        drawGraph();
+
+        if(currentTime >= DURATION){
+          finishRun();
+          return;
+        }
+        animationId=requestAnimationFrame(tick);
+      }
+
+      async function countdown(){
+        els.countdown.classList.add("show");
+        for(const n of [3,2,1]){
+          els.countdown.textContent=n;
+          await new Promise(r=>setTimeout(r,600));
+        }
+        els.countdown.textContent="출발!";
+        await new Promise(r=>setTimeout(r,400));
+        els.countdown.classList.remove("show");
+      }
+
+      async function startRun(){
+        if(running) return;
+        resetMission(false);
+        els.startBtn.disabled=true;
+        setMissionButtonsDisabled(true);
+        els.results.classList.remove("show");
+        await countdown();
+        running=true;
+        startTime=performance.now();
+        lastSample=0;
+        currentTime=0;
+        animationId=requestAnimationFrame(tick);
+      }
+
+      function resetMission(scrollTop=true){
+        running=false;
+        if(animationId) cancelAnimationFrame(animationId);
+        samples=[];
+        currentTime=0;
+        els.speedSlider.value="0";
+        updateSliderUI();
+        els.timeValue.textContent="0.0초";
+        els.remainValue.textContent="15.0초";
+        els.targetValue.textContent=`${targetAt(0).toFixed(1)} m/s`;
+        els.liveAccuracy.textContent="-";
+        els.feedback.className="feedback";
+        els.feedback.textContent="목표 그래프를 먼저 살펴보세요.";
+        els.startBtn.disabled=false;
+        setMissionButtonsDisabled(false);
+        els.results.classList.remove("show");
+        els.nextBtnQuiz.disabled=true;
+        drawGraph();
+      }
+
+      function classify(score){
+        if(score>=90) return "매우 잘 맞음";
+        if(score>=82) return "잘 맞음";
+        if(score>=70) return "조금 차이 남";
+        return "차이가 큼";
+      }
+
+      function getSegmentFeedback(index, data){
+        const mission=selectedMission;
+        const meanActual=data.reduce((s,x)=>s+x.actual,0)/Math.max(1,data.length);
+        const meanTarget=data.reduce((s,x)=>s+x.target,0)/Math.max(1,data.length);
+        const delta=meanActual-meanTarget;
+        const score=computeAccuracy(data);
+
+        if(score>=90){
+          return ["출발할 때 속력을 아주 잘 조절했어요.","이 구간의 목표 모양을 아주 잘 따라갔어요.","정거장에 맞춰 속력을 아주 잘 낮췄어요."][index];
+        }
+        if(index===0){
+          if(delta>0.5) return mission===1 ? "처음부터 너무 빠르게 높였어요. 천천히 시작해 보세요." : "목표보다 속력을 너무 빠르게 높였어요.";
+          return mission===2 ? "처음에는 빠르게 높이고, 목표에 가까워질수록 천천히 높여 보세요." : "속력을 조금 더 빠르게 높여 보세요.";
+        }
+        if(index===1){
+          if(delta>0.4) return "목표보다 빠르게 달린 시간이 길었어요.";
+          if(delta<-0.4) return "목표보다 느리게 달린 시간이 길었어요.";
+          return "레버를 큰 폭 대신 부드럽게 조절해 보세요.";
+        }
+        if(delta>0.5) return "감속을 조금 더 일찍 시작해 보세요.";
+        if(mission===2) return "처음에는 천천히, 뒤로 갈수록 더 빠르게 속력을 낮춰 보세요.";
+        return "마지막에는 속력이 0에 가까워지도록 조금 더 낮춰 보세요.";
+      }
+
+      function finishRun(){
+        running=false;
+        setMissionButtonsDisabled(false);
+        els.startBtn.disabled=false;
+
+        if(!samples.length || samples[samples.length-1].t < DURATION){
+          samples.push({t:DURATION,actual:parseFloat(els.speedSlider.value),target:targetAt(DURATION)});
+        }
+
+        const overall=computeAccuracy(samples);
+        const segmentData=[0,1,2].map(i=>samples.filter(s=>s.t>=i*5 && (i===2?s.t<=15:s.t<(i+1)*5)));
+        const segmentScores=segmentData.map(computeAccuracy);
+        const worstIndex=segmentScores.indexOf(Math.min(...segmentScores));
+        const success=overall>=SUCCESS_SCORE;
+
+        if (success) {
+          completedMissions[selectedMission] = true;
+          buildMissionCards();
+        }
+
+        els.resultBanner.className="result-banner "+(success?"success":"retry");
+        els.resultTitle.textContent=success?"미션 성공! (일치도 85% 이상 달성)":"조금만 더 연습해 봅시다!";
+        els.finalScore.textContent=`${Math.round(overall)}%`;
+        els.resultMessage.textContent=success
+          ?"완벽한 속력 조절입니다! 주행 목표를 성공적으로 이수했습니다."
+          :"목표 그래프와 조금 차이가 있어요. 구간별 결과를 살펴보고 다시 도전해 보세요!";
+
+        els.segmentGrid.innerHTML="";
+        segmentScores.forEach((score,i)=>{
+          const card=document.createElement("div");
+          card.className="segment"+(i===worstIndex&&!success?" worst":"");
+          card.innerHTML=`
+            <strong>${i*5}~${(i+1)*5}초 · ${missions[selectedMission].segmentNames[i]}</strong>
+            <div class="seg-score">${Math.round(score)}%</div>
+            <div>${classify(score)}</div>
+            <p>${getSegmentFeedback(i,segmentData[i])}</p>`;
+          els.segmentGrid.appendChild(card);
+        });
+
+        // 미션 클리어 판정 및 이동 제어
+        if (selectedMission < missions.length - 1) {
+          // 미션 1, 2 클리어 시
+          els.nextBtnQuiz.disabled = !success;
+          els.nextBtnQuiz.textContent = "다음 미션으로 이동";
+          document.getElementById("btn-next").style.display = "none";
+        } else {
+          // 마지막 3번째 미션 클리어 시
+          const allCompleted = completedMissions.every(Boolean);
+          if (success && allCompleted) {
+            els.resultTitle.textContent = "🎉 축하합니다! 3개 미션 모두 완수!";
+            els.resultMessage.textContent = "레일바이크 그래프 미션을 완벽하게 마쳤습니다! 우측 하단의 [다음 구역 (D04)] 버튼을 눌러 계속 진행해 주세요.";
+            els.nextBtnQuiz.disabled = true;
+            els.nextBtnQuiz.textContent = "모든 미션 완료";
+            
+            // 모든 미션 완수 시 D04 이동 버튼 활성화
+            document.getElementById("btn-next").style.display = "inline-flex";
+          } else {
+            els.nextBtnQuiz.disabled = true;
+            els.nextBtnQuiz.textContent = "3번째 미션 성공 필요";
+          }
+        }
+
+        els.results.classList.add("show");
+        drawGraph();
+      }
+
+      els.speedSlider.addEventListener("input",()=>{
+        updateSliderUI();
+        if(!running) drawGraph();
+      });
+      els.startBtn.addEventListener("click",startRun);
+      els.resetBtn.addEventListener("click",()=>resetMission());
+      els.retryBtn.addEventListener("click",()=>resetMission());
+      
+      els.nextBtnQuiz.addEventListener("click",()=>{
+        if(els.nextBtnQuiz.disabled) return;
+        if(selectedMission < missions.length - 1){
+          selectedMission++;
+          buildMissionCards();
+          updateMissionText();
+          resetMission();
+        }
+      });
+
+      window.addEventListener("resize",resizeCanvas);
+
+      buildMissionCards();
+      updateMissionText();
+      updateSliderUI();
+      resizeCanvas();
+    })();
+  </script>
+</body>
+</html>
