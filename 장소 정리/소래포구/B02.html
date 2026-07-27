@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소래포구 MATHTOUR - A02</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #120e0c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Gowun Dodum', sans-serif;
+            color: #f4ecd8;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #2c2019;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 59, 70, 0.25) 0%, rgba(44, 32, 25, 0.85) 100%),
+                linear-gradient(rgba(184, 115, 51, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(184, 115, 51, 0.05) 1px, transparent 1px);
+            background-size: 100% 100%, 30px 30px, 30px 30px;
+            border: 4px solid #b87333;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+        }
+
+        /* 스테이지 상단 표시바 */
+        .stage-header {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            background: linear-gradient(180deg, #4a3b32 0%, #2c2019 100%);
+            border: 2px solid #b87333;
+            border-radius: 4px;
+            padding: 6px 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), inset 0 0 5px rgba(184, 115, 51, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stage-header::before, .stage-header::after {
+            content: '⚙';
+            font-size: 16px;
+            color: #b87333;
+            text-shadow: 0 0 3px rgba(184, 115, 51, 0.5);
+            animation: spin 10s linear infinite;
+        }
+
+        .stage-header::after {
+            animation-direction: reverse;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .stage-title {
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            color: #f4ecd8;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        /* 에셋 및 인물 레이어 */
+        .asset-wrapper {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .char-wrapper {
+            position: absolute;
+            pointer-events: none;
+            transition: filter 0.2s ease;
+        }
+
+        .char-wrapper.inactive {
+            filter: brightness(0.55);
+        }
+
+        /* 증발 시각화 그래픽 / 이펙트 */
+        .evaporation-effect {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 480px;
+            height: 180px;
+            background: rgba(0, 59, 70, 0.6);
+            border: 2px solid #b87333;
+            border-radius: 8px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 0 15px rgba(0, 59, 70, 0.4);
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            overflow: hidden;
+        }
+
+        /* 수증기 애니메이션 */
+        .vapor-container {
+            position: absolute;
+            top: 10px;
+            width: 80%;
+            height: 60px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .vapor {
+            width: 8px;
+            height: 30px;
+            background: linear-gradient(0deg, rgba(244, 236, 216, 0) 0%, rgba(244, 236, 216, 0.6) 50%, rgba(244, 236, 216, 0) 100%);
+            border-radius: 4px;
+            animation: rise 2.5s infinite ease-in-out;
+        }
+
+        .vapor:nth-child(1) { animation-delay: 0s; }
+        .vapor:nth-child(2) { animation-delay: 0.5s; }
+        .vapor:nth-child(3) { animation-delay: 1.0s; }
+        .vapor:nth-child(4) { animation-delay: 1.5s; }
+        .vapor:nth-child(5) { animation-delay: 0.8s; }
+
+        @keyframes rise {
+            0% { transform: translateY(20px) scaleX(1); opacity: 0; }
+            50% { opacity: 0.8; transform: translateY(-10px) scaleX(1.8); }
+            100% { transform: translateY(-40px) scaleX(2.5); opacity: 0; }
+        }
+
+        .formula-display {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 16px;
+            color: #f4ecd8;
+            background: rgba(44, 32, 25, 0.85);
+            padding: 10px 20px;
+            border: 1px solid #b87333;
+            border-radius: 4px;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5);
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .formula-display span.highlight {
+            color: #b87333;
+            font-weight: bold;
+        }
+
+        .formula-display span.up-arrow {
+            color: #4cd137;
+            font-weight: bold;
+            animation: bounce 1s infinite alternate;
+            display: inline-block;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-4px); }
+        }
+
+        /* 대화창 (유형 2 스팀펑크 파이프 스타일) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 86%;
+            height: 125px;
+            background: rgba(44, 32, 25, 0.94);
+            border: 3px solid #b87333;
+            border-radius: 8px;
+            padding: 16px 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9), inset 0 0 15px rgba(0,0,0,0.8);
+            z-index: 15;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        #dialogue-box::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            border: 1px solid #4a3b32;
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        #speaker-name {
+            font-family: 'Gowun Dodum', sans-serif;
+            font-size: 15px;
+            font-weight: bold;
+            color: #b87333;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px #000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #speaker-name::after {
+            content: '⚙';
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 15px;
+            color: #f4ecd8;
+            line-height: 1.6;
+            word-break: keep-all;
+        }
+
+        .click-indicator {
+            position: absolute;
+            right: 20px;
+            bottom: 12px;
+            font-size: 12px;
+            color: #b87333;
+            animation: pulse 1.2s infinite;
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* 네비게이션 공통 버튼 */
+        .btn-nav {
+            position: absolute;
+            bottom: 20px;
+            z-index: 20;
+            padding: 10px 24px;
+            background: linear-gradient(180deg, #b87333 0%, #7a481c 100%);
+            color: #f4ecd8;
+            font-family: 'Gowun Dodum', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            border: 2px solid #4a3b32;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6), inset 1px 1px 2px rgba(255, 255, 255, 0.3), inset -1px -1px 2px rgba(0, 0, 0, 0.5);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-nav:hover {
+            background: linear-gradient(180deg, #d48b46 0%, #8f5422 100%);
+            border-color: #b87333;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.7), inset 1px 1px 2px rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-nav:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), inset -1px -1px 2px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-nav::before, .btn-nav::after {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background: #2c2019;
+            border-radius: 50%;
+            box-shadow: inset 0.5px 0.5px 1px rgba(255,255,255,0.4);
+        }
+
+        #btn-prev {
+            left: 20px;
+        }
+
+        #btn-next, #btn-skip {
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 상단 스테이지 표시바 -->
+        <div class="stage-header">
+            <span class="stage-title">소래포구 MATHTOUR - CHAPTER 02</span>
+        </div>
+
+        <!-- 수분의 증발과 농도 변화 시각화 애니메이션 컨테이너 -->
+        <div class="evaporation-effect">
+            <div class="vapor-container">
+                <div class="vapor"></div>
+                <div class="vapor"></div>
+                <div class="vapor"></div>
+                <div class="vapor"></div>
+                <div class="vapor"></div>
+            </div>
+            <div class="formula-display">
+                바닷물 농도: <span class="highlight">약 3.5%</span><br>
+                [물 증발 <span style="color:#eccc68;">▼</span>] &nbsp;+&nbsp; [소금의 양 <span style="color:#70a1ff;">고정 =</span>] &nbsp;&rarr;&nbsp; [농도 <span class="up-arrow">▲</span>]
+            </div>
+        </div>
+
+        <!-- 무대 레이어 1: 건물/장소 에셋 (z-index: 1) -->
+        <!-- 소래포구_염전1 (가변 비율, 1000x500 축소 배치 s=0.8) -->
+        <div class="asset-wrapper" style="left: 133px; bottom: 0px; width: 800px; height: 400px; overflow: hidden; z-index: 1;">
+            <iframe src="소래포구_염전1.html" scrolling="no" style="border: 0; width: 1000px; height: 500px; transform: scale(0.8); transform-origin: top left; pointer-events: none;"></iframe>
+        </div>
+
+        <!-- 무대 레이어 2: 조형물/소품 에셋 (z-index: 2) -->
+        <!-- 소래포구_에셋_소금더미 (가변 비율, 600x600 축소 배치 s=0.35) -->
+        <div class="asset-wrapper" style="left: 428px; bottom: 20px; width: 210px; height: 210px; overflow: hidden; z-index: 2;">
+            <iframe src="소래포구_에셋_소금더미.html" scrolling="no" style="border: 0; width: 600px; height: 600px; transform: scale(0.35); transform-origin: top left; pointer-events: none;"></iframe>
+        </div>
+
+        <!-- 무대 레이어 3: 등장인물 (z-index: 3) -->
+        <!-- 민우 (260x320 고정, s=0.9, 중앙 우측배치) -->
+        <div class="char-wrapper" id="char-민우" style="position: absolute; left: 180px; bottom: 20px; width: 234px; height: 288px; overflow: visible; z-index: 3;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border: 0; width: 260px; height: 320px; transform: scale(0.9); transform-origin: bottom left; pointer-events: none;"></iframe>
+        </div>
+
+        <!-- 대화창 UI -->
+        <div id="dialogue-box" onclick="advanceDialogue()">
+            <div id="speaker-name">민우</div>
+            <div id="dialogue-text">바닷물의 농도는 약 3.5%야. 뜨거운 햇빛과 바람에 물이 증발하면 어떻게 될까? 맞아, 물만 날아가고 소금의 양은 변하지 않아서 농도가 쑥쑥 올라가지!</div>
+            <div class="click-indicator">▼ 클릭하여 계속</div>
+        </div>
+
+        <!-- 이동 및 건너뛰기 버튼 -->
+        <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기 ⏩</button>
+        <button class="btn-nav" id="btn-prev" style="display: none;" onclick="navigateTo('B01.html')">◀ 이전</button>
+        <button class="btn-nav" id="btn-next" style="display: none;" onclick="navigateTo('B03.html')">다음 ▶</button>
+    </div>
+
+    <script>
+        const dialogues = [
+            {
+                speaker: "민우",
+                text: "바닷물의 농도는 약 3.5%야. 뜨거운 햇빛과 바람에 물이 증발하면 어떻게 될까? 맞아, 물만 날아가고 소금의 양은 변하지 않아서 농도가 쑥쑥 올라가지!",
+                target: "char-민우"
+            }
+        ];
+
+        let currentIndex = 0;
+
+        function updateDialogue() {
+            if (currentIndex < dialogues.length) {
+                const current = dialogues[currentIndex];
+                document.getElementById('speaker-name').innerText = current.speaker;
+                document.getElementById('dialogue-text').innerText = current.text;
+
+                // 모든 등장인물의 inactive 상태 업데이트
+                document.querySelectorAll('.char-wrapper').forEach(char => {
+                    if (char.id === current.target) {
+                        char.classList.remove('inactive');
+                    } else {
+                        char.classList.add('inactive');
+                    }
+                });
+            } else {
+                endDialogue();
+            }
+        }
+
+        function advanceDialogue() {
+            currentIndex++;
+            if (currentIndex >= dialogues.length) {
+                endDialogue();
+            } else {
+                updateDialogue();
+            }
+        }
+
+        function skipDialogue() {
+            endDialogue();
+        }
+
+        function endDialogue() {
+            document.getElementById('dialogue-box').style.display = 'none';
+            document.getElementById('btn-skip').style.display = 'none';
+            
+            // 모든 캐릭터 원래 밝기로 복구
+            document.querySelectorAll('.char-wrapper').forEach(char => {
+                char.classList.remove('inactive');
+            });
+
+            // 네비게이션 버튼 표시
+            document.getElementById('btn-prev').style.display = 'flex';
+            document.getElementById('btn-next').style.display = 'flex';
+        }
+
+        function navigateTo(url) {
+            if (url) {
+                window.location.href = url;
+            }
+        }
+
+        // 초기화 실행
+        updateDialogue();
+    </script>
+</body>
+</html>

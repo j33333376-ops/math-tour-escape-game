@@ -1,0 +1,130 @@
+<!-- 원본 크기: 300x500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아라타워 전망대</title>
+    <style>
+        body { margin:0; padding:0; background:transparent; overflow:hidden; }
+        svg { display:block; width:100%; height:auto; }
+    </style>
+</head>
+<body>
+    <svg viewBox="0 0 300 500" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <!-- 원기둥 투명 유리 타워 그라데이션 -->
+            <linearGradient id="glassTower" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#1e3c72" stop-opacity="0.85"/>
+                <stop offset="20%" stop-color="#2a5298" stop-opacity="0.8"/>
+                <stop offset="45%" stop-color="#6dd5ed" stop-opacity="0.75"/>
+                <stop offset="55%" stop-color="#ffffff" stop-opacity="0.95"/>
+                <stop offset="75%" stop-color="#1e3c72" stop-opacity="0.85"/>
+                <stop offset="100%" stop-color="#0f2027" stop-opacity="0.95"/>
+            </linearGradient>
+
+            <linearGradient id="glassShimmer" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.7"/>
+                <stop offset="30%" stop-color="#ffffff" stop-opacity="0.1"/>
+                <stop offset="70%" stop-color="#00f2fe" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#ffffff" stop-opacity="0.5"/>
+            </linearGradient>
+
+            <linearGradient id="metallic" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#738a9c"/>
+                <stop offset="50%" stop-color="#eef2f3"/>
+                <stop offset="100%" stop-color="#4a5568"/>
+            </linearGradient>
+
+            <linearGradient id="roofDark" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#1a252f"/>
+                <stop offset="100%" stop-color="#050b11"/>
+            </linearGradient>
+
+            <linearGradient id="innerGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.5"/>
+                <stop offset="100%" stop-color="#4facfe" stop-opacity="0.15"/>
+            </linearGradient>
+
+            <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
+        </defs>
+
+        <!-- [단일 아라타워 원기둥 건물 개체] -->
+        <g id="ara-tower-standalone">
+            <!-- 1. 원기둥 하단 지상 기단부 -->
+            <ellipse cx="150" cy="492" rx="100" ry="8" fill="#101820"/>
+            <polygon points="65,492 235,492 225,472 75,472" fill="#34495e"/>
+            <line x1="65" y1="485" x2="235" y2="485" stroke="#ffffff" stroke-opacity="0.4" stroke-width="1"/>
+            <line x1="70" y1="479" x2="230" y2="479" stroke="#ffffff" stroke-opacity="0.4" stroke-width="1"/>
+
+            <!-- 2. 초고층 원기둥 전체 투명 유리 타워 샤프트 -->
+            <path d="M 55,492 L 65,110 A 85,22 0 0,1 235,110 L 245,492 A 95,22 0 0,1 55,492 Z" fill="url(#glassTower)" filter="url(#softGlow)"/>
+
+            <!-- 내부 승강기/코어 투명 연출 -->
+            <rect x="138" y="110" width="24" height="370" fill="#0a1118" opacity="0.4"/>
+            <rect x="144" y="110" width="12" height="370" fill="#00f2fe" opacity="0.35"/>
+
+            <!-- 곡면 입체감을 표현하는 수직 창문 프레임 -->
+            <path d="M 80,113 L 72,492" stroke="#ffffff" stroke-opacity="0.45" stroke-width="1.5"/>
+            <path d="M 110,115 L 103,492" stroke="#ffffff" stroke-opacity="0.65" stroke-width="1.5"/>
+            <path d="M 150,116 L 150,492" stroke="#ffffff" stroke-opacity="0.85" stroke-width="2"/>
+            <path d="M 190,115 L 197,492" stroke="#ffffff" stroke-opacity="0.55" stroke-width="1.5"/>
+            <path d="M 220,113 L 228,492" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1.5"/>
+
+            <!-- 수평 유리 패널 링 (원기둥 층선) -->
+            <ellipse cx="150" cy="140" rx="87" ry="20" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1"/>
+            <ellipse cx="150" cy="180" rx="89" ry="20.5" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1"/>
+            <ellipse cx="150" cy="220" rx="91" ry="21" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1"/>
+            <ellipse cx="150" cy="260" rx="92.5" ry="21.2" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1"/>
+            <ellipse cx="150" cy="300" rx="93.5" ry="21.5" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1"/>
+            <ellipse cx="150" cy="340" rx="94.5" ry="21.7" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1"/>
+            <ellipse cx="150" cy="380" rx="95" ry="22" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1"/>
+            <ellipse cx="150" cy="420" rx="95" ry="22" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1"/>
+            <ellipse cx="150" cy="460" rx="95" ry="22" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1"/>
+
+            <!-- 유리 질감 대각선 반사광 -->
+            <path d="M 70,460 L 185,118 L 215,118 L 100,460 Z" fill="url(#glassShimmer)"/>
+            <path d="M 115,480 L 220,160 L 228,160 L 123,480 Z" fill="#ffffff" opacity="0.18"/>
+
+            <!-- 3. 원형 파노라마 전망대 최상층 -->
+            <g id="observatory-deck">
+                <!-- 전망대 하단 받침 -->
+                <path d="M 50,110 L 10,75 L 290,75 L 250,110 Z" fill="url(#metallic)" stroke="#2c3e50" stroke-width="1.5"/>
+                <ellipse cx="150" cy="110" rx="100" ry="22" fill="#1f2d3a"/>
+                
+                <!-- 360도 통유리 전망 덱 -->
+                <path d="M 10,75 L 10,35 A 140,28 0 0,1 290,35 L 290,75 A 140,28 0 0,1 10,75 Z" fill="url(#glassTower)"/>
+                <ellipse cx="150" cy="55" rx="130" ry="22" fill="url(#innerGlow)"/>
+                
+                <!-- 전망대 유리 세로 프레임 -->
+                <path d="M 30,70 L 30,38 M 65,73 L 65,36 M 105,75 L 105,35 M 150,76 L 150,35 M 195,75 L 195,35 M 235,73 L 235,36 M 270,70 L 270,38" stroke="#ffffff" stroke-opacity="0.8" stroke-width="1.5"/>
+
+                <!-- 전망대 지붕 Cap -->
+                <ellipse cx="150" cy="35" rx="140" ry="28" fill="url(#metallic)"/>
+                <ellipse cx="150" cy="30" rx="140" ry="28" fill="url(#roofDark)"/>
+                <ellipse cx="150" cy="24" rx="115" ry="22" fill="url(#metallic)"/>
+
+                <!-- 최상단 피뢰침 안테나 -->
+                <polygon points="146,24 154,24 152,8 148,8" fill="url(#metallic)"/>
+                <line x1="150" y1="8" x2="150" y2="1" stroke="#ffffff" stroke-width="2"/>
+                <circle cx="150" cy="1" r="3" fill="#ff3333"/>
+            </g>
+
+            <!-- 4. 흰색 문구 '경인아라뱃길' -->
+            <g id="building-title-sign">
+                <text x="150" y="20" 
+                      fill="#ffffff" 
+                      font-family="'Pretendard', 'Noto Sans KR', 'Malgun Gothic', sans-serif" 
+                      font-size="19" 
+                      font-weight="900" 
+                      letter-spacing="5" 
+                      text-anchor="middle"
+                      filter="drop-shadow(0px 2px 5px rgba(0,0,0,0.9))">경인아라뱃길</text>
+            </g>
+        </g>
+    </svg>
+</body>
+</html>

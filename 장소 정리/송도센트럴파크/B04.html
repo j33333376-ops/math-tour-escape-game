@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>송도센트럴파크 MATHTOUR - 한옥마을 투어의 끝</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    :root {
+      --forest: #2d5a27;
+      --wood: #6d4c41;
+      --sun: #f4a261;
+      --olive: #3e4a3d;
+      --ivory: #fdfbf7;
+      --sage: #8aa171;
+      --moss: #f2f7f2;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(244, 162, 97, 0.16), transparent 35%),
+        linear-gradient(145deg, #dce9dc, #91a887);
+      font-family: 'Noto Sans KR', sans-serif;
+      color: var(--olive);
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    #game-container {
+      position: relative;
+      width: min(1066px, calc(100vw - 24px));
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      max-height: calc(100vh - 24px);
+      overflow: hidden;
+      background: var(--moss);
+      border: 7px solid #4d342c;
+      border-radius: 24px;
+      box-shadow:
+        0 22px 55px rgba(28, 52, 26, 0.35),
+        inset 0 0 0 3px rgba(255, 255, 255, 0.22);
+      isolation: isolate;
+    }
+
+    #background-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .forest-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(to bottom, rgba(20, 48, 24, 0.13), transparent 34%),
+        linear-gradient(to top, rgba(18, 38, 19, 0.28), transparent 42%);
+    }
+
+    .light-rays {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0;
+      background:
+        linear-gradient(
+          110deg,
+          transparent 10%,
+          rgba(255, 244, 195, 0.16) 30%,
+          transparent 48%,
+          rgba(255, 246, 210, 0.1) 65%,
+          transparent 82%
+        );
+      animation: raysIn 1.7s ease-out 0.2s forwards;
+    }
+
+    #stage-sign {
+      position: absolute;
+      top: 17px;
+      left: 50%;
+      z-index: 15;
+      min-width: 390px;
+      max-width: calc(100% - 180px);
+      transform: translateX(-50%) translateY(-24px);
+      padding: 10px 34px 11px;
+      border: 4px solid #4c3025;
+      border-radius: 14px 18px 13px 17px;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,0.035) 0,
+          rgba(255,255,255,0.035) 2px,
+          transparent 2px,
+          transparent 12px
+        ),
+        linear-gradient(90deg, #795548, #9a6b50 48%, #795548);
+      color: var(--ivory);
+      text-align: center;
+      box-shadow: 0 8px 15px rgba(41, 27, 18, 0.3);
+      opacity: 0;
+      animation: signDrop 0.85s cubic-bezier(.2,.8,.2,1) 0.2s forwards;
+    }
+
+    #stage-sign::before,
+    #stage-sign::after {
+      content: "◆";
+      position: absolute;
+      top: 50%;
+      color: #d6c5a6;
+      font-size: 13px;
+      transform: translateY(-50%);
+    }
+
+    #stage-sign::before { left: 13px; }
+    #stage-sign::after { right: 13px; }
+
+    #stage-sign .small {
+      display: block;
+      margin-bottom: 1px;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      opacity: 0.83;
+    }
+
+    #stage-sign .title {
+      font-family: 'Gowun Batang', serif;
+      font-size: clamp(19px, 2.4vw, 28px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .leaf {
+      position: absolute;
+      z-index: 2;
+      width: 24px;
+      height: 13px;
+      border-radius: 100% 0 100% 0;
+      background: rgba(93, 126, 76, 0.76);
+      opacity: 0;
+      pointer-events: none;
+      animation: leafFall 4.8s ease-in-out infinite;
+    }
+
+    .leaf.l1 { left: 12%; top: 7%; animation-delay: 0.4s; }
+    .leaf.l2 { left: 84%; top: 15%; width: 18px; height: 10px; animation-delay: 1.5s; }
+    .leaf.l3 { left: 68%; top: 6%; width: 20px; height: 11px; animation-delay: 2.6s; }
+
+    .char-wrapper {
+      position: absolute;
+      z-index: 3;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      opacity: 0;
+      filter: brightness(1);
+      will-change: left, right, transform, opacity, filter;
+      transition:
+        filter 0.2s ease,
+        opacity 0.45s ease,
+        transform 0.45s ease;
+    }
+
+    .char-wrapper iframe {
+      border: 0;
+      width: 260px;
+      height: 320px;
+      pointer-events: none;
+      display: block;
+    }
+
+    #char-민우 {
+      left: 112px;
+      bottom: 108px;
+      transform: translateX(-65px) scale(0.9);
+      animation: characterEnterLeft 1.05s cubic-bezier(.16,.9,.25,1) 0.55s forwards;
+    }
+
+    #char-민우 iframe {
+      transform: scale(0.9);
+      transform-origin: bottom left;
+    }
+
+    #char-서연 {
+      right: 112px;
+      bottom: 108px;
+      transform: translateX(65px) scale(0.9);
+      animation: characterEnterRight 1.05s cubic-bezier(.16,.9,.25,1) 0.75s forwards;
+    }
+
+    #char-서연 iframe {
+      transform: scale(0.9) scaleX(-1);
+      transform-origin: bottom left;
+    }
+
+    .char-wrapper.inactive {
+      filter: brightness(0.55);
+    }
+
+    .char-wrapper.speaking {
+      transform-origin: bottom center;
+    }
+
+    .char-wrapper.speaking::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 6px;
+      width: 64%;
+      height: 18px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: rgba(244, 162, 97, 0.25);
+      filter: blur(6px);
+      z-index: -1;
+      animation: speakingGlow 1.25s ease-in-out infinite;
+    }
+
+    #dialogue-box {
+      position: absolute;
+      left: 50%;
+      bottom: 22px;
+      z-index: 20;
+      width: calc(100% - 180px);
+      min-height: 128px;
+      transform: translateX(-50%) translateY(30px);
+      padding: 26px 32px 22px;
+      border: 4px solid var(--wood);
+      border-radius: 24px;
+      background: rgba(28, 70, 34, 0.91);
+      color: var(--ivory);
+      box-shadow:
+        0 12px 28px rgba(18, 40, 19, 0.38),
+        inset 0 0 0 2px rgba(255,255,255,0.08);
+      cursor: pointer;
+      opacity: 0;
+      animation: dialogueRise 0.7s ease-out 1.25s forwards;
+    }
+
+    #dialogue-box::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(242, 247, 242, 0.19);
+      border-radius: 17px;
+      pointer-events: none;
+    }
+
+    #speaker-name {
+      position: absolute;
+      left: 28px;
+      top: -22px;
+      min-width: 110px;
+      padding: 7px 20px;
+      border: 3px solid #4e342e;
+      border-radius: 13px 13px 8px 8px;
+      background: linear-gradient(#8b624f, #6d4c41);
+      color: #fff9ef;
+      font-family: 'Gowun Batang', serif;
+      font-size: 20px;
+      font-weight: 700;
+      text-align: center;
+      box-shadow: 0 5px 10px rgba(38, 24, 17, 0.3);
+    }
+
+    #dialogue-text {
+      position: relative;
+      z-index: 1;
+      margin: 5px 0 0;
+      font-size: clamp(16px, 2vw, 21px);
+      line-height: 1.65;
+      letter-spacing: -0.02em;
+      word-break: keep-all;
+    }
+
+    #dialogue-hint {
+      position: absolute;
+      right: 24px;
+      bottom: 9px;
+      color: rgba(253, 251, 247, 0.72);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 11px;
+      animation: hintBlink 1.4s ease-in-out infinite;
+    }
+
+    .btn-nav {
+      position: absolute;
+      z-index: 30;
+      min-width: 112px;
+      padding: 11px 22px;
+      border: none;
+      border-radius: 20px;
+      background: var(--forest);
+      color: white;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(45, 90, 39, 0.2);
+      transition:
+        background 0.25s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .btn-nav:hover {
+      background: var(--wood);
+      transform: translateY(-2px);
+      box-shadow: 0 7px 12px rgba(45, 44, 29, 0.25);
+    }
+
+    .btn-nav:active {
+      transform: translateY(0);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+      display: none;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+      display: none;
+    }
+
+    #btn-skip {
+      right: 20px;
+      bottom: 20px;
+      min-width: 132px;
+      background: rgba(109, 76, 65, 0.94);
+    }
+
+    #btn-skip:hover {
+      background: var(--forest);
+    }
+
+    #farewell-message {
+      position: absolute;
+      left: 50%;
+      top: 46%;
+      z-index: 14;
+      width: min(620px, calc(100% - 170px));
+      transform: translate(-50%, -50%) scale(0.92);
+      padding: 22px 32px;
+      border: 3px solid rgba(138, 161, 113, 0.94);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--olive);
+      text-align: center;
+      box-shadow: 0 12px 30px rgba(28, 59, 29, 0.24);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #farewell-message.show {
+      animation: farewellIn 0.75s ease forwards;
+    }
+
+    #farewell-message h2 {
+      margin: 0 0 7px;
+      color: var(--forest);
+      font-family: 'Gowun Batang', serif;
+      font-size: clamp(23px, 3vw, 34px);
+    }
+
+    #farewell-message p {
+      margin: 0;
+      font-size: clamp(14px, 1.7vw, 18px);
+      line-height: 1.6;
+      word-break: keep-all;
+    }
+
+    .exit-left,
+    .exit-right {
+      animation: none !important;
+      opacity: 1;
+    }
+
+    #char-민우.exit-left {
+      left: calc(50% - 86px);
+      transform: translateX(0) scale(0.9);
+      transition:
+        left 1.25s cubic-bezier(.45,0,.2,1),
+        transform 1.25s cubic-bezier(.45,0,.2,1),
+        opacity 0.8s ease 1.15s,
+        filter 0.2s ease;
+      opacity: 0;
+    }
+
+    #char-서연.exit-right {
+      right: calc(50% - 86px);
+      transform: translateX(0) scale(0.9);
+      transition:
+        right 1.25s cubic-bezier(.45,0,.2,1),
+        transform 1.25s cubic-bezier(.45,0,.2,1),
+        opacity 0.8s ease 1.15s,
+        filter 0.2s ease;
+      opacity: 0;
+    }
+
+    .sparkle {
+      position: absolute;
+      z-index: 13;
+      width: 10px;
+      height: 10px;
+      opacity: 0;
+      pointer-events: none;
+      background: #ffe6a7;
+      clip-path: polygon(50% 0%, 61% 37%, 100% 50%, 61% 63%, 50% 100%, 39% 63%, 0% 50%, 39% 37%);
+    }
+
+    .sparkle.play {
+      animation: sparklePop 1.55s ease-out forwards;
+    }
+
+    .s1 { left: 43%; top: 44%; animation-delay: .05s !important; }
+    .s2 { left: 55%; top: 38%; width: 14px; height: 14px; animation-delay: .22s !important; }
+    .s3 { left: 48%; top: 58%; width: 8px; height: 8px; animation-delay: .38s !important; }
+    .s4 { left: 59%; top: 52%; width: 11px; height: 11px; animation-delay: .55s !important; }
+    .s5 { left: 39%; top: 53%; width: 7px; height: 7px; animation-delay: .7s !important; }
+
+    @keyframes signDrop {
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    @keyframes characterEnterLeft {
+      0% {
+        opacity: 0;
+        transform: translateX(-65px) scale(0.9);
+      }
+      72% {
+        opacity: 1;
+        transform: translateX(7px) scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) scale(0.9);
+      }
+    }
+
+    @keyframes characterEnterRight {
+      0% {
+        opacity: 0;
+        transform: translateX(65px) scale(0.9);
+      }
+      72% {
+        opacity: 1;
+        transform: translateX(-7px) scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) scale(0.9);
+      }
+    }
+
+    @keyframes dialogueRise {
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    @keyframes raysIn {
+      to { opacity: 1; }
+    }
+
+    @keyframes speakingGlow {
+      0%, 100% { opacity: 0.45; transform: translateX(-50%) scaleX(0.92); }
+      50% { opacity: 0.85; transform: translateX(-50%) scaleX(1.08); }
+    }
+
+    @keyframes hintBlink {
+      0%, 100% { opacity: 0.42; transform: translateX(0); }
+      50% { opacity: 0.95; transform: translateX(3px); }
+    }
+
+    @keyframes leafFall {
+      0% { opacity: 0; transform: translate(0, -15px) rotate(0deg); }
+      15% { opacity: 0.7; }
+      70% { opacity: 0.52; }
+      100% { opacity: 0; transform: translate(70px, 180px) rotate(300deg); }
+    }
+
+    @keyframes farewellIn {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.92); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    @keyframes sparklePop {
+      0% { opacity: 0; transform: scale(0.25) rotate(0deg); }
+      35% { opacity: 1; transform: scale(1.25) rotate(100deg); }
+      100% { opacity: 0; transform: translateY(-42px) scale(0.45) rotate(210deg); }
+    }
+
+    @media (max-width: 760px) {
+      #stage-sign {
+        top: 10px;
+        min-width: 300px;
+        max-width: calc(100% - 80px);
+        padding: 7px 26px 8px;
+      }
+
+      #stage-sign .small {
+        font-size: 9px;
+      }
+
+      #stage-sign .title {
+        font-size: 18px;
+      }
+
+      #char-민우 {
+        left: 40px;
+        bottom: 84px;
+      }
+
+      #char-서연 {
+        right: 40px;
+        bottom: 84px;
+      }
+
+      #dialogue-box {
+        width: calc(100% - 120px);
+        min-height: 110px;
+        padding: 22px 24px 16px;
+      }
+
+      #speaker-name {
+        min-width: 88px;
+        font-size: 16px;
+      }
+
+      #dialogue-text {
+        font-size: 14px;
+      }
+
+      .btn-nav {
+        min-width: 88px;
+        padding: 8px 15px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main id="game-container" aria-label="송도센트럴파크 MATHTOUR 대화 장면">
+    <img id="background-image" src="한옥마을3.png" alt="한옥마을 출구 배경" />
+    <div class="forest-overlay"></div>
+    <div class="light-rays"></div>
+
+    <div class="leaf l1"></div>
+    <div class="leaf l2"></div>
+    <div class="leaf l3"></div>
+
+    <header id="stage-sign">
+      <span class="small">SONGDO CENTRAL PARK MATHTOUR</span>
+      <span class="title">한옥마을 투어의 끝</span>
+    </header>
+
+    <div class="char-wrapper" id="char-민우">
+      <iframe
+        src="등장인물_민우.html"
+        scrolling="no"
+        title="민우"
+        aria-hidden="true"
+      ></iframe>
+    </div>
+
+    <div class="char-wrapper inactive" id="char-서연">
+      <iframe
+        src="등장인물_서연.html"
+        scrolling="no"
+        title="서연"
+        aria-hidden="true"
+      ></iframe>
+    </div>
+
+    <section id="dialogue-box" onclick="advanceDialogue()" role="button" tabindex="0" aria-label="대화창, 클릭하여 다음 대사 보기">
+      <div id="speaker-name">민우</div>
+      <p id="dialogue-text"></p>
+      <span id="dialogue-hint">클릭하여 계속 ▶</span>
+    </section>
+
+    <section id="farewell-message" aria-live="polite">
+      <h2>한옥마을 수학 탐험 완료!</h2>
+      <p>우리 주변의 공간과 건축물 속에도 다양한 수학 원리가 숨어 있어요.</p>
+    </section>
+
+    <span class="sparkle s1"></span>
+    <span class="sparkle s2"></span>
+    <span class="sparkle s3"></span>
+    <span class="sparkle s4"></span>
+    <span class="sparkle s5"></span>
+
+    <button class="btn-nav" id="btn-prev" type="button" onclick="goToPage('B03.html')">이전</button>
+    <button class="btn-nav" id="btn-next" type="button" onclick="goToPage('index.html')">다음</button>
+    <button class="btn-nav" id="btn-skip" type="button" onclick="skipDialogue(event)">건너뛰기</button>
+  </main>
+
+  <script>
+    const dialogues = [
+      {
+        speaker: "민우",
+        text: "서연아, 드디어 한옥마을 출구에 도착했어. 오늘 둘러본 곳마다 수학이 숨어 있어서 정말 신기했어!",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "맞아. 지붕의 기울기나 건물의 모양을 살펴보니까, 우리가 배운 수학이 실제 공간과 연결되어 있다는 게 느껴졌어.",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "앞으로는 길을 걷거나 건물을 볼 때도 어떤 수학적 원리가 숨어 있는지 찾아보고 싶어.",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "나도 그래! 수학은 문제집 안에만 있는 게 아니라 우리 생활 곳곳에서 만날 수 있는 것 같아.",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "오늘의 한옥마을 수학 투어는 여기까지지만, 우리의 수학 탐험은 이제부터 시작이네!",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "좋아! 다음에는 센트럴파크의 다른 장소에서도 새로운 수학 요소를 찾아보자.",
+        target: "char-서연"
+      }
+    ];
+
+    let currentIndex = 0;
+    let dialogueFinished = false;
+    let exitStarted = false;
+
+    const dialogueBox = document.getElementById("dialogue-box");
+    const speakerName = document.getElementById("speaker-name");
+    const dialogueText = document.getElementById("dialogue-text");
+    const btnPrev = document.getElementById("btn-prev");
+    const btnNext = document.getElementById("btn-next");
+    const btnSkip = document.getElementById("btn-skip");
+    const farewellMessage = document.getElementById("farewell-message");
+    const characters = document.querySelectorAll(".char-wrapper");
+
+    function updateDialogue() {
+      if (currentIndex >= dialogues.length) {
+        finishDialogue();
+        return;
+      }
+
+      const current = dialogues[currentIndex];
+      speakerName.textContent = current.speaker;
+      dialogueText.textContent = current.text;
+
+      characters.forEach((character) => {
+        const isSpeaking = character.id === current.target;
+        character.classList.toggle("inactive", !isSpeaking);
+        character.classList.toggle("speaking", isSpeaking);
+      });
+    }
+
+    function advanceDialogue() {
+      if (dialogueFinished) return;
+      currentIndex += 1;
+      updateDialogue();
+    }
+
+    function skipDialogue(event) {
+      event.stopPropagation();
+      if (dialogueFinished) return;
+      currentIndex = dialogues.length;
+      finishDialogue();
+    }
+
+    function finishDialogue() {
+      if (exitStarted) return;
+
+      dialogueFinished = true;
+      exitStarted = true;
+
+      dialogueBox.style.display = "none";
+      btnSkip.style.display = "none";
+
+      characters.forEach((character) => {
+        character.classList.remove("inactive", "speaking");
+      });
+
+      const minwoo = document.getElementById("char-민우");
+      const seoyeon = document.getElementById("char-서연");
+
+      requestAnimationFrame(() => {
+        minwoo.classList.add("exit-left");
+        seoyeon.classList.add("exit-right");
+
+        document.querySelectorAll(".sparkle").forEach((sparkle) => {
+          sparkle.classList.add("play");
+        });
+      });
+
+      window.setTimeout(() => {
+        farewellMessage.classList.add("show");
+      }, 1200);
+
+      window.setTimeout(() => {
+        btnPrev.style.display = "block";
+        btnNext.style.display = "block";
+      }, 2250);
+    }
+
+    function goToPage(url) {
+      window.location.href = url;
+    }
+
+    dialogueBox.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        advanceDialogue();
+      }
+    });
+
+    window.addEventListener("load", () => {
+      updateDialogue();
+    });
+  </script>
+</body>
+</html>

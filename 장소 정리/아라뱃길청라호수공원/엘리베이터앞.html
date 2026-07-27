@@ -1,0 +1,181 @@
+<!-- 원본 크기: 1000x500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>엘리베이터</title>
+    <style>
+        body { margin:0; padding:0; background:transparent; overflow:hidden; }
+        svg { display:block; width:100%; height:auto; }
+    </style>
+</head>
+<body>
+    <svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <!-- 메탈릭 헤어라인 실버 그라데이션 -->
+            <linearGradient id="silverBody" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#8a95a5"/>
+                <stop offset="15%" stop-color="#cfd6df"/>
+                <stop offset="30%" stop-color="#e8ecf1"/>
+                <stop offset="50%" stop-color="#b0b9c6"/>
+                <stop offset="70%" stop-color="#f0f4f8"/>
+                <stop offset="85%" stop-color="#d0d7e1"/>
+                <stop offset="100%" stop-color="#737e8f"/>
+            </linearGradient>
+
+            <linearGradient id="doorMetalLeft" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#9aa5b5"/>
+                <stop offset="25%" stop-color="#e2e7ec"/>
+                <stop offset="70%" stop-color="#b5becb"/>
+                <stop offset="100%" stop-color="#6e7888"/>
+            </linearGradient>
+
+            <linearGradient id="doorMetalRight" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#6e7888"/>
+                <stop offset="30%" stop-color="#b5becb"/>
+                <stop offset="75%" stop-color="#e2e7ec"/>
+                <stop offset="100%" stop-color="#9aa5b5"/>
+            </linearGradient>
+
+            <linearGradient id="outerFrame" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#3a414d"/>
+                <stop offset="50%" stop-color="#5a6373"/>
+                <stop offset="100%" stop-color="#282d37"/>
+            </linearGradient>
+
+            <linearGradient id="displayGlass" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#080c14"/>
+                <stop offset="50%" stop-color="#121824"/>
+                <stop offset="100%" stop-color="#05080e"/>
+            </linearGradient>
+
+            <linearGradient id="accentGold" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#d4af37"/>
+                <stop offset="50%" stop-color="#fff2a8"/>
+                <stop offset="100%" stop-color="#aa8625"/>
+            </linearGradient>
+
+            <!-- 디지털 디스플레이 LED 발광 효과 -->
+            <filter id="redGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="4" result="blur"/>
+                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
+
+            <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+                <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.5"/>
+            </filter>
+        </defs>
+
+        <!-- 메인 엘리베이터 외관 프레임 및 메탈릭 실버 파사드 구조 (1000x500 전체 조화) -->
+        <g id="elevator-structure">
+            <!-- 1. 외부 실버 메탈릭 벽체 파사드 -->
+            <rect x="0" y="0" width="1000" height="500" fill="url(#silverBody)"/>
+
+            <!-- 실버 메탈 헤어라인/패널 구분선 디테일 -->
+            <line x1="0" y1="90" x2="1000" y2="90" stroke="#525d6d" stroke-width="2"/>
+            <line x1="0" y1="91" x2="1000" y2="91" stroke="#ffffff" stroke-width="1" stroke-opacity="0.8"/>
+            
+            <line x1="0" y1="410" x2="1000" y2="410" stroke="#525d6d" stroke-width="2"/>
+            <line x1="0" y1="411" x2="1000" y2="411" stroke="#ffffff" stroke-width="1" stroke-opacity="0.8"/>
+
+            <line x1="160" y1="0" x2="160" y2="500" stroke="#636e7e" stroke-width="2"/>
+            <line x1="161" y1="0" x2="161" y2="500" stroke="#ffffff" stroke-opacity="0.6" stroke-width="1"/>
+            
+            <line x1="840" y1="0" x2="840" y2="500" stroke="#636e7e" stroke-width="2"/>
+            <line x1="841" y1="0" x2="841" y2="500" stroke="#ffffff" stroke-opacity="0.6" stroke-width="1"/>
+
+            <!-- 2. 중앙 엘리베이터 문 프레임 (아치트레이브/문틀) -->
+            <rect x="220" y="20" width="560" height="480" fill="url(#outerFrame)" filter="url(#softShadow)"/>
+            <!-- 내측 입체 몰딩 -->
+            <rect x="235" y="35" width="530" height="465" fill="#1b2028"/>
+            <rect x="245" y="45" width="510" height="455" fill="url(#silverBody)"/>
+
+            <!-- 3. 상단 23층 내려오는 상태 층수 표시기 (디스플레이 인디케이터) -->
+            <g id="indicator-display">
+                <!-- 디스플레이 프레임 -->
+                <rect x="330" y="60" width="340" height="75" rx="8" fill="url(#outerFrame)"/>
+                <rect x="335" y="65" width="330" height="65" rx="5" fill="url(#displayGlass)"/>
+                <rect x="337" y="67" width="326" height="61" rx="4" fill="none" stroke="#222f42" stroke-width="1.5"/>
+
+                <!-- 내림(Down) 화살표 (23층에서 내려오는 상황 연출 - 점등 강조) -->
+                <g id="down-arrow" filter="url(#redGlow)">
+                    <!-- 하향 화살표 애니메이션/점등 느낌의 붉은 LED -->
+                    <polygon points="385,80 415,80 400,102" fill="#ff2a2a"/>
+                    <polygon points="385,102 415,102 400,120" fill="#ff1a1a" opacity="0.6"/>
+                </g>
+
+                <!-- 23층 디지털 FND 7-Segment / 글래스 텍스트 -->
+                <g id="floor-number" filter="url(#redGlow)">
+                    <!-- 23 숫자 렌더링 (고대비 리얼 디지털 폰트 스타일) -->
+                    <text x="510" y="117" 
+                          fill="#ff2a2a" 
+                          font-family="'Courier New', Courier, monospace, sans-serif" 
+                          font-size="58" 
+                          font-weight="900" 
+                          letter-spacing="4" 
+                          text-anchor="middle">23</text>
+                </g>
+
+                <!-- 상태 표시 보조 아이콘 (층수 옆 수직 내림 가이드 LED) -->
+                <circle cx="615" cy="88" r="4" fill="#ff2a2a" filter="url(#redGlow)"/>
+                <circle cx="615" cy="108" r="4" fill="#660000"/>
+            </g>
+
+            <!-- 4. 엘리베이터 문 (Door - 좌/우 2단 미닫이) -->
+            <g id="elevator-doors">
+                <!-- 문 개선 및 음영 레이어 -->
+                <rect x="255" y="150" width="490" height="350" fill="#0b0e14"/>
+
+                <!-- 왼쪽 문 -->
+                <rect x="255" y="150" width="243" height="350" fill="url(#doorMetalLeft)"/>
+                <!-- 오른쪽 문 -->
+                <rect x="502" y="150" width="243" height="350" fill="url(#doorMetalRight)"/>
+
+                <!-- 중앙 문 틈새 및 고무 패킹/그림자 디테일 -->
+                <line x1="498" y1="150" x2="498" y2="500" stroke="#10141a" stroke-width="3"/>
+                <line x1="500" y1="150" x2="500" y2="500" stroke="#000000" stroke-width="2"/>
+                <line x1="501" y1="150" x2="501" y2="500" stroke="#ffffff" stroke-opacity="0.5" stroke-width="1"/>
+
+                <!-- 문 표면 수직 스테인리스 무늬 line -->
+                <line x1="320" y1="150" x2="320" y2="500" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1"/>
+                <line x1="400" y1="150" x2="400" y2="500" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1"/>
+                <line x1="600" y1="150" x2="600" y2="500" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1"/>
+                <line x1="680" y1="150" x2="680" y2="500" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1"/>
+
+                <!-- 문 하단 고무/안전 씰 플레이트 -->
+                <rect x="255" y="492" width="490" height="8" fill="#1a1e24"/>
+            </g>
+
+            <!-- 5. 우측 호출 버튼 패널 (External Call Button Panel) -->
+            <g id="call-button-panel">
+                <!-- 버튼 플레이트 Base -->
+                <rect x="765" y="210" width="55" height="150" rx="6" fill="url(#outerFrame)" filter="url(#softShadow)"/>
+                <rect x="768" y="213" width="49" height="144" rx="4" fill="url(#silverBody)"/>
+                <rect x="770" y="215" width="45" height="140" rx="3" fill="none" stroke="#ffffff" stroke-opacity="0.5" stroke-width="1"/>
+
+                <!-- 나사 디테일 -->
+                <circle cx="792.5" cy="222" r="2" fill="#444850"/>
+                <circle cx="792.5" cy="348" r="2" fill="#444850"/>
+
+                <!-- 위로 버튼 (Unlit) -->
+                <circle cx="792.5" cy="255" r="16" fill="url(#outerFrame)"/>
+                <circle cx="792.5" cy="255" r="14" fill="#2c323b"/>
+                <polygon points="792.5,247 785,259 800,259" fill="#7a889b"/>
+
+                <!-- 아래로 버튼 (Lit - 내려오는 상황이므로 활성화/점등 연출) -->
+                <circle cx="792.5" cy="308" r="16" fill="url(#outerFrame)"/>
+                <circle cx="792.5" cy="308" r="14" fill="#3a1010"/>
+                <polygon points="785,302 800,302 792.5,314" fill="#ff3333" filter="url(#redGlow)"/>
+                <circle cx="792.5" cy="308" r="14" fill="none" stroke="#ff3333" stroke-width="1.5" opacity="0.8"/>
+            </g>
+
+            <!-- 6. 메탈릭 질감 광택 & 하이라이트 레이어 -->
+            <!-- 대각선 빛 반사 효과 -->
+            <path d="M 0,0 L 250,0 L 80,500 L 0,500 Z" fill="#ffffff" opacity="0.06"/>
+            <path d="M 245,45 L 420,45 L 310,500 L 245,500 Z" fill="#ffffff" opacity="0.08"/>
+            <path d="M 700,0 L 1000,0 L 1000,350 Z" fill="#ffffff" opacity="0.04"/>
+        </g>
+    </svg>
+</body>
+</html>

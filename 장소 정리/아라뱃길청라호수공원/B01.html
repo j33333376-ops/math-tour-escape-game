@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아라뱃길·청라호수공원 MATHTOUR</title>
+    
+    <!-- 폰트 구성 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css">
+
+    <style>
+        /* 기본 화면 설정 */
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #fdfbf7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 16:9 방탈출 게임 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 119, 190, 0.25);
+        }
+
+        /* 스테이지 상단 표시바 (글래스모피즘) */
+        #top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: rgba(0, 119, 190, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'NanumSquareRound', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a365d;
+            z-index: 50;
+            border-bottom: 1px solid rgba(64, 224, 208, 0.5);
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            bottom: 20px;
+            background-color: #0077be;
+            color: #ffffff;
+            border: 1px solid #40e0d0;
+            border-radius: 50px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 50;
+            box-shadow: 0 4px 6px rgba(0, 119, 190, 0.3);
+        }
+        .btn-nav:hover {
+            background-color: #40e0d0;
+            color: #1a365d;
+            box-shadow: 0 6px 12px rgba(64, 224, 208, 0.4);
+            transform: translateY(-2px);
+        }
+        #btn-prev { left: 20px; }
+        #btn-next { right: 20px; }
+
+        /* 상황 설명 박스 (유형 1) */
+        #situation-box {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 78%;
+            background: rgba(255, 255, 255, 0.85);
+            border: 3px solid #81d4fa;
+            border-radius: 20px;
+            padding: 20px 28px;
+            box-shadow: 0 8px 24px rgba(0, 119, 190, 0.15);
+            z-index: 20;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px;
+            transition: opacity 0.5s ease;
+        }
+
+        #sit-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 17px;
+            color: #1a365d;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            margin: 0;
+            text-align: center;
+            word-break: keep-all;
+        }
+
+        #click-hint {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 13px;
+            color: #0077be;
+            margin-top: 10px;
+            animation: pulse 1.5s infinite;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        /* 캐릭터 등장/퇴장 애니메이션 유틸 */
+        .char-wrapper {
+            opacity: 0;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 스테이지 상단 표시바 -->
+        <div id="top-bar">아라폭포 도착</div>
+
+        <!-- 에셋: 아라뱃길_아라폭포 (화면 좌측 ~ 1/3 지점 차지) -->
+        <div style="position:absolute; left:-60px; bottom:30px; width:550px; height:275px; overflow:hidden; z-index:1;">
+            <iframe src="아라뱃길_아라폭포.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(0.55); transform-origin:top left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 등장인물: 민우 (아라폭포 우측) -->
+        <div class="char-wrapper" id="char-민우" style="position:absolute; left:470px; bottom:40px; width:260px; height:320px; overflow:visible; z-index:3;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 등장인물: 서연 (민우 우측, 마주보도록 좌우반전 적용) -->
+        <div class="char-wrapper" id="char-서연" style="position:absolute; left:730px; bottom:40px; width:260px; height:320px; overflow:visible; z-index:3;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 상황 설명 박스 -->
+        <div id="situation-box" onclick="nextStory()">
+            <p id="sit-text">민우와 서연이가 아라폭포에 도착했습니다.</p>
+            <div id="click-hint">▼ 클릭하여 진행 ▼</div>
+        </div>
+
+        <!-- 네비게이션 버튼 -->
+        <button id="btn-prev" class="btn-nav">이전</button>
+        <button id="btn-next" class="btn-nav">다음</button>
+    </div>
+
+    <script>
+        // 요청서에 기술된 대사 및 안내문 스크립트 순서 배열
+        const storySequence = [
+            "민우와 서연이가 아라폭포에 도착했습니다.",
+            "<strong>민우</strong> : 와, 여기가 바로 아라폭포구나! 생각했던 것보다 훨씬 크고 멋지다!",
+            "<strong>서연</strong> : 맞아! 아라폭포는 계양산 협곡의 지형을 그대로 이용해 만든 국내 최대의 인공 폭포래.",
+            "<strong>민우</strong> : 상부 폭은 40m, 하부 폭은 150m나 되고, 높이가 무려 45m에 달하는 거대한 인공 폭포라고 하더라고.",
+            "<strong>서연</strong> : 인근의 아라마루 전망대와 함께 묶어서 '수향 4경'으로 불리기도 해.",
+            "<strong>민우</strong> : 아라뱃길에서 가장 높은 계양산 협곡을 활용한 절벽 산책로에 조성되어 있어서 진짜 절경이다.",
+            "<strong>서연</strong> : 폭포 옆으로 수변 산책길이 조성되어 있는데, 인공 폭포 바로 밑까지 계단으로 이어져 있어.",
+            "<strong>민우</strong> : 오, 정말? 그럼 우리 함께 이 계단을 통해 아래로 내려가 보자!"
+        ];
+
+        let currentIndex = 0;
+        let isLeaving = false;
+
+        // 초기 캐릭터 페이드인 연출
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('char-민우').style.opacity = '1';
+                document.getElementById('char-서연').style.opacity = '1';
+            }, 300);
+        });
+
+        // 스토리 진행 함수
+        function nextStory() {
+            if (isLeaving) return;
+
+            currentIndex++;
+            if (currentIndex < storySequence.length) {
+                document.getElementById('sit-text').innerHTML = storySequence[currentIndex];
+            } else {
+                handleTransition();
+            }
+        }
+
+        // 스크립트 종료 시 캐릭터 및 박스 Fade Out 후 B02.html 전환
+        function handleTransition() {
+            if (isLeaving) return;
+            isLeaving = true;
+
+            document.getElementById('sit-text').innerHTML = "민우와 서연이가 계단을 따라 아라폭포 아래로 내려갑니다...";
+            document.getElementById('click-hint').style.display = 'none';
+
+            setTimeout(() => {
+                document.getElementById('char-민우').style.opacity = '0';
+                document.getElementById('char-서연').style.opacity = '0';
+                document.getElementById('situation-box').style.opacity = '0';
+            }, 500);
+
+            setTimeout(() => {
+                window.location.href = 'B02.html';
+            }, 1800);
+        }
+
+        // 이전/다음 버튼 동작
+        document.getElementById('btn-prev').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        document.getElementById('btn-next').addEventListener('click', () => {
+            handleTransition();
+        });
+    </script>
+</body>
+</html>

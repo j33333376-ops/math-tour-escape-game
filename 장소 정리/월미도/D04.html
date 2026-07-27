@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>월미도 MATHTOUR - D04</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #1a1512;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #2d3748;
+    }
+
+    /* 게임 컨테이너 (16:9 비율 유지) */
+    #game-container {
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background: #f5f0e6;
+      border: 3px solid #d4af37;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 상단 스테이지 표시바 */
+    #top-bar {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      z-index: 20;
+      background: rgba(20, 15, 10, 0.75);
+      border: 1px solid #d4af37;
+      padding: 8px 18px;
+      border-radius: 4px;
+      color: #d4af37;
+      font-family: 'Nanum Myeongjo', serif;
+      font-weight: bold;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+
+    /* 스테이지 무대 영역 */
+    #stage {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background: linear-gradient(180deg, #2c1f1d 0%, #4a3525 60%, #2a1a10 100%);
+    }
+
+    /* 이동 및 액션 공통 버튼 */
+    .btn-nav {
+      position: absolute;
+      z-index: 30;
+      background-color: #8c3030;
+      color: #ffffff;
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      padding: 10px 24px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      font-family: 'Noto Sans KR', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn-nav:hover {
+      background-color: #661f1f;
+      transform: translateY(-2px);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+      display: none; /* 퀴즈 성공 후 표시 */
+    }
+
+    /* 등장인물 Wrapper */
+    .char-wrapper {
+      position: absolute;
+      z-index: 3;
+      overflow: visible;
+      transition: filter 0.2s;
+    }
+
+    /* 퀴즈 오버레이 / 컨테이너 레이어 */
+    #quiz-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 15;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(10, 8, 15, 0.4);
+      backdrop-filter: blur(2px);
+    }
+
+    /* 삽입된 퀴즈 내부 전용 스타일 래퍼 */
+    .quiz-app-wrapper {
+      width: 90%;
+      max-width: 760px;
+      height: 90%;
+      max-height: 520px;
+      background: radial-gradient(circle at center, #1b1638 0%, #080612 100%);
+      border: 3px solid #00f3ff;
+      border-radius: 16px;
+      box-shadow: 0 0 25px rgba(0, 243, 255, 0.3), inset 0 0 15px rgba(0, 243, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 퀴즈 스크린 공통 */
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 20px 25px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .screen.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    /* 퀴즈 대사상자 */
+    .dialog-box {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      border: 2px solid #ff2a85;
+      border-radius: 12px;
+      padding: 12px 18px;
+      text-align: center;
+      box-shadow: 0 0 12px rgba(255, 42, 133, 0.2);
+    }
+
+    .dialog-box h2 {
+      color: #ffe600;
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 1.15rem;
+      margin-bottom: 6px;
+      text-shadow: 0 0 8px rgba(255, 230, 0, 0.6);
+    }
+
+    .dialog-box p {
+      font-size: 0.95rem;
+      line-height: 1.4;
+      color: #e0e0ff;
+    }
+
+    /* 시각 그래픽 영역 */
+    .visual-area {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      margin: 10px 0;
+    }
+
+    /* 퀴즈 내 진행 버튼 */
+    .quiz-btn {
+      background: linear-gradient(45deg, #ff2a85, #9d4edd);
+      color: #fff;
+      border: none;
+      padding: 8px 24px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(255, 42, 133, 0.5);
+      transition: all 0.2s ease;
+      align-self: flex-end;
+    }
+
+    .quiz-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 0 20px rgba(255, 42, 133, 0.8);
+    }
+
+    /* A01: 디스코팡팡 비주얼 */
+    .disco-park-bg {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: 6px dashed #00f3ff;
+      background: radial-gradient(circle, #3a0ca3 0%, #4cc9f0 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: spin 12s linear infinite;
+      box-shadow: 0 0 25px #00f3ff;
+    }
+
+    .disco-center {
+      width: 60px;
+      height: 60px;
+      background: #ffe600;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #000;
+      font-weight: bold;
+      font-size: 0.85rem;
+      box-shadow: 0 0 12px #ffe600;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* A02: 탑뷰 */
+    .topview-disco {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: conic-gradient(
+        #ff2a85 0deg 60deg,
+        #2a244d 60deg 360deg
+      );
+      border: 4px solid #00f3ff;
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+      position: relative;
+    }
+
+    .topview-disco::after {
+      content: '앉는 구역 (부채꼴)';
+      position: absolute;
+      top: 25px;
+      right: 10px;
+      color: #ffe600;
+      font-size: 0.8rem;
+      font-weight: bold;
+      text-shadow: 0 0 5px #000;
+    }
+
+    /* A03: 조작 컨테이너 */
+    .interactive-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    canvas {
+      background: transparent;
+    }
+
+    .controls {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid #00f3ff;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .slider-info {
+      display: flex;
+      justify-content: space-between;
+      color: #ffe600;
+      font-weight: bold;
+      font-size: 0.9rem;
+      font-family: 'Nanum Gothic Coding', monospace;
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: #ff2a85;
+      cursor: pointer;
+    }
+
+    /* A04: 퀴즈 질문 */
+    .quiz-container {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px solid #ffe600;
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quiz-info-box {
+      background: rgba(0,0,0,0.5);
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: #00f3ff;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      border: 1px dashed #00f3ff;
+      font-family: 'Nanum Gothic Coding', monospace;
+    }
+
+    .input-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .input-group label {
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .input-wrapper input {
+      width: 90px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #00f3ff;
+      background: #15102a;
+      color: #ffe600;
+      font-size: 1rem;
+      font-weight: bold;
+      text-align: center;
+      font-family: 'Nanum Gothic Coding', monospace;
+    }
+
+    .input-wrapper span {
+      color: #fff;
+      font-size: 0.9rem;
+    }
+
+    .submit-btn {
+      background: linear-gradient(45deg, #00f3ff, #0077ff);
+      color: #000;
+      font-weight: bold;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
+      margin-top: 4px;
+      transition: transform 0.2s;
+    }
+
+    .submit-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.7);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 상단 스테이지 바 -->
+    <div id="top-bar">월미도 MATHTOUR — Stage D04</div>
+
+    <!-- 배경 무대 및 에셋 / 인물 배치 -->
+    <div id="stage">
+      <!-- 디스코팡팡 에셋 (배경 중원) -->
+      <div style="position:absolute; left:233px; bottom:120px; width:600px; height:360px; overflow:hidden; z-index:1;">
+        <iframe src="월미도_디스코팡팡.html" scrolling="no" style="border:0; width:1000px; height:600px; transform:scale(0.6); transform-origin:top left; pointer-events:none;"></iframe>
+      </div>
+
+      <!-- 인물 1: 민우 (좌측 하단) -->
+      <div class="char-wrapper" id="char-민우" style="position:absolute; left:40px; bottom:20px; width:260px; height:320px; z-index:3;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+      </div>
+
+      <!-- 인물 2: 서연 (우측 하단) -->
+      <div class="char-wrapper" id="char-서연" style="position:absolute; right:40px; bottom:20px; width:260px; height:320px; z-index:3;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+      </div>
+    </div>
+
+    <!-- 수학 퀴즈 컨테이너 (중앙 오버레이) -->
+    <div id="quiz-overlay">
+      <div class="quiz-app-wrapper">
+        <!-- A01. 도입 화면 -->
+        <div id="screen-a01" class="screen active">
+          <div class="dialog-box">
+            <h2>🎡 월미도 테마파크 도착!</h2>
+            <p>"와, 월미도다! 저기 화려한 디스코팡팡 좀 봐. 둥글게 돌아가는 모습이 우리가 배운 '원'이랑 똑같이 생겼네?"</p>
+          </div>
+          <div class="visual-area">
+            <div class="disco-park-bg">
+              <div class="disco-center">DISCO</div>
+            </div>
+          </div>
+          <button class="quiz-btn" onclick="nextScreen('screen-a02')">다음으로 ➔</button>
+        </div>
+
+        <!-- A02. 개념 발견 화면 -->
+        <div id="screen-a02" class="screen">
+          <div class="dialog-box">
+            <h2>🍕 디스코팡팡 속 부채꼴 찾기</h2>
+            <p>"디스코팡팡을 위에서 보니 완벽한 원 모양이야. 우리가 앉을 자리를 잘라보면 '부채꼴' 모양이 나오는데, 중심각에 따라 이 크기가 어떻게 변할까?"</p>
+          </div>
+          <div class="visual-area">
+            <div class="topview-disco"></div>
+          </div>
+          <button class="quiz-btn" onclick="nextScreen('screen-a03')">다음으로 ➔</button>
+        </div>
+
+        <!-- A03. 조작 및 탐구 활동 화면 -->
+        <div id="screen-a03" class="screen">
+          <div class="dialog-box">
+            <h2>📐 중심각과 부채꼴의 정비례 관계</h2>
+            <p>"아래 슬라이더를 움직여 중심각을 키워보자. 중심각이 커질수록 호의 길이와 부채꼴의 넓이도 정비례해서 커지고 있어!"</p>
+          </div>
+          <div class="visual-area interactive-container">
+            <canvas id="sectorCanvas" width="240" height="180"></canvas>
+            <div class="controls">
+              <div class="slider-info">
+                <span>중심각 (x)</span>
+                <span id="angleValue">60°</span>
+              </div>
+              <input type="range" id="angleSlider" min="10" max="360" value="60" oninput="updateSector(this.value)">
+            </div>
+          </div>
+          <button class="quiz-btn" onclick="nextScreen('screen-a04')">미션 도전! ➔</button>
+        </div>
+
+        <!-- A04. 미션 해결 화면 -->
+        <div id="screen-a04" class="screen">
+          <div class="dialog-box">
+            <h2>🎯 최종 미션: 디스코팡팡 구역의 크기는?</h2>
+            <p>DJ가 내는 퀴즈를 풀고 정답을 입력해 보세요!</p>
+          </div>
+          <div class="visual-area">
+            <div class="quiz-container">
+              <div class="quiz-info-box">
+                📌 <strong>조건:</strong><br>
+                • 디스코팡팡 반지름($r$) = <strong>18m</strong><br>
+                • 우리 반 탑승 구역의 중심각($x$) = <strong>20°</strong><br>
+                • <strong>(단, 원주율은 3으로 계산)</strong>
+              </div>
+
+              <div class="input-group">
+                <label for="arcInput">1. 호의 길이:</label>
+                <div class="input-wrapper">
+                  <input type="number" id="arcInput" placeholder="숫자만">
+                  <span>m</span>
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label for="areaInput">2. 부채꼴의 넓이:</label>
+                <div class="input-wrapper">
+                  <input type="number" id="areaInput" placeholder="숫자만">
+                  <span>m²</span>
+                </div>
+              </div>
+
+              <button class="submit-btn" onclick="checkAnswer()">정답 제출하기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 네비게이션 버튼 -->
+    <button id="btn-prev" class="btn-nav" onclick="goPrev()">이전</button>
+    <button id="btn-next" class="btn-nav" onclick="goNext()">다음</button>
+  </div>
+
+  <script>
+    // 네비게이션 이동 함수
+    function goPrev() {
+      window.location.href = "D03.html";
+    }
+
+    function goNext() {
+      window.location.href = "D05.html";
+    }
+
+    // 퀴즈 화면 전환 함수
+    function nextScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+      });
+      const targetScreen = document.getElementById(screenId);
+      targetScreen.classList.add('active');
+
+      if (screenId === 'screen-a03') {
+        const sliderVal = document.getElementById('angleSlider').value;
+        updateSector(sliderVal);
+      }
+    }
+
+    // A03: Canvas 부채꼴 실시간 드로잉
+    const canvas = document.getElementById('sectorCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function updateSector(angle) {
+      document.getElementById('angleValue').innerText = angle + '°';
+
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2 + 15;
+      const radius = 65;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const angleRad = (angle * Math.PI) / 180;
+      const startAngle = -Math.PI / 2 - angleRad / 2;
+      const endAngle = -Math.PI / 2 + angleRad / 2;
+
+      // 1. 전체 원 가이드라인
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 2. 부채꼴 넓이 영역
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(255, 42, 133, 0.4)';
+      ctx.fill();
+      ctx.strokeStyle = '#ff2a85';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // 3. 호의 길이 강조
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+      ctx.strokeStyle = '#00f3ff';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // 4. 중심각 표시
+      if (angle > 15) {
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 20, startAngle, endAngle);
+        ctx.strokeStyle = '#ffe600';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    }
+
+    // A04: 정답 채점 로직 (6, 54 검증)
+    function checkAnswer() {
+      const arcVal = parseInt(document.getElementById('arcInput').value.trim(), 10);
+      const areaVal = parseInt(document.getElementById('areaInput').value.trim(), 10);
+
+      if (arcVal === 6 && areaVal === 54) {
+        alert("🎉 성공! 수학의 달인이네!\n호의 길이는 6m, 넓이는 54m²가 정확히 맞아!");
+        document.getElementById('btn-next').style.display = 'block';
+      } else {
+        alert("❌ 다시 한번 공식을 떠올려 계산해 봐!\n\n💡 힌트:\n• 20°는 전체(360°)의 1/18 입니다.\n• 호의 길이 = 2 × 3 × 18 × (1/18) = 6\n• 넓이 = 3 × 18 × 18 × (1/18) = 54");
+      }
+    }
+  </script>
+</body>
+</html>

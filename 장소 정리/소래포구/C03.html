@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소래포구 MATHTOUR - C03</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #1a120c;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Gowun Dodum', sans-serif;
+      color: #f4ecd8;
+    }
+
+    /* 게임 컨테이너 (16:9 비율) */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #2c2019;
+      overflow: hidden;
+      border: 4px solid #4a3b32;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(184, 115, 51, 0.3);
+    }
+
+    /* 배경 이미지 */
+    #bg-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    /* 상단 스테이지 표시바 */
+    #stage-bar {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(180deg, #4a3b32 0%, #2c2019 100%);
+      border: 2px solid #b87333;
+      border-radius: 6px;
+      padding: 6px 24px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.2);
+    }
+
+    .gear-icon {
+      font-size: 16px;
+      color: #b87333;
+      text-shadow: 0 0 5px rgba(184, 115, 51, 0.5);
+      animation: rotateGear 12s linear infinite;
+    }
+
+    @keyframes rotateGear {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .stage-title {
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+      color: #f4ecd8;
+      letter-spacing: 1px;
+    }
+
+    /* 캐릭터 영역 */
+    .char-wrapper {
+      position: absolute;
+      bottom: 50px;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      z-index: 3;
+      transition: left 0.8s ease, right 0.8s ease, transform 0.8s ease, opacity 0.8s ease, filter 0.3s ease;
+    }
+
+    #char-민우 {
+      left: 120px;
+      filter: brightness(1);
+    }
+
+    #char-서연 {
+      right: 120px;
+      filter: brightness(0.55);
+    }
+
+    .inactive {
+      filter: brightness(0.55) !important;
+    }
+
+    /* 스파클 애니메이션 컨테이너 */
+    #sparkle-container {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #f4ecd8;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #b87333, 0 0 20px #ffd700;
+      pointer-events: none;
+      animation: sparkleFly 1.2s ease-out forwards;
+    }
+
+    @keyframes sparkleFly {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--dx), var(--dy)) scale(0.2);
+      }
+    }
+
+    /* 대화창 UI */
+    #dialogue-box {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92%;
+      height: 145px;
+      z-index: 10;
+      background: linear-gradient(135deg, rgba(44, 32, 25, 0.94), rgba(0, 59, 70, 0.94));
+      border: 3px solid #b87333;
+      border-radius: 8px;
+      padding: 20px 25px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.8), inset 0 0 12px rgba(184, 115, 51, 0.3);
+      cursor: pointer;
+    }
+
+    /* 화자 명패 */
+    #speaker-tag {
+      position: absolute;
+      top: -18px;
+      left: 20px;
+      background: #b87333;
+      border: 2px solid #4a3b32;
+      border-radius: 4px;
+      padding: 3px 18px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    /* 리벳 장식 */
+    #speaker-tag::before, #speaker-tag::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 4px;
+      height: 4px;
+      background: #4a3b32;
+      border-radius: 50%;
+      transform: translateY(-50%);
+    }
+    #speaker-tag::before { left: 5px; }
+    #speaker-tag::after { right: 5px; }
+
+    #speaker-name {
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+      color: #f4ecd8;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    #dialogue-text {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 17px;
+      line-height: 1.6;
+      color: #f4ecd8;
+      margin-top: 8px;
+      word-break: keep-all;
+    }
+
+    #click-prompt {
+      position: absolute;
+      bottom: 12px;
+      right: 20px;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 12px;
+      color: #b87333;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* 퀴즈 미션 스타트 배너 */
+    #mission-banner {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.6);
+      opacity: 0;
+      z-index: 20;
+      background: linear-gradient(135deg, rgba(44, 32, 25, 0.96), rgba(0, 59, 70, 0.96));
+      border: 4px solid #b87333;
+      border-radius: 12px;
+      padding: 25px 50px;
+      text-align: center;
+      box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 15px rgba(184, 115, 51, 0.6);
+      transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+    }
+
+    #mission-banner.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      pointer-events: auto;
+    }
+
+    .mission-title {
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 30px;
+      font-weight: bold;
+      color: #f4ecd8;
+      text-shadow: 2px 2px 4px #000, 0 0 12px #b87333;
+      letter-spacing: 2px;
+    }
+
+    .mission-subtitle {
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 14px;
+      color: #b87333;
+      margin-top: 10px;
+    }
+
+    /* 공통 네비게이션 버튼 */
+    .btn-nav {
+      position: absolute;
+      z-index: 15;
+      background: #b87333;
+      color: #f4ecd8;
+      border: 2px solid #4a3b32;
+      border-radius: 4px;
+      padding: 8px 20px;
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 1px 1px 0 rgba(255,255,255,0.3);
+      transition: background 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-nav:hover {
+      background: #c88343;
+      transform: translateY(-2px);
+    }
+
+    .btn-nav:active {
+      transform: translateY(0);
+    }
+
+    /* 리벳 네비게이션 버튼 모서리 */
+    .btn-nav::before, .btn-nav::after {
+      content: '';
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #2c2019;
+      border-radius: 50%;
+    }
+    .btn-nav::before { top: 3px; left: 3px; }
+    .btn-nav::after { bottom: 3px; right: 3px; }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+      display: none;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+      display: none;
+    }
+
+    #btn-skip {
+      right: 20px;
+      bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 배경 이미지 -->
+    <img id="bg-image" src="소래습지공원 전시관 내부2.png" alt="소래습지공원 전시관 내부">
+
+    <!-- 상단 표시바 -->
+    <div id="stage-bar">
+      <div class="gear-icon">⚙️</div>
+      <span class="stage-title">소래포구 MATHTOUR — 소래습지공원 전시관</span>
+      <div class="gear-icon">⚙️</div>
+    </div>
+
+    <!-- 캐릭터 영역 -->
+    <div class="char-wrapper" id="char-민우">
+      <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <div class="char-wrapper" id="char-서연">
+      <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 스파클 효과 컨테이너 -->
+    <div id="sparkle-container"></div>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+      <div id="speaker-tag">
+        <span id="speaker-name">민우</span>
+      </div>
+      <p id="dialogue-text">대사를 불러오는 중...</p>
+      <div id="click-prompt">▶ 클릭하여 계속</div>
+    </div>
+
+    <!-- 퀴즈 미션 스타트 안내 배너 -->
+    <div id="mission-banner">
+      <div class="mission-title">명제 퀴즈 미션 START!</div>
+      <div class="mission-subtitle">[ 미션 : 명제의 참·거짓 판단 및 역과 대우 구하기 ]</div>
+    </div>
+
+    <!-- 이동 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="goToUrl('C02.html')">이전</button>
+    <button class="btn-nav" id="btn-next" onclick="goToUrl('C04.html')">다음</button>
+    <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
+  </div>
+
+  <script>
+    // 대화 스크립트 데이터 (유형 2)
+    const dialogues = [
+      {
+        speaker: "민우",
+        target: "char-민우",
+        text: "우와, 소래습지공원 전시관 관람 정말 알찼어! 갯벌 생태계부터 소금 생산 과정까지 한눈에 볼 수 있어서 재밌었어."
+      },
+      {
+        speaker: "서연",
+        target: "char-서연",
+        text: "맞아! 염생식물들도 신기했고, 습지에 사는 다양한 생물들을 직접 보니까 기억에 쏙쏙 남더라."
+      },
+      {
+        speaker: "민우",
+        target: "char-민우",
+        text: "생각해보니 아까 본 내용들을 수학 시간에 배운 ‘명제’로 만들어볼 수도 있을 것 같아!"
+      },
+      {
+        speaker: "서연",
+        target: "char-서연",
+        text: "오, 명제? 참이나 거짓을 명확하게 판별할 수 있는 문장 말이지? 좋은 아이디어야!"
+      },
+      {
+        speaker: "민우",
+        target: "char-민우",
+        text: "예를 들면… \"소래습지에 사는 모든 식물은 염분에 강하다.\" 이건 어때?"
+      },
+      {
+        speaker: "서연",
+        target: "char-서연",
+        text: "음! 소래습지의 환경에 적응한 식물들이니 참인 명제네. 그럼 나도 하나 만들어볼게."
+      },
+      {
+        speaker: "서연",
+        target: "char-서연",
+        text: "\"어떤 생물이 갯벌에 산다면 그 생물은 습지 생태계의 구성원이다.\" 이것도 참인 명제가 되겠지?"
+      },
+      {
+        speaker: "민우",
+        target: "char-민우",
+        text: "완벽해! 이렇게 보니까 우리가 본 전시 내용이 멋진 수학적 문장이 되는구나."
+      },
+      {
+        speaker: "서연",
+        target: "char-서연",
+        text: "맞아! 그러고 보니 출발하기 전에 선생님께서 하셨던 말씀 기억나?"
+      },
+      {
+        speaker: "민우",
+        target: "char-민우",
+        text: "\"전시관을 모두 둘러본 뒤에는 오늘 본 내용을 가지고 명제의 참과 거짓, 그리고 역과 대우를 판단하는 퀴즈 미션이 기다리고 있어요!\" 하셨잖아."
+      },
+      {
+        speaker: "서연",
+        target: "char-서연",
+        text: "응! 명제의 조건이 바뀔 때 역과 대우가 어떻게 되는지도 잘 파악해둬야 할 것 같아."
+      },
+      {
+        speaker: "민우",
+        target: "char-민우",
+        text: "오늘 직접 보고 배운 내용이니까 문제도 잘 풀 수 있겠지?"
+      },
+      {
+        speaker: "서연",
+        target: "char-서연",
+        text: "좋아! 참과 거짓도 정확히 판단하고, 역과 대우까지 제대로 찾아보자!"
+      }
+    ];
+
+    let currentIndex = 0;
+    let isEnding = false;
+
+    // 페이지 로드 시 첫 대화 출력
+    window.addEventListener('DOMContentLoaded', () => {
+      updateDialogue();
+    });
+
+    // 대화 진행 함수
+    function advanceDialogue() {
+      if (isEnding) return;
+
+      currentIndex++;
+      if (currentIndex < dialogues.length) {
+        updateDialogue();
+      } else {
+        endDialogueSequence();
+      }
+    }
+
+    // 대화 화면 갱신
+    function updateDialogue() {
+      const current = dialogues[currentIndex];
+      
+      document.getElementById('speaker-name').innerText = current.speaker;
+      document.getElementById('dialogue-text').innerText = current.text;
+
+      // 캐릭터 하이라이트 처리 (.inactive)
+      const minwoo = document.getElementById('char-민우');
+      const seoyeon = document.getElementById('char-서연');
+
+      if (current.target === 'char-민우') {
+        minwoo.classList.remove('inactive');
+        seoyeon.classList.add('inactive');
+      } else if (current.target === 'char-서연') {
+        seoyeon.classList.remove('inactive');
+        minwoo.classList.add('inactive');
+      }
+    }
+
+    // 대화 건너뛰기
+    function skipDialogue() {
+      if (isEnding) return;
+      endDialogueSequence();
+    }
+
+    // 대화 종료 연출 (가운데 이동 -> 사라짐 + 반짝임 -> 미션 스타트 배너 -> 다음 버튼)
+    function endDialogueSequence() {
+      isEnding = true;
+
+      const dialogueBox = document.getElementById('dialogue-box');
+      const btnSkip = document.getElementById('btn-skip');
+      dialogueBox.style.display = 'none';
+      btnSkip.style.display = 'none';
+
+      const minwoo = document.getElementById('char-민우');
+      const seoyeon = document.getElementById('char-서연');
+
+      // 밝기 복구
+      minwoo.classList.remove('inactive');
+      seoyeon.classList.remove('inactive');
+
+      // 가운데로 이동
+      minwoo.style.left = 'calc(50% - 150px)';
+      seoyeon.style.right = 'calc(50% - 150px)';
+
+      // 0.8초 후 사라지며 파티클 생성
+      setTimeout(() => {
+        createSparkleEffect();
+        minwoo.style.opacity = '0';
+        minwoo.style.transform = 'scale(0.7) translateY(-20px)';
+        seoyeon.style.opacity = '0';
+        seoyeon.style.transform = 'scale(0.7) scaleX(-1) translateY(-20px)';
+      }, 700);
+
+      // 1.6초 후 스타트 배너 및 네비게이션 버튼 표시
+      setTimeout(() => {
+        document.getElementById('mission-banner').classList.add('show');
+        document.getElementById('btn-prev').style.display = 'flex';
+        document.getElementById('btn-next').style.display = 'flex';
+      }, 1600);
+    }
+
+    // 파티클 생성 함수
+    function createSparkleEffect() {
+      const container = document.getElementById('sparkle-container');
+      for (let i = 0; i < 40; i++) {
+        const p = document.createElement('div');
+        p.className = 'sparkle';
+        p.style.left = (42 + Math.random() * 16) + '%';
+        p.style.top = (45 + Math.random() * 25) + '%';
+        p.style.setProperty('--dx', (Math.random() * 260 - 130) + 'px');
+        p.style.setProperty('--dy', (Math.random() * -180 - 20) + 'px');
+        p.style.animationDelay = (Math.random() * 0.3) + 's';
+        container.appendChild(p);
+      }
+    }
+
+    // 페이지 이동 함수
+    function goToUrl(url) {
+      if (url) {
+        window.location.href = url;
+      }
+    }
+  </script>
+</body>
+</html>

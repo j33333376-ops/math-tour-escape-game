@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천도호부청사·인천향교 MATHTOUR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        body {
+            margin: 0; padding: 0;
+            background-color: #111;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%; max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background-color: #f5f0e6;
+            color: #2d3748;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        /* 공통 네비게이션 버튼 */
+        .btn-nav {
+            position: absolute;
+            background-color: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-weight: bold;
+            font-family: 'Noto Sans KR', sans-serif;
+            cursor: pointer;
+            z-index: 100;
+            transition: background-color 0.2s;
+        }
+        .btn-nav:hover { background-color: #661f1f; }
+        #btn-prev { left: 20px; bottom: 20px; }
+        #btn-next { right: 20px; bottom: 20px; display: none; }
+
+        /* 상황 설명 박스 */
+        .story-box {
+            position: absolute;
+            top: 25px; left: 50%; transform: translateX(-50%);
+            width: 85%;
+            background: rgba(245, 240, 230, 0.95);
+            border: 2px solid #d4af37;
+            padding: 12px 20px;
+            text-align: center;
+            z-index: 50;
+            border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            font-family: 'Noto Sans KR', sans-serif;
+            line-height: 1.6; letter-spacing: -0.02em;
+            font-size: 1.05rem;
+        }
+
+        /* 퀴즈 컨테이너 래퍼 */
+        .quiz-wrapper {
+            position: absolute;
+            top: 95px; left: 0; right: 0; bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            z-index: 10;
+        }
+
+        /* 퀴즈 영역 CSS */
+        :root {
+            --wood-dark: #8c3030; 
+            --wood-light: #d4af37;
+            --tile-gray: #455A64;
+            --tile-border: #263238;
+            --tile-empty: rgba(140, 48, 48, 0.15);
+        }
+
+        .container {
+            max-width: 880px;
+            width: 95%;
+            background-color: transparent;
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+        }
+
+        .header {
+            background-color: var(--wood-dark);
+            color: #fff;
+            padding: 12px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+            border: 2px solid var(--wood-light);
+            border-bottom: none;
+        }
+
+        .header h1 {
+            margin: 0 0 5px 0;
+            font-size: 1.4rem;
+            font-family: 'Nanum Myeongjo', serif;
+            color: #d4af37;
+        }
+
+        .header p {
+            margin: 0;
+            font-size: 0.95rem;
+            font-family: 'Nanum Gothic Coding', monospace;
+            color: #f5f0e6;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: row;
+            padding: 15px;
+            gap: 20px;
+            background-color: rgba(255,255,255,0.6);
+            border: 2px solid var(--wood-light);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .control-panel, .visual-panel {
+            flex: 1;
+            background-color: rgba(245, 240, 230, 0.9);
+            border-radius: 6px;
+            padding: 15px;
+            border: 1px solid #d4af37;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .visual-panel {
+            align-items: center;
+            justify-content: flex-end;
+            border: 2px solid var(--wood-light);
+            background-color: #eae3d3;
+        }
+
+        .control-group { margin-bottom: 15px; font-family: 'Nanum Gothic Coding', monospace; }
+        .control-group label {
+            display: flex; justify-content: space-between;
+            font-weight: bold; margin-bottom: 6px; color: var(--wood-dark);
+            font-size: 0.95rem;
+        }
+        
+        input[type="range"] { 
+            width: 100%; cursor: pointer; accent-color: var(--wood-dark); 
+        }
+
+        .divider { height: 1px; background-color: #d4af37; margin: 10px 0; opacity: 0.5; }
+
+        .answer-section {
+            background-color: rgba(212, 175, 55, 0.15);
+            padding: 15px;
+            border-radius: 6px;
+            border: 2px dashed var(--wood-light);
+            font-family: 'Nanum Gothic Coding', monospace;
+            flex-grow: 1;
+        }
+
+        .answer-section p { 
+            margin-top: 0; margin-bottom: 10px; font-weight: bold; 
+            color: var(--wood-dark); font-size: 0.9rem; word-break: keep-all;
+        }
+
+        .input-group { display: flex; gap: 8px; }
+        
+        input[type="number"] {
+            flex: 1; padding: 8px 12px; font-size: 1.1rem;
+            border: 2px solid var(--wood-light); border-radius: 4px; outline: none;
+            font-family: 'Nanum Gothic Coding', monospace;
+            background-color: #fffaf0;
+        }
+
+        .input-group button {
+            padding: 8px 16px; font-size: 0.95rem; font-weight: bold; color: #fff;
+            background-color: var(--wood-dark); border: 1px solid var(--wood-light);
+            border-radius: 4px; cursor: pointer; transition: 0.2s; white-space: nowrap;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .input-group button:hover { background-color: #661f1f; }
+        .input-group button:disabled { background-color: #aaa; border-color: #999; cursor: not-allowed; }
+
+        /* Roof Visualizer */
+        #roof-container {
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+            width: 100%; margin-bottom: 10px;
+        }
+        .roof-row { display: flex; justify-content: center; gap: 1px; width: 100%; }
+        .tile {
+            height: 12px; flex: 1; max-width: 12px;
+            background-color: var(--tile-empty);
+            border: 1px solid rgba(140, 48, 48, 0.3);
+            border-radius: 3px 3px 0 0;
+            transition: background-color 0.8s, border-color 0.8s;
+        }
+        .building-base {
+            width: 80%; height: 35px; background-color: var(--wood-dark);
+            border: 2px solid var(--wood-light); border-bottom: none; border-radius: 4px 4px 0 0;
+            display: flex; justify-content: center; align-items: center;
+            color: #d4af37; font-weight: bold; letter-spacing: 5px;
+            font-family: 'Nanum Myeongjo', serif; font-size: 1.1rem;
+        }
+
+        .roof-completed .tile {
+            background-color: var(--tile-gray);
+            border-color: var(--tile-border);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .message-box {
+            margin-top: 10px; padding: 10px; border-radius: 4px; text-align: center;
+            font-weight: bold; display: none; line-height: 1.4; word-break: keep-all;
+            font-size: 0.9rem; font-family: 'Noto Sans KR', sans-serif;
+        }
+        .message-success { display: block; background-color: #f5f0e6; color: #2E7D32; border: 1px solid #2E7D32; }
+        .message-error { display: block; background-color: #f5f0e6; color: #8c3030; border: 1px solid #8c3030; }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            50% { transform: translateX(6px); }
+            75% { transform: translateX(-6px); }
+            100% { transform: translateX(0); }
+        }
+        .shake-animation { animation: shake 0.4s ease-in-out; }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        
+        <div class="story-box">
+            "자, 이제 본격적인 보수 작전이야! 주어진 조건에 맞게 슬라이더를 움직여 값을 설정해 봐.<br>
+            그리고 완벽한 지붕 복원을 위해 필요한 기와의 총합을 등차수열의 합 원리를 이용해 계산한 뒤 기와를 얹어주자!"
+        </div>
+
+        <div class="quiz-wrapper">
+            <div class="container">
+                <div class="header">
+                    <h1>미션: 명륜당 지붕 보수 작전!</h1>
+                    <p>명륜당의 지붕은 처마 끝으로 내려올수록 폭이 넓어져 기와의 개수가 일정하게 증가합니다.</p>
+                </div>
+
+                <div class="main-content">
+                    <div class="control-panel">
+                        <div class="control-group">
+                            <label><span>첫 번째 단의 기와 수 (a)</span><span id="val-a">10개</span></label>
+                            <input type="range" id="slider-a" min="10" max="30" step="1" value="10">
+                        </div>
+                        <div class="control-group">
+                            <label><span>단마다 증가하는 기와 수 (d)</span><span id="val-d">2개</span></label>
+                            <input type="range" id="slider-d" min="1" max="5" step="1" value="2">
+                        </div>
+                        <div class="control-group">
+                            <label><span>지붕의 총 단 수 (n)</span><span id="val-n">5단</span></label>
+                            <input type="range" id="slider-n" min="5" max="15" step="1" value="5">
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="answer-section" id="answer-box">
+                            <p>설정한 조건(a, d, n)일 때, n번째 단까지 필요한 기와의 총합은?</p>
+                            <div class="input-group">
+                                <input type="number" id="answer-input" placeholder="총 기와 개수 입력">
+                                <button id="submit-btn">기왓장 얹기</button>
+                            </div>
+                            <div id="feedback-message" class="message-box"></div>
+                        </div>
+                    </div>
+
+                    <div class="visual-panel">
+                        <div id="roof-container"></div>
+                        <div class="building-base">명륜당</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 공통 네비게이션 버튼 -->
+        <button id="btn-prev" class="btn-nav" onclick="window.location.href='E02.html'">이전</button>
+        <button id="btn-next" class="btn-nav" onclick="window.location.href='E04.html'">다음</button>
+
+    </div>
+
+    <script>
+        let state = { a: 10, d: 2, n: 5, isCompleted: false };
+
+        const sliderA = document.getElementById('slider-a');
+        const sliderD = document.getElementById('slider-d');
+        const sliderN = document.getElementById('slider-n');
+        
+        const valA = document.getElementById('val-a');
+        const valD = document.getElementById('val-d');
+        const valN = document.getElementById('val-n');
+        
+        const roofContainer = document.getElementById('roof-container');
+        const answerInput = document.getElementById('answer-input');
+        const submitBtn = document.getElementById('submit-btn');
+        const feedbackMsg = document.getElementById('feedback-message');
+        const answerBox = document.getElementById('answer-box');
+        const btnNext = document.getElementById('btn-next');
+
+        function calculateTotalTiles(a, d, n) {
+            return (n * (2 * a + (n - 1) * d)) / 2;
+        }
+
+        function renderRoof() {
+            roofContainer.innerHTML = '';
+            roofContainer.classList.remove('roof-completed');
+            
+            for (let i = 0; i < state.n; i++) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'roof-row';
+                
+                const tilesInRow = state.a + (i * state.d);
+                for (let j = 0; j < tilesInRow; j++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    rowDiv.appendChild(tile);
+                }
+                roofContainer.appendChild(rowDiv);
+            }
+        }
+
+        function updateState() {
+            if(state.isCompleted) return;
+
+            state.a = parseInt(sliderA.value);
+            state.d = parseInt(sliderD.value);
+            state.n = parseInt(sliderN.value);
+
+            valA.textContent = state.a + '개';
+            valD.textContent = state.d + '개';
+            valN.textContent = state.n + '단';
+
+            feedbackMsg.className = 'message-box';
+            answerInput.value = '';
+            
+            renderRoof();
+        }
+
+        sliderA.addEventListener('input', updateState);
+        sliderD.addEventListener('input', updateState);
+        sliderN.addEventListener('input', updateState);
+
+        submitBtn.addEventListener('click', () => {
+            if(state.isCompleted) return;
+
+            const studentAnswer = parseInt(answerInput.value);
+            const correctAnswer = calculateTotalTiles(state.a, state.d, state.n);
+
+            if (isNaN(studentAnswer)) {
+                feedbackMsg.textContent = "숫자를 입력해주세요.";
+                feedbackMsg.className = 'message-box message-error';
+                return;
+            }
+
+            if (studentAnswer === correctAnswer) {
+                handleSuccess();
+            } else {
+                handleError();
+            }
+        });
+
+        function handleSuccess() {
+            state.isCompleted = true;
+            roofContainer.classList.add('roof-completed');
+            
+            feedbackMsg.textContent = "성공입니다! 완벽한 계산으로 명륜당 지붕이 튼튼하게 복원되었습니다.";
+            feedbackMsg.className = 'message-box message-success';
+            
+            // 정답 이동 대상: E03.html로 수정 및 '다음' 버튼 표시
+            btnNext.style.display = 'block';
+            submitBtn.disabled = true;
+            answerInput.disabled = true;
+            sliderA.disabled = true;
+            sliderD.disabled = true;
+            sliderN.disabled = true;
+        }
+
+        function handleError() {
+            answerBox.classList.remove('shake-animation');
+            void answerBox.offsetWidth;
+            answerBox.classList.add('shake-animation');
+
+            feedbackMsg.textContent = "기와가 부족하거나 남습니다. 등차수열의 합 공식 Sn = n{2a+(n-1)d}/2 를 다시 활용하여 총합을 계산해보세요!";
+            feedbackMsg.className = 'message-box message-error';
+        }
+
+        // 초기 렌더링
+        renderRoof();
+    </script>
+</body>
+</html>

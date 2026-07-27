@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>월미도 MATHTOUR - D03</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      overflow: hidden;
+    }
+
+    /* 16:9 비율 고정 게임 컨테이너 */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #f5f0e6;
+      border: 2px solid #d4af37;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+      overflow: hidden;
+    }
+
+    /* 무대 및 스카이라인 배경 */
+    #stage {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, #2b1f1d 0%, #4a332f 50%, #f5f0e6 100%);
+      z-index: 0;
+    }
+
+    /* 상단 스테이지 표시바 */
+    #stage-header {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      padding: 8px 18px;
+      background: rgba(20, 15, 15, 0.75);
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      color: #d4af37;
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 16px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      z-index: 10;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    /* 에셋 (디스코팡팡) 레이어 - z-index: 1 */
+    .asset-wrapper {
+      position: absolute;
+      z-index: 1;
+    }
+
+    /* 캐릭터 레이어 - z-index: 3 */
+    .char-wrapper {
+      position: absolute;
+      z-index: 3;
+      transition: filter 0.2s ease;
+    }
+
+    .char-wrapper.inactive {
+      filter: brightness(0.55);
+    }
+
+    /* 대화창 UI - z-index: 10 */
+    #dialogue-box {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      height: 130px;
+      background: rgba(0, 0, 0, 0.75);
+      border: 2px solid #d4af37;
+      border-radius: 8px;
+      padding: 16px 24px;
+      color: #ffffff;
+      z-index: 10;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+      user-select: none;
+    }
+
+    #speaker-name {
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 18px;
+      font-weight: bold;
+      color: #d4af37;
+      margin-bottom: 8px;
+    }
+
+    #dialogue-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+      color: #f0f0f0;
+      word-break: keep-all;
+    }
+
+    #dialogue-hint {
+      position: absolute;
+      bottom: 10px;
+      right: 20px;
+      font-size: 12px;
+      color: #a0a0a0;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* 공통 네비게이션 버튼 */
+    .btn-nav {
+      position: absolute;
+      background-color: #8c3030;
+      color: #ffffff;
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      padding: 10px 24px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn-nav:hover {
+      background-color: #661f1f;
+    }
+
+    .btn-nav:active {
+      transform: scale(0.97);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+    }
+
+    #btn-skip {
+      right: 20px;
+      bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 배경 레이어 -->
+    <div id="stage"></div>
+
+    <!-- 스테이지 상단 표시바 -->
+    <div id="stage-header">월미도 MATHTOUR - 디스코팡팡</div>
+
+    <!-- 에셋 배치: 월미도_디스코팡팡 (가로형 배경 에셋, 원본 규격: 1000x500 기준 축소 배치) -->
+    <div class="asset-wrapper" style="left: 33px; bottom: 60px; width: 1000px; height: 500px; overflow: hidden;">
+      <iframe src="월미도_디스코팡팡.html" scrolling="no" style="border: 0; width: 1000px; height: 500px; transform: scale(1); transform-origin: top left; pointer-events: none;"></iframe>
+    </div>
+
+    <!-- 등장인물 1: 민우 (왼쪽 배치) -->
+    <div class="char-wrapper" id="char-민우" style="left: 180px; bottom: 80px; width: 260px; height: 320px; overflow: visible;">
+      <iframe src="등장인물_민우.html" scrolling="no" style="border: 0; width: 260px; height: 320px; transform: scale(1); transform-origin: bottom left; pointer-events: none;"></iframe>
+    </div>
+
+    <!-- 등장인물 2: 서연 (오른쪽 배치 및 좌측 주시) -->
+    <div class="char-wrapper" id="char-서연" style="left: 626px; bottom: 80px; width: 260px; height: 320px; overflow: visible;">
+      <iframe src="등장인물_서연.html" scrolling="no" style="border: 0; width: 260px; height: 320px; transform: scale(1) scaleX(-1); transform-origin: bottom left; pointer-events: none;"></iframe>
+    </div>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+      <div id="speaker-name">민우</div>
+      <div id="dialogue-text">DJ가 수학문제를 맞추면 멈춰준데</div>
+      <div id="dialogue-hint">클릭하여 계속 ▼</div>
+    </div>
+
+    <!-- 이동 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="goToUrl('D02.html')">이전</button>
+    <button class="btn-nav" id="btn-skip" onclick="finishDialogue()">건너뛰기</button>
+    <button class="btn-nav" id="btn-next" style="display: none;" onclick="goToUrl('D04.html')">다음</button>
+  </div>
+
+  <script>
+    // 대화 데이터 정의
+    const dialogues = [
+      {
+        speaker: "민우",
+        text: "DJ가 수학문제를 맞추면 멈춰준데",
+        target: "char-민우"
+      }
+    ];
+
+    let currentIndex = 0;
+
+    function updateDialogue() {
+      if (currentIndex < dialogues.length) {
+        const current = dialogues[currentIndex];
+        document.getElementById('speaker-name').innerText = current.speaker;
+        document.getElementById('dialogue-text').innerText = current.text;
+
+        // 화자 하이라이트 처리 (.inactive 토글)
+        document.querySelectorAll('.char-wrapper').forEach(wrapper => {
+          if (wrapper.id === current.target) {
+            wrapper.classList.remove('inactive');
+          } else {
+            wrapper.classList.add('inactive');
+          }
+        });
+      } else {
+        finishDialogue();
+      }
+    }
+
+    function advanceDialogue() {
+      currentIndex++;
+      if (currentIndex < dialogues.length) {
+        updateDialogue();
+      } else {
+        finishDialogue();
+      }
+    }
+
+    function finishDialogue() {
+      // 대화창 숨기기
+      document.getElementById('dialogue-box').style.display = 'none';
+      document.getElementById('btn-skip').style.display = 'none';
+
+      // 모든 캐릭터 원래 밝기로 복구
+      document.querySelectorAll('.char-wrapper').forEach(wrapper => {
+        wrapper.classList.remove('inactive');
+      });
+
+      // '다음' 버튼 표시
+      document.getElementById('btn-next').style.display = 'block';
+    }
+
+    function goToUrl(url) {
+      if (url) {
+        window.location.href = url;
+      }
+    }
+
+    // 초기화 실행
+    window.onload = function() {
+      updateDialogue();
+    };
+  </script>
+</body>
+</html>

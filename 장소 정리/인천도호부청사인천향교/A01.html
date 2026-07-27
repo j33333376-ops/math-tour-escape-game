@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천도호부청사·인천향교 MATHTOUR - A01</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+            overflow: hidden;
+        }
+
+        /* 16:9 메인 게임 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f5f0e6;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            border: 2px solid #d4af37;
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 스테이지 상단 표시바 */
+        #stage-header {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.65);
+            border: 1px solid #d4af37;
+            padding: 8px 18px;
+            border-radius: 4px;
+            color: #d4af37;
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 캐릭터 래퍼 및 애니메이션 */
+        .char-wrapper {
+            position: absolute;
+            z-index: 3;
+            transition: transform 0.8s ease, opacity 0.8s ease, filter 0.2s ease;
+        }
+
+        .char-wrapper.inactive {
+            filter: brightness(0.55);
+        }
+
+        /* 등장 및 퇴장 애니메이션 클래스 */
+        .char-enter-left {
+            transform: translateX(-150px);
+            opacity: 0;
+        }
+
+        .char-enter-right {
+            transform: translateX(150px);
+            opacity: 0;
+        }
+
+        .char-ready {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .char-exit-right {
+            transform: translateX(250px);
+            opacity: 0;
+        }
+
+        /* 대화창 UI (유형 2) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 320px);
+            height: 125px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 2px solid #d4af37;
+            border-radius: 6px;
+            padding: 15px 20px;
+            z-index: 10;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 17px;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            word-break: keep-all;
+        }
+
+        #click-indicator {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 12px;
+            color: #d4af37;
+            animation: blink 1.2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* 공통 이동 및 내비게이션 버튼 */
+        .btn-nav {
+            position: absolute;
+            z-index: 11;
+            background-color: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        .btn-nav:active {
+            transform: scale(0.98);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next, #btn-skip {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        /* 초기 상태 설정 */
+        #btn-next {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- 배경 이미지 -->
+    <img src="인천도호부청사.png" alt="인천도호부청사 배경" class="bg-img">
+
+    <!-- 스테이지 상단 표시바 -->
+    <div id="stage-header">STAGE 01. 인천도호부청사 도착</div>
+
+    <!-- 등장인물: 민우 (좌측 배치) -->
+    <div class="char-wrapper char-enter-left" id="char-민우" style="left: 120px; bottom: 30px; width: 260px; height: 320px; overflow: visible;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 서연 (우측 배치 및 좌우 반전으로 마주보기) -->
+    <div class="char-wrapper char-enter-right" id="char-서연" style="right: 120px; bottom: 30px; width: 260px; height: 320px; overflow: visible;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-name">민우</div>
+        <div id="dialogue-text">대화를 불러오는 중입니다...</div>
+        <div id="click-indicator">▼ 클릭하여 계속</div>
+    </div>
+
+    <!-- 내비게이션 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="goToUrl('index.html')">이전</button>
+    <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
+    <button class="btn-nav" id="btn-next" onclick="goToUrl('A02.html')">다음</button>
+</div>
+
+<script>
+    // 대화 스크립트 데이터
+    const dialogues = [
+        {
+            speaker: "민우",
+            text: "드디어 인천도호부청사 앞에 도착했어! 생각했던 것보다 건물의 기품이 대단한걸?",
+            target: "char-민우"
+        },
+        {
+            speaker: "서연",
+            text: "맞아, 민우야. 인천도호부청사는 조선 시대 인천의 행정 중심지 역할을 했던 곳이야.",
+            target: "char-서연"
+        },
+        {
+            speaker: "민우",
+            text: "행정 중심지라면... 여기서 수령이 행정 업무를 보고 관아 역할을 했던 건가?",
+            target: "char-민우"
+        },
+        {
+            speaker: "서연",
+            text: "정확해! 수령이 직접 집무를 보던 건물인 '동헌'과 왕을 상징하는 전패를 모시고 국왕의 대궐을 향해 망궐례를 올리던 '객사'가 핵심 건축물이지.",
+            target: "char-서연"
+        },
+        {
+            speaker: "민우",
+            text: "아하! 동헌과 객사의 역사적 용도가 서로 달랐구나. 저기 보이는 건물이 동헌인 거지?",
+            target: "char-민우"
+        },
+        {
+            speaker: "서연",
+            text: "응! 그럼 먼저 동헌 주위를 둘러보면서 정교한 역사적 구조를 확인하고, 객사 쪽으로천천히 이동해 볼까?",
+            target: "char-서연"
+        },
+        {
+            speaker: "민우",
+            text: "좋아, 출발하자! 동헌 뒤편과 객사 방향으로 가보자고!",
+            target: "char-민우"
+        }
+    ];
+
+    let currentIndex = 0;
+    const prevUrl = "index.html";
+    const nextUrl = "A02.html";
+
+    // 페이지 로드 시 인물 등장 연출 및 대화 초기화
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            const minwoo = document.getElementById('char-민우');
+            const seoyeon = document.getElementById('char-서연');
+
+            minwoo.classList.remove('char-enter-left');
+            minwoo.classList.add('char-ready');
+
+            seoyeon.classList.remove('char-enter-right');
+            seoyeon.classList.add('char-ready');
+
+            updateDialogue();
+        }, 100);
+    });
+
+    // 대화 업데이트 함수
+    function updateDialogue() {
+        if (currentIndex < dialogues.length) {
+            const current = dialogues[currentIndex];
+            document.getElementById('speaker-name').innerText = current.speaker;
+            document.getElementById('dialogue-text').innerText = current.text;
+
+            // 말하는 인물 강조 (비활성화 대상 .inactive 처리)
+            const minwoo = document.getElementById('char-민우');
+            const seoyeon = document.getElementById('char-서연');
+
+            if (current.target === 'char-민우') {
+                minwoo.classList.remove('inactive');
+                seoyeon.classList.add('inactive');
+            } else if (current.target === 'char-서연') {
+                seoyeon.classList.remove('inactive');
+                minwoo.classList.add('inactive');
+            }
+        } else {
+            endDialogue();
+        }
+    }
+
+    // 다음 대화 진행
+    function advanceDialogue() {
+        currentIndex++;
+        updateDialogue();
+    }
+
+    // 대화 건너뛰기
+    function skipDialogue() {
+        endDialogue();
+    }
+
+    // 대화 종료 및 캐릭터 이동/퇴장 연출
+    function endDialogue() {
+        document.getElementById('dialogue-box').style.display = 'none';
+        document.getElementById('btn-skip').style.display = 'none';
+
+        const minwoo = document.getElementById('char-민우');
+        const seoyeon = document.getElementById('char-서연');
+
+        // 하이라이트 해제
+        minwoo.classList.remove('inactive');
+        seoyeon.classList.remove('inactive');
+
+        // 동헌에서 객사로 이동하며 사라지는 효과 연출
+        setTimeout(() => {
+            minwoo.classList.remove('char-ready');
+            seoyeon.classList.remove('char-ready');
+            minwoo.classList.add('char-exit-right');
+            seoyeon.classList.add('char-exit-right');
+        }, 100);
+
+        // '다음' 또는 'End' 버튼 표시
+        const nextBtn = document.getElementById('btn-next');
+        if (!nextUrl || nextUrl.trim() === "") {
+            nextBtn.innerText = "End";
+            nextBtn.onclick = function() { goToUrl('index.html'); };
+        } else {
+            nextBtn.innerText = "다음";
+            nextBtn.onclick = function() { goToUrl(nextUrl); };
+        }
+        nextBtn.style.display = 'block';
+    }
+
+    // 페이지 이동 함수
+    function goToUrl(url) {
+        if (url) {
+            window.location.href = url;
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소래포구 MATHTOUR - C02</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #120c09;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Serif KR', serif;
+      color: #f4ecd8;
+    }
+
+    /* 게임 컨테이너 (16:9 비율 고정) */
+    #game-container {
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      overflow: hidden;
+      background-color: #2c2019;
+      border: 4px solid #b87333;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(0, 0, 0, 0.7);
+    }
+
+    /* 배경 이미지 */
+    .bg-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      filter: brightness(0.9) contract(1.05);
+    }
+
+    /* 상단 명패 스타일 (스팀펑크 헤더) */
+    .header-bar {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      background: linear-gradient(180deg, #4a3b32 0%, #2c2019 100%);
+      border: 2px solid #b87333;
+      border-radius: 6px;
+      padding: 6px 24px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 0 6px rgba(184, 115, 51, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-gear {
+      width: 18px;
+      height: 18px;
+      border: 2px dashed #b87333;
+      border-radius: 50%;
+      animation: spin 10s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    .header-title {
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+      color: #f4ecd8;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    /* 캐릭터 영역 */
+    .char-wrapper {
+      position: absolute;
+      z-index: 3;
+      transition: filter 0.2s ease, left 1.2s ease-in-out, bottom 1.2s ease-in-out, opacity 1s ease-in-out, transform 1.2s ease-in-out;
+      animation: charEntrance 0.8s ease-out forwards;
+    }
+
+    @keyframes charEntrance {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 캐릭터 어둡게 처리 */
+    .char-wrapper.inactive {
+      filter: brightness(0.55);
+    }
+
+    /* 대화 종료 후 캐릭터 퇴장 효과 */
+    .char-wrapper.char-exit {
+      left: 403px !important;
+      bottom: 40px !important;
+      opacity: 0 !important;
+      transform: scale(0.6) !important;
+    }
+
+    /* 대화창 UI (스팀펑크 파이프 & 금속 디자인) */
+    #dialogue-box {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 88%;
+      height: 150px;
+      background: rgba(44, 32, 25, 0.92);
+      border: 3px solid #b87333;
+      border-radius: 8px;
+      padding: 16px 24px;
+      z-index: 10;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.8), inset 0 0 15px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    /* 리벳 장식 효과 */
+    #dialogue-box::before, #dialogue-box::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #b87333;
+      border-radius: 50%;
+      box-shadow: inset 1px 1px 2px rgba(255,255,255,0.4), 1px 1px 2px rgba(0,0,0,0.8);
+    }
+    #dialogue-box::before { top: 6px; left: 6px; }
+    #dialogue-box::after { top: 6px; right: 6px; }
+
+    /* 화자 이름 태그 */
+    #speaker-name {
+      align-self: flex-start;
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 17px;
+      font-weight: bold;
+      color: #f4ecd8;
+      background: linear-gradient(90deg, #003b46 0%, #00252c 100%);
+      border: 1px solid #b87333;
+      padding: 4px 16px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+      letter-spacing: 0.5px;
+    }
+
+    /* 대사 텍스트 */
+    #dialogue-text {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 16.5px;
+      line-height: 1.6;
+      color: #f4ecd8;
+      word-break: keep-all;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+      padding-left: 4px;
+    }
+
+    /* 대화 진행 화살표 안내 */
+    .next-indicator {
+      position: absolute;
+      right: 20px;
+      bottom: 12px;
+      font-size: 12px;
+      color: #b87333;
+      font-family: 'Nanum Gothic Coding', monospace;
+      animation: bounce 1.2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* 이동 및 컨트롤 버튼 공통 */
+    .btn-nav {
+      position: absolute;
+      z-index: 20;
+      background: linear-gradient(180deg, #b87333 0%, #8c5322 100%);
+      color: #f4ecd8;
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      padding: 10px 22px;
+      border: 2px solid #4a3b32;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 2px 2px 0px #2c2019, inset 1px 1px 2px rgba(255,255,255,0.3);
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-nav:hover {
+      background: linear-gradient(180deg, #c98240 0%, #a05f29 100%);
+      transform: translateY(-2px);
+      box-shadow: 2px 4px 6px rgba(0,0,0,0.5);
+    }
+
+    .btn-nav:active {
+      transform: translateY(1px);
+      box-shadow: 1px 1px 0px #2c2019;
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+    }
+
+    #btn-skip {
+      right: 20px;
+      bottom: 20px;
+      background: linear-gradient(180deg, #4a3b32 0%, #2c2019 100%);
+      border-color: #b87333;
+    }
+  </style>
+</head>
+<body>
+
+<div id="game-container">
+  <!-- 배경 이미지 -->
+  <img src="소래습지공원 전시관 내부.png" alt="소래습지공원 전시관 내부" class="bg-image">
+
+  <!-- 상단 스테이지 헤더 -->
+  <div class="header-bar">
+    <div class="header-gear"></div>
+    <div class="header-title">소래습지공원 전시관 내부</div>
+    <div class="header-gear"></div>
+  </div>
+
+  <!-- 등장 인물 : 민우 -->
+  <div class="char-wrapper" id="char-민우" style="left: 160px; bottom: 40px; width: 260px; height: 320px; overflow: visible;">
+    <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+  </div>
+
+  <!-- 등장 인물 : 서연 -->
+  <div class="char-wrapper" id="char-서연" style="left: 640px; bottom: 40px; width: 260px; height: 320px; overflow: visible;">
+    <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+  </div>
+
+  <!-- 대화창 UI -->
+  <div id="dialogue-box" onclick="advanceDialogue()">
+    <div id="speaker-name">민우</div>
+    <div id="dialogue-text">대사를 불러오는 중...</div>
+    <div class="next-indicator">▼ 클릭하여 계속</div>
+  </div>
+
+  <!-- 건너뛰기 버튼 -->
+  <button id="btn-skip" class="btn-nav" onclick="finishDialogue()">건너뛰기 ▶</button>
+
+  <!-- 이전/다음 이동 버튼 (대화 종료 후 표시) -->
+  <button id="btn-prev" class="btn-nav" style="display: none;" onclick="location.href='C01.html'">◀ 이전</button>
+  <button id="btn-next" class="btn-nav" style="display: none;" onclick="location.href='C03.html'">다음 ▶</button>
+</div>
+
+<script>
+  // 대화 스크립트 데이터
+  const dialogues = [
+    {
+      speaker: "민우",
+      text: "드디어 소래습지공원 전시관 안으로 들어왔어! 밖에서 보던 고풍스러운 건물 모습만큼이나 내부도 흥미로운 전시가 가득해 보여.",
+      target: "char-민우"
+    },
+    {
+      speaker: "서연",
+      text: "맞아! 이곳에는 소래습지의 역사와 생태, 그리고 옛 염전에 대한 이야기들이 섬세하게 잘 꾸며져 있대.",
+      target: "char-서연"
+    },
+    {
+      speaker: "민우",
+      text: "전시관 안의 설명과 모형들을 천천히 살펴보면, 이 습지가 간직하고 있는 숨겨진 수학적 비밀이나 힌트도 찾을 수 있겠지?",
+      target: "char-민우"
+    },
+    {
+      speaker: "서연",
+      text: "당연하지! 여기서 배운 이야기들을 바탕으로 관람하면, 잠시 후 펼쳐질 실제 습지의 풍경도 훨씬 더 깊이 있게 보일 거야.",
+      target: "char-서연"
+    },
+    {
+      speaker: "민우",
+      text: "좋아! 그럼 전시관 곳곳을 하나씩 둘러보면서 소래습지가 들려주는 다양한 이야기들에 귀를 기울여보자!",
+      target: "char-민우"
+    }
+  ];
+
+  let currentIndex = 0;
+  let isFinished = false;
+
+  // 대화 갱신 함수
+  function updateDialogue() {
+    if (currentIndex >= dialogues.length) {
+      finishDialogue();
+      return;
+    }
+
+    const current = dialogues[currentIndex];
+    
+    // 화자 이름 및 대사 갱신
+    document.getElementById("speaker-name").innerText = current.speaker;
+    document.getElementById("dialogue-text").innerText = current.text;
+
+    // 말하는 캐릭터만 활성화 (밝게), 나머지는 inactive (어둡게)
+    const minwoo = document.getElementById("char-민우");
+    const seoyeon = document.getElementById("char-서연");
+
+    if (current.target === "char-민우") {
+      minwoo.classList.remove("inactive");
+      seoyeon.classList.add("inactive");
+    } else if (current.target === "char-서연") {
+      seoyeon.classList.remove("inactive");
+      minwoo.classList.add("inactive");
+    }
+  }
+
+  // 다음 대화 진행
+  function advanceDialogue() {
+    if (isFinished) return;
+    currentIndex++;
+    updateDialogue();
+  }
+
+  // 대화 종료 및 캐릭터 퇴장 연출
+  function finishDialogue() {
+    if (isFinished) return;
+    isFinished = true;
+
+    // 대화창 및 건너뛰기 버튼 숨기기
+    document.getElementById("dialogue-box").style.display = "none";
+    document.getElementById("btn-skip").style.display = "none";
+
+    const minwoo = document.getElementById("char-민우");
+    const seoyeon = document.getElementById("char-서연");
+
+    // 모든 캐릭터 밝기 복구
+    minwoo.classList.remove("inactive");
+    seoyeon.classList.remove("inactive");
+
+    // 캐릭터 중앙으로 이동 및 사라지는 애니메이션
+    setTimeout(() => {
+      minwoo.classList.add("char-exit");
+      seoyeon.classList.add("char-exit");
+    }, 100);
+
+    // 연출 완료 후 네비게이션 버튼 표시
+    setTimeout(() => {
+      document.getElementById("btn-prev").style.display = "flex";
+      document.getElementById("btn-next").style.display = "flex";
+    }, 1100);
+  }
+
+  // 초기 실행
+  window.addEventListener("DOMContentLoaded", () => {
+    updateDialogue();
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아라뱃길·청라호수공원 MATHTOUR</title>
+    
+    <!-- 폰트 로드 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        water: '#0ea5e9',    /* 맑은 물색 */
+                        deep: '#0369a1',     /* 깊은 물색 (텍스트용) */
+                        foam: '#ffffff',     /* 흰 물보라 */
+                        splash: '#e0f2fe',   /* 연한 하늘색 배경 */
+                        cyan: '#22d3ee',     /* 강조 테두리 */
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans KR"', 'sans-serif'],
+                        title: ['"NanumSquareRound"', 'sans-serif'],
+                        mono: ['"Nanum Gothic Coding"', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* 기본 화면 설정 */
+        body {
+            margin: 0; padding: 0;
+            background-color: #f8fafc;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 16:9 게임 컨테이너 (폭포 그라데이션) */
+        #game-container {
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(135deg, #7dd3fc 0%, #0284c7 100%);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.4);
+        }
+
+        /* 스테이지 상단 표시바 (물결 글래스모피즘) */
+        #top-bar {
+            position: absolute; top: 0; left: 0; width: 100%;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'NanumSquareRound', sans-serif;
+            font-size: 20px; font-weight: bold;
+            color: #ffffff;
+            z-index: 50;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+            text-shadow: 0 2px 4px rgba(3, 105, 161, 0.5);
+        }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute; bottom: 20px;
+            background-color: #ffffff;
+            color: #0ea5e9;
+            border: 2px solid #0ea5e9;
+            border-radius: 50px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 16px; font-weight: bold;
+            line-height: 1.6; letter-spacing: -0.02em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 50;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-nav:hover {
+            background-color: #0ea5e9;
+            color: #ffffff;
+            box-shadow: 0 6px 12px rgba(14, 165, 233, 0.3);
+            transform: translateY(-2px);
+        }
+        #btn-prev { left: 20px; }
+        #btn-next { right: 20px; display: none; }
+
+        /* 수학 퀴즈 컨테이너 (밝은 톤) */
+        .quiz-container {
+            position: absolute;
+            top: 70px; left: 40px; right: 40px; bottom: 80px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 3px solid #7dd3fc;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(3, 105, 161, 0.3);
+            display: flex;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        /* 커스텀 스크롤바 */
+        .scrollable-content { overflow-y: auto; }
+        .scrollable-content::-webkit-scrollbar { width: 6px; }
+        .scrollable-content::-webkit-scrollbar-track { background: transparent; }
+        .scrollable-content::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 3px; }
+
+        /* 슬라이더 커스텀 스타일 (물방울 느낌) */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 2px 6px rgba(14, 165, 233, 0.4);
+            border: 3px solid #0ea5e9;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #bae6fd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="top-bar">아라폭포 안전 구역 설정 - 1단계</div>
+
+        <div class="quiz-container flex-col md:flex-row">
+            <!-- 왼쪽 영역 -->
+            <div class="w-full md:w-1/2 lg:w-3/5 bg-splash/50 p-6 flex flex-col items-center justify-center border-r border-water/20 relative">
+                <h2 class="text-xl font-bold text-deep mb-4 bg-white px-5 py-2 rounded-xl shadow-sm border border-cyan font-title">
+                    📍 아라폭포 좌표평면
+                </h2>
+                <div class="w-full max-w-[400px] aspect-square bg-white border-2 border-water rounded-2xl overflow-hidden shadow-inner relative flex justify-center items-center">
+                    <canvas id="mathCanvas" width="400" height="400" class="w-full h-full"></canvas>
+                </div>
+            </div>
+
+            <!-- 오른쪽 영역 -->
+            <div class="w-full md:w-1/2 lg:w-2/5 p-8 flex flex-col justify-center bg-white scrollable-content">
+                <h1 class="text-2xl lg:text-3xl font-bold text-deep mb-4 font-title">안전 구역 범위 설정</h1>
+                <p class="text-deep/80 mb-8 leading-relaxed font-sans text-sm lg:text-base">
+                    슬라이더를 움직여 풍속에 따른 물보라의 반경을 조절해 보세요. 물보라의 경계선이 <strong class="text-water font-bold">관람객 위치 Q(6, 8)</strong>와 정확히 일치하도록 원을 맞춰야 합니다.
+                </p>
+
+                <div class="bg-splash p-6 rounded-2xl border border-water/30 mb-8 shadow-sm">
+                    <label for="windSlider" class="block text-sm font-bold text-deep mb-3 flex justify-between font-sans">
+                        <span>🌬️ 풍속 조절 (1~8단계)</span>
+                        <span id="windLevelText" class="text-water font-bold">1단계</span>
+                    </label>
+                    <input type="range" id="windSlider" min="1" max="8" value="1" class="w-full">
+                    <div class="flex justify-between text-xs text-deep/60 mt-3 font-medium font-sans">
+                        <span>약함</span>
+                        <span>강함</span>
+                    </div>
+                </div>
+
+                <button id="checkBtn" class="w-full bg-water hover:bg-deep text-white font-bold py-4 px-4 rounded-xl transition duration-300 shadow-md text-lg font-sans">
+                    안전 구역 설정 확인
+                </button>
+                <div id="feedbackPopup" class="hidden mt-4 p-5 rounded-xl font-bold text-center border transition-all font-sans text-sm leading-relaxed"></div>
+            </div>
+        </div>
+
+        <button id="btn-prev" class="btn-nav">이전</button>
+        <button id="btn-next" class="btn-nav">다음</button>
+    </div>
+
+    <script>
+        document.getElementById('btn-prev').addEventListener('click', () => {
+            window.location.href = 'B02.html'; // B02로 수정됨
+        });
+
+        const nextBtn = document.getElementById('btn-next');
+        nextBtn.addEventListener('click', () => {
+            window.location.href = 'B04.html'; // B04로 수정됨
+        });
+
+        const canvas = document.getElementById('mathCanvas');
+        const ctx = canvas.getContext('2d');
+        const windSlider = document.getElementById('windSlider');
+        const windLevelText = document.getElementById('windLevelText');
+        const checkBtn = document.getElementById('checkBtn');
+        const feedbackPopup = document.getElementById('feedbackPopup');
+
+        const scale = 25; 
+        const originX = 80;  
+        const originY = 320; 
+
+        function drawGraph(radius) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 그리드 (더 연하게)
+            ctx.strokeStyle = '#e2e8f0'; 
+            ctx.lineWidth = 1;
+            for(let i = -5; i <= 15; i++) {
+                ctx.beginPath(); ctx.moveTo(0, originY - i*scale); ctx.lineTo(400, originY - i*scale); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(originX + i*scale, 0); ctx.lineTo(originX + i*scale, 400); ctx.stroke();
+            }
+
+            // 축
+            ctx.strokeStyle = '#94a3b8'; 
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(0, originY); ctx.lineTo(400, originY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(originX, 0); ctx.lineTo(originX, 400); ctx.stroke();
+
+            // 물보라 반경 (청량한 파란색 톤)
+            ctx.beginPath();
+            ctx.arc(originX, originY, radius * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.2)';
+            ctx.fill();
+            ctx.strokeStyle = '#0ea5e9';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            const drawPoint = (x, y, icon, label, color, iconSize) => {
+                const sx = originX + x * scale;
+                const sy = originY - y * scale;
+                
+                ctx.beginPath();
+                ctx.arc(sx, sy, iconSize / 1.5, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.font = `${iconSize}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(icon, sx, sy + (iconSize * 0.05));
+                
+                ctx.font = 'bold 15px "Nanum Gothic Coding"';
+                const textWidth = ctx.measureText(label).width;
+                const textY = sy + (iconSize / 2) + 12; 
+                
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.roundRect(sx - textWidth/2 - 8, textY - 12, textWidth + 16, 24, 6);
+                ctx.fill();
+                
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText(label, sx, textY + 5);
+            };
+
+            drawPoint(0, 0, '🌊', 'C(0,0)', '#0369a1', 36);
+            drawPoint(6, 8, '🚶', 'Q(6,8)', '#059669', 28);
+        }
+
+        windSlider.addEventListener('input', (e) => {
+            const wind = parseInt(e.target.value);
+            windLevelText.textContent = `${wind}단계`;
+            
+            feedbackPopup.classList.add('hidden');
+            nextBtn.style.display = 'none';
+            checkBtn.classList.remove('hidden');
+
+            drawGraph(wind * 2);
+        });
+
+        checkBtn.addEventListener('click', () => {
+            const currentRadius = parseInt(windSlider.value) * 2;
+            feedbackPopup.classList.remove('hidden', 'bg-red-50', 'text-red-700', 'border-red-200', 'bg-splash', 'text-deep', 'border-water');
+
+            if (currentRadius === 10) {
+                feedbackPopup.innerHTML = "🎉 <strong>구역 설정 완료!</strong><br>이제 수치로 확인해 봅시다.";
+                feedbackPopup.classList.add('bg-splash', 'text-deep', 'border-water', 'block');
+                checkBtn.classList.add('hidden');
+                nextBtn.style.display = 'block';
+            } else {
+                feedbackPopup.innerHTML = "❌ <strong>위험!</strong><br>아직 관람객이 위험하거나 구역이 정확하지 않습니다.<br>다시 조절해 보세요!";
+                feedbackPopup.classList.add('bg-red-50', 'text-red-700', 'border-red-200', 'block');
+                nextBtn.style.display = 'none';
+            }
+        });
+
+        window.addEventListener('load', () => drawGraph(2));
+    </script>
+</body>
+</html>

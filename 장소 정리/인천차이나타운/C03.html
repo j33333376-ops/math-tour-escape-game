@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>인천차이나타운 MATHTOUR - C03: 역사를 지켜내다</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        :root {
+            --point-red: #8c3030;
+            --point-gold: #d4af37;
+            --bg-beige: #f5f0e6;
+            --text-dark: #2d3748;
+            --text-light: #ffffff;
+            --shield-blue: rgba(64, 169, 255, 0.45);
+            --shield-border: rgba(140, 215, 255, 0.85);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #111111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        /* 16:9 메인 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100vw;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: var(--bg-beige);
+            overflow: hidden;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.9);
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            transition: filter 1s ease;
+        }
+
+        /* 스테이지 상단 표시바 */
+        #stage-header {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--point-gold);
+            border-radius: 4px;
+            padding: 6px 16px;
+            color: var(--point-gold);
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 1rem;
+            font-weight: bold;
+            z-index: 20;
+            letter-spacing: 0.05em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        /* 방어막 연출 (반구형 돔) */
+        #shield-dome {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 75%;
+            height: 75%;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            background: radial-gradient(circle at 50% 30%, rgba(120, 200, 255, 0.35) 0%, rgba(30, 100, 200, 0.15) 70%, rgba(10, 50, 120, 0) 100%);
+            border: 3px solid var(--shield-border);
+            border-bottom: none;
+            box-shadow: 0 0 30px var(--shield-blue), inset 0 0 25px var(--shield-blue);
+            z-index: 1;
+            opacity: 0.9;
+            animation: shieldPulse 3s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes shieldPulse {
+            0%, 100% { opacity: 0.8; box-shadow: 0 0 25px var(--shield-blue), inset 0 0 20px var(--shield-blue); }
+            50% { opacity: 1; box-shadow: 0 0 45px rgba(100, 200, 255, 0.8), inset 0 0 35px rgba(100, 200, 255, 0.6); }
+        }
+
+        /* 방어막 타격/무력화 이펙트 */
+        .spark {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #40a9ff, 0 0 30px #ffffff;
+            opacity: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* 시각 자료 (역사 자료 카드 팝업) */
+        .photo-card {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            width: 340px;
+            background: var(--bg-beige);
+            border: 2px solid var(--point-gold);
+            border-radius: 6px;
+            padding: 14px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+            z-index: 15;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        .photo-card.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) scale(1);
+        }
+
+        .photo-card .card-frame {
+            border: 1px dashed var(--point-red);
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .photo-card .card-title {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--point-red);
+            margin-bottom: 8px;
+        }
+
+        .photo-card .card-desc {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        .photo-card .card-badge {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 4px 12px;
+            background: var(--point-red);
+            color: white;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 0.8rem;
+            border-radius: 3px;
+        }
+
+        /* 등장 인물 래퍼 */
+        .char-wrapper {
+            position: absolute;
+            bottom: 0px;
+            width: 260px;
+            height: 320px;
+            overflow: visible;
+            z-index: 3;
+            transition: filter 0.25s ease, transform 0.3s ease;
+        }
+
+        #char-민우 {
+            left: 50px !important;
+            right: auto !important;
+        }
+
+        #char-서연 {
+            left: auto !important;
+            right: 10px !important; /* 오른쪽 끝으로 강력하게 고정 */
+        }
+
+        /* 서연 귀환 빛 이펙트 */
+        #light-aura {
+            position: absolute;
+            left: auto !important;
+            right: 10px !important;
+            bottom: 0px;
+            width: 260px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(255, 245, 200, 0.95) 0%, rgba(212, 175, 55, 0.6) 50%, rgba(255, 255, 255, 0) 75%);
+            border-radius: 50%;
+            z-index: 4;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s ease;
+            mix-blend-mode: screen;
+        }
+
+        /* 대화창 UI */
+        #dialogue-box {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 800px;
+            min-height: 110px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 2px solid var(--point-gold);
+            border-radius: 4px;
+            padding: 16px 24px;
+            z-index: 80;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            box-sizing: border-box;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .speaker {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+            color: var(--point-gold);
+            letter-spacing: 0.02em;
+        }
+
+        .dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            color: var(--text-light);
+            word-break: keep-all;
+        }
+
+        .dialogue-hint {
+            position: absolute;
+            bottom: 12px;
+            right: 20px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* 이동/제어 버튼 공통 */
+        .btn-nav {
+            position: absolute;
+            background: var(--point-red);
+            color: var(--text-light);
+            border: 1px solid var(--point-gold);
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            font-family: 'Noto Sans KR', sans-serif;
+            cursor: pointer;
+            z-index: 100;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        .btn-nav:active {
+            transform: scale(0.95);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-skip {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next {
+            right: 20px;
+            bottom: 20px;
+            display: none;
+            background: #2d3748;
+            border-color: var(--point-gold);
+        }
+
+        #btn-next:hover {
+            background-color: #1a202c;
+        }
+
+        /* 미션 클리어 연출 오버레이 (페이드아웃용) */
+        #clear-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1.5s ease, visibility 1.5s ease;
+        }
+
+        #clear-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .clear-badge {
+            border: 2px solid var(--point-gold);
+            padding: 30px 50px;
+            background: rgba(245, 240, 230, 0.95);
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.6);
+            transform: scale(0.8);
+            transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #clear-overlay.active .clear-badge {
+            transform: scale(1);
+        }
+
+        .clear-title {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--point-red);
+            margin-bottom: 12px;
+            letter-spacing: 0.15em;
+        }
+
+        .clear-subtitle {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+
+        .clear-divider {
+            width: 100px;
+            height: 2px;
+            background: var(--point-gold);
+            margin: 0 auto 20px auto;
+        }
+
+        .clear-desc {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.95rem;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- 배경 이미지 -->
+    <img src="대불호텔승리.png" class="bg-img" id="bg-main" alt="대불호텔 배경">
+
+    <!-- 스테이지 상단 표시바 -->
+    <div id="stage-header">인천차이나타운 MATHTOUR</div>
+
+    <!-- 방어막 연출 -->
+    <div id="shield-dome"></div>
+    <div class="spark" style="top: 30%; left: 35%;"></div>
+    <div class="spark" style="top: 25%; left: 60%;"></div>
+    <div class="spark" style="top: 40%; left: 45%;"></div>
+
+    <!-- 역사 자료 카드 팝업 1: 최초의 서양식 호텔 -->
+    <div class="photo-card" id="photo-1">
+        <div class="card-frame">
+            <div class="card-title">☕ 대불호텔</div>
+            <div class="card-desc">
+                1888년경 건립된 <strong>한국 최초의 서양식 호텔</strong>.<br>
+                서양 외교관과 선교사들이 머물며 서양식 식사와 커피 문화를 조선에 들여온 중요한 창구였습니다.
+            </div>
+            <div class="card-badge">근대 문화의 유입</div>
+        </div>
+    </div>
+
+    <!-- 역사 자료 카드 팝업 2: 중화루 시기 -->
+    <div class="photo-card" id="photo-2">
+        <div class="card-frame">
+            <div class="card-title">🪧 중화루(中華樓)</div>
+            <div class="card-desc">
+                1899년 경인선 개통 후 숙박객이 줄자,<br>
+                유명한 중국 요릿집 <strong>'중화루'</strong>로 변모하여 차이나타운의 역사를 이어갔습니다.
+            </div>
+            <div class="card-badge">현 대불호텔 전시관</div>
+        </div>
+    </div>
+
+    <!-- 등장 인물: 민우 (좌측) -->
+    <div class="char-wrapper" id="char-민우">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장 인물: 서연 (우측 끝 밀착, 좌우 반전) -->
+    <div class="char-wrapper" id="char-서연">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scaleX(-1); transform-origin:center; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 서연 귀환 빛 효과 -->
+    <div id="light-aura"></div>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div class="speaker" id="speaker-name">민우</div>
+        <div class="dialogue-text" id="dialogue-text">대사를 불러오는 중...</div>
+        <div class="dialogue-hint">클릭하여 계속 ▶</div>
+    </div>
+
+    <!-- 미션 클리어 연출 오버레이 -->
+    <div id="clear-overlay">
+        <div class="clear-badge">
+            <div class="clear-title">MISSION CLEAR</div>
+            <div class="clear-subtitle">대불호텔의 시공간 방어 성공!</div>
+            <div class="clear-divider"></div>
+            <div class="clear-desc">
+                정확한 계산으로 방어막을 전개하여<br>
+                개항기 소중한 역사 유적인 대불호텔을 지켜냈습니다.
+            </div>
+        </div>
+    </div>
+
+    <!-- 이동 / 제어 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="window.location.href='C02.html'">이전</button>
+    <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
+    <button class="btn-nav" id="btn-next" onclick="window.location.href='index.html'">다음</button>
+</div>
+
+<script>
+    /* 대화 시퀀스 데이터 */
+    const dialogues = [
+        {
+            speaker: "민우",
+            text: "해냈어, 서연! 네 정확한 계산 덕분에 방어막이 완벽하게 작동했어. 소중한 역사를 지켜낸 거야.",
+            activeChar: "char-민우",
+            action: null
+        },
+        {
+            speaker: "서연",
+            text: "휴, 십년감수했네. 근데 이 대불호텔이 역사를 뒤바꿀 만큼 그렇게 중요한 곳이야?",
+            activeChar: "char-서연",
+            action: null
+        },
+        {
+            speaker: "민우",
+            text: "그럼. 이곳은 1888년에 세워진 한국 최초의 서양식 호텔이야. 서양 외교관과 선교사들이 머물며 서양식 식사와 커피를 즐겼던, 근대 문화가 조선에 유입되는 가장 중요한 창구였지.",
+            activeChar: "char-민우",
+            action: "show-photo-1"
+        },
+        {
+            speaker: "서연",
+            text: "아하, 최초의 서양식 호텔이구나!",
+            activeChar: "char-서연",
+            action: "show-photo-1"
+        },
+        {
+            speaker: "민우",
+            text: "맞아. 비록 1899년 경인선 철도가 개통되며 숙박객이 줄어들어 나중엔 '중화루'라는 중국 요릿집으로 바뀌었고, 지금은 원본 건물이 사라졌지만… 오늘 네가 지켜낸 이 건물의 기억은 '대불호텔 전시관'이라는 이름으로 영원히 남을 거야.",
+            activeChar: "char-민우",
+            action: "show-photo-2"
+        },
+        {
+            speaker: "서연",
+            text: "정말 다행이다. 우리가 이 역사를 지켜낸 거네!",
+            activeChar: "char-서연",
+            action: null
+        },
+        {
+            speaker: "시스템",
+            text: "민우가 웃으며 서연에게 악수를 청하고, 서연의 몸이 다시 빛으로 감싸이며 현대의 시간으로 돌아갑니다.",
+            activeChar: null,
+            action: "ending-effect"
+        }
+    ];
+
+    let currentIndex = 0;
+    let isFinished = false;
+
+    // DOM 요소 캐싱
+    const speakerName = document.getElementById('speaker-name');
+    const dialogueText = document.getElementById('dialogue-text');
+    const dialogueBox = document.getElementById('dialogue-box');
+    const charMinwoo = document.getElementById('char-민우');
+    const charSeoyeon = document.getElementById('char-서연');
+    const photo1 = document.getElementById('photo-1');
+    const photo2 = document.getElementById('photo-2');
+    const lightAura = document.getElementById('light-aura');
+    const clearOverlay = document.getElementById('clear-overlay');
+    const btnSkip = document.getElementById('btn-skip');
+    const btnNext = document.getElementById('btn-next');
+
+    // 초기화 및 첫 대사 렌더링
+    window.addEventListener('DOMContentLoaded', () => {
+        renderDialogue();
+        createSparkEffects();
+    });
+
+    // 대화 진행
+    function advanceDialogue() {
+        if (isFinished) return;
+
+        currentIndex++;
+        if (currentIndex < dialogues.length) {
+            renderDialogue();
+        } else {
+            finishDialogue();
+        }
+    }
+
+    // 대화 건너뛰기
+    function skipDialogue() {
+        if (isFinished) return;
+        currentIndex = dialogues.length - 1;
+        renderDialogue();
+        setTimeout(finishDialogue, 1500);
+    }
+
+    // 현재 대화 출력 및 화면 연출 처리
+    function renderDialogue() {
+        const current = dialogues[currentIndex];
+
+        // 화자 및 대사 텍스트 업데이트
+        speakerName.innerText = current.speaker;
+        dialogueText.innerText = current.text;
+
+        // 화자 하이라이트 (비활성 캐릭터 어둡게)
+        if (current.activeChar === 'char-민우') {
+            charMinwoo.style.filter = 'brightness(1)';
+            charSeoyeon.style.filter = 'brightness(0.55)';
+        } else if (current.activeChar === 'char-서연') {
+            charMinwoo.style.filter = 'brightness(0.55)';
+            charSeoyeon.style.filter = 'brightness(1)';
+        } else {
+            charMinwoo.style.filter = 'brightness(0.55)';
+            charSeoyeon.style.filter = 'brightness(0.55)';
+        }
+
+        // 시각 자료(팝업) 액션 제어
+        if (current.action === 'show-photo-1') {
+            photo1.classList.add('active');
+            photo2.classList.remove('active');
+        } else if (current.action === 'show-photo-2') {
+            photo1.classList.remove('active');
+            photo2.classList.add('active');
+        } else {
+            photo1.classList.remove('active');
+            photo2.classList.remove('active');
+        }
+
+        // 엔딩 빛 효과 연출
+        if (current.action === 'ending-effect') {
+            lightAura.style.opacity = '1';
+            charSeoyeon.style.filter = 'brightness(1.5) drop-shadow(0 0 20px gold)';
+        } else {
+            lightAura.style.opacity = '0';
+        }
+    }
+
+    // 대화 종료 및 미션 클리어 페이드아웃 처리
+    function finishDialogue() {
+        if (isFinished) return;
+        isFinished = true;
+
+        // UI 숨기기
+        dialogueBox.style.opacity = '0';
+        dialogueBox.style.visibility = 'hidden';
+        btnSkip.style.display = 'none';
+        photo1.classList.remove('active');
+        photo2.classList.remove('active');
+
+        // 캐릭터 밝기 복구 및 서연 빛 효과 유지
+        charMinwoo.style.filter = 'brightness(1)';
+        charSeoyeon.style.filter = 'brightness(1)';
+        lightAura.style.opacity = '1';
+
+        // 1.5초 뒤 미션 클리어 오버레이 등장
+        setTimeout(() => {
+            clearOverlay.classList.add('active');
+            btnNext.style.display = 'block';
+        }, 1500);
+    }
+
+    // 방어막 타격 스파크 효과 무작위 재생
+    function createSparkEffects() {
+        const sparks = document.querySelectorAll('.spark');
+        sparks.forEach((spark, idx) => {
+            setInterval(() => {
+                spark.style.opacity = '1';
+                spark.style.transform = `scale(${1 + Math.random()})`;
+                setTimeout(() => {
+                    spark.style.opacity = '0';
+                }, 300);
+            }, 1500 + (idx * 900) + Math.random() * 500);
+        });
+    }
+</script>
+
+</body>
+</html>

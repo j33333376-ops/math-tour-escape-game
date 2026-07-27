@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소래포구 MATHTOUR - A05</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #1a120c;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Serif KR', serif;
+      color: #f4ecd8;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background-color: #2c2019;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+      border: 2px solid #4a3b32;
+    }
+
+    /* 배경 이미지 */
+    .bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      filter: brightness(0.6) blur(1px);
+    }
+
+    /* 등장인물 래퍼 및 레이아웃 */
+    .char-wrapper {
+      position: absolute;
+      z-index: 3;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .char-wrapper iframe {
+      border: 0;
+      width: 260px;
+      height: 320px;
+      transform-origin: bottom left;
+      pointer-events: none;
+    }
+
+    /* 왼쪽 서연, 민우 / 오른쪽 선생님 배치 (무대 하단 기준) */
+    #char-서연 {
+      left: 40px;
+      bottom: 20px;
+      width: 234px; /* s=0.9 */
+      height: 288px;
+    }
+    #char-서연 iframe {
+      transform: scale(0.9);
+    }
+
+    #char-민우 {
+      left: 170px;
+      bottom: 15px;
+      width: 247px; /* s=0.95 */
+      height: 304px;
+    }
+    #char-민우 iframe {
+      transform: scale(0.95);
+    }
+
+    #char-선생님 {
+      right: 50px;
+      bottom: 20px;
+      width: 260px; /* s=1.0 */
+      height: 320px;
+    }
+    #char-선생님 iframe {
+      transform: scale(1.0) scaleX(-1); /* 좌측 응시를 위한 좌우 반전 */
+    }
+
+    /* 상단 스테이지 표시바 */
+    #stage-bar {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      background: linear-gradient(135deg, #2c2019, #4a3b32);
+      border: 2px solid #b87333;
+      padding: 10px 28px;
+      border-radius: 6px;
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 18px;
+      font-weight: bold;
+      color: #f4ecd8;
+      box-shadow: 2px 4px 12px rgba(0,0,0,0.7), inset 0 0 8px rgba(184,115,51,0.4);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #stage-bar::before {
+      content: '⚙';
+      color: #b87333;
+      font-size: 20px;
+    }
+
+    /* 퀴즈 메인 컨테이너 */
+    .quiz-container {
+      position: absolute;
+      top: 75px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92%;
+      height: 480px;
+      background: rgba(30, 22, 16, 0.94);
+      border: 3px solid #b87333;
+      border-radius: 10px;
+      padding: 20px 25px;
+      z-index: 10;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .quiz-title-area {
+      border-bottom: 2px dashed #4a3b32;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .quiz-title {
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 18px;
+      color: #b87333;
+      font-weight: bold;
+    }
+
+    .quiz-rule {
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 13px;
+      color: #00a896;
+      background: rgba(0, 59, 70, 0.5);
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid #005f73;
+    }
+
+    /* 시뮬레이터 본문 대시보드 레이아웃 */
+    .dashboard {
+      display: flex;
+      gap: 20px;
+      height: 330px;
+    }
+
+    /* 왼쪽 제어 및 수식 판넬 */
+    .control-panel {
+      flex: 1;
+      background: rgba(20, 14, 10, 0.6);
+      border: 1px solid #4a3b32;
+      border-radius: 6px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .slider-group {
+      margin-bottom: 8px;
+    }
+
+    .slider-label {
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 14px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      color: #f4ecd8;
+    }
+
+    .slider-val {
+      color: #b87333;
+      font-weight: bold;
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: #b87333;
+      cursor: pointer;
+    }
+
+    .formula-box {
+      background: #120b07;
+      border: 1px inset #4a3b32;
+      box-shadow: inset 2px 2px 5px rgba(0,0,0,0.7);
+      padding: 10px 12px;
+      border-radius: 4px;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 12.5px;
+      line-height: 1.55;
+      color: #e0d0b8;
+    }
+
+    .formula-line {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .highlight-val {
+      color: #e76f51;
+      font-weight: bold;
+    }
+
+    .result-display {
+      background: linear-gradient(135deg, #003b46, #00252c);
+      border: 1px solid #005f73;
+      padding: 8px 12px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .result-text {
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 13px;
+      color: #83c5be;
+    }
+
+    .result-price {
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 20px;
+      font-weight: bold;
+      color: #f4ecd8;
+      margin-top: 2px;
+    }
+
+    /* 오른쪽 시각화 그래프 판넬 */
+    .graph-panel {
+      flex: 1.1;
+      background: rgba(18, 11, 7, 0.8);
+      border: 1px solid #4a3b32;
+      border-radius: 6px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 하단 입력 및 제출 구역 */
+    .answer-zone {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(44, 32, 25, 0.8);
+      border: 1px solid #b87333;
+      padding: 10px 16px;
+      border-radius: 6px;
+    }
+
+    .answer-prompt {
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 15px;
+      color: #f4ecd8;
+    }
+
+    .input-wrapper {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .quiz-input {
+      width: 130px;
+      padding: 6px 12px;
+      background: #120b07;
+      border: 1px solid #b87333;
+      border-radius: 4px;
+      color: #f4ecd8;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 16px;
+      text-align: right;
+      box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5);
+    }
+
+    .btn-submit {
+      background: #b87333;
+      color: #1a120c;
+      border: 1px solid #4a3b32;
+      padding: 6px 18px;
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .btn-submit:hover {
+      background: #d4833b;
+    }
+
+    /* 공통 네비게이션 버튼 */
+    .btn-nav {
+      position: absolute;
+      z-index: 15;
+      background-color: #b87333;
+      color: #f4ecd8;
+      border: 2px solid #4a3b32;
+      padding: 10px 22px;
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+      box-shadow: 3px 3px 6px rgba(0,0,0,0.6), inset 1px 1px 2px rgba(255,255,255,0.3);
+      transition: all 0.15s ease;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-nav:hover {
+      background-color: #d4833b;
+      transform: translateY(-2px);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 15px;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 15px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* 알림 메시지 모달 */
+    #msg-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 20;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .msg-card {
+      background: #2c2019;
+      border: 3px solid #b87333;
+      border-radius: 8px;
+      padding: 25px 35px;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(0,0,0,0.9);
+      max-width: 400px;
+    }
+
+    .msg-title {
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .msg-desc {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 15px;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .msg-btn {
+      background: #b87333;
+      color: #1a120c;
+      border: 0;
+      padding: 8px 20px;
+      font-family: 'Gowun Dodum', sans-serif;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div id="game-container">
+  <!-- 배경 이미지 -->
+  <img src="소래포구주차장.png" alt="소래포구 주차장 배경" class="bg-img">
+
+  <!-- 등장인물 레이어 (배경 위, UI 아래) -->
+  <div class="char-wrapper" id="char-서연">
+    <iframe src="등장인물_서연.html" scrolling="no"></iframe>
+  </div>
+  <div class="char-wrapper" id="char-민우">
+    <iframe src="등장인물_민우.html" scrolling="no"></iframe>
+  </div>
+  <div class="char-wrapper" id="char-선생님">
+    <iframe src="등장인물_선생님.html" scrolling="no"></iframe>
+  </div>
+
+  <!-- 스테이지 상단바 -->
+  <div id="stage-bar">소래포구 주차장 - 등차수열 제어반 탐구</div>
+
+  <!-- 퀴즈 메인 컨테이너 -->
+  <div class="quiz-container">
+    <div class="quiz-title-area">
+      <div class="quiz-title">⚙ 주차 요금 등차수열 제어반 (최대 12시간 시뮬레이션)</div>
+      <div class="quiz-rule">기본 30분 1,000원 | 추가 15분당(d) 500원 | 일 최대 20,000원</div>
+    </div>
+
+    <!-- 대시보드 시뮬레이터 -->
+    <div class="dashboard">
+      <!-- 왼쪽 제어반 -->
+      <div class="control-panel">
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>주차 예정 시간 조작:</span>
+            <span class="slider-val" id="time-display">450분 (7시간 30분)</span>
+          </div>
+          <!-- 최대 720분(12시간)까지 조작 가능 -->
+          <input type="range" id="time-slider" min="30" max="720" step="15" value="450" oninput="updateSim()">
+        </div>
+
+        <!-- 등차수열 수식 계산 판넬 -->
+        <div class="formula-box">
+          <div class="formula-line">
+            <span>• 초항 (a₁):</span>
+            <span>1,000 원 (기본 30분)</span>
+          </div>
+          <div class="formula-line">
+            <span>• 추가 항수 (n):</span>
+            <span id="formula-n">28 회 ( (450-30)/15 )</span>
+          </div>
+          <div class="formula-line">
+            <span>• 공차 (d):</span>
+            <span>500 원 (15분당)</span>
+          </div>
+          <hr style="border-color: #4a3b32; margin: 4px 0;">
+          <div class="formula-line">
+            <span>• 수열값 (a_n):</span>
+            <span id="formula-an" style="color: #e8a87c; font-weight: bold;">15,000 원</span>
+          </div>
+          <div class="formula-line">
+            <span>• 상한선 제한:</span>
+            <span class="highlight-val">min(a_n, 20,000원)</span>
+          </div>
+        </div>
+
+        <!-- 최종 정산액 표시 -->
+        <div class="result-display">
+          <div class="result-text">최종 부과 주차 요금</div>
+          <div class="result-price" id="final-price">15,000 원</div>
+        </div>
+      </div>
+
+      <!-- 오른쪽 시각화 그래프 -->
+      <div class="graph-panel">
+        <canvas id="graph-canvas"></canvas>
+      </div>
+    </div>
+
+    <!-- 하단 정답 제출 구역 -->
+    <div class="answer-zone">
+      <div class="answer-prompt">
+        🔑 <strong>문제:</strong> 선생님 일행의 총 주차 시간(7시간 30분)에 실제 부과되는 <strong>최종 주차 요금</strong>은 얼마일까요?
+      </div>
+      <div class="input-wrapper">
+        <input type="number" id="user-answer" class="quiz-input" placeholder="숫자만 입력"> 원
+        <button class="btn-submit" onclick="checkAnswer()">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 이전 / 다음 버튼 -->
+  <button id="btn-prev" class="btn-nav" onclick="navigate('A04.html')">≪ 이전</button>
+  <button id="btn-next" class="btn-nav hidden" onclick="navigate('A06.html')">다음 ≫</button>
+
+  <!-- 모달 알림창 -->
+  <div id="msg-overlay" class="hidden">
+    <div class="msg-card">
+      <div class="msg-title" id="msg-title" style="color: #b87333;">정답입니다!</div>
+      <div class="msg-desc" id="msg-desc">7시간 30분 주차 시 등차수열 계산값(15,000원)이 일 최대 요금 상한선(20,000원)보다 적으므로 15,000원이 그대로 정산됩니다!</div>
+      <button class="msg-btn" onclick="closeModal()">확인</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const canvas = document.getElementById('graph-canvas');
+  const ctx = canvas.getContext('2d');
+  const MAX_FEE_CAP = 20000; // 일 최대 요금 20,000원
+
+  function resizeCanvas() {
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = canvas.parentElement.clientHeight;
+  }
+
+  // 등차수열 시뮬레이터 업데이트 함수
+  function updateSim() {
+    const time = parseInt(document.getElementById('time-slider').value);
+    const hrs = Math.floor(time / 60);
+    const mins = time % 60;
+    
+    // 시간 표시
+    document.getElementById('time-display').innerText = `${time}분 (${hrs > 0 ? hrs + '시간 ' : ''}${mins > 0 ? mins + '분' : ''})`;
+
+    // 등차수열 계산
+    const n = Math.max(0, (time - 30) / 15);
+    const an = 1000 + (n * 500);
+    const finalFee = Math.min(an, MAX_FEE_CAP);
+
+    // 수식 갱신
+    document.getElementById('formula-n').innerText = `${n} 회 ( (${time}-30)/15 )`;
+    document.getElementById('formula-an').innerText = `${an.toLocaleString()} 원`;
+    document.getElementById('final-price').innerText = `${finalFee.toLocaleString()} 원`;
+
+    // 그래프 렌더링
+    drawGraph(time, an, finalFee);
+  }
+
+  // Canvas 그래픽 그리기
+  function drawGraph(currentTime, currentAn, currentFinal) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const paddingL = 45;
+    const paddingR = 25;
+    const paddingT = 25;
+    const paddingB = 30;
+
+    const graphW = canvas.width - paddingL - paddingR;
+    const graphH = canvas.height - paddingT - paddingB;
+
+    const minTime = 30;
+    const maxTime = 720; // 12시간 (720분)
+    const maxGraphY = 30000; // Y축 최대 30,000원으로 조정하여 상한선 돌파 확인
+
+    // 축 그리기
+    ctx.strokeStyle = '#4a3b32';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(paddingL, paddingT);
+    ctx.lineTo(paddingL, canvas.height - paddingB);
+    ctx.lineTo(canvas.width - paddingR, canvas.height - paddingB);
+    ctx.stroke();
+
+    // 눈금 및 범례 텍스트
+    ctx.fillStyle = '#83c5be';
+    ctx.font = '10px "Nanum Gothic Coding"';
+    ctx.fillText('30,000원', 5, paddingT + 10);
+    ctx.fillText('0원', 20, canvas.height - paddingB);
+    ctx.fillText('12시간(720분)', canvas.width - paddingR - 70, canvas.height - 8);
+
+    // 일 최대 요금 (20,000원) 상한선 기준선 (붉은 점선)
+    const capY = (canvas.height - paddingB) - (MAX_FEE_CAP / maxGraphY) * graphH;
+    ctx.strokeStyle = '#e76f51';
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(paddingL, capY);
+    ctx.lineTo(canvas.width - paddingR, capY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#e76f51';
+    ctx.font = '11px "Nanum Gothic Coding"';
+    ctx.fillText('일 최대 상한선 (20,000원)', paddingL + 10, capY - 6);
+
+    // 1. 순수 등차수열 그래프 (점선: 상한선 넘어 계속 상승)
+    ctx.beginPath();
+    ctx.strokeStyle = '#e8a87c';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 3]);
+
+    for (let t = minTime; t <= maxTime; t += 15) {
+      const n = (t - 30) / 15;
+      const pureAn = 1000 + n * 500;
+      
+      const x = paddingL + ((t - minTime) / (maxTime - minTime)) * graphW;
+      const y = (canvas.height - paddingB) - (pureAn / maxGraphY) * graphH;
+
+      if (t === minTime) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 2. 실제 부과 요금 그래프 (실선: 20,000원에서 평탄화)
+    ctx.beginPath();
+    ctx.strokeStyle = '#00a896';
+    ctx.lineWidth = 2.5;
+
+    for (let t = minTime; t <= maxTime; t += 15) {
+      const n = (t - 30) / 15;
+      const fee = Math.min(1000 + n * 500, MAX_FEE_CAP);
+      
+      const x = paddingL + ((t - minTime) / (maxTime - minTime)) * graphW;
+      const y = (canvas.height - paddingB) - (fee / maxGraphY) * graphH;
+
+      if (t === minTime) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // 현재 설정 위치 - 순수 등차수열 위치 (주황색 점)
+    const curX = paddingL + ((currentTime - minTime) / (maxTime - minTime)) * graphW;
+    const curAnY = (canvas.height - paddingB) - (currentAn / maxGraphY) * graphH;
+
+    if (currentAn > MAX_FEE_CAP) {
+      ctx.fillStyle = '#e8a87c';
+      ctx.beginPath();
+      ctx.arc(curX, curAnY, 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 현재 설정 위치 - 실제 정산액 위치 (구리색 점)
+    const curFinalY = (canvas.height - paddingB) - (currentFinal / maxGraphY) * graphH;
+    ctx.fillStyle = '#b87333';
+    ctx.beginPath();
+    ctx.arc(curX, curFinalY, 6.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#f4ecd8';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 범례 표시 (그래프 상단)
+    ctx.fillStyle = '#00a896';
+    ctx.fillRect(paddingL + 10, paddingT + 5, 12, 3);
+    ctx.fillStyle = '#f4ecd8';
+    ctx.font = '10px "Gowun Dodum"';
+    ctx.fillText('실제 부과액', paddingL + 26, paddingT + 9);
+
+    ctx.fillStyle = '#e8a87c';
+    ctx.fillRect(paddingL + 90, paddingT + 5, 12, 3);
+    ctx.fillStyle = '#f4ecd8';
+    ctx.fillText('순수 수열값(a_n)', paddingL + 106, paddingT + 9);
+  }
+
+  // 정답 제출 검증 함수
+  function checkAnswer() {
+    const userVal = parseInt(document.getElementById('user-answer').value);
+    const modal = document.getElementById('msg-overlay');
+    const title = document.getElementById('msg-title');
+    const desc = document.getElementById('msg-desc');
+
+    if (userVal === 15000) {
+      title.innerText = "🎉 정답입니다!";
+      title.style.color = "#b87333";
+      desc.innerText = "7시간 30분(450분) 주차 시 등차수열 일반항 공식에 의해 a_28 = 1,000 + (28 × 500) = 15,000원입니다. 일 최대 요금 상한선(20,000원)을 넘지 않으므로 15,000원이 부과됩니다!";
+      document.getElementById('btn-next').classList.remove('hidden');
+    } else {
+      title.innerText = "❌ 다시 생각해보세요";
+      title.style.color = "#e76f51";
+      desc.innerText = "7시간 30분은 기본 30분 제외 후 15분 단위가 총 28회(n=28) 증가한 시간입니다. 등차수열 계산을 다시 확인해 보세요!";
+    }
+    modal.classList.remove('hidden');
+  }
+
+  function closeModal() {
+    document.getElementById('msg-overlay').classList.add('hidden');
+  }
+
+  function navigate(url) {
+    if (url) {
+      window.location.href = url;
+    }
+  }
+
+  window.onload = function() {
+    resizeCanvas();
+    updateSim();
+  };
+
+  window.onresize = function() {
+    resizeCanvas();
+    updateSim();
+  };
+</script>
+
+</body>
+</html>

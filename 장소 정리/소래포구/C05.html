@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소래포구 MATHTOUR - C05</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #1a120c;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Gowun Dodum', sans-serif;
+      color: #f4ecd8;
+      overflow: hidden;
+    }
+
+    /* 게임 컨테이너 (16:9 비율 고정) */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #2c2019;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(184, 115, 51, 0.3);
+      border: 4px solid #4a3b32;
+    }
+
+    /* 배경 이미지 */
+    .bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      filter: brightness(0.9) contrast(1.05);
+    }
+
+    /* 상단 스테이지 표시바 */
+    #stage-bar {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      background: linear-gradient(180deg, #4a3b32 0%, #2c2019 100%);
+      border: 2px solid #b87333;
+      border-radius: 6px;
+      padding: 8px 24px;
+      color: #f4ecd8;
+      font-size: 16px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6), inset 0 0 5px rgba(184, 115, 51, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #stage-bar::before, #stage-bar::after {
+      content: '⚙';
+      color: #b87333;
+      font-size: 16px;
+      animation: spin 8s linear infinite;
+    }
+    #stage-bar::after {
+      animation-direction: reverse;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* 캐릭터 영역 */
+    .char-wrapper {
+      position: absolute;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      z-index: 3;
+      transition: filter 0.3s ease, opacity 0.8s ease, transform 0.5s ease;
+    }
+
+    .char-wrapper.inactive {
+      filter: brightness(0.55);
+    }
+
+    .char-wrapper.vanish {
+      opacity: 0;
+      transform: translateY(20px) scale(0.9);
+      pointer-events: none;
+    }
+
+    /* 대화창 UI */
+    #dialogue-box {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 88%;
+      height: 140px;
+      background: rgba(22, 16, 12, 0.92);
+      border: 3px solid #b87333;
+      border-radius: 8px;
+      padding: 16px 24px;
+      z-index: 10;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(184, 115, 51, 0.3);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      backdrop-filter: blur(3px);
+    }
+
+    /* 파이프 테두리 장식 디테일 */
+    #dialogue-box::before {
+      content: '';
+      position: absolute;
+      top: -6px; left: -6px; right: -6px; bottom: -6px;
+      border: 1px dashed rgba(184, 115, 51, 0.5);
+      border-radius: 12px;
+      pointer-events: none;
+    }
+
+    #speaker-tag {
+      display: inline-block;
+      align-self: flex-start;
+      background: #b87333;
+      color: #1a120c;
+      font-family: 'Gowun Dodum', sans-serif;
+      font-weight: bold;
+      font-size: 15px;
+      padding: 3px 14px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      border: 1px solid #f4ecd8;
+    }
+
+    #dialogue-text {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #f4ecd8;
+      word-break: keep-all;
+    }
+
+    .click-prompt {
+      position: absolute;
+      right: 18px;
+      bottom: 12px;
+      font-size: 12px;
+      color: #b87333;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* 네비게이션 버튼 (공통) */
+    .btn-nav {
+      position: absolute;
+      z-index: 12;
+      background: #b87333;
+      color: #f4ecd8;
+      border: 2px solid #4a3b32;
+      border-radius: 6px;
+      padding: 10px 22px;
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.3), inset -1px -1px 0px rgba(0, 0, 0, 0.5), 3px 3px 8px rgba(0,0,0,0.6);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-nav:hover {
+      background: #d48b46;
+      transform: translateY(-2px);
+      box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.4), inset -1px -1px 0px rgba(0, 0, 0, 0.5), 3px 5px 12px rgba(0,0,0,0.8);
+    }
+
+    .btn-nav:active {
+      transform: translateY(1px);
+      box-shadow: inset -1px -1px 0px rgba(255, 255, 255, 0.3), inset 1px 1px 0px rgba(0, 0, 0, 0.5), 1px 1px 4px rgba(0,0,0,0.6);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+      display: none;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+      display: none;
+    }
+
+    #btn-skip {
+      right: 20px;
+      bottom: 20px;
+    }
+
+    /* 축하 완료 메시지 카드 */
+    #success-card {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      z-index: 11;
+      background: rgba(28, 20, 15, 0.95);
+      border: 3px solid #b87333;
+      border-radius: 12px;
+      padding: 30px 45px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(184, 115, 51, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    #success-card.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      pointer-events: auto;
+    }
+
+    #success-card h2 {
+      font-size: 26px;
+      color: #b87333;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    #success-card p {
+      font-size: 15px;
+      color: #f4ecd8;
+      line-height: 1.6;
+    }
+
+    /* 캔버스 층 (반짝임 / 컨페티) */
+    #effects-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 8;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 배경 이미지 -->
+    <img src="소래습지공원 전시관2.png" alt="소래습지공원 전시관" class="bg-img" onerror="this.src='소래습지공원 전시관2';" />
+
+    <!-- 스테이지 명패 -->
+    <div id="stage-bar">소래습지공원 전시관 외부 - 탐방 완료</div>
+
+    <!-- 특수효과 캔버스 -->
+    <canvas id="effects-canvas"></canvas>
+
+    <!-- 등장인물: 민우 (좌측) -->
+    <div class="char-wrapper" id="char-민우" style="left: 220px; bottom: 70px;">
+      <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 서연 (우측) -->
+    <div class="char-wrapper" id="char-서연" style="left: 580px; bottom: 70px;">
+      <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+      <span id="speaker-tag">민우</span>
+      <p id="dialogue-text">대사를 불러오는 중입니다...</p>
+      <div class="click-prompt">▼ 클릭하여 계속</div>
+    </div>
+
+    <!-- 미션 성공 축하 카드 -->
+    <div id="success-card">
+      <h2>🎉 MISSION COMPLETE 🎉</h2>
+      <p>소래습지 생태 논리 탐방을 성공적으로 완료하였습니다!<br>수학적 사고로 본 인천의 자연은 더욱 깊고 아름답습니다.</p>
+    </div>
+
+    <!-- 네비게이션 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="goURL('C04.html')">◀ 이전</button>
+    <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기 ⏩</button>
+    <button class="btn-nav" id="btn-next" onclick="goURL('index.html')">메인으로 ➔</button>
+  </div>
+
+  <script>
+    // 대화 스크립트 데이터
+    const dialogues = [
+      {
+        speaker: '민우',
+        target: 'char-민우',
+        text: '와, 서연아! 드디어 소래습지공원 전시관 탐방을 완벽하게 마무리했어!'
+      },
+      {
+        speaker: '서연',
+        target: 'char-서연',
+        text: '응! 처음에는 단순히 생태계를 둘러보는 줄 알았는데, 명제와 조건으로 소래습지의 생태 논리를 하나씩 풀어내니까 정말 색달랐어.'
+      },
+      {
+        speaker: '민우',
+        target: 'char-민우',
+        text: '맞아! 수학이 단순한 공식이 아니라, 우리 지역 인천의 자연과 생태 현상을 논리적으로 이해하는 데 이렇게 유용할 줄이야!'
+      },
+      {
+        speaker: '서연',
+        target: 'char-서연',
+        text: '이제 늘 보던 익숙한 지역 공간도 새로운 관점으로 바라보게 된 것 같아. 우리 주변엔 생각보다 멋진 수학적 논리가 숨어있었어.'
+      },
+      {
+        speaker: '민우',
+        target: 'char-민우',
+        text: '우리가 진짜 \'소래습지 생태 논리 전문가\'가 된 기분이야! 오늘 배운 논리적 사고로 앞으로 더 많은 세상을 탐구해 보자!'
+      },
+      {
+        speaker: '서연',
+        target: 'char-서연',
+        text: '좋아! 수학과 함께하는 우리의 소래포구 MATH TOUR, 대성공이야!'
+      }
+    ];
+
+    let currentIndex = 0;
+    let isDialogueEnded = false;
+
+    // 대화 진행 및 인물 하이라이트 함수
+    function updateDialogue() {
+      if (currentIndex >= dialogues.length) {
+        endDialogue();
+        return;
+      }
+
+      const current = dialogues[currentIndex];
+      document.getElementById('speaker-tag').innerText = current.speaker;
+      document.getElementById('dialogue-text').innerText = current.text;
+
+      // 캐릭터 활성화/비활성화 처리 (.inactive 적용)
+      const charMinwoo = document.getElementById('char-민우');
+      const charSeoyeon = document.getElementById('char-서연');
+
+      if (current.target === 'char-민우') {
+        charMinwoo.classList.remove('inactive');
+        charSeoyeon.classList.add('inactive');
+      } else if (current.target === 'char-서연') {
+        charSeoyeon.classList.remove('inactive');
+        charMinwoo.classList.add('inactive');
+      } else {
+        charMinwoo.classList.remove('inactive');
+        charSeoyeon.classList.remove('inactive');
+      }
+    }
+
+    function advanceDialogue() {
+      if (isDialogueEnded) return;
+      currentIndex++;
+      updateDialogue();
+    }
+
+    function skipDialogue() {
+      if (isDialogueEnded) return;
+      currentIndex = dialogues.length;
+      endDialogue();
+    }
+
+    // 대화 종료 후 효과 및 버튼 전환
+    function endDialogue() {
+      if (isDialogueEnded) return;
+      isDialogueEnded = true;
+
+      // 대화창 및 건너뛰기 버튼 숨김
+      document.getElementById('dialogue-box').style.display = 'none';
+      document.getElementById('btn-skip').style.display = 'none';
+
+      // 캐릭터 사라지는 효과
+      const charMinwoo = document.getElementById('char-민우');
+      const charSeoyeon = document.getElementById('char-서연');
+      charMinwoo.classList.remove('inactive');
+      charSeoyeon.classList.remove('inactive');
+      charMinwoo.classList.add('vanish');
+      charSeoyeon.classList.add('vanish');
+
+      // 컨페티 & 폭죽 파티클 대량 생성
+      startConfettiExplosion();
+
+      // 성공 안내 카드 표시
+      setTimeout(() => {
+        document.getElementById('success-card').classList.add('show');
+        document.getElementById('btn-prev').style.display = 'flex';
+        document.getElementById('btn-next').style.display = 'flex';
+      }, 600);
+    }
+
+    function goURL(url) {
+      window.location.href = url;
+    }
+
+    /* ===================================================
+       특수효과: 등장 시 반짝임 & 대화 종료 시 대량 컨페티
+    =================================================== */
+    const canvas = document.getElementById('effects-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animationFrameId;
+
+    function resizeCanvas() {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // 반짝임/컨페티 파티클 클래스
+    class Particle {
+      constructor(x, y, isConfetti = false) {
+        this.x = x;
+        this.y = y;
+        this.isConfetti = isConfetti;
+        
+        if (isConfetti) {
+          this.vx = (Math.random() - 0.5) * 8;
+          this.vy = Math.random() * -10 - 4;
+          this.gravity = 0.25;
+          this.size = Math.random() * 8 + 6;
+          this.color = ['#b87333', '#f4ecd8', '#003b46', '#d48b46', '#ffd700', '#ff5722'][Math.floor(Math.random() * 6)];
+          this.rotation = Math.random() * 360;
+          this.rotationSpeed = (Math.random() - 0.5) * 10;
+          this.opacity = 1;
+          this.decay = Math.random() * 0.008 + 0.003;
+        } else { // 단순 반짝임
+          this.vx = (Math.random() - 0.5) * 2;
+          this.vy = (Math.random() - 0.5) * 2;
+          this.gravity = 0;
+          this.size = Math.random() * 4 + 2;
+          this.color = '#f4ecd8';
+          this.opacity = Math.random();
+          this.decay = 0.02;
+        }
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += this.gravity;
+        this.opacity -= this.decay;
+
+        if (this.isConfetti) {
+          this.rotation += this.rotationSpeed;
+        }
+      }
+
+      draw(ctx) {
+        if (this.opacity <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.opacity);
+        ctx.fillStyle = this.color;
+
+        if (this.isConfetti) {
+          ctx.translate(this.x, this.y);
+          ctx.rotate((this.rotation * Math.PI) / 180);
+          ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size * 0.6);
+        } else {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+
+    // 등장 시 반짝이는 효과 생성
+    function triggerEntranceSparkles() {
+      for (let i = 0; i < 40; i++) {
+        // 민우 및 서연이 주변 위치
+        const posX = Math.random() > 0.5 ? 350 + (Math.random() - 0.5) * 200 : 710 + (Math.random() - 0.5) * 200;
+        const posY = 350 + (Math.random() - 0.5) * 200;
+        particles.push(new Particle(posX, posY, false));
+      }
+    }
+
+    // 대량의 축하 컨페티 폭발
+    function startConfettiExplosion() {
+      // 여러 지점에서 컨페티 분사
+      const burstPoints = [
+        { x: canvas.width * 0.2, y: canvas.height * 0.7 },
+        { x: canvas.width * 0.5, y: canvas.height * 0.6 },
+        { x: canvas.width * 0.8, y: canvas.height * 0.7 }
+      ];
+
+      burstPoints.forEach(pt => {
+        for (let i = 0; i < 70; i++) {
+          particles.push(new Particle(pt.x, pt.y, true));
+        }
+      });
+
+      // 지속적인 컨페티 비 효과
+      let count = 0;
+      const interval = setInterval(() => {
+        for (let i = 0; i < 8; i++) {
+          particles.push(new Particle(Math.random() * canvas.width, -10, true));
+        }
+        count++;
+        if (count > 25) clearInterval(interval);
+      }, 150);
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles = particles.filter(p => p.opacity > 0);
+
+      particles.forEach(p => {
+        p.update();
+        p.draw(ctx);
+      });
+
+      animationFrameId = requestAnimationFrame(animateParticles);
+    }
+
+    // 초기화
+    window.onload = function() {
+      updateDialogue();
+      triggerEntranceSparkles();
+      animateParticles();
+    };
+  </script>
+</body>
+</html>

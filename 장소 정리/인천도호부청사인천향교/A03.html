@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천도호부청사·인천향교 MATHTOUR - A03</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0f0a06;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 16:9 메인 게임 컨테이너 */
+        #game-container {
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            position: relative;
+            overflow: hidden;
+            background-color: #f5f0e6;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            border: 2px solid #d4af37;
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 상단 헤더 / 스테이지 바 */
+        #top-bar {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            right: 20px;
+            height: 40px;
+            background: rgba(20, 12, 6, 0.85);
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 10;
+        }
+
+        .stage-title {
+            font-family: 'Nanum Myeongjo', serif;
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 1.05rem;
+            letter-spacing: 1px;
+        }
+
+        .game-subtitle {
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #f5f0e6;
+            font-size: 0.85rem;
+        }
+
+        /* 등장 인물 Wrapper */
+        .char-wrapper {
+            position: absolute;
+            z-index: 3;
+            transition: opacity 0.5s ease;
+        }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            background: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            font-family: 'Noto Sans KR', sans-serif;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            transition: background 0.2s;
+        }
+
+        .btn-nav:hover {
+            background: #661f1f;
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 15px;
+        }
+
+        #btn-next {
+            right: 20px;
+            bottom: 15px;
+            display: none; /* 정답 전에는 숨김 */
+        }
+
+        /* 퀴즈 컨테이너 - 화면에 맞게 최적화 */
+        .quiz-container {
+            position: absolute;
+            top: 55px;
+            left: 20px;
+            right: 20px;
+            bottom: 15px;
+            z-index: 10;
+            background: rgba(30, 19, 10, 0.92);
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            padding: 10px 15px;
+            color: #f3e5ab;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        /* Custom Scrollbar for quiz container */
+        .quiz-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .quiz-container::-webkit-scrollbar-thumb {
+            background: #8c3030;
+            border-radius: 3px;
+        }
+
+        /* -------------------------------------------------------------
+           [삽입된 퀴즈 전용 CSS 스코프]
+           ------------------------------------------------------------- */
+        :root {
+            --bg-color: #1e130a;
+            --wood-tone: #3a2514;
+            --wood-light: #5c3c21;
+            --wood-card: #2c1b0e;
+            --accent-gold: #e5a93b;
+            --danchong-red: #c0392b;
+            --danchong-green: #16a085;
+            --danchong-blue: #2980b9;
+            --danchong-yellow: #f1c40f;
+            --text-color: #f3e5ab;
+            --grid-line: rgba(229, 169, 59, 0.25);
+            --line-yx: #00e5ff;
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--accent-gold);
+            padding-bottom: 5px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .quiz-header h1 {
+            margin: 0;
+            color: var(--accent-gold);
+            font-size: 1.25rem;
+            font-family: 'Nanum Myeongjo', serif;
+            text-shadow: 1px 1px 3px #000;
+        }
+
+        .scenario {
+            font-size: 0.8rem;
+            line-height: 1.35;
+            background-color: var(--wood-card);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--accent-gold);
+            max-width: 900px;
+            width: 100%;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .intro-stage {
+            background: var(--wood-card);
+            border: 2px solid var(--accent-gold);
+            border-radius: 10px;
+            padding: 12px;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.8);
+            margin-top: 5px;
+        }
+
+        .intro-stage.hidden {
+            display: none;
+        }
+
+        .intro-title {
+            color: var(--accent-gold);
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed var(--accent-gold);
+            padding-bottom: 4px;
+            font-family: 'Nanum Myeongjo', serif;
+        }
+
+        .piece-preview-box {
+            width: 130px;
+            height: 130px;
+            margin: 8px auto;
+            background-color: rgba(30, 19, 10, 0.9);
+            border: 2px solid var(--accent-gold);
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 0 10px rgba(229, 169, 59, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-place {
+            background: linear-gradient(135deg, #d35400, var(--danchong-red));
+            color: #fff;
+            border: 1px solid var(--accent-gold);
+            padding: 8px 18px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-place:hover {
+            background: var(--accent-gold);
+            color: #000;
+        }
+
+        /* Stage 1 Layout */
+        .main-container {
+            display: none;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: flex-start;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .main-container.visible {
+            display: flex;
+        }
+
+        .board-wrapper {
+            position: relative;
+            padding: 20px 25px 25px 20px;
+            background: var(--wood-card);
+            border: 4px solid var(--wood-light);
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.8);
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: 140px 140px;
+            grid-template-rows: 140px 140px;
+            gap: 2px;
+            background-color: var(--wood-light);
+            position: relative;
+            border: 2px solid var(--accent-gold);
+        }
+
+        .axis-x-line, .axis-y-line {
+            position: absolute;
+            background-color: var(--accent-gold);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .axis-x-line {
+            top: 50%;
+            left: -10px;
+            width: 302px;
+            height: 2px;
+            transform: translateY(-50%);
+        }
+
+        .axis-y-line {
+            left: 50%;
+            top: -10px;
+            width: 2px;
+            height: 302px;
+            transform: translateX(-50%);
+        }
+
+        .axis-name-x {
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-gold);
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .axis-name-y {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--accent-gold);
+            font-weight: bold;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .origin-label {
+            position: absolute;
+            left: calc(50% - 20px);
+            top: calc(50% + 2px);
+            color: var(--accent-gold);
+            font-size: 0.75rem;
+            font-weight: bold;
+            z-index: 6;
+        }
+
+        .quadrant-tag {
+            position: absolute;
+            font-size: 0.75rem;
+            color: rgba(243, 229, 171, 0.75);
+            font-weight: bold;
+            z-index: 6;
+            pointer-events: none;
+        }
+        .tag-q1 { top: 5px; right: 5px; }
+
+        .quadrant {
+            width: 140px;
+            height: 140px;
+            background-color: rgba(20, 12, 6, 0.92);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quadrant:hover:not(.filled):not(.q1) {
+            background-color: rgba(110, 75, 40, 0.6);
+        }
+
+        .quadrant.selected {
+            outline: 2px solid var(--accent-gold);
+            outline-offset: -2px;
+            background-color: rgba(229, 169, 59, 0.25);
+        }
+
+        .danchong-svg {
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
+        }
+
+        @keyframes glowCircle {
+            0% { filter: drop-shadow(0 0 4px var(--accent-gold)); }
+            50% { filter: drop-shadow(0 0 15px var(--accent-gold)) brightness(1.2); }
+            100% { filter: drop-shadow(0 0 4px var(--accent-gold)); }
+        }
+
+        .board.complete {
+            animation: glowCircle 2.5s infinite ease-in-out;
+        }
+
+        .control-panel {
+            flex: 1;
+            min-width: 260px;
+            background: var(--wood-card);
+            border: 2px solid var(--accent-gold);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            color: var(--accent-gold);
+            margin: 0;
+            text-align: center;
+            border-bottom: 1px dashed var(--accent-gold);
+            padding-bottom: 4px;
+            font-family: 'Nanum Myeongjo', serif;
+        }
+
+        .instruction {
+            font-size: 0.8rem;
+            color: #ddd;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .btn-transform {
+            background: linear-gradient(135deg, var(--wood-light), var(--wood-tone));
+            color: var(--text-color);
+            border: 1px solid var(--accent-gold);
+            padding: 8px 10px;
+            border-radius: 5px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .btn-transform:hover:not(:disabled) {
+            background: var(--accent-gold);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .message-box {
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: rgba(0,0,0,0.4);
+            border: 1px solid rgba(229, 169, 59, 0.3);
+            line-height: 1.3;
+        }
+
+        .message-box.error {
+            background-color: rgba(192, 57, 43, 0.35);
+            border-color: var(--danchong-red);
+            color: #ffb3b3;
+        }
+
+        .message-box.success {
+            background-color: rgba(22, 160, 133, 0.35);
+            border-color: var(--danchong-green);
+            color: #a3e4d7;
+            font-weight: bold;
+        }
+
+        .reset-btn {
+            background: var(--danchong-red);
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            transition: background 0.2s;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .reset-btn:hover {
+            background-color: #a93226;
+        }
+
+        /* Stage 2 */
+        .stage2-container {
+            display: none;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: flex-start;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .stage2-container.visible {
+            display: flex;
+        }
+
+        .canvas-card {
+            background: var(--wood-card);
+            border: 4px solid var(--wood-light);
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #gridCanvas {
+            background-color: #120a04;
+            border: 1px solid var(--accent-gold);
+            border-radius: 4px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .coord-input-card {
+            background: rgba(30, 19, 10, 0.85);
+            border: 1px solid var(--accent-gold);
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .point-focus-badge {
+            background: linear-gradient(135deg, var(--danchong-red), #8e44ad);
+            color: #fff;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-align: center;
+            border: 1px solid var(--accent-gold);
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 1rem;
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+
+        .coord-input {
+            width: 50px;
+            height: 32px;
+            background: #0d0704;
+            border: 1px solid var(--accent-gold);
+            border-radius: 4px;
+            color: #fff;
+            font-size: 1rem;
+            text-align: center;
+            font-weight: bold;
+            outline: none;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+
+        .coord-input:focus {
+            border-color: #00e5ff;
+            box-shadow: 0 0 6px rgba(0, 229, 255, 0.5);
+        }
+
+        .btn-submit-coord {
+            background: linear-gradient(135deg, #27ae60, #16a085);
+            color: #fff;
+            border: 1px solid var(--accent-gold);
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 0.88rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .btn-submit-coord:hover {
+            background: var(--accent-gold);
+            color: #000;
+        }
+
+        .points-progress-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.78rem;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(229, 169, 59, 0.2);
+        }
+
+        .progress-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-item.done {
+            color: #a3e4d7;
+            font-weight: bold;
+        }
+
+        .progress-item.active {
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: var(--wood-card);
+            border: 3px solid var(--accent-gold);
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 400px;
+            width: 85%;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(229, 169, 59, 0.6);
+            transform: scale(0.85);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            color: var(--accent-gold);
+            font-size: 1.3rem;
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-family: 'Nanum Myeongjo', serif;
+        }
+
+        .modal-icon {
+            width: 90px;
+            height: 90px;
+            margin: 8px auto;
+            animation: glowCircle 2s infinite ease-in-out;
+        }
+
+        .modal-msg {
+            font-size: 0.88rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            color: #f3e5ab;
+        }
+
+        .modal-close-btn {
+            background: linear-gradient(135deg, #d35400, var(--danchong-red));
+            color: white;
+            border: 1px solid var(--accent-gold);
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- 배경 이미지 -->
+    <img src="인천도호부청사_객사.png" alt="인천도호부청사 객사 배경" class="bg-img">
+
+    <!-- 상단 표시바 -->
+    <div id="top-bar">
+        <span class="stage-title">인천도호부청사·인천향교 MATHTOUR</span>
+        <span class="game-subtitle">A03. 객사 단청 대칭이동 복원</span>
+    </div>
+
+    <!-- 등장 인물 (게임 시작 시 양쪽 위치, 첫 활동 시작 전 노출) -->
+    <div class="char-wrapper" id="char-민우" style="position:absolute; left:40px; bottom:20px; width:208px; height:256px; overflow:visible;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.8); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <div class="char-wrapper" id="char-서연" style="position:absolute; right:40px; bottom:20px; width:208px; height:256px; overflow:visible;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.8) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 수학 퀴즈 컨테이너 -->
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>🏛️ 인천도호부청사 객사: 단청 대칭이동 복원 프로젝트</h1>
+        </div>
+
+        <!-- 시나리오 설명 영역 -->
+        <div class="scenario" id="scenario-text">
+            <b>[1단계 미션]</b> 임금의 위패를 모신 객사의 단청 문양이 훼손되었습니다.<br>
+            제1사분면의 기본 단청 조각을 대칭이동 원리로 복원하여 전체 원형 단청을 완성하세요.
+        </div>
+
+        <!-- ================= STAGE 1: 사분면 대칭 ================= -->
+        <div class="intro-stage" id="intro-stage">
+            <div class="intro-title">1단계: 기본 단청 문양(초) 탐색</div>
+            <p style="font-size: 0.82rem; margin-bottom: 8px;">
+                아래 문양은 단청 복원에 사용될 <b>1/4 부채꼴 조각</b>입니다.<br>
+                이 조각을 좌표평면의 제1사분면에 올린 후 복원을 시작합니다.
+            </p>
+            
+            <div class="piece-preview-box">
+                <svg class="danchong-svg" viewBox="0 0 100 100">
+                    <g>
+                        <path d="M 0,100 L 98,100 A 98 98 0 0 0 0,2 Z" fill="#1b4332" stroke="#e5a93b" stroke-width="1.5"/>
+                        <path d="M 0,100 L 90,100 A 90 90 0 0 0 0,10 Z" fill="#c0392b"/>
+                        <path d="M 0,100 L 75,100 A 75 75 0 0 0 0,25 Z" fill="#e5a93b"/>
+                        <path d="M 0,100 L 60,100 A 60 60 0 0 0 0,40 Z" fill="#16a085"/>
+                        <path d="M 0,100 Q 45,85 70,30 Q 15,45 0,100 Z" fill="#f3e5ab" opacity="0.9"/>
+                        <path d="M 0,100 Q 30,70 50,20 Q 20,50 0,100 Z" fill="#2980b9" opacity="0.95"/>
+                        <path d="M 0,100 L 25,100 A 25 25 0 0 0 0,75 Z" fill="#f1c40f"/>
+                        <path d="M 0,100 L 12,100 A 12 12 0 0 0 0,88 Z" fill="#c0392b"/>
+                        <line x1="0" y1="100" x2="69.3" y2="30.7" stroke="#e5a93b" stroke-width="1.5"/>
+                        <line x1="0" y1="100" x2="30.7" y2="30.7" stroke="#e5a93b" stroke-width="1.5"/>
+                    </g>
+                </svg>
+            </div>
+
+            <button class="btn-place" onclick="startStage1Puzzle()">좌표평면에 문양 얹기 ➔</button>
+        </div>
+
+        <!-- Stage 1 Main Board -->
+        <div class="main-container" id="main-container-s1">
+            <div class="board-wrapper">
+                <div class="board" id="board">
+                    <div class="axis-x-line"><span class="axis-name-x">x축 ▶</span></div>
+                    <div class="axis-y-line"><span class="axis-name-y">▲<span>y축</span></span></div>
+                    <span class="origin-label">O(0,0)</span>
+
+                    <div class="quadrant" id="q2" onclick="selectQuadrant('q2')"></div>
+
+                    <div class="quadrant q1 filled" id="q1">
+                        <span class="quadrant-tag tag-q1">제1사분면 (기본)</span>
+                        <svg class="danchong-svg" viewBox="0 0 100 100" id="original-svg">
+                            <g>
+                                <path d="M 0,100 L 98,100 A 98 98 0 0 0 0,2 Z" fill="#1b4332" stroke="#e5a93b" stroke-width="1.5"/>
+                                <path d="M 0,100 L 90,100 A 90 90 0 0 0 0,10 Z" fill="#c0392b"/>
+                                <path d="M 0,100 L 75,100 A 75 75 0 0 0 0,25 Z" fill="#e5a93b"/>
+                                <path d="M 0,100 L 60,100 A 60 60 0 0 0 0,40 Z" fill="#16a085"/>
+                                <path d="M 0,100 Q 45,85 70,30 Q 15,45 0,100 Z" fill="#f3e5ab" opacity="0.9"/>
+                                <path d="M 0,100 Q 30,70 50,20 Q 20,50 0,100 Z" fill="#2980b9" opacity="0.95"/>
+                                <path d="M 0,100 L 25,100 A 25 25 0 0 0 0,75 Z" fill="#f1c40f"/>
+                                <path d="M 0,100 L 12,100 A 12 12 0 0 0 0,88 Z" fill="#c0392b"/>
+                                <line x1="0" y1="100" x2="69.3" y2="30.7" stroke="#e5a93b" stroke-width="1.5"/>
+                                <line x1="0" y1="100" x2="30.7" y2="30.7" stroke="#e5a93b" stroke-width="1.5"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <div class="quadrant" id="q3" onclick="selectQuadrant('q3')"></div>
+                    <div class="quadrant" id="q4" onclick="selectQuadrant('q4')"></div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <h2 class="panel-title">1단계: 대칭이동 변환 도구</h2>
+                <p class="instruction">1. 빈 사분면 칸을 클릭하세요.<br>2. 올바른 대칭이동 공식을 선택하세요.</p>
+                
+                <div class="btn-group">
+                    <button class="btn-transform" onclick="applyTransformation('x-axis')">
+                        <span>x축 대칭 복사</span>
+                        <span style="font-family:'Nanum Gothic Coding';">(x, y) ➔ (x, -y)</span>
+                    </button>
+                    <button class="btn-transform" onclick="applyTransformation('y-axis')">
+                        <span>y축 대칭 복사</span>
+                        <span style="font-family:'Nanum Gothic Coding';">(-x, y)</span>
+                    </button>
+                    <button class="btn-transform" onclick="applyTransformation('origin')">
+                        <span>원점 대칭 복사</span>
+                        <span style="font-family:'Nanum Gothic Coding';">(-x, -y)</span>
+                    </button>
+                </div>
+
+                <div class="message-box" id="message-box-s1">
+                    복원할 빈 사분면 칸을 클릭해 주세요.
+                </div>
+
+                <button class="reset-btn" onclick="resetBoardS1()">처음부터 다시하기</button>
+            </div>
+        </div>
+
+        <!-- ================= STAGE 2: y=x 대칭 심화 ================= -->
+        <div class="stage2-container" id="stage2-container">
+            <!-- Canvas 좌표평면 -->
+            <div class="canvas-card">
+                <canvas id="gridCanvas" width="300" height="300"></canvas>
+            </div>
+
+            <!-- 우측 컨트롤 및 좌표 입력 패널 -->
+            <div class="control-panel">
+                <h2 class="panel-title">2단계: 좌표 대칭 복원</h2>
+                <p class="instruction">
+                    단청 조각의 세 꼭짓점을 <b>직선 y=x</b>에 대해 대칭이동시킨 대칭점의 좌표를 찾아 입력하세요.
+                </p>
+
+                <div class="coord-input-card">
+                    <div class="point-focus-badge" id="point-focus-label">
+                        목표 점 A(2, 7) 대칭이동
+                    </div>
+                    
+                    <div class="input-row">
+                        <span>A' = (</span>
+                        <input type="number" id="inputX" class="coord-input" placeholder="x'" autocomplete="off">
+                        <span>,</span>
+                        <input type="number" id="inputY" class="coord-input" placeholder="y'" autocomplete="off">
+                        <span>)</span>
+                    </div>
+
+                    <button class="btn-submit-coord" onclick="submitCoordinate()">좌표 확인 ➔</button>
+                </div>
+
+                <!-- 진행 상태 리스트 -->
+                <div class="points-progress-list" id="progress-list">
+                    <div class="progress-item active" id="prog-0">
+                        <span>1. 점 A(2, 7)</span>
+                        <span id="prog-val-0" style="font-family:'Nanum Gothic Coding';">대기 중...</span>
+                    </div>
+                    <div class="progress-item" id="prog-1">
+                        <span>2. 점 B(4, 9)</span>
+                        <span id="prog-val-1" style="font-family:'Nanum Gothic Coding';">대기 중...</span>
+                    </div>
+                    <div class="progress-item" id="prog-2">
+                        <span>3. 점 C(3, 4)</span>
+                        <span id="prog-val-2" style="font-family:'Nanum Gothic Coding';">대기 중...</span>
+                    </div>
+                </div>
+
+                <div class="message-box" id="message-box-s2">
+                    점 A를 직선 y=x에 대해 대칭이동한 좌표를 입력하세요.
+                </div>
+
+                <button class="reset-btn" onclick="resetStage2()">2단계 다시하기</button>
+            </div>
+        </div>
+
+        <!-- 성공 모달 -->
+        <div class="modal-overlay" id="victory-modal">
+            <div class="modal-card">
+                <h2 class="modal-title">🎉 복원 완료!</h2>
+                <div class="modal-icon">
+                    <svg viewBox="0 0 100 100" class="danchong-svg">
+                        <g>
+                            <circle cx="50" cy="50" r="48" fill="#1b4332" stroke="#e5a93b" stroke-width="2"/>
+                            <circle cx="50" cy="50" r="38" fill="#c0392b"/>
+                            <circle cx="50" cy="50" r="28" fill="#e5a93b"/>
+                            <circle cx="50" cy="50" r="18" fill="#16a085"/>
+                            <circle cx="50" cy="50" r="8" fill="#f1c40f"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="modal-msg" id="modal-msg-text">
+                    축하합니다! 대칭이동의 원리를 완벽하게 적용하여 객사의 아름다운 단청을 성공적으로 복원하였습니다!
+                </div>
+                <button class="modal-close-btn" onclick="closeVictoryModal()">확인 및 이동</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 공통 이동 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="goPrev()">이전</button>
+    <button class="btn-nav" id="btn-next" onclick="goNext()">다음</button>
+</div>
+
+<script>
+    /* 페이지 이동 함수 */
+    function goPrev() {
+        window.location.href = "A02.html";
+    }
+
+    function goNext() {
+        window.location.href = "A04.html";
+    }
+
+    /* -------------------------------------------------------------
+       [STAGE 1 자바스크립트 로직]
+       ------------------------------------------------------------- */
+    const correctMap = {
+        'q2': 'y-axis',
+        'q3': 'origin',
+        'q4': 'x-axis'
+    };
+
+    const filledState = {
+        'q1': true,
+        'q2': false,
+        'q3': false,
+        'q4': false
+    };
+
+    let selectedQ = null;
+
+    function hideCharacters() {
+        const char1 = document.getElementById('char-민우');
+        const char2 = document.getElementById('char-서연');
+        if(char1) char1.style.display = 'none';
+        if(char2) char2.style.display = 'none';
+    }
+
+    function startStage1Puzzle() {
+        hideCharacters(); // 첫 활동 시작 시 등장인물 숨김
+        document.getElementById('intro-stage').classList.add('hidden');
+        document.getElementById('main-container-s1').classList.add('visible');
+    }
+
+    function selectQuadrant(qId) {
+        if (filledState[qId]) return;
+
+        document.querySelectorAll('.quadrant').forEach(el => {
+            if (el.id !== 'q1') el.classList.remove('selected');
+        });
+
+        selectedQ = qId;
+        document.getElementById(qId).classList.add('selected');
+        
+        const qNames = {'q2': '제2사분면', 'q3': '제3사분면', 'q4': '제4사분면'};
+        showMessageS1(`${qNames[qId]}이(가) 선택되었습니다. 대칭이동 공식을 선택하세요.`, 'normal');
+    }
+
+    function applyTransformation(transType) {
+        if (!selectedQ) {
+            showMessageS1('먼저 복원할 빈 사분면 칸을 클릭해 주세요!', 'error');
+            return;
+        }
+
+        if (correctMap[selectedQ] === transType) {
+            filledState[selectedQ] = true;
+            renderQuadrantSvg(selectedQ, transType);
+            
+            const targetEl = document.getElementById(selectedQ);
+            targetEl.classList.remove('selected');
+            targetEl.classList.add('filled');
+            
+            showMessageS1('올바른 대칭이동입니다! 문양이 성공적으로 복원되었습니다.', 'success');
+            selectedQ = null;
+
+            checkStage1Completion();
+        } else {
+            showMessageS1('대칭 공식이 올바르지 않습니다. 위치에 맞는 대칭 관계를 다시 생각해 보세요.', 'error');
+        }
+    }
+
+    function renderQuadrantSvg(qId, transType) {
+        const qEl = document.getElementById(qId);
+        let transformCSS = '';
+
+        if (qId === 'q2') transformCSS = 'scaleX(-1)';
+        else if (qId === 'q3') transformCSS = 'scale(-1, -1)';
+        else if (qId === 'q4') transformCSS = 'scaleY(-1)';
+
+        qEl.innerHTML = `
+            <svg class="danchong-svg" viewBox="0 0 100 100" style="transform: ${transformCSS}">
+                <g>
+                    <path d="M 0,100 L 98,100 A 98 98 0 0 0 0,2 Z" fill="#1b4332" stroke="#e5a93b" stroke-width="1.5"/>
+                    <path d="M 0,100 L 90,100 A 90 90 0 0 0 0,10 Z" fill="#c0392b"/>
+                    <path d="M 0,100 L 75,100 A 75 75 0 0 0 0,25 Z" fill="#e5a93b"/>
+                    <path d="M 0,100 L 60,100 A 60 60 0 0 0 0,40 Z" fill="#16a085"/>
+                    <path d="M 0,100 Q 45,85 70,30 Q 15,45 0,100 Z" fill="#f3e5ab" opacity="0.9"/>
+                    <path d="M 0,100 Q 30,70 50,20 Q 20,50 0,100 Z" fill="#2980b9" opacity="0.95"/>
+                    <path d="M 0,100 L 25,100 A 25 25 0 0 0 0,75 Z" fill="#f1c40f"/>
+                    <path d="M 0,100 L 12,100 A 12 12 0 0 0 0,88 Z" fill="#c0392b"/>
+                    <line x1="0" y1="100" x2="69.3" y2="30.7" stroke="#e5a93b" stroke-width="1.5"/>
+                    <line x1="0" y1="100" x2="30.7" y2="30.7" stroke="#e5a93b" stroke-width="1.5"/>
+                </g>
+            </svg>
+        `;
+    }
+
+    function showMessageS1(msg, type) {
+        const box = document.getElementById('message-box-s1');
+        box.textContent = msg;
+        box.className = 'message-box ' + (type || '');
+    }
+
+    function checkStage1Completion() {
+        const isAllDone = Object.values(filledState).every(v => v === true);
+        if (isAllDone) {
+            document.getElementById('board').classList.add('complete');
+            setTimeout(() => {
+                showStage2Intro();
+            }, 1200);
+        }
+    }
+
+    function resetBoardS1() {
+        ['q2', 'q3', 'q4'].forEach(qId => {
+            filledState[qId] = false;
+            const el = document.getElementById(qId);
+            el.innerHTML = '';
+            el.className = 'quadrant';
+        });
+        selectedQ = null;
+        document.getElementById('board').classList.remove('complete');
+        showMessageS1('복원할 빈 사분면 칸을 클릭해 주세요.', 'normal');
+    }
+
+    /* -------------------------------------------------------------
+       [STAGE 2 자바스크립트 로직]
+       ------------------------------------------------------------- */
+    const targetPoints = [
+        { name: 'A', x: 2, y: 7, targetX: 7, targetY: 2 },
+        { name: 'B', x: 4, y: 9, targetX: 9, targetY: 4 },
+        { name: 'C', x: 3, y: 4, targetX: 4, targetY: 3 }
+    ];
+
+    let currentPointIdx = 0;
+    const completedPoints = [];
+
+    function showStage2Intro() {
+        document.getElementById('main-container-s1').style.display = 'none';
+        document.getElementById('stage2-container').classList.add('visible');
+        document.getElementById('scenario-text').innerHTML = `
+            <b>[2단계 심화 미션]</b> 정밀 대칭 복원: 단청 문양의 정교한 복원을 위해 <br>
+            세 기준점 A, B, C를 <b>직선 y=x</b>에 대해 대칭이동시킨 위치를 구하고 단청 조각을 완성하세요.
+        `;
+        initCanvas();
+        updateStage2UI();
+    }
+
+    let canvas, ctx;
+    const gridSize = 10;
+    const scale = 25; 
+    const padding = 25;
+
+    function initCanvas() {
+        canvas = document.getElementById('gridCanvas');
+        ctx = canvas.getContext('2d');
+        drawGrid();
+    }
+
+    function toScreenX(x) { return padding + x * scale; }
+    function toScreenY(y) { return canvas.height - padding - y * scale; }
+
+    function drawGrid() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 격자선
+        ctx.strokeStyle = 'rgba(229, 169, 59, 0.15)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= gridSize; i++) {
+            ctx.beginPath();
+            ctx.moveTo(toScreenX(i), toScreenY(0));
+            ctx.lineTo(toScreenX(i), toScreenY(gridSize));
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(toScreenX(0), toScreenY(i));
+            ctx.lineTo(toScreenX(gridSize), toScreenY(i));
+            ctx.stroke();
+        }
+
+        // 축
+        ctx.strokeStyle = '#e5a93b';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(toScreenX(0), toScreenY(0));
+        ctx.lineTo(toScreenX(gridSize), toScreenY(0));
+        ctx.moveTo(toScreenX(0), toScreenY(0));
+        ctx.lineTo(toScreenX(0), toScreenY(gridSize));
+        ctx.stroke();
+
+        // 눈금 라벨
+        ctx.fillStyle = '#d4af37';
+        ctx.font = '10px "Nanum Gothic Coding"';
+        ctx.textAlign = 'center';
+        for(let i=2; i<=gridSize; i+=2) {
+            ctx.fillText(i, toScreenX(i), toScreenY(0) + 12);
+            ctx.fillText(i, toScreenX(0) - 10, toScreenY(i) + 4);
+        }
+
+        // 직선 y=x
+        ctx.strokeStyle = '#00e5ff';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(toScreenX(0), toScreenY(0));
+        ctx.lineTo(toScreenX(gridSize), toScreenY(gridSize));
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#00e5ff';
+        ctx.font = '11px sans-serif';
+        ctx.fillText('y=x', toScreenX(gridSize-1)+10, toScreenY(gridSize-1)-5);
+
+        // 원본 삼각형 ABC 그리기
+        drawTriangle(targetPoints, '#e5a93b', 'rgba(229, 169, 59, 0.15)');
+        targetPoints.forEach(p => drawPoint(p.x, p.y, p.name, '#e5a93b'));
+
+        // 복원된 점/삼각형 그리기
+        if (completedPoints.length > 0) {
+            completedPoints.forEach(p => drawPoint(p.x, p.y, p.name + "'", '#16a085'));
+            if (completedPoints.length === 3) {
+                drawTriangle(completedPoints, '#16a085', 'rgba(22, 160, 133, 0.35)');
+            }
+        }
+
+        // 현재 선택 대기 중인 원본 점 강조
+        if (currentPointIdx < targetPoints.length) {
+            const curP = targetPoints[currentPointIdx];
+            ctx.strokeStyle = '#ff0055';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(toScreenX(curP.x), toScreenY(curP.y), 7, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+    }
+
+    function drawPoint(x, y, label, color) {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(toScreenX(x), toScreenY(y), 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px "Nanum Gothic Coding"';
+        ctx.fillText(`${label}(${x},${y})`, toScreenX(x) + 12, toScreenY(y) - 5);
+    }
+
+    function drawTriangle(points, strokeColor, fillColor) {
+        if (points.length < 3) return;
+        ctx.strokeStyle = strokeColor;
+        ctx.fillStyle = fillColor;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(toScreenX(points[0].x), toScreenY(points[0].y));
+        ctx.lineTo(toScreenX(points[1].x), toScreenY(points[1].y));
+        ctx.lineTo(toScreenX(points[2].x), toScreenY(points[2].y));
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+    }
+
+    function updateStage2UI() {
+        if (currentPointIdx < targetPoints.length) {
+            const pt = targetPoints[currentPointIdx];
+            document.getElementById('point-focus-label').textContent = `목표: 점 ${pt.name}(${pt.x}, ${pt.y}) 대칭점 찾기`;
+            document.getElementById('inputX').value = '';
+            document.getElementById('inputY').value = '';
+            document.getElementById('inputX').focus();
+        }
+
+        for (let i = 0; i < 3; i++) {
+            const itemEl = document.getElementById(`prog-${i}`);
+            const valEl = document.getElementById(`prog-val-${i}`);
+            if (i < completedPoints.length) {
+                itemEl.className = 'progress-item done';
+                const cp = completedPoints[i];
+                valEl.textContent = `(${cp.x}, ${cp.y}) ✓`;
+            } else if (i === currentPointIdx) {
+                itemEl.className = 'progress-item active';
+                valEl.textContent = '입력 대기...';
+            } else {
+                itemEl.className = 'progress-item';
+                valEl.textContent = '대기 중...';
+            }
+        }
+    }
+
+    function submitCoordinate() {
+        if (currentPointIdx >= targetPoints.length) return;
+
+        const inX = parseInt(document.getElementById('inputX').value);
+        const inY = parseInt(document.getElementById('inputY').value);
+        const target = targetPoints[currentPointIdx];
+
+        if (isNaN(inX) || isNaN(inY)) {
+            showMessageS2('x 좌표와 y 좌표를 모두 올바르게 입력하세요.', 'error');
+            return;
+        }
+
+        if (inX === target.targetX && inY === target.targetY) {
+            completedPoints.push({ name: target.name, x: inX, y: inY });
+            showMessageS2(`정답입니다! 점 ${target.name}'(${inX}, ${inY}) 복원 완료.`, 'success');
+            currentPointIdx++;
+            
+            drawGrid();
+            updateStage2UI();
+
+            if (currentPointIdx >= targetPoints.length) {
+                setTimeout(() => {
+                    showVictoryModal();
+                }, 800);
+            }
+        } else {
+            showMessageS2(`좌표가 올바르지 않습니다. 직선 y=x에 대한 대칭은 (x, y) ➔ (y, x) 입니다.`, 'error');
+        }
+    }
+
+    function showMessageS2(msg, type) {
+        const box = document.getElementById('message-box-s2');
+        box.textContent = msg;
+        box.className = 'message-box ' + (type || '');
+    }
+
+    function resetStage2() {
+        currentPointIdx = 0;
+        completedPoints.length = 0;
+        drawGrid();
+        updateStage2UI();
+        showMessageS2('2단계를 처음부터 다시 시작합니다.', 'normal');
+    }
+
+    function showVictoryModal() {
+        document.getElementById('victory-modal').classList.add('active');
+        // 정답 성공 시 '다음' 버튼 표시
+        document.getElementById('btn-next').style.display = 'block';
+    }
+
+    function closeVictoryModal() {
+        document.getElementById('victory-modal').classList.remove('active');
+    }
+
+    // 엔터키 입력 시 자동 제출
+    document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            if (document.getElementById('stage2-container').classList.contains('visible')) {
+                submitCoordinate();
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

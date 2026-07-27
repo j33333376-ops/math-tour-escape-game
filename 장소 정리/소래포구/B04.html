@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소래포구 MATHTOUR - A04</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        :root {
+            --brass-gold: #b87333;
+            --dark-teal: #003b46;
+            --parchment: #f4ecd8;
+            --rusty-brown: #4a3b32;
+            --dark-brown: #2c2019;
+            --pure-white: #FFFFFF;
+            --ocean-blue: #0288D1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #120c09;
+            color: var(--parchment);
+            font-family: 'Gowun Dodum', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 16:9 비율 유지 게임 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background: radial-gradient(circle at center, #3a2b22 0%, var(--dark-brown) 70%, #1a120c 100%);
+            border: 4px solid var(--brass-gold);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(0, 0, 0, 0.9);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 스팀펑크 상단 명패 스타일 스테이지 바 */
+        .stage-bar {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(180deg, #4a3b32 0%, #2c2019 100%);
+            border: 2px solid var(--brass-gold);
+            padding: 6px 24px;
+            border-radius: 4px;
+            color: var(--parchment);
+            font-size: 1.05rem;
+            font-weight: bold;
+            z-index: 20;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 0 5px rgba(184, 115, 51, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+
+        .stage-bar::before, .stage-bar::after {
+            content: "⚙";
+            color: var(--brass-gold);
+            font-size: 1.1rem;
+            animation: gear-spin 10s linear infinite;
+        }
+
+        .stage-bar::after {
+            animation: gear-spin-reverse 10s linear infinite;
+        }
+
+        @keyframes gear-spin { 100% { transform: rotate(360deg); } }
+        @keyframes gear-spin-reverse { 100% { transform: rotate(-360deg); } }
+
+        /* 소금꽃 연출 캔버스 */
+        #salt-flower-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* 등장인물 감싸는 wrapper */
+        .char-wrapper {
+            position: absolute;
+            z-index: 3;
+            transition: filter 0.2s ease;
+        }
+
+        /* 유형 1: 상황 설명 박스 (스팀펑크 설계도/오래된 서류 양식) */
+        .situation-box {
+            position: absolute;
+            top: 75px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 780px;
+            background: rgba(44, 32, 25, 0.92);
+            border: 3px solid var(--brass-gold);
+            border-radius: 12px;
+            padding: 28px 36px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 10px 25px rgba(0, 0, 0, 0.7);
+            z-index: 10;
+            text-align: center;
+            backdrop-filter: blur(2px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .situation-title {
+            color: var(--brass-gold);
+            font-size: 1.6rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .situation-text {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 1.15rem;
+            color: var(--parchment);
+            line-height: 1.8;
+            word-break: keep-all;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 18px 24px;
+            border-radius: 8px;
+            border: 1px dashed rgba(184, 115, 51, 0.4);
+            width: 100%;
+        }
+
+        /* 스팀펑크 황동 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            background: var(--brass-gold);
+            color: var(--parchment);
+            border: 2px solid var(--rusty-brown);
+            padding: 10px 24px;
+            font-family: 'Gowun Dodum', sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            z-index: 20;
+            box-shadow: 2px 2px 6px rgba(0,0,0,0.6), inset 1px 1px 2px rgba(255,255,255,0.3);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-nav:hover {
+            background: #d48844;
+            transform: translateY(-2px);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next {
+            right: 20px;
+            bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- 상단 스테이지 바 -->
+    <div class="stage-bar">소래포구 MATHTOUR - 미션 완료</div>
+
+    <!-- 소금꽃 만발 배경 애니메이션 캔버스 -->
+    <canvas id="salt-flower-canvas"></canvas>
+
+    <!-- 등장인물: 서연 (260x320 고정 규격) -->
+    <div class="char-wrapper" id="char-서연" style="position:absolute; left: 60px; bottom: 20px; width: 208px; height: 256px; overflow:visible;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.8); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 유형 1: 연출 및 상황 설명 박스 -->
+    <div class="situation-box">
+        <div class="situation-title">
+            <i class="fa-solid fa-trophy"></i>
+            <span>소금꽃 결정 완성!</span>
+        </div>
+        <div class="situation-text">
+            "정확한 양의 물을 증발시켰더니 눈부신 소금꽃이 피어났어! 수학으로 맛있는 소금을 만들어내다니, 넌 이제 완벽한 소금 장인이야!"
+        </div>
+    </div>
+
+    <!-- 공통 네비게이션 이동 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="window.location.href='B03.html'">
+        <i class="fa-solid fa-chevron-left"></i> 이전
+    </button>
+    <button class="btn-nav" id="btn-next" onclick="window.location.href='index.html'">
+        End <i class="fa-solid fa-flag-checkered"></i>
+    </button>
+</div>
+
+<script>
+    /* 배경 소금꽃 폭죽/결정 생성 캔버스 연출 */
+    const canvas = document.getElementById('salt-flower-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+        const container = document.getElementById('game-container');
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+    }
+
+    let particles = [];
+
+    function initParticles() {
+        particles = [];
+        const numClusters = 6;
+        for (let c = 0; c < numClusters; c++) {
+            const cx = Math.random() * canvas.width;
+            const cy = Math.random() * (canvas.height * 0.7) + (canvas.height * 0.1);
+            const count = 30;
+            
+            for (let i = 0; i < count; i++) {
+                const angle = (Math.PI * 2 / count) * i + Math.random() * 0.2;
+                particles.push({
+                    x: cx,
+                    y: cy,
+                    angle: angle,
+                    speed: Math.random() * 2.5 + 1,
+                    size: Math.random() * 6 + 3,
+                    dist: 0,
+                    maxDist: Math.random() * 120 + 30,
+                    alpha: 1
+                });
+            }
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach(p => {
+            if (p.dist < p.maxDist) {
+                p.dist += p.speed;
+            } else {
+                p.alpha -= 0.005;
+            }
+
+            const currX = p.x + Math.cos(p.angle) * p.dist;
+            const currY = p.y + Math.sin(p.angle) * p.dist;
+
+            if (p.alpha > 0) {
+                ctx.save();
+                ctx.translate(currX, currY);
+                ctx.rotate(p.angle);
+                ctx.globalAlpha = Math.max(0, p.alpha);
+                
+                // 빛나는 결정체 그리기
+                ctx.fillStyle = '#f4ecd8';
+                ctx.strokeStyle = '#b87333';
+                ctx.lineWidth = 1.5;
+
+                ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                ctx.strokeRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                ctx.restore();
+            }
+        });
+
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        resizeCanvas();
+        initParticles();
+        animate();
+    });
+
+    window.addEventListener('resize', resizeCanvas);
+</script>
+
+</body>
+</html>

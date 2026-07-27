@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>송도센트럴파크 MATHTOUR - 지붕의 기울기</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Noto+Sans+KR:wght@400;500;700;900&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+:root{--forest:#2d5a27;--forest2:#173d22;--wood:#6d4c41;--wood2:#452b22;--sage:#8aa171;--sun:#f4a261;--paper:#fff8e9;--ink:#3e4a3d;--orange:#ee6c16;--green:#29833a}
+*{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden} body{display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 8%,rgba(255,255,255,.12),transparent 22%),linear-gradient(135deg,#122d18,#305b35 52%,#172b1b);font-family:'Noto Sans KR',sans-serif;color:var(--ink)} button,input{font:inherit}
+#game-container{position:relative;width:min(1066px,100vw);max-height:100vh;aspect-ratio:16/9;overflow:hidden;border:6px solid var(--wood2);border-radius:22px;background:#dce8d8;box-shadow:0 18px 48px rgba(0,0,0,.42),inset 0 0 0 3px #b69775}
+.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:saturate(.94) brightness(.9)}
+.bg-shade{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(9,28,13,.14),rgba(12,30,14,.03) 55%,rgba(9,24,12,.24))}
+.title-sign{position:absolute;z-index:30;top:10px;left:50%;transform:translateX(-50%);min-width:470px;padding:9px 34px 11px;text-align:center;color:#fff;font-family:'Gowun Batang',serif;font-size:23px;border:4px solid #4a2c1c;border-radius:15px 15px 22px 22px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 42px,transparent 42px 84px),linear-gradient(#83512e,#5a321d);box-shadow:0 7px 12px rgba(0,0,0,.33)}
+.title-sign::before,.title-sign::after{content:'🍃';position:absolute;top:50%;transform:translateY(-50%)}.title-sign::before{left:10px}.title-sign::after{right:10px}
+.char-wrapper{position:absolute;z-index:8;overflow:visible;transition:filter .2s,opacity .2s}.char-wrapper.inactive{filter:brightness(.55)}
+#char-민우{right:205px;bottom:26px;width:208px;height:256px}#char-서연{right:18px;bottom:20px;width:208px;height:256px}
+.char-wrapper iframe{border:0;width:260px;height:320px;transform:scale(.8);transform-origin:bottom left;pointer-events:none;display:block}
+#char-서연 iframe{transform:scale(.8) scaleX(-1);transform-origin:bottom left}
+#dialogue-box{position:absolute;z-index:40;left:34px;right:34px;bottom:66px;min-height:132px;padding:19px 24px 18px 165px;border:4px solid var(--wood);border-radius:20px;background:rgba(31,73,35,.9);box-shadow:0 10px 28px rgba(0,0,0,.36);color:#fdfbf7;cursor:pointer;backdrop-filter:blur(4px)}
+#speaker-name{position:absolute;left:25px;top:21px;width:116px;padding:8px 12px;text-align:center;border-radius:14px;background:#f4a261;color:#3d2a1e;font-family:'Gowun Batang',serif;font-size:20px;font-weight:700;box-shadow:0 4px 0 rgba(69,43,34,.7)}
+#dialogue-text{font-size:18px;line-height:1.7;font-weight:700;word-break:keep-all}.click-guide{position:absolute;right:20px;bottom:10px;font-size:12px;opacity:.75}
+.btn-nav{position:absolute;z-index:50;bottom:18px;min-width:128px;padding:10px 20px;border:0;border-radius:20px;background:var(--forest);color:#fff;font-weight:900;box-shadow:0 4px 8px rgba(45,90,39,.3);cursor:pointer;transition:.2s}.btn-nav:hover{background:var(--wood);transform:translateY(-1px)}#btn-prev{left:20px}#btn-next,#btn-skip{right:20px}#btn-next{display:none}#btn-skip{display:block}
+.quiz-shell{position:absolute;z-index:20;left:18px;right:18px;top:54px;bottom:64px;display:none;grid-template-columns:minmax(0,1.62fr) minmax(328px,.98fr);border:5px solid #7a4f2e;border-radius:22px;background:#f3ead7;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.3),inset 0 0 0 3px #e0c69e}
+.scene{position:relative;min-width:0;overflow:hidden;background:linear-gradient(#74c6ef 0 53%,#709757 53% 75%,#987d5b 75% 100%);border-right:5px solid #7a4f2e}.scene svg{width:100%;height:100%;display:block}
+.story-card{position:absolute;left:20px;bottom:16px;width:min(430px,68%);padding:13px 17px;border:3px solid #b58a56;border-radius:15px;background:rgba(255,249,232,.95);box-shadow:0 7px 16px rgba(0,0,0,.2);font-size:13px;line-height:1.55}.story-card strong{display:block;margin-top:5px;color:#e65f12;font-size:15px}
+.panel{min-width:0;padding:18px 20px 14px;display:flex;flex-direction:column;gap:9px;background:linear-gradient(135deg,#fffaf0,#f4ead6);overflow:hidden}.panel h2{margin:0;text-align:center;font-family:'Gowun Batang',serif;font-size:21px;color:#304c35}.mission{padding:9px 11px;border:2px solid #d2a36b;border-radius:12px;background:#f8efdf;font-family:'Nanum Gothic Coding',monospace;font-size:12px;font-weight:700;line-height:1.45}.control{padding:3px 2px 7px;border-bottom:2px solid #d8b78c}.control-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:3px;font-weight:900;font-size:13px}.value{min-width:84px;padding:4px 8px;text-align:center;border:2px solid #d1ac82;border-radius:10px;background:#fff;font-family:'Nanum Gothic Coding',monospace}input[type=range]{width:100%;margin:5px 0 0;accent-color:var(--green)}input.orange{accent-color:var(--orange)}.scale{display:flex;justify-content:space-between;font-size:10px;color:#7b6a58}.tangent-card{padding:7px 10px;text-align:center;border:3px solid #6b955f;border-radius:13px;background:#fffdf5}.tangent-card .label{font-size:13px;font-weight:900}.tangent-value{margin:0;font-family:'Nanum Gothic Coding',monospace;font-size:24px;font-weight:900;color:#23883a}.target{font-size:12px;color:#e76118;font-weight:900}.guide{padding:7px 9px;border:2px solid #c9a777;border-radius:11px;background:#f7eddc;font-size:11px;line-height:1.4;font-weight:700}.utility-row{display:grid;grid-template-columns:1fr 1fr;gap:7px}.utility-btn{padding:7px;border:2px solid #b58a56;border-radius:10px;background:#fff;color:#65462f;font-size:12px;font-weight:900;cursor:pointer}.hint-box{display:none;padding:7px 9px;border:2px dashed #da8c49;border-radius:9px;background:#fff4dc;font-size:10px;line-height:1.35}.hint-box.show{display:block}
+.success-pop{position:absolute;z-index:70;inset:50% auto auto 50%;transform:translate(-50%,-50%) scale(.8);width:min(420px,76%);padding:23px;text-align:center;border:5px solid #c8923b;border-radius:23px;background:#fff8df;box-shadow:0 18px 50px rgba(0,0,0,.42);opacity:0;pointer-events:none;transition:.3s}.success-pop.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto}.success-pop h3{margin:0 0 8px;font-family:'Gowun Batang',serif;font-size:30px;color:#2e7135}.success-pop p{margin:0 0 15px;line-height:1.55}.success-pop button{padding:10px 22px;border:0;border-radius:15px;background:var(--forest);color:#fff;font-weight:900;cursor:pointer}
+.rain-layer{opacity:0;transition:opacity .3s}.raining .rain-layer{opacity:1}.rain-drop{animation:fall var(--dur,1.6s) linear infinite;animation-delay:var(--delay,0s)}@keyframes fall{from{transform:translateY(-100px);opacity:0}12%{opacity:.9}to{transform:translateY(700px);opacity:0}}
+@media(max-width:760px){#game-container{border-width:3px;border-radius:0}.title-sign{top:5px;min-width:330px;font-size:16px;padding:7px 25px}.quiz-shell{left:5px;right:5px;top:40px;bottom:54px;grid-template-columns:1.5fr 1fr}.panel{padding:11px 8px 8px;gap:5px}.panel h2{font-size:15px}.mission,.guide{font-size:9px;padding:5px}.control-head{font-size:9px}.value{min-width:60px;padding:2px}.tangent-value{font-size:17px}.utility-btn{font-size:9px;padding:4px}.story-card{left:8px;bottom:8px;font-size:8px;padding:7px}.story-card strong{font-size:9px}#dialogue-box{left:12px;right:12px;bottom:52px;min-height:98px;padding:13px 14px 12px 105px}#speaker-name{left:14px;top:15px;width:76px;font-size:14px;padding:6px}#dialogue-text{font-size:12px}.btn-nav{bottom:8px;min-width:92px;padding:7px 12px;font-size:12px}#char-민우{right:135px;bottom:12px}#char-서연{right:-18px;bottom:8px}.char-wrapper iframe{transform:scale(.62)}#char-서연 iframe{transform:scale(.62) scaleX(-1)}}
+</style>
+</head>
+<body>
+<div id="game-container">
+  <img class="bg" src="한옥마을2.png" alt="송도 한옥마을 배경">
+  <div class="bg-shade"></div>
+  <div class="title-sign">지붕의 기울기를 삼각비로 구해보자!</div>
+
+  <div class="char-wrapper" id="char-민우"><iframe src="등장인물_민우.html" scrolling="no" title="민우"></iframe></div>
+  <div class="char-wrapper inactive" id="char-서연"><iframe src="등장인물_서연.html" scrolling="no" title="서연"></iframe></div>
+
+  <div id="dialogue-box" onclick="advanceDialogue()">
+    <div id="speaker-name">민우</div>
+    <div id="dialogue-text"></div>
+    <div class="click-guide">대화창을 눌러 계속하기 ▸</div>
+  </div>
+
+  <div class="quiz-shell" id="quizShell">
+    <section class="scene" id="scene">
+      <svg viewBox="0 0 780 650" aria-label="한옥 지붕 삼각비 활동">
+        <defs>
+          <pattern id="tilePattern" width="34" height="22" patternUnits="userSpaceOnUse"><rect width="34" height="22" fill="#3c4145"/><path d="M0 14 Q17 -4 34 14" fill="none" stroke="#23272a" stroke-width="6"/><path d="M0 20 Q17 4 34 20" fill="none" stroke="#697076" stroke-width="2"/></pattern>
+          <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7ead3"/><stop offset="1" stop-color="#e4cfaa"/></linearGradient>
+          <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bd7632"/><stop offset="1" stop-color="#81501f"/></linearGradient>
+          <filter id="shadow"><feDropShadow dx="0" dy="7" stdDeviation="5" flood-opacity=".32"/></filter>
+        </defs>
+        <circle cx="57" cy="62" r="30" fill="#ffd45f"/><g fill="#eff8fc" opacity=".92"><ellipse cx="170" cy="82" rx="73" ry="24"/><ellipse cx="455" cy="70" rx="55" ry="19"/></g>
+        <path d="M0 290 Q125 245 270 300 T520 286 T780 294 V650 H0Z" fill="#638b4e"/><rect y="420" width="780" height="230" fill="#a88b67"/>
+        <g filter="url(#shadow)"><rect x="185" y="305" width="410" height="260" fill="url(#wall)" stroke="#74451f" stroke-width="8"/><rect x="210" y="340" width="100" height="225" fill="url(#wood)"/><rect x="335" y="335" width="115" height="185" fill="#f5ead4" stroke="#7e4d27" stroke-width="7"/><path d="M392 335 V520 M335 392 H450 M335 455 H450" stroke="#7e4d27" stroke-width="5"/><rect x="478" y="340" width="88" height="225" fill="url(#wood)"/><rect x="165" y="555" width="450" height="26" rx="7" fill="#654421"/></g>
+        <g id="roof"><polygon id="roofPolygon" points="" fill="url(#tilePattern)" stroke="#22272a" stroke-width="11" stroke-linejoin="round" filter="url(#shadow)"/><line id="leftEdge" stroke="#202427" stroke-width="14" stroke-linecap="round"/><line id="rightEdge" stroke="#202427" stroke-width="14" stroke-linecap="round"/><line id="baseGuide" stroke="#fff" stroke-width="4" stroke-dasharray="12 9"/><line id="heightGuide" stroke="#ff831e" stroke-width="5" stroke-dasharray="12 8"/><line id="leftSlopeGuide" stroke="#fff" stroke-width="4" stroke-dasharray="12 8"/><line id="rightSlopeGuide" stroke="#fff" stroke-width="4" stroke-dasharray="12 8"/><path id="angleArc" fill="none" stroke="#a7dc54" stroke-width="5"/><text id="theta" font-size="31" font-weight="900" fill="#a7dc54">θ</text><path id="rightAngle" fill="none" stroke="#ff8a1d" stroke-width="5"/><text id="heightText" font-size="22" font-weight="900" fill="#f26d16" stroke="#fff5df" stroke-width="5" paint-order="stroke">지붕 높이</text><text id="baseText" font-size="22" font-weight="900" fill="#f26d16" stroke="#fff5df" stroke-width="5" paint-order="stroke">처마 길이(밑변)</text></g>
+        <g class="rain-layer">
+          <g class="rain-drop" style="--delay:-.1s;--dur:1.5s" transform="translate(90 0)"><path d="M0 -14 C8 0 11 8 11 14 A11 11 0 1 1 -11 14 C-11 8 -8 0 0 -14Z" fill="#72c7f4"/></g><g class="rain-drop" style="--delay:-.9s;--dur:1.9s" transform="translate(165 0)"><path d="M0 -14 C8 0 11 8 11 14 A11 11 0 1 1 -11 14 C-11 8 -8 0 0 -14Z" fill="#72c7f4"/></g><g class="rain-drop" style="--delay:-.4s;--dur:1.7s" transform="translate(245 0)"><path d="M0 -14 C8 0 11 8 11 14 A11 11 0 1 1 -11 14 C-11 8 -8 0 0 -14Z" fill="#72c7f4"/></g><g class="rain-drop" style="--delay:-1.2s;--dur:2s" transform="translate(325 0)"><path d="M0 -14 C8 0 11 8 11 14 A11 11 0 1 1 -11 14 C-11 8 -8 0 0 -14Z" fill="#72c7f4"/></g><g class="rain-drop" style="--delay:-.7s;--dur:1.6s" transform="translate(405 0)"><path d="M0 -14 C8 0 11 8 11 14 A11 11 0 1 1 -11 14 C-11 8 -8 0 0 -14Z" fill="#72c7f4"/></g><g class="rain-drop" style="--delay:-1.4s;--dur:1.8s" transform="translate(485 0)"><path d="M0 -14 C8 0 11 8 11 14 A11 11 0 1 1 -11 14 C-11 8 -8 0 0 -14Z" fill="#72c7f4"/></g><g class="rain-drop" style="--delay:-.2s;--dur:2.1s" transform="translate(565 0)"><path d="M0 -14 C8 0 11 8 11 14 A11 11 0 1 1 -11 14 C-11 8 -8 0 0 -14Z" fill="#72c7f4"/></g><g class="rain-drop" style="--delay:-1s;--dur:1.65s" transform="translate(650 0)"><path d="M0 -14 C8 0 11 8 11 14 A11 11 0 1 1 -11 14 C-11 8 -8 0 0 -14Z" fill="#72c7f4"/></g><g class="rain-drop" style="--delay:-.55s;--dur:1.85s" transform="translate(720 0)"><path d="M0 -14 C8 0 11 8 11 14 A11 11 0 1 1 -11 14 C-11 8 -8 0 0 -14Z" fill="#72c7f4"/></g>
+        </g>
+      </svg>
+      <div class="story-card">송도 한옥마을의 지붕은 빗물이 잘 흐르도록 기울어져 있어요.<strong>탄젠트 값이 0.600이 되도록 조절해 보세요.</strong></div>
+    </section>
+    <aside class="panel">
+      <h2>❖ 지붕 조건 조절 ❖</h2>
+      <div class="mission">미션: tanθ = 높이 ÷ 밑변 = 0.60<br>각도는 약 31°가 됩니다.</div>
+      <div class="control"><div class="control-head"><span>지붕 높이</span><span class="value"><b id="heightVal">3.7</b> m</span></div><input id="height" type="range" min="0.5" max="5" step="0.1" value="3.7"><div class="scale"><span>0.5</span><span>5.0</span></div></div>
+      <div class="control"><div class="control-head"><span>처마 길이(밑변)</span><span class="value"><b id="baseVal">6.2</b> m</span></div><input id="base" class="orange" type="range" min="1" max="10" step="0.1" value="6.2"><div class="scale"><span>1.0</span><span>10.0</span></div></div>
+      <div class="tangent-card"><div class="label">현재 탄젠트 값</div><div class="tangent-value" id="tanValue">0.597</div><div class="target">목표: 0.600</div></div>
+      <div class="guide">🍃 탄젠트 값이 0.600이 되면<br>‘다음’ 버튼이 활성화됩니다!</div>
+      <div class="utility-row"><button class="utility-btn" id="resetBtn">↻ 초기화</button><button class="utility-btn" id="hintBtn">힌트 보기 💡</button></div>
+      <div class="hint-box" id="hintBox">높이를 3.0m, 밑변을 5.0m로 맞추면<br>3.0 ÷ 5.0 = 0.600이 됩니다.</div>
+    </aside>
+  </div>
+
+  <button class="btn-nav" id="btn-prev" onclick="window.location.href='B02.html'">← 이전</button>
+  <button class="btn-nav" id="btn-skip" onclick="finishDialogue()">건너뛰기</button>
+  <button class="btn-nav" id="btn-next" onclick="window.location.href='B04.html'">다음 →</button>
+
+  <div class="success-pop" id="successPop"><h3>미션 성공!</h3><p>탄젠트 값이 0.600이 되는<br>지붕의 황금 각도를 찾았습니다.</p><button onclick="closeSuccess()">계속 살펴보기</button></div>
+</div>
+<script>
+const dialogues=[
+ {speaker:'민우',text:'한옥마을 처마 아래에 도착했어. 지붕이 생각보다 가파르게 기울어져 있네!',target:'char-민우'},
+ {speaker:'서연',text:'처마의 높이와 길이를 알면 탄젠트 값으로 지붕의 기울기를 나타낼 수 있어.',target:'char-서연'},
+ {speaker:'민우',text:'좋아! 높이와 밑변을 직접 조절해서 tanθ가 0.600이 되는 조건을 찾아보자.',target:'char-민우'}
+];
+let currentIndex=0;
+const box=document.getElementById('dialogue-box'), speaker=document.getElementById('speaker-name'), text=document.getElementById('dialogue-text');
+function renderDialogue(){const d=dialogues[currentIndex];speaker.textContent=d.speaker;text.textContent=d.text;document.querySelectorAll('.char-wrapper').forEach(el=>el.classList.add('inactive'));document.getElementById(d.target).classList.remove('inactive')}
+function advanceDialogue(){currentIndex++;if(currentIndex>=dialogues.length){finishDialogue();return}renderDialogue()}
+function finishDialogue(){box.style.display='none';document.getElementById('btn-skip').style.display='none';document.querySelectorAll('.char-wrapper').forEach(el=>{el.classList.remove('inactive');el.style.display='none'});document.getElementById('quizShell').style.display='grid';update()}
+renderDialogue();
+const heightInput=document.getElementById('height'),baseInput=document.getElementById('base'),heightVal=document.getElementById('heightVal'),baseVal=document.getElementById('baseVal'),tanValue=document.getElementById('tanValue'),scene=document.getElementById('scene'),btnNext=document.getElementById('btn-next'),successPop=document.getElementById('successPop');
+const roofPolygon=document.getElementById('roofPolygon'),leftEdge=document.getElementById('leftEdge'),rightEdge=document.getElementById('rightEdge'),baseGuide=document.getElementById('baseGuide'),heightGuide=document.getElementById('heightGuide'),leftSlopeGuide=document.getElementById('leftSlopeGuide'),rightSlopeGuide=document.getElementById('rightSlopeGuide'),angleArc=document.getElementById('angleArc'),theta=document.getElementById('theta'),rightAngle=document.getElementById('rightAngle'),heightText=document.getElementById('heightText'),baseText=document.getElementById('baseText');
+let wasSuccessful=false;
+function setLine(el,x1,y1,x2,y2){el.setAttribute('x1',x1);el.setAttribute('y1',y1);el.setAttribute('x2',x2);el.setAttribute('y2',y2)}
+function update(){const h=Number(heightInput.value),b=Number(baseInput.value),t=h/b;heightVal.textContent=h.toFixed(1);baseVal.textContent=b.toFixed(1);tanValue.textContent=t.toFixed(3);const cx=390,baseY=310,halfWidth=260+(b-5)*13,roofH=145+(h-3)*27,peakY=baseY-roofH,leftX=cx-halfWidth,rightX=cx+halfWidth,overhang=33;roofPolygon.setAttribute('points',`${leftX-overhang},${baseY+8} ${cx},${peakY} ${rightX+overhang},${baseY+8} ${rightX+16},${baseY+30} ${cx},${peakY+28} ${leftX-16},${baseY+30}`);setLine(leftEdge,leftX-overhang,baseY+8,cx,peakY);setLine(rightEdge,cx,peakY,rightX+overhang,baseY+8);setLine(baseGuide,leftX,baseY,rightX,baseY);setLine(heightGuide,cx,baseY,cx,peakY);setLine(leftSlopeGuide,leftX,baseY,cx,peakY);setLine(rightSlopeGuide,cx,peakY,rightX,baseY);rightAngle.setAttribute('d',`M ${cx-27} ${baseY} L ${cx-27} ${baseY-27} L ${cx} ${baseY-27}`);heightText.setAttribute('x',cx-34);heightText.setAttribute('y',(baseY+peakY)/2+6);baseText.setAttribute('x',cx-93);baseText.setAttribute('y',baseY+37);const r=48,a=Math.atan2(baseY-peakY,cx-leftX),ax=leftX+r*Math.cos(a),ay=baseY-r*Math.sin(a);angleArc.setAttribute('d',`M ${leftX+r} ${baseY} A ${r} ${r} 0 0 0 ${ax} ${ay}`);theta.setAttribute('x',leftX+62);theta.setAttribute('y',baseY-17);const success=Math.abs(t-.6)<=.0005;scene.classList.toggle('raining',success);btnNext.style.display=success?'block':'none';if(success&&!wasSuccessful)setTimeout(()=>successPop.classList.add('show'),250);wasSuccessful=success}
+function closeSuccess(){successPop.classList.remove('show')}
+document.getElementById('resetBtn').addEventListener('click',()=>{heightInput.value=3.7;baseInput.value=6.2;successPop.classList.remove('show');wasSuccessful=false;update()});document.getElementById('hintBtn').addEventListener('click',()=>document.getElementById('hintBox').classList.toggle('show'));heightInput.addEventListener('input',update);baseInput.addEventListener('input',update);
+</script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!-- 원본 크기: 900x580 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아라뱃길 아라폭포</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  *,*::before,*::after{ box-sizing:border-box; }
+  .arf-wrap{ width:100%; max-width:900px; margin:0 auto; }
+  .arf-svg{ display:block; width:100%; height:auto; }
+
+  .arf-foam{ stroke-dasharray: 6 8; animation: arf-flow 1.4s linear infinite; }
+  @keyframes arf-flow{ to{ stroke-dashoffset:-28; } }
+
+  .arf-mist{ animation: arf-mist 3.4s ease-in-out infinite; }
+  @keyframes arf-mist{ 0%,100%{ opacity:0.18; } 50%{ opacity:0.38; } }
+</style>
+</head>
+<body>
+<div class="arf-wrap">
+<svg class="arf-svg" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="아라뱃길 아라폭포와 원형 광장">
+<title>아라폭포</title>
+<defs>
+  <linearGradient id="arf-water" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#eaf7fb"/>
+    <stop offset="1" stop-color="#5fa8cc"/>
+  </linearGradient>
+  <radialGradient id="arf-pool" cx="0.5" cy="0.4" r="0.65">
+    <stop offset="0" stop-color="#bfe6f2"/>
+    <stop offset="1" stop-color="#3f7ea3"/>
+  </radialGradient>
+  <filter id="arf-blur"><feGaussianBlur stdDeviation="5"/></filter>
+</defs>
+
+<!-- 원형 광장 (바닥) -->
+<ellipse cx="450" cy="480" rx="380" ry="95" fill="#cdc2a6"/>
+<ellipse cx="450" cy="480" rx="380" ry="95" fill="none" stroke="#a99a78" stroke-width="3"/>
+<ellipse cx="450" cy="480" rx="290" ry="73" fill="none" stroke="#b7aa8a" stroke-width="2.5" opacity="0.85"/>
+<ellipse cx="450" cy="480" rx="200" ry="51" fill="none" stroke="#b7aa8a" stroke-width="2.5" opacity="0.85"/>
+<ellipse cx="450" cy="480" rx="110" ry="29" fill="none" stroke="#b7aa8a" stroke-width="2.5" opacity="0.85"/>
+<g stroke="#a99a78" stroke-width="1.4" opacity="0.55">
+  <line x1="450" y1="480" x2="830" y2="480"/>
+  <line x1="450" y1="480" x2="801" y2="516"/>
+  <line x1="450" y1="480" x2="719" y2="547"/>
+  <line x1="450" y1="480" x2="596" y2="568"/>
+  <line x1="450" y1="480" x2="450" y2="575"/>
+  <line x1="450" y1="480" x2="304" y2="568"/>
+  <line x1="450" y1="480" x2="181" y2="547"/>
+  <line x1="450" y1="480" x2="99"  y2="516"/>
+  <line x1="450" y1="480" x2="70"  y2="480"/>
+  <line x1="450" y1="480" x2="99"  y2="444"/>
+  <line x1="450" y1="480" x2="181" y2="413"/>
+  <line x1="450" y1="480" x2="304" y2="392"/>
+  <line x1="450" y1="480" x2="450" y2="385"/>
+  <line x1="450" y1="480" x2="596" y2="392"/>
+  <line x1="450" y1="480" x2="719" y2="413"/>
+  <line x1="450" y1="480" x2="801" y2="444"/>
+</g>
+<!-- 화단 포인트 -->
+<g fill="#d9607a" opacity="0.8">
+  <circle cx="150" cy="500" r="5"/><circle cx="180" cy="512" r="4"/><circle cx="720" cy="500" r="5"/><circle cx="690" cy="512" r="4"/>
+</g>
+<g fill="#e8b93c" opacity="0.8">
+  <circle cx="165" cy="508" r="4"/><circle cx="705" cy="508" r="4"/>
+</g>
+
+<!-- 낙수 웅덩이 -->
+<ellipse cx="380" cy="405" rx="175" ry="46" fill="url(#arf-pool)" stroke="#3f7ea3" stroke-width="2"/>
+<ellipse class="arf-mist" cx="380" cy="400" rx="150" ry="30" fill="#ffffff" filter="url(#arf-blur)"/>
+
+<!-- 바위 계단 + 폭포 -->
+<!-- 1단 (최상단) -->
+<polygon points="70,40 300,20 320,90 60,110" fill="#9c8a70"/>
+<polygon points="60,110 320,90 300,150 80,168" fill="#7a6a54"/>
+<path d="M110,112 L270,96 L262,150 L100,164 Z" fill="url(#arf-water)" opacity="0.92"/>
+<g class="arf-foam" stroke="#ffffff" stroke-width="2.5" opacity="0.85">
+  <line x1="125" y1="118" x2="118" y2="158"/>
+  <line x1="160" y1="114" x2="153" y2="156"/>
+  <line x1="195" y1="111" x2="189" y2="153"/>
+  <line x1="230" y1="107" x2="224" y2="150"/>
+</g>
+
+<!-- 2단 -->
+<polygon points="150,150 400,132 420,190 140,208" fill="#93805f"/>
+<polygon points="140,208 420,190 402,244 165,262" fill="#71614a"/>
+<path d="M185,210 L370,196 L362,244 L178,258 Z" fill="url(#arf-water)" opacity="0.92"/>
+<g class="arf-foam" stroke="#ffffff" stroke-width="2.5" opacity="0.85">
+  <line x1="205" y1="215" x2="199" y2="252"/>
+  <line x1="245" y1="211" x2="239" y2="250"/>
+  <line x1="285" y1="208" x2="279" y2="246"/>
+  <line x1="325" y1="204" x2="320" y2="243"/>
+</g>
+
+<!-- 3단 -->
+<polygon points="230,248 470,232 490,282 220,300" fill="#8a7860"/>
+<polygon points="220,300 490,282 474,330 245,346" fill="#6a5b46"/>
+<path d="M260,302 L450,290 L442,330 L253,344 Z" fill="url(#arf-water)" opacity="0.92"/>
+<g class="arf-foam" stroke="#ffffff" stroke-width="2.5" opacity="0.85">
+  <line x1="280" y1="305" x2="275" y2="338"/>
+  <line x1="320" y1="301" x2="315" y2="336"/>
+  <line x1="360" y1="298" x2="355" y2="333"/>
+  <line x1="400" y1="295" x2="396" y2="330"/>
+</g>
+
+<!-- 4단 (물웅덩이로 낙하) -->
+<polygon points="300,336 520,322 534,362 288,378" fill="#7d6c54"/>
+<path d="M330,338 L500,328 L494,362 L326,372 Z" fill="url(#arf-water)" opacity="0.92"/>
+<g class="arf-foam" stroke="#ffffff" stroke-width="2" opacity="0.85">
+  <line x1="345" y1="340" x2="341" y2="368"/>
+  <line x1="380" y1="337" x2="376" y2="364"/>
+  <line x1="415" y1="334" x2="412" y2="362"/>
+  <line x1="450" y1="331" x2="447" y2="358"/>
+</g>
+
+<!-- 이끼 / 초목 -->
+<g fill="#5f7a4a" opacity="0.75">
+  <circle cx="90" cy="55" r="14"/><circle cx="330" cy="35" r="12"/><circle cx="440" cy="145" r="10"/>
+  <circle cx="150" cy="165" r="10"/><circle cx="500" cy="205" r="10"/>
+</g>
+<g fill="#79974f" opacity="0.6">
+  <circle cx="100" cy="50" r="8"/><circle cx="335" cy="30" r="7"/>
+</g>
+
+<!-- 물보라 -->
+<ellipse class="arf-mist" cx="330" cy="390" rx="60" ry="16" fill="#ffffff" filter="url(#arf-blur)"/>
+<ellipse class="arf-mist" cx="440" cy="392" rx="55" ry="14" fill="#ffffff" filter="url(#arf-blur)"/>
+</svg>
+</div>
+</body>
+</html>

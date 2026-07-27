@@ -1,0 +1,271 @@
+<!-- 원본 크기: 600x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>아라폭포</title>
+    <style>
+        body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
+        svg { display: block; width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+        <defs>
+            <!-- Rock Gradient -->
+            <linearGradient id="rockGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#8C7A6B" />
+                <stop offset="40%" stop-color="#5A4D41" />
+                <stop offset="80%" stop-color="#3B3128" />
+                <stop offset="100%" stop-color="#241E18" />
+            </linearGradient>
+            <linearGradient id="rockHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#C5B5A5" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#5A4D41" stop-opacity="0"/>
+            </linearGradient>
+
+            <!-- Water Gradients -->
+            <linearGradient id="waterFlow1" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#E0F7FA" stop-opacity="0.95"/>
+                <stop offset="20%" stop-color="#80DEEA" stop-opacity="0.85"/>
+                <stop offset="60%" stop-color="#4DD0E1" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#E0F7FA" stop-opacity="0.98"/>
+            </linearGradient>
+
+            <linearGradient id="waterFlow2" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+                <stop offset="30%" stop-color="#B2EBF2" stop-opacity="0.85"/>
+                <stop offset="70%" stop-color="#26C6DA" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+            </linearGradient>
+
+            <linearGradient id="foamGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+                <stop offset="50%" stop-color="#E0F7FA" stop-opacity="0.7"/>
+                <stop offset="100%" stop-color="#E0F7FA" stop-opacity="0"/>
+            </linearGradient>
+
+            <!-- Metal Fence Gradient -->
+            <linearGradient id="fenceGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#FFFFFF"/>
+                <stop offset="50%" stop-color="#E0E0E0"/>
+                <stop offset="100%" stop-color="#BDBDBD"/>
+            </linearGradient>
+
+            <!-- Shadow Filter -->
+            <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+                <feDropShadow dx="2" dy="4" stdDeviation="3" flood-opacity="0.4"/>
+            </filter>
+            
+            <!-- Water Glow Filter -->
+            <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+        </defs>
+
+        <!-- ROCK STRUCTURE (Main Cliff Face) -->
+        <g id="rock-structure">
+            <!-- Back Rock Wall Outer Silhouette -->
+            <path d="M 30 570 
+                     L 20 450 L 35 320 L 25 200 L 50 100 L 90 50 L 150 20 L 250 15 L 380 25 L 480 60 L 550 130 L 570 280 L 580 440 L 570 570 Z" 
+                  fill="url(#rockGrad1)" />
+
+            <!-- Detailed Rock Blocks - Left Tier -->
+            <path d="M 30 570 L 25 420 L 110 400 L 160 480 L 140 570 Z" fill="#42372C" stroke="#241E18" stroke-width="2"/>
+            <path d="M 25 420 L 35 300 L 130 280 L 180 370 L 110 400 Z" fill="#54473B" stroke="#241E18" stroke-width="2"/>
+            <path d="M 35 300 L 50 180 L 150 160 L 190 260 L 130 280 Z" fill="#66574A" stroke="#241E18" stroke-width="2"/>
+            <path d="M 50 180 L 90 50 L 180 40 L 210 140 L 150 160 Z" fill="#78685A" stroke="#241E18" stroke-width="2"/>
+            <path d="M 90 50 L 150 20 L 250 15 L 260 110 L 180 40 Z" fill="#8A7A6C" stroke="#241E18" stroke-width="2"/>
+
+            <!-- Rock Highlights -->
+            <path d="M 90 50 L 150 20 L 250 15 L 230 30 L 150 35 L 95 60 Z" fill="url(#rockHighlight)"/>
+            <path d="M 50 180 L 150 160 L 140 170 L 60 188 Z" fill="url(#rockHighlight)"/>
+
+            <!-- Central Deep Rock Wall -->
+            <path d="M 180 40 L 260 110 L 240 250 L 220 400 L 210 570 L 400 570 L 420 410 L 410 240 L 420 100 L 380 25 Z" fill="#2A221B"/>
+            <path d="M 260 110 L 320 130 L 310 220 L 240 250 Z" fill="#3D3229" stroke="#1A140E" stroke-width="2"/>
+            <path d="M 320 130 L 420 100 L 410 200 L 310 220 Z" fill="#4A3E33" stroke="#1A140E" stroke-width="2"/>
+            <path d="M 240 250 L 310 220 L 330 340 L 230 370 Z" fill="#382E25" stroke="#1A140E" stroke-width="2"/>
+            <path d="M 310 220 L 410 200 L 430 330 L 330 340 Z" fill="#45382C" stroke="#1A140E" stroke-width="2"/>
+            <path d="M 230 370 L 330 340 L 340 480 L 220 500 Z" fill="#2E251E" stroke="#1A140E" stroke-width="2"/>
+            <path d="M 330 340 L 430 330 L 440 470 L 340 480 Z" fill="#3B2F26" stroke="#1A140E" stroke-width="2"/>
+
+            <!-- Detailed Rock Blocks - Right Tier -->
+            <path d="M 380 25 L 480 60 L 450 150 L 420 100 Z" fill="#7A6A5C" stroke="#241E18" stroke-width="2"/>
+            <path d="M 480 60 L 550 130 L 510 240 L 450 150 Z" fill="#6B5C4E" stroke="#241E18" stroke-width="2"/>
+            <path d="M 550 130 L 570 280 L 490 350 L 510 240 Z" fill="#5C4E41" stroke="#241E18" stroke-width="2"/>
+            <path d="M 570 280 L 580 440 L 480 470 L 490 350 Z" fill="#4C3F34" stroke="#241E18" stroke-width="2"/>
+            <path d="M 580 440 L 570 570 L 450 570 L 480 470 Z" fill="#3B3027" stroke="#241E18" stroke-width="2"/>
+
+            <!-- Rock Ledge Overhangs -->
+            <path d="M 120 120 C 180 100, 240 100, 290 125 C 270 145, 150 150, 120 120 Z" fill="#998878" stroke="#241E18" stroke-width="2"/>
+            <path d="M 320 130 C 370 110, 430 115, 470 140 C 440 160, 350 155, 320 130 Z" fill="#887767" stroke="#241E18" stroke-width="2"/>
+        </g>
+
+        <!-- WATERFALL STREAMS (Dense, Widening Downwards, Minimal Gaps) -->
+        <g id="waterfalls" filter="url(#glow)">
+            <!-- Stream 1 (Left Fall: narrow top ~70px, wide bottom ~190px) -->
+            <path d="M 120 120 
+                     Q 110 250 100 380 Q 90 480 80 570 
+                     L 270 570 
+                     Q 240 480 210 380 Q 180 250 190 120 Z" 
+                  fill="url(#waterFlow1)" opacity="0.95"/>
+            <path d="M 135 120 
+                     Q 125 250 115 380 Q 105 480 95 570 
+                     L 255 570 
+                     Q 225 480 195 380 Q 170 250 175 120 Z" 
+                  fill="url(#waterFlow2)" opacity="0.9"/>
+
+            <!-- Center Stream (Connecting Left and Right Streams to minimize gaps) -->
+            <path d="M 180 125 
+                     Q 195 250 210 380 Q 230 480 250 570 
+                     L 360 570 
+                     Q 320 480 290 380 Q 270 250 260 125 Z" 
+                  fill="url(#waterFlow1)" opacity="0.88"/>
+
+            <!-- Stream 2 (Right Fall: narrow top ~80px, wide bottom ~210px) -->
+            <path d="M 310 125 
+                     Q 300 250 290 380 Q 280 480 270 570 
+                     L 480 570 
+                     Q 450 480 420 380 Q 390 250 390 125 Z" 
+                  fill="url(#waterFlow1)" opacity="0.95"/>
+            <path d="M 325 125 
+                     Q 315 250 305 380 Q 295 480 285 570 
+                     L 465 570 
+                     Q 435 480 405 380 Q 380 250 375 125 Z" 
+                  fill="url(#waterFlow2)" opacity="0.9"/>
+
+            <!-- Stream 3 (Far Right Stream) -->
+            <path d="M 440 140 
+                     Q 435 250 430 380 Q 425 480 420 570 
+                     L 535 570 
+                     Q 515 480 495 380 Q 480 250 480 140 Z" 
+                  fill="url(#waterFlow1)" opacity="0.85"/>
+
+            <!-- Dynamic Water Flow Texture Lines / Ribbons (Widening towards bottom) -->
+            <path d="M 130 120 Q 120 280 110 450 T 100 570" stroke="#FFFFFF" stroke-width="5" fill="none" opacity="0.9"/>
+            <path d="M 155 120 Q 150 260 160 420 T 175 570" stroke="#E0F7FA" stroke-width="4" fill="none" opacity="0.85"/>
+            <path d="M 180 125 Q 190 290 220 460 T 245 570" stroke="#FFFFFF" stroke-width="4.5" fill="none" opacity="0.9"/>
+            <path d="M 230 130 Q 240 280 260 450 T 290 570" stroke="#E0F7FA" stroke-width="3" fill="none" opacity="0.8"/>
+            <path d="M 330 125 Q 320 270 310 450 T 310 570" stroke="#FFFFFF" stroke-width="5" fill="none" opacity="0.9"/>
+            <path d="M 360 125 Q 370 280 390 460 T 410 570" stroke="#E0F7FA" stroke-width="4" fill="none" opacity="0.85"/>
+            <path d="M 385 130 Q 405 280 430 460 T 460 570" stroke="#FFFFFF" stroke-width="4.5" fill="none" opacity="0.9"/>
+            <path d="M 460 140 Q 470 280 485 450 T 510 570" stroke="#FFFFFF" stroke-width="3.5" fill="none" opacity="0.85"/>
+
+            <!-- Bottom Heavy Water Foam & Spray (Massive Base Spread) -->
+            <ellipse cx="230" cy="550" rx="140" ry="35" fill="url(#foamGrad)"/>
+            <ellipse cx="400" cy="550" rx="150" ry="35" fill="url(#foamGrad)"/>
+            
+            <path d="M 70 570 C 110 515, 190 505, 260 525 C 310 495, 390 500, 460 525 C 500 510, 540 525, 570 570 Z" 
+                  fill="#FFFFFF" opacity="0.85"/>
+            <path d="M 90 570 C 130 530, 200 525, 250 540 C 290 515, 370 520, 430 540 C 470 525, 520 535, 550 570 Z" 
+                  fill="#E0F7FA" opacity="0.9"/>
+        </g>
+
+        <!-- WATER SPLASH DROPLETS & MIST PARTICLES -->
+        <g id="splashes" fill="#FFFFFF">
+            <!-- Splashes Spread Around -->
+            <circle cx="100" cy="220" r="2.5" opacity="0.8"/>
+            <circle cx="85" cy="280" r="3.5" opacity="0.7"/>
+            <circle cx="115" cy="340" r="3" opacity="0.9"/>
+            <circle cx="70" cy="390" r="4.5" opacity="0.7"/>
+            <circle cx="95" cy="450" r="4" opacity="0.8"/>
+            <circle cx="125" cy="490" r="5" opacity="0.85"/>
+            <circle cx="60" cy="510" r="3.5" opacity="0.7"/>
+            <circle cx="80" cy="530" r="5.5" opacity="0.9"/>
+            
+            <circle cx="270" cy="290" r="3.5" opacity="0.8"/>
+            <circle cx="290" cy="350" r="3" opacity="0.75"/>
+            <circle cx="310" cy="420" r="4.5" opacity="0.8"/>
+            <circle cx="450" cy="280" r="3.5" opacity="0.8"/>
+            <circle cx="475" cy="390" r="3" opacity="0.75"/>
+            <circle cx="500" cy="470" r="4.5" opacity="0.85"/>
+            <circle cx="525" cy="510" r="5" opacity="0.9"/>
+            <circle cx="550" cy="530" r="4" opacity="0.8"/>
+
+            <!-- Fine Mist Soft Circles -->
+            <circle cx="180" cy="520" r="20" fill="#E0F7FA" opacity="0.35"/>
+            <circle cx="250" cy="495" r="25" fill="#FFFFFF" opacity="0.3"/>
+            <circle cx="380" cy="505" r="22" fill="#E0F7FA" opacity="0.35"/>
+            <circle cx="450" cy="490" r="28" fill="#FFFFFF" opacity="0.25"/>
+        </g>
+
+        <!-- SAFETY FENCE (White Decorative Railing - Front Foreground) -->
+        <g id="safety-fence" filter="url(#dropShadow)">
+            <!-- Fence Base Curb / Beam -->
+            <path d="M 10 585 L 590 585 L 590 593 L 10 593 Z" fill="#B0BEC5"/>
+            <path d="M 10 585 L 590 585" stroke="#FFFFFF" stroke-width="2"/>
+
+            <!-- Posts -->
+            <!-- Post 0 --> <rect x="15" y="460" width="10" height="125" rx="2" fill="url(#fenceGrad)"/> <polygon points="12,460 20,448 28,460" fill="#ECEFF1"/>
+            <!-- Post 1 --> <rect x="98" y="460" width="10" height="125" rx="2" fill="url(#fenceGrad)"/> <polygon points="95,460 103,448 111,460" fill="#ECEFF1"/>
+            <!-- Post 2 --> <rect x="181" y="460" width="10" height="125" rx="2" fill="url(#fenceGrad)"/> <polygon points="178,460 186,448 194,460" fill="#ECEFF1"/>
+            <!-- Post 3 --> <rect x="264" y="460" width="10" height="125" rx="2" fill="url(#fenceGrad)"/> <polygon points="261,460 269,448 277,460" fill="#ECEFF1"/>
+            <!-- Post 4 --> <rect x="347" y="460" width="10" height="125" rx="2" fill="url(#fenceGrad)"/> <polygon points="344,460 352,448 360,460" fill="#ECEFF1"/>
+            <!-- Post 5 --> <rect x="430" y="460" width="10" height="125" rx="2" fill="url(#fenceGrad)"/> <polygon points="427,460 435,448 443,460" fill="#ECEFF1"/>
+            <!-- Post 6 --> <rect x="513" y="460" width="10" height="125" rx="2" fill="url(#fenceGrad)"/> <polygon points="510,460 518,448 526,460" fill="#ECEFF1"/>
+            <!-- Post 7 --> <rect x="575" y="460" width="10" height="125" rx="2" fill="url(#fenceGrad)"/> <polygon points="572,460 580,448 588,460" fill="#ECEFF1"/>
+
+            <!-- Horizontal Bars -->
+            <!-- Top Rail -->
+            <line x1="10" y1="472" x2="590" y2="472" stroke="#FFFFFF" stroke-width="4"/>
+            <line x1="10" y1="472" x2="590" y2="472" stroke="#CFD8DC" stroke-width="1"/>
+            <!-- Bottom Rail -->
+            <line x1="10" y1="575" x2="590" y2="575" stroke="#FFFFFF" stroke-width="4"/>
+            <line x1="10" y1="575" x2="590" y2="575" stroke="#CFD8DC" stroke-width="1"/>
+
+            <!-- Decorative Swirl Grids Inside Each Section -->
+            <g stroke="#FFFFFF" stroke-width="2.5" fill="none">
+                <!-- Sec 1 -->
+                <line x1="25" y1="480" x2="98" y2="570"/> <line x1="98" y1="480" x2="25" y2="570"/>
+                <path d="M 61.5 525 C 40 480, 25 500, 61.5 525 C 98 500, 83 480, 61.5 525 C 40 565, 25 550, 61.5 525 C 98 550, 83 565, 61.5 525 Z" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+                <circle cx="61.5" cy="525" r="14" stroke="#FFFFFF" stroke-width="2"/>
+
+                <!-- Sec 2 -->
+                <line x1="108" y1="480" x2="181" y2="570"/> <line x1="181" y1="480" x2="108" y2="570"/>
+                <path d="M 144.5 525 C 123 480, 108 500, 144.5 525 C 181 500, 166 480, 144.5 525 C 123 565, 108 550, 144.5 525 C 181 550, 166 565, 144.5 525 Z" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+                <circle cx="144.5" cy="525" r="14" stroke="#FFFFFF" stroke-width="2"/>
+
+                <!-- Sec 3 -->
+                <line x1="191" y1="480" x2="264" y2="570"/> <line x1="264" y1="480" x2="191" y2="570"/>
+                <path d="M 227.5 525 C 206 480, 191 500, 227.5 525 C 264 500, 249 480, 227.5 525 C 206 565, 191 550, 227.5 525 C 264 550, 249 565, 227.5 525 Z" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+                <circle cx="227.5" cy="525" r="14" stroke="#FFFFFF" stroke-width="2"/>
+
+                <!-- Sec 4 -->
+                <line x1="274" y1="480" x2="347" y2="570"/> <line x1="347" y1="480" x2="274" y2="570"/>
+                <path d="M 310.5 525 C 289 480, 274 500, 310.5 525 C 347 500, 332 480, 310.5 525 C 289 565, 274 550, 310.5 525 C 347 550, 332 565, 310.5 525 Z" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+                <circle cx="310.5" cy="525" r="14" stroke="#FFFFFF" stroke-width="2"/>
+
+                <!-- Sec 5 -->
+                <line x1="357" y1="480" x2="430" y2="570"/> <line x1="430" y1="480" x2="357" y2="570"/>
+                <path d="M 393.5 525 C 372 480, 357 500, 393.5 525 C 430 500, 415 480, 393.5 525 C 372 565, 357 550, 393.5 525 C 430 550, 415 565, 393.5 525 Z" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+                <circle cx="393.5" cy="525" r="14" stroke="#FFFFFF" stroke-width="2"/>
+
+                <!-- Sec 6 -->
+                <line x1="440" y1="480" x2="513" y2="570"/> <line x1="513" y1="480" x2="440" y2="570"/>
+                <path d="M 476.5 525 C 455 480, 440 500, 476.5 525 C 513 500, 498 480, 476.5 525 C 455 565, 440 550, 476.5 525 C 513 550, 498 565, 476.5 525 Z" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+                <circle cx="476.5" cy="525" r="14" stroke="#FFFFFF" stroke-width="2"/>
+
+                <!-- Sec 7 -->
+                <line x1="523" y1="480" x2="575" y2="570"/> <line x1="575" y1="480" x2="523" y2="570"/>
+                <circle cx="549" cy="525" r="12" stroke="#FFFFFF" stroke-width="2"/>
+            </g>
+            
+            <!-- Vertical Pickets inside Fence -->
+            <g stroke="#FFFFFF" stroke-width="1.5" opacity="0.85">
+                <line x1="43" y1="472" x2="43" y2="575"/> <line x1="80" y1="472" x2="80" y2="575"/>
+                <line x1="126" y1="472" x2="126" y2="575"/> <line x1="163" y1="472" x2="163" y2="575"/>
+                <line x1="209" y1="472" x2="209" y2="575"/> <line x1="246" y1="472" x2="246" y2="575"/>
+                <line x1="292" y1="472" x2="292" y2="575"/> <line x1="329" y1="472" x2="329" y2="575"/>
+                <line x1="375" y1="472" x2="375" y2="575"/> <line x1="412" y1="472" x2="412" y2="575"/>
+                <line x1="458" y1="472" x2="458" y2="575"/> <line x1="495" y1="472" x2="495" y2="575"/>
+                <line x1="541" y1="472" x2="541" y2="575"/>
+            </g>
+        </g>
+    </svg>
+</body>
+</html>

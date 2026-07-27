@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소래포구 MATHTOUR - 다음 장소로 이동</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #120e0b;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Gowun Dodum', sans-serif;
+      color: #f4ecd8;
+      overflow: hidden;
+    }
+
+    /* 16:9 비율 고정 게임 컨테이너 */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #2c2019;
+      border: 4px solid #4a3b32;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+
+    /* 배경 이미지 */
+    .bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    /* 배경 오버레이 (스팀펑크 톤앤매너 연출) */
+    .bg-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, rgba(0,0,0,0.1) 0%, rgba(20, 12, 5, 0.45) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* 스테이지 상단 표시바 */
+    #stage-header {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(180deg, #4a3b32 0%, #2c2019 100%);
+      border: 2px solid #b87333;
+      border-radius: 4px;
+      padding: 8px 24px;
+      z-index: 10;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 0 6px rgba(184, 115, 51, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #stage-header::before, #stage-header::after {
+      content: '⚙';
+      font-size: 16px;
+      color: #b87333;
+      text-shadow: 0 0 4px rgba(0,0,0,0.8);
+    }
+
+    .stage-title {
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+      color: #f4ecd8;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    /* 무대 영역 (인물 및 에셋 배치 공간) */
+    #stage-area {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+    }
+
+    /* 인물 래퍼 */
+    .char-wrapper {
+      position: absolute;
+      overflow: visible;
+      transition: filter 0.2s ease;
+    }
+
+    /* 상황 설명 박스 (유형 1) */
+    .situation-box {
+      position: absolute;
+      top: 48%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70%;
+      max-width: 650px;
+      background: linear-gradient(135deg, rgba(44, 32, 25, 0.92) 0%, rgba(26, 18, 13, 0.95) 100%);
+      border: 3px solid #b87333;
+      border-radius: 8px;
+      padding: 28px 36px;
+      z-index: 10;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.7), inset 0 0 15px rgba(184, 115, 51, 0.15);
+      text-align: center;
+    }
+
+    /* 리벳(못) 장식 디테일 */
+    .situation-box::before, .situation-box::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #b87333;
+      border-radius: 50%;
+      box-shadow: inset 1px 1px 2px rgba(255,255,255,0.4), 1px 1px 3px rgba(0,0,0,0.8);
+    }
+    .situation-box::before { top: 8px; left: 8px; }
+    .situation-box::after { top: 8px; right: 8px; }
+
+    .situation-text {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 20px;
+      line-height: 1.6;
+      color: #f4ecd8;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+      word-break: keep-all;
+    }
+
+    /* 공통 이동 버튼 (스팀펑크 황동 금속판 스타일) */
+    .btn-nav {
+      position: absolute;
+      bottom: 20px;
+      z-index: 10;
+      background: linear-gradient(180deg, #c88343 0%, #b87333 50%, #8c5323 100%);
+      color: #f4ecd8;
+      border: 2px solid #4a3b32;
+      border-radius: 4px;
+      padding: 10px 24px;
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.4);
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-nav:hover {
+      background: linear-gradient(180deg, #d89353 0%, #c88343 50%, #9c6333 100%);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.4);
+      transform: translateY(-2px);
+    }
+
+    .btn-nav:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.8), inset 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    #btn-prev {
+      left: 20px;
+    }
+
+    #btn-next, #btn-skip {
+      right: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 배경 이미지 -->
+    <img src="소래포구주차장.png" alt="소래포구 주차장" class="bg-img">
+    <div class="bg-overlay"></div>
+
+    <!-- 스테이지 상단 표시바 -->
+    <div id="stage-header">
+      <span class="stage-title">소래포구 MATHTOUR — 이동</span>
+    </div>
+
+    <!-- 무대 영역 (인물 배치) -->
+    <div id="stage-area">
+      <!-- 서연 (왼쪽 배치 1) -->
+      <div class="char-wrapper" id="char-서연" style="left: 110px; bottom: 30px; width: 234px; height: 288px;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9); transform-origin:bottom left; pointer-events:none;"></iframe>
+      </div>
+
+      <!-- 민우 (왼쪽 배치 2, 서연과 겹치지 않게 옆에 위치) -->
+      <div class="char-wrapper" id="char-민우" style="left: 310px; bottom: 30px; width: 234px; height: 288px;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9); transform-origin:bottom left; pointer-events:none;"></iframe>
+      </div>
+
+      <!-- 선생님 (오쪽 배치, 좌우 반전하여 아이들을 바라보도록 연출) -->
+      <div class="char-wrapper" id="char-선생님" style="left: 720px; bottom: 30px; width: 234px; height: 288px;">
+        <iframe src="등장인물_선생님.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+      </div>
+    </div>
+
+    <!-- 상황 설명 박스 -->
+    <div class="situation-box">
+      <p class="situation-text">"다음 장소로 이동해볼까?"</p>
+    </div>
+
+    <!-- 네비게이션 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="goUrl('A05.html')">◀ 이전</button>
+    <button class="btn-nav" id="btn-next" onclick="goUrl('index.html')">다음 ▶</button>
+  </div>
+
+  <script>
+    function goUrl(url) {
+      if (url) {
+        window.location.href = url;
+      }
+    }
+  </script>
+</body>
+</html>

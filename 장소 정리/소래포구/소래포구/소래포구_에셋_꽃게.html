@@ -1,0 +1,103 @@
+<!-- 원본 크기: 600x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>꽃게</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .skk-svg { display:block; width:100%; height:auto; }
+  .skk-claw-l { animation: skk-cl 3.4s ease-in-out infinite; transform-origin: 200px 330px; }
+  .skk-claw-r { animation: skk-cr 3.4s ease-in-out infinite; transform-origin: 400px 330px; }
+  @keyframes skk-cl { 0%,100% { transform: rotate(0deg);} 50% { transform: rotate(-9deg);} }
+  @keyframes skk-cr { 0%,100% { transform: rotate(0deg);} 50% { transform: rotate(9deg);} }
+  .skk-leg { animation: skk-leg 2.8s ease-in-out infinite; transform-box: fill-box; transform-origin: 0% 50%; }
+  @keyframes skk-leg { 0%,100% { transform: rotate(-2.5deg);} 50% { transform: rotate(2.5deg);} }
+</style>
+</head>
+<body>
+<svg class="skk-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="꽃게">
+<title>꽃게</title>
+<desc>소래포구 어시장의 대표 수산물인 꽃게.</desc>
+<defs>
+  <radialGradient id="skkShell" cx="0.36" cy="0.26" r="0.85">
+    <stop offset="0" stop-color="#f0a07c"/><stop offset="0.5" stop-color="#d9603c"/><stop offset="1" stop-color="#96331c"/>
+  </radialGradient>
+  <linearGradient id="skkClaw" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#e8834e"/><stop offset="1" stop-color="#a8401f"/>
+  </linearGradient>
+</defs>
+<ellipse cx="300" cy="512" rx="230" ry="30" fill="#5a2a18" opacity="0.2"/>
+<!-- 다리 (뒤) -->
+<g stroke="#b8471f" stroke-width="15" fill="none" stroke-linecap="round">
+  <g class="skk-leg"><path d="M186,318 L92,286 L34,318"/></g>
+  <g class="skk-leg" style="animation-delay:.3s"><path d="M180,352 L74,352 L20,392"/></g>
+  <g class="skk-leg" style="animation-delay:.6s"><path d="M190,386 L92,414 L44,466"/></g>
+  <g class="skk-leg" style="animation-delay:.9s"><path d="M210,414 L146,466 L118,522"/></g>
+  <g class="skk-leg" style="animation-delay:.15s"><path d="M414,318 L508,286 L566,318"/></g>
+  <g class="skk-leg" style="animation-delay:.45s"><path d="M420,352 L526,352 L580,392"/></g>
+  <g class="skk-leg" style="animation-delay:.75s"><path d="M410,386 L508,414 L556,466"/></g>
+  <g class="skk-leg" style="animation-delay:1.05s"><path d="M390,414 L454,466 L482,522"/></g>
+</g>
+<g stroke="#8c3316" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.6">
+  <path d="M92,286 L34,318"/><path d="M74,352 L20,392"/><path d="M508,286 L566,318"/><path d="M526,352 L580,392"/>
+</g>
+<!-- 집게 -->
+<g class="skk-claw-l">
+  <path d="M200,330 C150,300 110,258 96,214" stroke="#b8471f" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <g transform="translate(88,196) rotate(-24)">
+    <path d="M-10,0 C-42,-22 -46,-64 -14,-74 C14,-82 40,-58 34,-30 C30,-10 12,4 -10,0 Z" fill="url(#skkClaw)" stroke="#7a2a12" stroke-width="4"/>
+    <path d="M-8,-24 C-30,-40 -30,-58 -12,-62 C-2,-64 8,-56 6,-44" fill="none" stroke="#7a2a12" stroke-width="4"/>
+    <path d="M6,-44 C24,-46 34,-34 30,-20" fill="none" stroke="#7a2a12" stroke-width="4"/>
+  </g>
+</g>
+<g class="skk-claw-r">
+  <path d="M400,330 C450,300 490,258 504,214" stroke="#b8471f" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <g transform="translate(512,196) rotate(24) scale(-1,1)">
+    <path d="M-10,0 C-42,-22 -46,-64 -14,-74 C14,-82 40,-58 34,-30 C30,-10 12,4 -10,0 Z" fill="url(#skkClaw)" stroke="#7a2a12" stroke-width="4"/>
+    <path d="M-8,-24 C-30,-40 -30,-58 -12,-62 C-2,-64 8,-56 6,-44" fill="none" stroke="#7a2a12" stroke-width="4"/>
+    <path d="M6,-44 C24,-46 34,-34 30,-20" fill="none" stroke="#7a2a12" stroke-width="4"/>
+  </g>
+</g>
+<!-- 등딱지 -->
+<path d="M300,236
+         C214,236 152,278 138,338
+         C128,382 160,428 220,442
+         C270,454 330,454 380,442
+         C440,428 472,382 462,338
+         C448,278 386,236 300,236 Z"
+      fill="url(#skkShell)" stroke="#7a2a12" stroke-width="6"/>
+<!-- 등딱지 가시 -->
+<g fill="#c85030" stroke="#7a2a12" stroke-width="3">
+  <polygon points="138,338 108,326 136,318"/>
+  <polygon points="146,300 116,286 146,282"/>
+  <polygon points="462,338 492,326 464,318"/>
+  <polygon points="454,300 484,286 454,282"/>
+</g>
+<!-- 등 무늬 -->
+<g fill="none" stroke="#8c3316" stroke-width="4" opacity="0.65">
+  <path d="M186,326 C216,306 250,298 300,298 C350,298 384,306 414,326"/>
+  <path d="M206,382 C244,366 270,360 300,360 C330,360 356,366 394,382"/>
+  <path d="M300,300 L300,438"/>
+</g>
+<g fill="#f2b48c" opacity="0.5">
+  <ellipse cx="240" cy="330" rx="30" ry="16" transform="rotate(-14 240 330)"/>
+  <ellipse cx="360" cy="330" rx="30" ry="16" transform="rotate(14 360 330)"/>
+</g>
+<!-- 눈 -->
+<g>
+  <rect x="272" y="228" width="12" height="26" rx="6" fill="#b8471f"/>
+  <rect x="316" y="228" width="12" height="26" rx="6" fill="#b8471f"/>
+  <circle cx="278" cy="226" r="14" fill="#2b1a10" stroke="#7a2a12" stroke-width="3"/>
+  <circle cx="322" cy="226" r="14" fill="#2b1a10" stroke="#7a2a12" stroke-width="3"/>
+  <circle cx="274" cy="221" r="5" fill="#ffffff"/>
+  <circle cx="318" cy="221" r="5" fill="#ffffff"/>
+</g>
+<!-- 입 -->
+<path d="M280,268 q20,14 40,0" fill="none" stroke="#7a2a12" stroke-width="4" stroke-linecap="round"/>
+<!-- 광택 -->
+<ellipse cx="226" cy="284" rx="50" ry="22" transform="rotate(-20 226 284)" fill="#ffffff" opacity="0.32"/>
+</svg>
+</body>
+</html>

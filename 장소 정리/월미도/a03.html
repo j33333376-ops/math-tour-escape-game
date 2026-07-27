@@ -69,7 +69,7 @@
             z-index: 1;
         }
 
-        /* 등장인물 Wrapper (퀴즈 상자와 안 겹치게 양끝 배치 및 크기 최적화) */
+        /* 등장인물 Wrapper */
         .char-wrapper {
             position: absolute;
             bottom: 0;
@@ -124,10 +124,10 @@
         #btn-next {
             right: 15px;
             bottom: 12px;
-            display: none; /* 퀴즈 성공 시 노출 */
+            display: none; /* 두 미션 모두 성공 시 노출 */
         }
 
-        /* 퀴즈 컨테이너 오버레이 (화면 중앙 고정 및 높이 자동 맞춤) */
+        /* 퀴즈 컨테이너 오버레이 */
         .quiz-container {
             position: absolute;
             top: 50%;
@@ -138,7 +138,7 @@
             max-height: 96%;
         }
 
-        /* 키오스크 메인 UI 스타일 (슬림화) */
+        /* 키오스크 메인 UI 스타일 */
         .kiosk-container {
             width: 100%;
             background-color: #f7f4ed;
@@ -405,14 +405,14 @@
         <!-- 상단 스테이지 표시바 -->
         <div id="stage-header">월미도 MATHTOUR — 월미전통정원</div>
 
-        <!-- 무대 요소 (등장인물 양쪽 끝 배치) -->
+        <!-- 무대 요소 -->
         <div id="stage-area">
-            <!-- 민우 (왼쪽 배치) -->
+            <!-- 민우 -->
             <div class="char-wrapper" id="char-민우">
                 <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:100%; height:100%; pointer-events:none;"></iframe>
             </div>
 
-            <!-- 서연 (오른쪽 배치, 반전) -->
+            <!-- 서연 -->
             <div class="char-wrapper" id="char-서연">
                 <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:100%; height:100%; transform: scaleX(-1); pointer-events:none;"></iframe>
             </div>
@@ -510,6 +510,12 @@
     <script>
         let currentMission = 1;
 
+        // 각 미션별 상태 관리 객체
+        const missionState = {
+            1: { solved: false, inputValue: '', feedbackText: '', isCorrect: false },
+            2: { solved: false, inputValue: '', feedbackText: '', isCorrect: false }
+        };
+
         const currentSelection = {
             pattern: '꽃',
             symbol: '🌸',
@@ -587,7 +593,7 @@
                 `문양: ${currentSelection.pattern} | 색상: ${currentSelection.color} | 배치: ${currentSelection.layout} | 재질: ${currentSelection.material}`;
         }
 
-        // 미션 탭 전환 및 문구 제어
+        // 미션 탭 전환 및 상태 복원
         function switchMission(num) {
             currentMission = num;
             document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
@@ -596,25 +602,35 @@
 
             const missionContent = document.getElementById('missionContent');
             const feedback = document.getElementById('feedback');
-            feedback.textContent = '';
-            document.getElementById('answerInput').value = '';
+            const answerInput = document.getElementById('answerInput');
 
             if (num === 1) {
                 missionContent.innerHTML = "💡 <b>[미션 1 - 곱의 법칙]</b><br>문양 4종, 색상 4종, 배치 3종, 재질 2종을 조합하여 하나의 담장을 만들 때, 만들 수 있는 <b>서로 다른 담장 디자인의 총 가짓수</b>는?";
             } else {
                 missionContent.innerHTML = "💡 <b>[미션 2 - 합의 법칙]</b><br>민우는 <b>'흙담'</b>만, 서연이는 <b>'돌담'</b>만 사용하여 디자인을 만듭니다. 두 사람이 만들 수 있는 총 디자인 가짓수의 합은?";
             }
+
+            // 이전 미션 상태 복원
+            const state = missionState[num];
+            answerInput.value = state.inputValue;
+            feedback.textContent = state.feedbackText;
+            feedback.className = "feedback-message " + (state.isCorrect ? "correct" : "incorrect");
         }
 
-        // 정답 검증
+        // 정답 검증 및 상태 저장
         function checkAnswer() {
-            const inputVal = parseInt(document.getElementById('answerInput').value.trim(), 10);
+            const inputEl = document.getElementById('answerInput');
+            const inputVal = parseInt(inputEl.value.trim(), 10);
             const feedback = document.getElementById('feedback');
-            const btnNext = document.getElementById('btn-next');
+            const state = missionState[currentMission];
+
+            state.inputValue = inputEl.value.trim();
 
             if (isNaN(inputVal)) {
                 feedback.className = "feedback-message incorrect";
                 feedback.textContent = "정답 숫자를 입력해주세요!";
+                state.feedbackText = feedback.textContent;
+                state.isCorrect = false;
                 return;
             }
 
@@ -622,20 +638,41 @@
                 if (inputVal === 96) {
                     feedback.className = "feedback-message correct";
                     feedback.textContent = "🎉 정답입니다! (4 × 4 × 3 × 2 = 96가지)";
-                    btnNext.style.display = "block";
+                    state.solved = true;
+                    state.isCorrect = true;
                 } else {
                     feedback.className = "feedback-message incorrect";
                     feedback.textContent = "다시 계산해보세요. (힌트: 4 × 4 × 3 × 2)";
+                    state.solved = false;
+                    state.isCorrect = false;
                 }
             } else {
                 if (inputVal === 96) {
                     feedback.className = "feedback-message correct";
                     feedback.textContent = "🎉 정답입니다! (민우 48가지 + 서연 48가지 = 96가지)";
-                    btnNext.style.display = "block";
+                    state.solved = true;
+                    state.isCorrect = true;
                 } else {
                     feedback.className = "feedback-message incorrect";
                     feedback.textContent = "다시 계산해보세요. (힌트: 민우 경우의 수 + 서연 경우의 수)";
+                    state.solved = false;
+                    state.isCorrect = false;
                 }
+            }
+
+            state.feedbackText = feedback.textContent;
+
+            // 두 미션 모두 해결했는지 검사
+            checkAllMissionsSolved();
+        }
+
+        // 미션 1, 2 모두 해결 시 '다음' 버튼 표시
+        function checkAllMissionsSolved() {
+            const btnNext = document.getElementById('btn-next');
+            if (missionState[1].solved && missionState[2].solved) {
+                btnNext.style.display = "block";
+            } else {
+                btnNext.style.display = "none";
             }
         }
 

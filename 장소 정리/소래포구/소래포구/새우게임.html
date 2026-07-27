@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦐 어시장 새우 수열 게임: 최대 새우를 찾아라!</title>
+    <!-- MathJax 수식 렌더링 라이브러리 추가 -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --accent: #f97316;
+            --bg: #f0f9ff;
+            --panel: #ffffff;
+            --text: #0f172a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .game-card {
+            background: var(--panel);
+            width: 100%;
+            max-width: 550px;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 헤더 영역 */
+        .header {
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e0f2fe;
+            color: var(--primary-dark);
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 12px;
+            margin-top: 4px;
+        }
+
+        /* 시각적 슬라이더 패널 */
+        .interactive-panel {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .kg-display {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .kg-display span {
+            font-size: 1.2rem;
+            color: #64748b;
+        }
+
+        /* 슬라이더 스타일 */
+        .slider-container {
+            position: relative;
+            margin: 10px 0;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 12px;
+            border-radius: 6px;
+            background: #cbd5e1;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        .slider-ticks {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: bold;
+            padding: 0 4px;
+        }
+
+        /* 메트릭 카드 3개 (등차수열) */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .metric-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 12px 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .metric-card .label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .metric-card .value {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .metric-card.highlight {
+            border-color: var(--accent);
+            background: #fff7ed;
+        }
+
+        .metric-card.highlight .value {
+            color: #c2410c;
+        }
+
+        /* 게이지 바 */
+        .budget-gauge {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .budget-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .budget-fill.over {
+            background: #ef4444;
+        }
+
+        .budget-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        /* 수열 일반항 토글 보드 */
+        .math-board {
+            background: #f1f5f9;
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .math-board summary {
+            font-weight: bold;
+            color: var(--primary-dark);
+            cursor: pointer;
+            outline: none;
+        }
+
+        .math-board p {
+            margin-top: 8px;
+        }
+
+        /* 미션 제출 버튼 */
+        .submit-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+        }
+
+        .submit-btn:hover {
+            background: #ea580c;
+            transform: translateY(-2px);
+        }
+
+        /* 모달 팝업 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 24px;
+            padding: 28px;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal h2 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+
+        .modal p {
+            font-size: 0.95rem;
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-card">
+    <div class="header">
+        <h1>🦐 수산시장 새우 수열 미션</h1>
+        <div class="badge">대수 · 등차수열의 일반항과 총액 공식</div>
+    </div>
+
+    <!-- 대화 가이드 (최소화된 텍스트) -->
+    <div style="text-align: center; font-size: 0.9rem; color: #475569;">
+        💡 <b>예산: 140,000원</b> | 슬라이더를 움직여 예산 내 <b>최대 kg</b>을 찾으세요!
+    </div>
+
+    <!-- 시각적 슬라이더 및 메트릭 패널 -->
+    <div class="interactive-panel">
+        <div class="kg-display" id="kg-val">1 <span>kg</span></div>
+
+        <div class="slider-container">
+            <input type="range" id="kg-slider" min="1" max="8" value="1" step="1" oninput="updateGame()">
+            <div class="slider-ticks">
+                <span>1kg</span>
+                <span>2kg</span>
+                <span>3kg</span>
+                <span>4kg</span>
+                <span>5kg</span>
+                <span>6kg</span>
+                <span>7kg</span>
+                <span>8kg</span>
+            </div>
+        </div>
+
+        <!-- 수학적 메트릭 (등차수열 요소) -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="label">kg당 단가 (a<sub>n</sub>)</div>
+                <div class="value" id="price-per-kg">30,000원</div>
+            </div>
+            <div class="metric-card highlight">
+                <div class="label">총 구매금액 (S<sub>n</sub>)</div>
+                <div class="value" id="total-price">30,000원</div>
+            </div>
+            <div class="metric-card">
+                <div class="label">남은 예산</div>
+                <div class="value" id="remaining-budget">110,000원</div>
+            </div>
+        </div>
+
+        <!-- 예산 게이지 바 -->
+        <div class="budget-gauge">
+            <div class="budget-fill" id="gauge-fill"></div>
+            <div class="budget-text" id="gauge-text">예산 사용률: 21.4%</div>
+        </div>
+    </div>
+
+    <!-- 수학적 수식 확인 (등차수열) -->
+    <details class="math-board">
+        <summary>📐 수열의 관계식 보기 (등차수열)</summary>
+        <p>
+            • <b>kg당 단가 수열 $a_n$:</b> 첫째항 $a_1 = 30,000$, 공차 $d = -1,000$<br>
+            &nbsp;&nbsp;$ightarrow a_n = 30,000 - 1,000(n-1) = 31,000 - 1,000n$<br>
+            • <b>총 금액 $S_n$:</b> $S_n = n 	imes a_n = 31,000n - 1,000n^2$
+        </p>
+    </details>
+
+    <!-- 구매 결정을 위한 제출 버튼 -->
+    <button class="submit-btn" onclick="submitAnswer()">이 수량으로 새우 구매하기! 🛒</button>
+</div>
+
+<!-- 결과 모달 팝업 -->
+<div class="modal-overlay" id="modal">
+    <div class="modal">
+        <h2 id="modal-title">🎉 미션 성공!</h2>
+        <p id="modal-desc">축하합니다!</p>
+        <button class="close-btn" onclick="closeModal()">확인</button>
+    </div>
+</div>
+
+<script>
+    const BUDGET = 140000;
+
+    function updateGame() {
+        const n = parseInt(document.getElementById('kg-slider').value);
+        
+        // 등차수열 단가 계산: a_n = 31000 - 1000*n
+        const pricePerKg = 31000 - (1000 * n);
+        
+        // 총액: S_n = n * a_n
+        const totalPrice = n * pricePerKg;
+        
+        const remaining = BUDGET - totalPrice;
+        const usagePercent = Math.min((totalPrice / BUDGET) * 100, 100);
+
+        // UI 업데이트
+        document.getElementById('kg-val').innerHTML = `${n} <span>kg</span>`;
+        document.getElementById('price-per-kg').innerText = `${pricePerKg.toLocaleString()}원`;
+        document.getElementById('total-price').innerText = `${totalPrice.toLocaleString()}원`;
+        
+        const remEl = document.getElementById('remaining-budget');
+        if (remaining >= 0) {
+            remEl.innerText = `${remaining.toLocaleString()}원`;
+            remEl.style.color = '#0f172a';
+        } else {
+            remEl.innerText = `${remaining.toLocaleString()}원 (초과!)`;
+            remEl.style.color = '#ef4444';
+        }
+
+        // 게이지 업데이트
+        const gaugeFill = document.getElementById('gauge-fill');
+        gaugeFill.style.width = `${usagePercent}%`;
+        if (totalPrice > BUDGET) {
+            gaugeFill.classList.add('over');
+            document.getElementById('gauge-text').innerText = `예산 초과! (${(totalPrice - BUDGET).toLocaleString()}원 부족)`;
+            document.getElementById('gauge-text').style.color = '#ffffff';
+        } else {
+            gaugeFill.classList.remove('over');
+            document.getElementById('gauge-text').innerText = `예산 사용률: ${usagePercent.toFixed(1)}%`;
+            document.getElementById('gauge-text').style.color = totalPrice > BUDGET * 0.6 ? '#ffffff' : '#0f172a';
+        }
+    }
+
+    function submitAnswer() {
+        const n = parseInt(document.getElementById('kg-slider').value);
+        const pricePerKg = 31000 - (1000 * n);
+        const totalPrice = n * pricePerKg;
+        
+        const modal = document.getElementById('modal');
+        const title = document.getElementById('modal-title');
+        const desc = document.getElementById('modal-desc');
+
+        if (n === 5) {
+            title.innerText = '🎉 미션 완전 성공!';
+            title.style.color = '#0284c7';
+            desc.innerHTML = `
+                <b>정답입니다! 5kg을 구매하셨습니다.</b><br><br>
+                • <b>총 금액 ($S_5$):</b> 130,000원<br>
+                • <b>남은 돈:</b> 10,000원<br><br>
+                예산 140,000원으로 살 수 있는 <b>최대 수량(5kg)</b>을 정확히 찾았습니다! 상인 아주머니의 덤 가리비 서비스까지 받았습니다! 🦪
+            `;
+        } else if (n < 5) {
+            title.innerText = '🤔 아직 예산이 남아있어요!';
+            title.style.color = '#f97316';
+            desc.innerHTML = `
+                현재 <b>${n}kg</b> 구매 금액은 <b>${totalPrice.toLocaleString()}원</b>입니다.<br>
+                남은 예산이 충분해서 새우를 더 살 수 있어요! 슬라이더를 더 올려보세요.
+            `;
+        } else {
+            title.innerText = '💥 예산 초과!';
+            title.style.color = '#ef4444';
+            desc.innerHTML = `
+                <b>${n}kg</b> 구매 금액은 <b>${totalPrice.toLocaleString()}원</b>입니다.<br>
+                회비 예산인 <b>140,000원</b>을 초과했습니다. 슬라이더를 내려주세요!
+            `;
+        }
+
+        // MathJax가 팝업 내 LaTeX 수식도 깔끔하게 다시 렌더링하도록 실행
+        if (window.MathJax) {
+            MathJax.typesetPromise();
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+    }
+
+    // 초기화
+    updateGame();
+</script>
+
+</body>
+</html>

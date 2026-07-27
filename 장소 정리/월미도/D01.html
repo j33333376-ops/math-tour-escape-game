@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>월미도 MATHTOUR - D01</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #1a1412;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+            overflow: hidden;
+        }
+
+        /* 16:9 메인 게임 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f5f0e6;
+            background-image: 
+                radial-gradient(#d4af37 0.75px, transparent 0.75px),
+                radial-gradient(#d4af37 0.75px, #f5f0e6 0.75px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            border: 4px solid #d4af37;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+        }
+
+        /* 상단 스테이지 표시바 */
+        #top-bar {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            z-index: 20;
+            background: rgba(20, 15, 12, 0.85);
+            border: 2px solid #d4af37;
+            border-radius: 6px;
+            padding: 8px 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        #top-bar h1 {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 18px;
+            color: #d4af37;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        /* 무대 레이어 */
+        #stage {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 에셋 레이어 (월미도 디스코팡팡) - 건물/조형물 z-index: 1 */
+        .asset-wrapper {
+            position: absolute;
+            z-index: 1;
+        }
+
+        /* 캐릭터 레이어 - z-index: 3 */
+        .char-wrapper {
+            position: absolute;
+            z-index: 3;
+            transition: filter 0.2s ease;
+        }
+
+        /* 상황 설명 / 스토리 박스 (양피지/오래된 종이 스타일) */
+        #story-box {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 82%;
+            background-color: #f2e6ce;
+            background-image: linear-gradient(to bottom, #f7ebd3 0%, #ebdcb9 100%);
+            border: 3px double #8c3030;
+            outline: 2px solid #d4af37;
+            border-radius: 8px;
+            padding: 20px 28px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(140, 48, 48, 0.15);
+            z-index: 10;
+        }
+
+        #story-title {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 18px;
+            font-weight: bold;
+            color: #8c3030;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(140, 48, 48, 0.3);
+            padding-bottom: 4px;
+        }
+
+        #story-title::before {
+            content: '◆';
+            color: #d4af37;
+            font-size: 14px;
+        }
+
+        #story-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 15px;
+            line-height: 1.65;
+            color: #2d3748;
+            letter-spacing: -0.02em;
+            word-break: keep-all;
+        }
+
+        /* 공통 이동 버튼 (개항기 스타일) */
+        .btn-nav {
+            position: absolute;
+            bottom: 20px;
+            z-index: 15;
+            background-color: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.2s, transform 0.1s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+            transform: translateY(-1px);
+        }
+
+        .btn-nav:active {
+            transform: translateY(1px);
+        }
+
+        #btn-prev {
+            left: 20px;
+        }
+
+        #btn-next, #btn-skip {
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 상단 스테이지 표시바 -->
+        <div id="top-bar">
+            <h1>월미도 MATHTOUR - [탐방] 디스코팡팡 앞</h1>
+        </div>
+
+        <!-- 무대 영역 -->
+        <div id="stage">
+            <!-- 에셋: 월미도 디스코팡팡 (기본 W:1000, H:500 기준 s=0.7 적용) -->
+            <div class="asset-wrapper" style="left: 80px; bottom: 130px; width: 700px; height: 350px; overflow: hidden;">
+                <iframe src="월미도_디스코팡팡.html" scrolling="no" style="border: 0; width: 1000px; height: 500px; transform: scale(0.7); transform-origin: top left; pointer-events: none;"></iframe>
+            </div>
+
+            <!-- 등장인물: 민우 (260x320 고정, s=1) -->
+            <div class="char-wrapper" id="char-민우" style="left: 140px; bottom: 90px; width: 260px; height: 320px; overflow: visible;">
+                <iframe src="등장인물_민우.html" scrolling="no" style="border: 0; width: 260px; height: 320px; transform: scale(1); transform-origin: bottom left; pointer-events: none;"></iframe>
+            </div>
+
+            <!-- 등장인물: 서연 (260x320 고정, s=1, 좌우 반전으로 민우를 바라봄) -->
+            <div class="char-wrapper" id="char-서연" style="left: 660px; bottom: 90px; width: 260px; height: 320px; overflow: visible;">
+                <iframe src="등장인물_서연.html" scrolling="no" style="border: 0; width: 260px; height: 320px; transform: scale(1) scaleX(-1); transform-origin: bottom left; pointer-events: none;"></iframe>
+            </div>
+        </div>
+
+        <!-- 상황 설명 박스 (유형 1) -->
+        <div id="story-box">
+            <div id="story-title">월미도 놀이동산</div>
+            <div id="story-text">
+                월미도에 도착한 민우와 서연이 화려하게 회전하는 디스코팡팡을 바라보고 있다.<br>
+                신나는 음악과 DJ의 재치 있는 멘트에 신이 난 민우는 서연이에게 다가가 디스코팡팡을 함께 타자며 들뜬 목소리로 제안한다.
+            </div>
+        </div>
+
+        <!-- 이동 버튼 -->
+        <button class="btn-nav" id="btn-prev" onclick="goToUrl('index.html')">이전</button>
+        <button class="btn-nav" id="btn-next" onclick="goToUrl('D02.html')">다음</button>
+    </div>
+
+    <script>
+        function goToUrl(url) {
+            if (url) {
+                window.location.href = url;
+            }
+        }
+    </script>
+</body>
+</html>

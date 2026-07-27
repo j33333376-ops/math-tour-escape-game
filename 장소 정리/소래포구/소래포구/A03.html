@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소래포구 MATHTOUR - A03</title>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\(', '\)']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #1a120c;
+            color: #f4ecd8;
+            font-family: 'Gowun Dodum', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background-color: #2c2019;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 0 8px #4a3b32, 0 0 0 12px #b87333;
+            border-radius: 4px;
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            filter: brightness(0.7) contrast(1.1);
+        }
+
+        /* 상단 스테이지 표시바 */
+        #stage-bar {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            background: linear-gradient(180deg, #4a3b32 0%, #2c2019 100%);
+            border: 2px solid #b87333;
+            border-radius: 8px;
+            padding: 6px 24px;
+            color: #f4ecd8;
+            font-family: 'Gowun Dodum', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 0 5px rgba(184, 115, 51, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #stage-bar::before, #stage-bar::after {
+            content: '⚙';
+            color: #b87333;
+            font-size: 18px;
+            animation: spin 8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 캐릭터 레이아웃 */
+        .char-wrapper {
+            position: absolute;
+            z-index: 3;
+            transition: filter 0.2s;
+        }
+
+        .char-wrapper iframe {
+            border: 0;
+            width: 260px;
+            height: 320px;
+            pointer-events: none;
+        }
+
+        /* 캐릭터 명판 */
+        .char-nametag {
+            position: absolute;
+            bottom: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c2019;
+            border: 1px solid #b87333;
+            color: #f4ecd8;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+
+        /* 유형 3: 수학 퀴즈 컨테이너 */
+        .quiz-container {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 580px;
+            max-height: 480px;
+            z-index: 10;
+            background: rgba(30, 22, 17, 0.92);
+            border: 3px solid #b87333;
+            border-radius: 16px;
+            padding: 16px 20px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 10px 25px rgba(0,0,0,0.7);
+            color: #f4ecd8;
+            backdrop-filter: blur(4px);
+            overflow-y: auto;
+        }
+
+        /* 스크롤바 스타일링 */
+        .quiz-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .quiz-container::-webkit-scrollbar-track {
+            background: #2c2019;
+        }
+        .quiz-container::-webkit-scrollbar-thumb {
+            background: #b87333;
+            border-radius: 3px;
+        }
+
+        /* 내부 퀴즈 요소 스타일 스팀펑크 재정의 */
+        .game-card-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-header {
+            text-align: center;
+            border-bottom: 1px solid #4a3b32;
+            padding-bottom: 8px;
+        }
+
+        .quiz-header h1 {
+            font-size: 1.25rem;
+            color: #f4ecd8;
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #003b46;
+            color: #f4ecd8;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 10px;
+            margin-top: 4px;
+            border: 1px solid #b87333;
+        }
+
+        .interactive-panel {
+            background: rgba(15, 10, 7, 0.6);
+            border: 1px solid #b87333;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .kg-display {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #b87333;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+
+        .kg-display span {
+            font-size: 1rem;
+            color: #c0a890;
+        }
+
+        .slider-container {
+            position: relative;
+            margin: 4px 0;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: #4a3b32;
+            outline: none;
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.8);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #f4ecd8 20%, #b87333 80%);
+            border: 2px solid #2c2019;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            transition: transform 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        .slider-ticks {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #c0a890;
+            font-weight: bold;
+            padding: 0 2px;
+            margin-top: 2px;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .metric-card {
+            background: #2c2019;
+            border: 1px solid #4a3b32;
+            border-radius: 8px;
+            padding: 8px 4px;
+            text-align: center;
+        }
+
+        .metric-card .label {
+            font-size: 0.7rem;
+            color: #c0a890;
+            margin-bottom: 2px;
+        }
+
+        .metric-card .value {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #f4ecd8;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+
+        .metric-card.highlight {
+            border-color: #b87333;
+            background: #3b281c;
+        }
+
+        .metric-card.highlight .value {
+            color: #e69c55;
+        }
+
+        .budget-gauge {
+            background: #1a120c;
+            border: 1px solid #4a3b32;
+            border-radius: 8px;
+            height: 18px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .budget-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #003b46 0%, #b87333 100%);
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+
+        .budget-fill.over {
+            background: #a32a2a;
+        }
+
+        .budget-text {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #f4ecd8;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .math-board {
+            background: #1a120c;
+            border: 1px solid #4a3b32;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            color: #c0a890;
+            line-height: 1.5;
+        }
+
+        .math-board summary {
+            font-weight: bold;
+            color: #b87333;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .math-board p {
+            margin-top: 6px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(180deg, #b87333 0%, #8c5322 100%);
+            color: #f4ecd8;
+            border: 2px solid #4a3b32;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            font-family: 'Gowun Dodum', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(180deg, #d48b46 0%, #b87333 100%);
+            transform: translateY(-1px);
+        }
+
+        /* 모달 팝업 */
+        .modal-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 7, 5, 0.75);
+            backdrop-filter: blur(3px);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .modal {
+            background: #2c2019;
+            border: 3px solid #b87333;
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal h2 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #f4ecd8;
+        }
+
+        .modal p {
+            font-size: 0.85rem;
+            color: #c0a890;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .close-btn {
+            background: #003b46;
+            color: #f4ecd8;
+            border: 1px solid #b87333;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            background: #005566;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* 공통 이동 버튼 (황동 금속판) */
+        .btn-nav {
+            position: absolute;
+            z-index: 20;
+            background: linear-gradient(180deg, #b87333 0%, #7d4a1d 100%);
+            color: #f4ecd8;
+            border: 2px solid #4a3b32;
+            padding: 10px 22px;
+            font-size: 15px;
+            font-weight: bold;
+            font-family: 'Gowun Dodum', sans-serif;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.6), inset 1px 1px 0 rgba(255,255,255,0.2), inset -1px -1px 0 rgba(0,0,0,0.4);
+            transition: all 0.15s ease;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-nav:hover {
+            filter: brightness(1.15);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.7);
+        }
+
+        .btn-nav:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next {
+            right: 20px;
+            bottom: 20px;
+            display: none; /* 정답을 맞추면 보임 */
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- 배경 이미지 -->
+    <img src="소래포구시장안.png" alt="소래포구 시장 안" class="bg-img">
+
+    <!-- 상단 스테이지 바 -->
+    <div id="stage-bar">소래포구 MATHTOUR — 어시장 수열 미션</div>
+
+    <!-- 캐릭터 배치 (왼쪽: 서연, 민우 / 오른쪽: 시장상인) -->
+    <!-- 서연 (x=30, y=20) -->
+    <div class="char-wrapper" id="char-서연" style="left: 30px; bottom: 20px; width: 208px; height: 256px;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="transform: scale(0.8); transform-origin: bottom left;"></iframe>
+        <div class="char-nametag">서연</div>
+    </div>
+
+    <!-- 민우 (x=150, y=20) -->
+    <div class="char-wrapper" id="char-민우" style="left: 150px; bottom: 20px; width: 208px; height: 256px;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="transform: scale(0.8); transform-origin: bottom left;"></iframe>
+        <div class="char-nametag">민우</div>
+    </div>
+
+    <!-- 시장상인 (x=830, y=20, 좌우 반전으로 왼쪽을 바라봄) -->
+    <div class="char-wrapper" id="char-시장상인" style="left: 830px; bottom: 20px; width: 208px; height: 256px;">
+        <iframe src="등장인물_시장상인.html" scrolling="no" style="transform: scale(0.8) scaleX(-1); transform-origin: bottom left;"></iframe>
+        <div class="char-nametag">시장상인</div>
+    </div>
+
+    <!-- 유형 3: 수학 퀴즈 컨테이너 -->
+    <div class="quiz-container">
+        <div class="game-card-inner">
+            <div class="quiz-header">
+                <h1>🦐 수산시장 새우 수열 미션</h1>
+                <div class="badge">대수 · 등차수열의 일반항과 총액 공식</div>
+            </div>
+
+            <div style="text-align: center; font-size: 0.82rem; color: #c0a890;">
+                💡 <b>예산: 140,000원</b> | 슬라이더를 움직여 예산 내 <b>최대 kg</b>을 찾으세요!
+            </div>
+
+            <!-- Interactive Panel -->
+            <div class="interactive-panel">
+                <div class="kg-display" id="kg-val">1 <span>kg</span></div>
+
+                <div class="slider-container">
+                    <input type="range" id="kg-slider" min="1" max="8" value="1" step="1" oninput="updateGame()">
+                    <div class="slider-ticks">
+                        <span>1kg</span>
+                        <span>2kg</span>
+                        <span>3kg</span>
+                        <span>4kg</span>
+                        <span>5kg</span>
+                        <span>6kg</span>
+                        <span>7kg</span>
+                        <span>8kg</span>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="label">kg당 단가 ($a_n$)</div>
+                        <div class="value" id="price-per-kg">30,000원</div>
+                    </div>
+                    <div class="metric-card highlight">
+                        <div class="label">총 구매금액 ($S_n$)</div>
+                        <div class="value" id="total-price">30,000원</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="label">남은 예산</div>
+                        <div class="value" id="remaining-budget">110,000원</div>
+                    </div>
+                </div>
+
+                <div class="budget-gauge">
+                    <div class="budget-fill" id="gauge-fill"></div>
+                    <div class="budget-text" id="gauge-text">예산 사용률: 21.4%</div>
+                </div>
+            </div>
+
+            <!-- Math board -->
+            <details class="math-board">
+                <summary>📐 수열의 관계식 보기 (등차수열)</summary>
+                <p>
+                    • <b>kg당 단가 수열 $a_n$:</b> 첫째항 $a_1 = 30,000$, 공차 $d = -1,000$<br>
+                    &nbsp;&nbsp;$ightarrow a_n = 30,000 - 1,000(n-1) = 31,000 - 1,000n$<br>
+                    • <b>총 금액 $S_n$:</b> $S_n = n 	imes a_n = 31,000n - 1,000n^2$
+                </p>
+            </details>
+
+            <button class="submit-btn" onclick="submitAnswer()">이 수량으로 새우 구매하기! 🛒</button>
+        </div>
+    </div>
+
+    <!-- 결과 모달 팝업 -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h2 id="modal-title">🎉 미션 성공!</h2>
+            <p id="modal-desc">축하합니다!</p>
+            <button class="close-btn" onclick="closeModal()">확인</button>
+        </div>
+    </div>
+
+    <!-- 네비게이션 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="window.location.href='A02.html'">◀ 이전</button>
+    <button class="btn-nav" id="btn-next" onclick="window.location.href='A04.html'">다음 ▶</button>
+</div>
+
+<script>
+    const BUDGET = 140000;
+
+    function updateGame() {
+        const n = parseInt(document.getElementById('kg-slider').value);
+        
+        // 등차수열 단가 계산: a_n = 31000 - 1000*n
+        const pricePerKg = 31000 - (1000 * n);
+        
+        // 총액: S_n = n * a_n
+        const totalPrice = n * pricePerKg;
+        
+        const remaining = BUDGET - totalPrice;
+        const usagePercent = Math.min((totalPrice / BUDGET) * 100, 100);
+
+        // UI 업데이트
+        document.getElementById('kg-val').innerHTML = `${n} <span>kg</span>`;
+        document.getElementById('price-per-kg').innerText = `${pricePerKg.toLocaleString()}원`;
+        document.getElementById('total-price').innerText = `${totalPrice.toLocaleString()}원`;
+        
+        const remEl = document.getElementById('remaining-budget');
+        if (remaining >= 0) {
+            remEl.innerText = `${remaining.toLocaleString()}원`;
+            remEl.style.color = '#f4ecd8';
+        } else {
+            remEl.innerText = `${remaining.toLocaleString()}원 (초과!)`;
+            remEl.style.color = '#ef4444';
+        }
+
+        // 게이지 업데이트
+        const gaugeFill = document.getElementById('gauge-fill');
+        gaugeFill.style.width = `${usagePercent}%`;
+        if (totalPrice > BUDGET) {
+            gaugeFill.classList.add('over');
+            document.getElementById('gauge-text').innerText = `예산 초과! (${(totalPrice - BUDGET).toLocaleString()}원 부족)`;
+        } else {
+            gaugeFill.classList.remove('over');
+            document.getElementById('gauge-text').innerText = `예산 사용률: ${usagePercent.toFixed(1)}%`;
+        }
+    }
+
+    function submitAnswer() {
+        const n = parseInt(document.getElementById('kg-slider').value);
+        const pricePerKg = 31000 - (1000 * n);
+        const totalPrice = n * pricePerKg;
+        
+        const modal = document.getElementById('modal');
+        const title = document.getElementById('modal-title');
+        const desc = document.getElementById('modal-desc');
+
+        if (n === 5) {
+            title.innerText = '🎉 미션 완전 성공!';
+            title.style.color = '#e69c55';
+            desc.innerHTML = `
+                <b>정답입니다! 5kg을 구매하셨습니다.</b><br><br>
+                • <b>총 금액 ($S_5$):</b> 130,000원<br>
+                • <b>남은 돈:</b> 10,000원<br><br>
+                예산 140,000원으로 살 수 있는 <b>최대 수량(5kg)</b>을 정확히 찾았습니다! 상인 아주머니의 덤 가리비 서비스까지 받았습니다! 🦪
+            `;
+            // 정답 확인 시 '다음' 버튼 표시
+            document.getElementById('btn-next').style.display = 'flex';
+        } else if (n < 5) {
+            title.innerText = '🤔 아직 예산이 남아있어요!';
+            title.style.color = '#b87333';
+            desc.innerHTML = `
+                현재 <b>${n}kg</b> 구매 금액은 <b>${totalPrice.toLocaleString()}원</b>입니다.<br>
+                남은 예산이 충분해서 새우를 더 살 수 있어요! 슬라이더를 더 올려보세요.
+            `;
+        } else {
+            title.innerText = '💥 예산 초과!';
+            title.style.color = '#ef4444';
+            desc.innerHTML = `
+                <b>${n}kg</b> 구매 금액은 <b>${totalPrice.toLocaleString()}원</b>입니다.<br>
+                회비 예산인 <b>140,000원</b>을 초과했습니다. 슬라이더를 내려주세요!
+            `;
+        }
+
+        if (window.MathJax) {
+            MathJax.typesetPromise();
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+    }
+
+    // 초기화
+    updateGame();
+</script>
+
+</body>
+</html>

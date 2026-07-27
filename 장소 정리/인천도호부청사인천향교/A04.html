@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>인천도호부청사·인천향교 MATHTOUR - 단청 복원의 감사</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #2d3748;
+    }
+
+    /* 게임 컨테이너: 16:9 비율 유지 (최대 1066px) */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #f5f0e6;
+      overflow: hidden;
+      border: 2px solid #d4af37;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    }
+
+    /* 배경 이미지 */
+    .bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    /* 상단 스테이지 표시바 */
+    #stage-bar {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.65);
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      padding: 6px 16px;
+      color: #d4af37;
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 15px;
+      font-weight: bold;
+      letter-spacing: 0.05em;
+    }
+
+    /* 캐릭터 래퍼 스타일 */
+    .char-wrapper {
+      position: absolute;
+      transition: filter 0.2s ease, transform 0.2s ease;
+      z-index: 3;
+    }
+
+    .char-wrapper.inactive {
+      filter: brightness(0.55);
+    }
+
+    /* 대화창 UI */
+    #dialogue-box {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      height: 130px;
+      background: rgba(0, 0, 0, 0.75);
+      border: 2px solid #d4af37;
+      border-radius: 8px;
+      padding: 16px 24px;
+      color: #ffffff;
+      z-index: 10;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    #speaker-name {
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 18px;
+      font-weight: bold;
+      color: #d4af37;
+      margin-bottom: 8px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+      padding-bottom: 4px;
+      width: fit-content;
+    }
+
+    #dialogue-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      word-break: keep-all;
+    }
+
+    #click-indicator {
+      position: absolute;
+      right: 20px;
+      bottom: 12px;
+      font-size: 12px;
+      color: #d4af37;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* 공통 이동 버튼 스타일 */
+    .btn-nav {
+      position: absolute;
+      z-index: 15;
+      background: #8c3030;
+      color: #ffffff;
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      padding: 10px 24px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+
+    .btn-nav:hover {
+      background: #661f1f;
+    }
+
+    .btn-nav:active {
+      transform: scale(0.98);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+    }
+
+    #btn-next, #btn-skip {
+      right: 20px;
+      bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="game-container">
+  <!-- 배경 이미지 -->
+  <img src="인천도호부청사_객사.png" alt="인천도호부청사 객사" class="bg-img">
+
+  <!-- 스테이지 상단 표시바 -->
+  <div id="stage-bar">인천도호부청사 · 객사 앞</div>
+
+  <!-- 등장인물: 도호부사 (화면 좌측, 안쪽으로 여유있게 배치 및 좌우 반전 위치 조정) -->
+  <div class="char-wrapper" id="char-도호부사" style="left: 80px; bottom: 40px; width: 260px; height: 320px; overflow: visible;">
+    <iframe src="등장인물_도호부사.html" scrolling="no" style="border:0; width:260px; height:320px; transform: scaleX(-1); transform-origin: center; pointer-events:none;"></iframe>
+  </div>
+
+  <!-- 등장인물: 민우 (화면 우측 배치 1) -->
+  <div class="char-wrapper" id="char-민우" style="left: 520px; bottom: 40px; width: 260px; height: 320px; overflow: visible;">
+    <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform: scale(1); transform-origin: bottom left; pointer-events:none;"></iframe>
+  </div>
+
+  <!-- 등장인물: 서연 (화면 우측 배치 2, 화면 오른쪽 안쪽으로 맞춰 배치) -->
+  <div class="char-wrapper" id="char-서연" style="left: 720px; bottom: 40px; width: 260px; height: 320px; overflow: visible;">
+    <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform: scale(1); transform-origin: bottom left; pointer-events:none;"></iframe>
+  </div>
+
+  <!-- 대화창 UI -->
+  <div id="dialogue-box" onclick="advanceDialogue()">
+    <div id="speaker-name">화자</div>
+    <div id="dialogue-text">대사 내용이 들어갑니다.</div>
+    <div id="click-indicator">클릭하여 계속 ▼</div>
+  </div>
+
+  <!-- 내비게이션 버튼 -->
+  <button id="btn-prev" class="btn-nav" style="display: none;" onclick="goPrev()">이전</button>
+  <button id="btn-skip" class="btn-nav" onclick="endDialogue()">건너뛰기</button>
+  <button id="btn-next" class="btn-nav" style="display: none;" onclick="goNext()">End</button>
+</div>
+
+<script>
+  // 대화 데이터 정의
+  const dialogues = [
+    {
+      speaker: "도호부사",
+      text: "오호, 훌륭하도다! 훼손되어 있던 객사의 단청이 완벽하게 원래의 기품을 되찾았구나. 너희들의 지혜에 깊이 감사한다.",
+      target: "char-도호부사"
+    },
+    {
+      speaker: "민우",
+      text: "감사합니다, 나리! 단청 무늬의 규칙성을 파악하고 대칭이동 원리를 적용했더니 감쪽같이 복원할 수 있었습니다.",
+      target: "char-민우"
+    },
+    {
+      speaker: "서연",
+      text: "맞아요. 선대칭과 점대칭의 원리가 단청 문양 구석구석에 아름답게 녹아있어서 저도 정말 놀랐어요.",
+      target: "char-서연"
+    },
+    {
+      speaker: "도호부사",
+      text: "수학이라는 학문이 이토록 아름다운 단청을 완성하는 데 쓰이다니 정말 신묘한 일이로다. 관아의 다른 곳도 둘러보며 기품을 느껴보거라.",
+      target: "char-도호부사"
+    },
+    {
+      speaker: "민우",
+      text: "네! 단청 말고도 이곳에는 흥미로운 수학적 원리들이 숨어있는 곳이 더 많을 것 같아요. 서연아, 다른 곳도 계속 둘러보자!",
+      target: "char-민우"
+    },
+    {
+      speaker: "서연",
+      text: "좋아, 민우야! 다음 장소에는 어떤 멋진 수학 비밀이 기다리고 있을지 정말 기대된다!",
+      target: "char-서연"
+    }
+  ];
+
+  let currentIndex = 0;
+
+  // 화면 갱신 함수
+  function updateDialogue() {
+    if (currentIndex < dialogues.length) {
+      const current = dialogues[currentIndex];
+      
+      // 대화 텍스트 갱신
+      document.getElementById('speaker-name').innerText = current.speaker;
+      document.getElementById('dialogue-text').innerText = current.text;
+
+      // 화자 강조 연출 (.inactive 제어)
+      const wrappers = document.querySelectorAll('.char-wrapper');
+      wrappers.forEach(wrapper => {
+        if (wrapper.id === current.target) {
+          wrapper.classList.remove('inactive');
+        } else {
+          wrapper.classList.add('inactive');
+        }
+      });
+    } else {
+      endDialogue();
+    }
+  }
+
+  // 대화 진행 클릭 이벤트
+  function advanceDialogue() {
+    currentIndex++;
+    if (currentIndex < dialogues.length) {
+      updateDialogue();
+    } else {
+      endDialogue();
+    }
+  }
+
+  // 대화 종료 / 건너뛰기 처리
+  function endDialogue() {
+    // 대화창 및 건너뛰기 버튼 숨기기
+    document.getElementById('dialogue-box').style.display = 'none';
+    document.getElementById('btn-skip').style.display = 'none';
+
+    // 모든 캐릭터 복구 (밝게)
+    const wrappers = document.querySelectorAll('.char-wrapper');
+    wrappers.forEach(wrapper => {
+      wrapper.classList.remove('inactive');
+    });
+
+    // 이전/다음(End) 이동 버튼 표시
+    document.getElementById('btn-prev').style.display = 'block';
+    document.getElementById('btn-next').style.display = 'block';
+  }
+
+  // 이전 장면 이동
+  function goPrev() {
+    window.location.href = "A03.html";
+  }
+
+  // 다음 장면 이동
+  function goNext() {
+    window.location.href = "index.html";
+  }
+
+  // 초기 시작
+  window.onload = function() {
+    updateDialogue();
+  };
+</script>
+
+</body>
+</html>

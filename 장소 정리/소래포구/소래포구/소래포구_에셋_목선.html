@@ -1,0 +1,95 @@
+<!-- 원본 크기: 1000x500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>소래포구 목선</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .smb-svg { display:block; width:100%; height:auto; }
+  .smb-flag { animation: smb-flag 2.8s ease-in-out infinite; transform-box: fill-box; transform-origin: 0% 50%; }
+  @keyframes smb-flag { 0%,100% { transform: skewY(-5deg);} 50% { transform: skewY(5deg);} }
+</style>
+</head>
+<body>
+<svg class="smb-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="소래포구 목선">
+<title>소래포구 목선</title>
+<desc>소래포구에 정박한 나무 고깃배. 그물과 부표가 실려 있다.</desc>
+<defs>
+  <linearGradient id="smbHull" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#e8ded0"/><stop offset="0.45" stop-color="#c9bca6"/><stop offset="1" stop-color="#8a7c66"/>
+  </linearGradient>
+  <linearGradient id="smbDeck" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#c49a5c"/><stop offset="1" stop-color="#8f6a34"/>
+  </linearGradient>
+</defs>
+<!-- 돛대 -->
+<line x1="360" y1="286" x2="360" y2="52" stroke="#8f6a34" stroke-width="12" stroke-linecap="round"/>
+<line x1="286" y1="118" x2="434" y2="118" stroke="#8f6a34" stroke-width="8" stroke-linecap="round"/>
+<!-- 깃발 -->
+<g class="smb-flag">
+  <path d="M360,52 L470,72 L360,96 Z" fill="#d8604e" stroke="#9c3226" stroke-width="3"/>
+</g>
+<!-- 만선 깃발 줄 -->
+<g stroke="#8f6a34" stroke-width="3">
+  <path d="M360,66 L152,206" fill="none"/>
+  <path d="M360,66 L604,206" fill="none"/>
+</g>
+<g>
+  <path d="M320,92 l22,4 l-20,16 Z" fill="#e8b64c"/>
+  <path d="M276,122 l22,4 l-20,16 Z" fill="#4c8a9c"/>
+  <path d="M232,152 l22,4 l-20,16 Z" fill="#d8604e"/>
+  <path d="M406,96 l-22,6 l22,14 Z" fill="#4c8a9c"/>
+  <path d="M452,126 l-22,6 l22,14 Z" fill="#e8b64c"/>
+  <path d="M498,156 l-22,6 l22,14 Z" fill="#7fae5c"/>
+</g>
+<!-- 선실 -->
+<g>
+  <rect x="600" y="204" width="176" height="96" rx="10" fill="#e8ded0" stroke="#7a6a54" stroke-width="5"/>
+  <path d="M590,204 L786,204 L776,178 L600,178 Z" fill="#4f7f95" stroke="#33586a" stroke-width="4"/>
+  <rect x="624" y="228" width="52" height="42" rx="5" fill="#8fc0d4" stroke="#5a7f92" stroke-width="3.4"/>
+  <rect x="700" y="228" width="52" height="42" rx="5" fill="#8fc0d4" stroke="#5a7f92" stroke-width="3.4"/>
+  <rect x="674" y="140" width="20" height="42" rx="6" fill="#c2452e" stroke="#8c2a1c" stroke-width="3"/>
+</g>
+<!-- 선체 -->
+<path d="M64,300 L900,300 C900,300 872,392 800,420 C740,442 300,442 232,420 C150,392 64,300 64,300 Z"
+      fill="url(#smbHull)" stroke="#6b5c46" stroke-width="6" stroke-linejoin="round"/>
+<path d="M64,300 L900,300 L892,326 L74,326 Z" fill="url(#smbDeck)" stroke="#6b5c46" stroke-width="4"/>
+<!-- 선체 판자 -->
+<g stroke="#9c8e78" stroke-width="3" opacity="0.7" fill="none">
+  <path d="M88,344 C240,376 700,376 866,344"/>
+  <path d="M120,376 C260,404 680,404 830,376"/>
+</g>
+<!-- 뱃머리 -->
+<path d="M64,300 C40,272 32,238 52,214 C70,236 74,268 84,300 Z" fill="#c9bca6" stroke="#6b5c46" stroke-width="5"/>
+<!-- 이름 띠 -->
+<rect x="360" y="336" width="230" height="40" rx="10" fill="#c2452e" opacity="0.9"/>
+<text x="475" y="366" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold" fill="#fff2d8">소래호</text>
+<!-- 그물 -->
+<g transform="translate(180,268)">
+  <path d="M-70,26 C-60,-14 60,-14 70,26 Z" fill="#8fae9c" stroke="#5a7f6c" stroke-width="3.4"/>
+  <g stroke="#5a7f6c" stroke-width="2" opacity="0.8">
+    <line x1="-50" y1="10" x2="-42" y2="26"/><line x1="-26" y1="0" x2="-20" y2="26"/>
+    <line x1="0" y1="-6" x2="0" y2="26"/><line x1="26" y1="0" x2="20" y2="26"/>
+    <line x1="50" y1="10" x2="42" y2="26"/>
+    <path d="M-60,10 q60,-16 120,0"/>
+    <path d="M-66,20 q66,-14 132,0"/>
+  </g>
+</g>
+<!-- 부표 -->
+<g>
+  <circle cx="500" cy="270" r="26" fill="#e8623c" stroke="#a83f26" stroke-width="4"/>
+  <path d="M474,270 h52" stroke="#f7f2e6" stroke-width="7"/>
+  <circle cx="546" cy="278" r="19" fill="#f2c14e" stroke="#a8862c" stroke-width="3.4"/>
+  <circle cx="458" cy="280" r="16" fill="#4c8a9c" stroke="#2f5f6c" stroke-width="3.4"/>
+</g>
+<!-- 물결 -->
+<g fill="none" stroke="#7fb4c4" stroke-width="6" stroke-linecap="round" opacity="0.85">
+  <path d="M120,430 q34,-14 68,0 q34,14 68,0"/>
+  <path d="M760,432 q34,-14 68,0 q34,14 68,0"/>
+  <path d="M340,452 q34,-14 68,0 q34,14 68,0 q34,-14 68,0"/>
+</g>
+</svg>
+</body>
+</html>

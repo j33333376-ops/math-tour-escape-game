@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>월미도 바이킹 매쓰투어</title>
+
+  <style>
+    /* =========================
+       1. 기본 스타일
+    ========================== */
+    :root {
+      --navy: #102542;
+      --blue: #1b74e4;
+      --sky: #dff4ff;
+      --yellow: #ffd447;
+      --orange: #ff8c42;
+      --red: #ef476f;
+      --green: #06d6a0;
+      --white: #ffffff;
+      --gray: #6b7280;
+      --panel: rgba(255, 255, 255, 0.94);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+      color: var(--navy);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.8), transparent 30%),
+        linear-gradient(160deg, #8ed8ff 0%, #e8f8ff 45%, #fff5d6 100%);
+      overflow-x: hidden;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .app {
+      width: min(1200px, 100%);
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    /* =========================
+       2. 상단 헤더
+    ========================== */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      align-items: center;
+      gap: 18px;
+      padding: 20px 24px;
+      border: 4px solid var(--navy);
+      border-radius: 26px;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,0.97), rgba(255,245,210,0.95));
+      box-shadow: 0 12px 0 rgba(16, 37, 66, 0.15);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent 0 18px,
+        rgba(27, 116, 228, 0.045) 18px 36px
+      );
+    }
+
+    .hero-text,
+    .viking-wrap {
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--yellow);
+      font-weight: 900;
+      letter-spacing: 0.04em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.45rem, 2.7vw, 2.45rem);
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+    }
+
+    .title-formula-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      white-space: nowrap;
+    }
+
+    .title-formula-row .formula {
+      flex: 1;
+      padding: 9px 14px;
+      border: 2px solid var(--navy);
+      border-radius: 14px;
+      background: rgba(255,255,255,.9);
+      font-size: clamp(1rem, 1.9vw, 1.35rem);
+      text-align: center;
+    }
+
+    .subtitle {
+      margin: 12px 0 0;
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      font-weight: 700;
+      color: #32516f;
+    }
+
+    /* 바이킹 SVG 애니메이션 */
+    .viking-wrap {
+      display: grid;
+      place-items: center;
+      min-height: 180px;
+    }
+
+    .viking-scene {
+      width: min(360px, 100%);
+      filter: drop-shadow(0 8px 6px rgba(16,37,66,0.18));
+    }
+
+    .ship-group {
+      transform-origin: 50% 16%;
+      animation: swing 3.2s ease-in-out infinite alternate;
+    }
+
+    @keyframes swing {
+      from { transform: rotate(-23deg); }
+      to   { transform: rotate(23deg); }
+    }
+
+    /* =========================
+       3. 상태 표시 영역
+    ========================== */
+    .status-bar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+      padding: 14px 18px;
+      border: 3px solid var(--navy);
+      border-radius: 18px;
+      background: var(--panel);
+      box-shadow: 0 8px 0 rgba(16, 37, 66, 0.1);
+    }
+
+    .formula {
+      font-size: clamp(1.1rem, 3vw, 1.6rem);
+      font-weight: 900;
+    }
+
+    .formula span {
+      display: inline-block;
+      min-width: 52px;
+      color: var(--red);
+      text-align: center;
+    }
+
+    .match-badge {
+      min-width: 150px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #e7eef6;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .match-badge.good {
+      color: #064e3b;
+      background: #b7f7df;
+    }
+
+    /* =========================
+       4. 그래프 캔버스 영역
+    ========================== */
+    .graph-card {
+      margin-top: 18px;
+      padding: 14px;
+      border: 4px solid var(--navy);
+      border-radius: 24px;
+      background: var(--white);
+      box-shadow: 0 12px 0 rgba(16, 37, 66, 0.12);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      padding: 4px 4px 12px;
+      font-weight: 800;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .legend-line {
+      width: 34px;
+      height: 0;
+      border-top: 5px solid var(--blue);
+      border-radius: 20px;
+    }
+
+    .legend-line.target {
+      border-top-color: var(--red);
+      border-top-style: dashed;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      height: clamp(320px, 48vw, 520px);
+      overflow: hidden;
+      border: 2px solid #bfd2e5;
+      border-radius: 16px;
+      background: linear-gradient(#f9fdff, #eef9ff);
+      touch-action: none;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .graph-hint {
+      position: absolute;
+      left: 12px;
+      bottom: 10px;
+      padding: 7px 10px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.86);
+      color: #425466;
+      font-size: 0.9rem;
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    /* =========================
+       5. 슬라이더 컨트롤
+    ========================== */
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .control-card {
+      padding: 18px;
+      border: 3px solid var(--navy);
+      border-radius: 20px;
+      background: var(--panel);
+      box-shadow: 0 8px 0 rgba(16, 37, 66, 0.1);
+    }
+
+    .control-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .control-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+    }
+
+    .value-pill {
+      min-width: 74px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      color: white;
+      background: var(--navy);
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .description {
+      min-height: 44px;
+      margin: 0 0 10px;
+      color: #53677c;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 48px;
+      margin: 4px 0;
+      background: transparent;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 14px;
+      border: 2px solid var(--navy);
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--yellow), var(--orange));
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      width: 36px;
+      height: 36px;
+      margin-top: -13px;
+      border: 4px solid var(--navy);
+      border-radius: 50%;
+      background: var(--white);
+      -webkit-appearance: none;
+      box-shadow: 0 3px 0 rgba(16,37,66,0.15);
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 14px;
+      border: 2px solid var(--navy);
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--yellow), var(--orange));
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 30px;
+      height: 30px;
+      border: 4px solid var(--navy);
+      border-radius: 50%;
+      background: var(--white);
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 18px 0 4px;
+      flex-wrap: wrap;
+    }
+
+    .action-button {
+      min-height: 54px;
+      padding: 12px 22px;
+      border: 3px solid var(--navy);
+      border-radius: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 5px 0 var(--navy);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    .action-button:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 var(--navy);
+    }
+
+    .reset-button {
+      background: var(--white);
+      color: var(--navy);
+    }
+
+    .next-button {
+      color: white;
+      background: var(--green);
+    }
+
+    .next-button:disabled {
+      color: #6b7280;
+      background: #d8dee7;
+      cursor: not-allowed;
+      box-shadow: 0 5px 0 #9aa4b2;
+    }
+
+    /* =========================
+       6. 성공 모달
+    ========================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(8, 22, 40, 0.72);
+    }
+
+    .modal-backdrop.show {
+      display: grid;
+    }
+
+    .modal {
+      width: min(520px, 100%);
+      padding: 28px;
+      border: 5px solid var(--navy);
+      border-radius: 26px;
+      background: linear-gradient(160deg, #ffffff, #fff7d6);
+      box-shadow: 0 16px 0 rgba(0,0,0,0.22);
+      text-align: center;
+      animation: pop 0.35s ease both;
+    }
+
+    @keyframes pop {
+      from {
+        opacity: 0;
+        transform: scale(0.72) rotate(-2deg);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+      }
+    }
+
+    .modal-icon {
+      font-size: 4rem;
+    }
+
+    .modal h2 {
+      margin: 8px 0 12px;
+      font-size: clamp(1.6rem, 5vw, 2.3rem);
+    }
+
+    .modal p {
+      margin: 0 0 20px;
+      font-size: 1.08rem;
+      line-height: 1.6;
+      font-weight: 800;
+    }
+
+    .close-modal {
+      width: 100%;
+      min-height: 54px;
+      border: 3px solid var(--navy);
+      border-radius: 15px;
+      color: white;
+      background: var(--blue);
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 5px 0 var(--navy);
+    }
+
+    /* =========================
+       7. 반응형 디자인
+    ========================== */
+    @media (max-width: 800px) {
+      .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .viking-wrap {
+        min-height: 130px;
+      }
+
+      .viking-scene {
+        width: min(290px, 90%);
+      }
+
+      .status-bar {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .title-formula-row {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .description {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .app {
+        padding: 8px;
+      }
+
+      .hero {
+        padding: 16px 12px;
+        border-radius: 20px;
+      }
+
+      .graph-card {
+        padding: 8px;
+      }
+
+      .canvas-wrap {
+        height: 340px;
+      }
+
+      .control-card {
+        padding: 14px;
+      }
+    }
+
+    /* 스마트폰 가로 모드 */
+    @media (orientation: landscape) and (max-height: 650px) {
+      .app {
+        padding: 6px 10px;
+      }
+
+      .hero {
+        grid-template-columns: 1.35fr 0.65fr;
+        gap: 10px;
+        padding: 8px 16px;
+        border-width: 3px;
+        border-radius: 18px;
+        box-shadow: 0 6px 0 rgba(16, 37, 66, 0.15);
+      }
+
+      .eyebrow {
+        margin-bottom: 4px;
+        padding: 3px 9px;
+        font-size: .78rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .title-formula-row {
+        gap: 10px;
+      }
+
+      .title-formula-row .formula {
+        padding: 6px 9px;
+        font-size: 1rem;
+      }
+
+      .subtitle {
+        margin-top: 5px;
+        font-size: .8rem;
+      }
+
+      .viking-wrap {
+        min-height: 82px;
+      }
+
+      .viking-scene {
+        width: 170px;
+      }
+
+      .graph-card {
+        margin-top: 7px;
+        padding: 6px;
+        border-width: 3px;
+        border-radius: 16px;
+        box-shadow: 0 6px 0 rgba(16, 37, 66, 0.12);
+      }
+
+      .legend {
+        gap: 10px;
+        padding: 1px 3px 5px;
+        font-size: .78rem;
+      }
+
+      .canvas-wrap {
+        height: 205px;
+        border-radius: 10px;
+      }
+
+      .controls {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 9px;
+        margin-top: 8px;
+      }
+
+      .control-card {
+        padding: 8px 10px;
+        border-width: 2px;
+        border-radius: 14px;
+        box-shadow: 0 4px 0 rgba(16, 37, 66, 0.1);
+      }
+
+      .control-head {
+        margin-bottom: 3px;
+      }
+
+      .control-title {
+        font-size: .9rem;
+      }
+
+      .value-pill {
+        min-width: 58px;
+        padding: 4px 7px;
+        font-size: .85rem;
+      }
+
+      .description {
+        min-height: 34px;
+        margin-bottom: 2px;
+        font-size: .7rem;
+        line-height: 1.25;
+      }
+
+      input[type="range"] {
+        height: 30px;
+        margin: 0;
+      }
+
+      input[type="range"]::-webkit-slider-runnable-track {
+        height: 10px;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        width: 26px;
+        height: 26px;
+        margin-top: -10px;
+      }
+
+      .actions {
+        margin: 7px 0 0;
+      }
+
+      .action-button {
+        min-height: 38px;
+        padding: 6px 16px;
+        border-width: 2px;
+        border-radius: 11px;
+        box-shadow: 0 3px 0 var(--navy);
+        font-size: .82rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <!-- =========================
+         상단 타이틀 및 바이킹 SVG
+    ========================== -->
+    <section class="hero">
+      <div class="hero-text">
+        <div class="eyebrow">🎢 삼각함수 체험 미션</div>
+        <div class="title-formula-row">
+          <h1>월미도 바이킹 매쓰투어</h1>
+          <div class="formula" aria-live="polite">
+            y =
+            <span id="formulaA">50</span>
+            sin(
+            <span id="formulaB">0.030</span>
+            x ) +
+            <span id="formulaD">100</span>
+          </div>
+        </div>
+        <p class="subtitle">
+          슬라이더를 움직여 점선 궤적과 똑같은 바이킹의 움직임을 완성하세요.
+        </p>
+        <div id="matchBadge" class="match-badge" aria-live="polite">일치도 계산 중</div>
+      </div>
+
+      <div class="viking-wrap" aria-label="좌우로 흔들리는 바이킹 애니메이션">
+        <svg class="viking-scene" viewBox="0 0 420 250" role="img">
+          <!-- 지지대 -->
+          <line x1="210" y1="38" x2="105" y2="226" stroke="#102542" stroke-width="14" stroke-linecap="round"/>
+          <line x1="210" y1="38" x2="315" y2="226" stroke="#102542" stroke-width="14" stroke-linecap="round"/>
+          <line x1="58" y1="226" x2="362" y2="226" stroke="#102542" stroke-width="16" stroke-linecap="round"/>
+          <circle cx="210" cy="38" r="16" fill="#ffd447" stroke="#102542" stroke-width="7"/>
+
+          <!-- 흔들리는 배 전체 그룹 -->
+          <g class="ship-group">
+            <line x1="210" y1="38" x2="210" y2="145" stroke="#102542" stroke-width="7"/>
+            <path d="M78 139 Q210 223 342 139 L318 190 Q210 245 102 190 Z"
+                  fill="#ff8c42" stroke="#102542" stroke-width="8" stroke-linejoin="round"/>
+            <path d="M102 157 Q210 207 318 157"
+                  fill="none" stroke="#ffd447" stroke-width="9" stroke-linecap="round"/>
+            <rect x="122" y="128" width="176" height="22" rx="10"
+                  fill="#ffffff" stroke="#102542" stroke-width="6"/>
+            <circle cx="156" cy="139" r="8" fill="#ef476f"/>
+            <circle cx="192" cy="139" r="8" fill="#1b74e4"/>
+            <circle cx="228" cy="139" r="8" fill="#06d6a0"/>
+            <circle cx="264" cy="139" r="8" fill="#ef476f"/>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 그래프 -->
+    <section class="graph-card">
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-line target"></span>
+          목표 궤적
+        </div>
+        <div class="legend-item">
+          <span class="legend-line"></span>
+          학생 그래프
+        </div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="graphCanvas" aria-label="바이킹 높이 변화 삼각함수 그래프"></canvas>
+        <div class="graph-hint">가로축: 시간 x · 세로축: 높이 y</div>
+      </div>
+    </section>
+
+    <!-- 슬라이더 -->
+    <section class="controls">
+      <article class="control-card">
+        <div class="control-head">
+          <div class="control-title">진폭 a</div>
+          <div id="aValue" class="value-pill">50</div>
+        </div>
+        <p class="description">
+          바이킹이 중심축에서 위아래로 얼마나 크게 움직이는지 결정합니다.
+        </p>
+        <input
+          id="aSlider"
+          type="range"
+          min="20"
+          max="120"
+          step="1"
+          value="50"
+          aria-label="진폭 a 조절"
+        />
+      </article>
+
+      <article class="control-card">
+        <div class="control-head">
+          <div class="control-title">주기 상수 b</div>
+          <div id="bValue" class="value-pill">0.030</div>
+        </div>
+        <p class="description">
+          그래프가 반복되는 빠르기, 즉 바이킹의 왕복 주기를 결정합니다.
+        </p>
+        <input
+          id="bSlider"
+          type="range"
+          min="0.020"
+          max="0.080"
+          step="0.001"
+          value="0.030"
+          aria-label="주기 상수 b 조절"
+        />
+      </article>
+
+      <article class="control-card">
+        <div class="control-head">
+          <div class="control-title">중심 높이 d</div>
+          <div id="dValue" class="value-pill">100</div>
+        </div>
+        <p class="description">
+          바이킹의 전체 궤적이 위아래로 이동하는 중심 높이를 결정합니다.
+        </p>
+        <input
+          id="dSlider"
+          type="range"
+          min="60"
+          max="220"
+          step="1"
+          value="100"
+          aria-label="중심 높이 d 조절"
+        />
+      </article>
+    </section>
+
+    <div class="actions">
+      <button id="resetButton" class="action-button reset-button">
+        처음 값으로 되돌리기
+      </button>
+      <button id="nextButton" class="action-button next-button" disabled>
+        다음 단계로 이동
+      </button>
+    </div>
+  </main>
+
+  <!-- 성공 모달 -->
+  <div id="successModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-icon">🎉</div>
+      <h2 id="modalTitle">궤적 동기화 성공!</h2>
+      <p>
+        바이킹의 물리 엔진을 파악했습니다.<br />
+        a, b, d가 목표값과 5% 이내로 일치합니다.
+      </p>
+      <button id="closeModal" class="close-modal">확인하고 계속하기</button>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================
+       1. 목표값과 초기값 설정
+       목표 함수: y = 80sin(0.05x) + 150
+    ========================================================== */
+    const TARGET = {
+      a: 80,
+      b: 0.05,
+      d: 150
+    };
+
+    const INITIAL = {
+      a: 50,
+      b: 0.03,
+      d: 100
+    };
+
+    const TOLERANCE = 0.05; // 각 목표값의 ±5%
+
+    /* =========================================================
+       2. DOM 요소 가져오기
+    ========================================================== */
+    const canvas = document.getElementById("graphCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const aSlider = document.getElementById("aSlider");
+    const bSlider = document.getElementById("bSlider");
+    const dSlider = document.getElementById("dSlider");
+
+    const aValue = document.getElementById("aValue");
+    const bValue = document.getElementById("bValue");
+    const dValue = document.getElementById("dValue");
+
+    const formulaA = document.getElementById("formulaA");
+    const formulaB = document.getElementById("formulaB");
+    const formulaD = document.getElementById("formulaD");
+
+    const matchBadge = document.getElementById("matchBadge");
+    const resetButton = document.getElementById("resetButton");
+    const nextButton = document.getElementById("nextButton");
+
+    const successModal = document.getElementById("successModal");
+    const closeModal = document.getElementById("closeModal");
+
+    let hasShownSuccess = false;
+    let animationFrameId = null;
+
+    /* =========================================================
+       3. 현재 슬라이더 값 읽기
+    ========================================================== */
+    function getCurrentValues() {
+      return {
+        a: Number(aSlider.value),
+        b: Number(bSlider.value),
+        d: Number(dSlider.value)
+      };
+    }
+
+    /* =========================================================
+       4. 캔버스를 고해상도 화면에 맞게 조정
+       CSS 크기와 실제 픽셀 크기를 분리해 선을 선명하게 표현함
+    ========================================================== */
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      requestDraw();
+    }
+
+    /* =========================================================
+       5. 그래프 좌표계 설정
+       x 범위: 0 ~ 500
+       y 범위: 0 ~ 300
+    ========================================================== */
+    const X_MIN = 0;
+    const X_MAX = 500;
+    const Y_MIN = 0;
+    const Y_MAX = 300;
+
+    function xToCanvas(x, width) {
+      return ((x - X_MIN) / (X_MAX - X_MIN)) * width;
+    }
+
+    function yToCanvas(y, height) {
+      return height - ((y - Y_MIN) / (Y_MAX - Y_MIN)) * height;
+    }
+
+    /* =========================================================
+       6. 격자와 축 그리기
+    ========================================================== */
+    function drawGrid(width, height) {
+      ctx.save();
+
+      ctx.fillStyle = "#f8fdff";
+      ctx.fillRect(0, 0, width, height);
+
+      // 세로 격자: x축 50 간격
+      for (let x = 0; x <= X_MAX; x += 50) {
+        const px = xToCanvas(x, width);
+
+        ctx.beginPath();
+        ctx.moveTo(px, 0);
+        ctx.lineTo(px, height);
+        ctx.strokeStyle = x % 100 === 0 ? "#bed4e7" : "#dfedf6";
+        ctx.lineWidth = x % 100 === 0 ? 1.4 : 1;
+        ctx.stroke();
+
+        if (x < X_MAX) {
+          ctx.fillStyle = "#526779";
+          ctx.font = "12px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(String(x), px, height - 8);
+        }
+      }
+
+      // 가로 격자: y축 25 간격
+      for (let y = 0; y <= Y_MAX; y += 25) {
+        const py = yToCanvas(y, height);
+
+        ctx.beginPath();
+        ctx.moveTo(0, py);
+        ctx.lineTo(width, py);
+        ctx.strokeStyle = y % 50 === 0 ? "#bed4e7" : "#dfedf6";
+        ctx.lineWidth = y % 50 === 0 ? 1.4 : 1;
+        ctx.stroke();
+
+        if (y > 0 && y < Y_MAX) {
+          ctx.fillStyle = "#526779";
+          ctx.font = "12px sans-serif";
+          ctx.textAlign = "left";
+          ctx.fillText(String(y), 6, py - 5);
+        }
+      }
+
+      // y축
+      ctx.beginPath();
+      ctx.moveTo(xToCanvas(0, width), 0);
+      ctx.lineTo(xToCanvas(0, width), height);
+      ctx.strokeStyle = "#102542";
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // x축
+      const xAxisY = yToCanvas(0, height);
+      ctx.beginPath();
+      ctx.moveTo(0, xAxisY);
+      ctx.lineTo(width, xAxisY);
+      ctx.strokeStyle = "#102542";
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    /* =========================================================
+       7. 사인 곡선 그리기
+       점선 여부에 따라 목표 그래프와 학생 그래프를 구분함
+    ========================================================== */
+    function drawSineCurve(params, width, height, options = {}) {
+      const {
+        color = "#1b74e4",
+        lineWidth = 4,
+        dashed = false,
+        alpha = 1
+      } = options;
+
+      ctx.save();
+      ctx.beginPath();
+
+      for (let pixelX = 0; pixelX <= width; pixelX += 1) {
+        const x = X_MIN + (pixelX / width) * (X_MAX - X_MIN);
+        const y = params.a * Math.sin(params.b * x) + params.d;
+        const py = yToCanvas(y, height);
+
+        if (pixelX === 0) {
+          ctx.moveTo(pixelX, py);
+        } else {
+          ctx.lineTo(pixelX, py);
+        }
+      }
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineWidth;
+      ctx.globalAlpha = alpha;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+
+      if (dashed) {
+        ctx.setLineDash([14, 10]);
+      }
+
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    /* =========================================================
+       8. 전체 그래프 다시 그리기
+    ========================================================== */
+    function drawGraph() {
+      animationFrameId = null;
+
+      const rect = canvas.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+      const current = getCurrentValues();
+
+      ctx.clearRect(0, 0, width, height);
+      drawGrid(width, height);
+
+      // 목표 궤적: 붉은색 점선
+      drawSineCurve(TARGET, width, height, {
+        color: "#ef476f",
+        lineWidth: 4,
+        dashed: true,
+        alpha: 0.95
+      });
+
+      // 학생 그래프: 파란색 실선
+      drawSineCurve(current, width, height, {
+        color: "#1b74e4",
+        lineWidth: 5,
+        dashed: false,
+        alpha: 0.95
+      });
+    }
+
+    // 너무 잦은 재그리기를 막기 위해 requestAnimationFrame 사용
+    function requestDraw() {
+      if (animationFrameId === null) {
+        animationFrameId = requestAnimationFrame(drawGraph);
+      }
+    }
+
+    /* =========================================================
+       9. 성공 조건 검사
+       각 값이 목표값의 ±5% 이내인지 확인함
+    ========================================================== */
+    function isWithinTolerance(value, target) {
+      return Math.abs(value - target) <= Math.abs(target * TOLERANCE);
+    }
+
+    function checkSuccess() {
+      const current = getCurrentValues();
+
+      const aMatched = isWithinTolerance(current.a, TARGET.a);
+      const bMatched = isWithinTolerance(current.b, TARGET.b);
+      const dMatched = isWithinTolerance(current.d, TARGET.d);
+
+      const matchedCount = [aMatched, bMatched, dMatched].filter(Boolean).length;
+      matchBadge.textContent = `목표 일치 ${matchedCount} / 3`;
+      matchBadge.classList.toggle("good", matchedCount === 3);
+
+      const success = aMatched && bMatched && dMatched;
+
+      if (success) {
+        nextButton.disabled = false;
+
+        // 같은 성공 상태에서 모달이 계속 반복해서 열리지 않도록 방지
+        if (!hasShownSuccess) {
+          hasShownSuccess = true;
+          successModal.classList.add("show");
+        }
+      } else {
+        nextButton.disabled = true;
+
+        // 사용자가 성공 범위를 벗어났다가 다시 맞추면 모달이 재등장하도록 설정
+        hasShownSuccess = false;
+      }
+    }
+
+    /* =========================================================
+       10. 화면의 숫자와 수식 업데이트
+    ========================================================== */
+    function updateLabels() {
+      const current = getCurrentValues();
+
+      aValue.textContent = current.a.toFixed(0);
+      bValue.textContent = current.b.toFixed(3);
+      dValue.textContent = current.d.toFixed(0);
+
+      formulaA.textContent = current.a.toFixed(0);
+      formulaB.textContent = current.b.toFixed(3);
+      formulaD.textContent = current.d.toFixed(0);
+    }
+
+    /* =========================================================
+       11. 슬라이더 입력 처리
+    ========================================================== */
+    function handleInput() {
+      updateLabels();
+      checkSuccess();
+      requestDraw();
+    }
+
+    [aSlider, bSlider, dSlider].forEach((slider) => {
+      slider.addEventListener("input", handleInput);
+    });
+
+    /* =========================================================
+       12. 버튼 기능
+    ========================================================== */
+    resetButton.addEventListener("click", () => {
+      aSlider.value = INITIAL.a;
+      bSlider.value = INITIAL.b;
+      dSlider.value = INITIAL.d;
+
+      hasShownSuccess = false;
+      successModal.classList.remove("show");
+
+      handleInput();
+    });
+
+    closeModal.addEventListener("click", () => {
+      successModal.classList.remove("show");
+    });
+
+    successModal.addEventListener("click", (event) => {
+      if (event.target === successModal) {
+        successModal.classList.remove("show");
+      }
+    });
+
+    nextButton.addEventListener("click", () => {
+      alert(
+        "다음 단계 예시:\\n" +
+        "실제 바이킹 영상에서 한 번 왕복하는 시간을 측정하고, " +
+        "그 값을 이용해 b와 주기를 계산해 보세요."
+      );
+    });
+
+    /* =========================================================
+       13. 초기 실행
+    ========================================================== */
+    window.addEventListener("resize", resizeCanvas);
+
+    updateLabels();
+    checkSuccess();
+    resizeCanvas();
+  </script>
+</body>
+</html>

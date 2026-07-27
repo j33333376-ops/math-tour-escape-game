@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소래포구 MATHTOUR - A03 (수학 퀴즈)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+        :root {
+            --brass-gold: #b87333;
+            --dark-teal: #003b46;
+            --parchment: #f4ecd8;
+            --rusty-brown: #4a3b32;
+            --dark-brown: #2c2019;
+            --ocean-blue: #0288D1;
+            --ocean-dark: #01579B;
+            --sky-blue: #E1F5FE;
+            --salt-gray: #757575;
+            --pure-white: #FFFFFF;
+            --accent-orange: #FF9800;
+            --success-green: #2E7D32;
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #120c09;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Gowun Dodum', sans-serif;
+            color: var(--parchment);
+            overflow: hidden;
+        }
+
+        /* 16:9 방탈출 게임 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background: radial-gradient(circle at center, #3a2b22 0%, var(--dark-brown) 70%, #1a120c 100%);
+            border: 4px solid var(--brass-gold);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0, 0, 0, 0.9);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 스팀펑크 상단 메인 바 */
+        .stage-bar {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(180deg, #4a3b32 0%, #2c2019 100%);
+            border: 2px solid var(--brass-gold);
+            padding: 6px 24px;
+            border-radius: 4px;
+            color: var(--parchment);
+            font-size: 1.1rem;
+            font-weight: bold;
+            z-index: 20;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 0 5px rgba(184, 115, 51, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+
+        .stage-bar::before, .stage-bar::after {
+            content: "⚙";
+            color: var(--brass-gold);
+            font-size: 1.2rem;
+            animation: spin 10s linear infinite;
+        }
+        .stage-bar::after {
+            animation: spin-reverse 10s linear infinite;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+
+        /* 캐릭터 레이어 */
+        .char-wrapper {
+            position: absolute;
+            z-index: 3;
+            transition: filter 0.2s ease;
+        }
+
+        /* 유형 3: 수학 퀴즈 메인 스팀펑크 제어반 스타일 스크롤 가능 영역 */
+        .quiz-container {
+            position: absolute;
+            top: 55px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 94%;
+            height: calc(100% - 120px);
+            background: rgba(44, 32, 25, 0.92);
+            border: 3px solid var(--brass-gold);
+            border-radius: 12px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 25px rgba(0,0,0,0.7);
+            z-index: 10;
+            padding: 16px;
+            overflow-y: auto;
+            color: #333;
+        }
+
+        /* 스크롤바 커스텀 */
+        .quiz-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .quiz-container::-webkit-scrollbar-track {
+            background: #1a120c;
+        }
+        .quiz-container::-webkit-scrollbar-thumb {
+            background: var(--brass-gold);
+            border-radius: 4px;
+        }
+
+        /* --- 원본 퀴즈 내부 스타일 유지 및 연동 --- */
+        .quiz-inner-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            font-family: 'Nanum Gothic', sans-serif;
+        }
+
+        .card {
+            background: var(--pure-white);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 1px solid rgba(2, 136, 209, 0.2);
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, var(--ocean-blue) 0%, var(--ocean-dark) 100%);
+            color: var(--pure-white);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card h1 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .header-card p {
+            font-size: 0.9rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+            word-break: keep-all;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--ocean-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid var(--sky-blue);
+            padding-bottom: 6px;
+        }
+
+        .simulator-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .beaker-container {
+            position: relative;
+            width: 180px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 4px solid var(--salt-gray);
+            border-top: none;
+            border-radius: 0 0 16px 16px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .beaker-container::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -10px;
+            right: -10px;
+            height: 8px;
+            background: var(--salt-gray);
+            border-radius: 4px;
+        }
+
+        .liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80%;
+            background: linear-gradient(180deg, rgba(2, 136, 209, 0.5) 0%, rgba(1, 87, 155, 0.8) 100%);
+            transition: height 0.3s ease, background 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .salt-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .salt-dot {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background-color: var(--pure-white);
+            border-radius: 50%;
+            box-shadow: 0 0 4px rgba(255,255,255,0.8);
+            transition: all 0.3s ease;
+        }
+
+        .gauge-container {
+            width: 100%;
+            background: var(--sky-blue);
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .gauge-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
+        .gauge-bar-bg {
+            height: 12px;
+            background: #E0E0E0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .gauge-bar-fill {
+            height: 100%;
+            width: 3.5%;
+            background: linear-gradient(90deg, var(--ocean-blue) 0%, var(--accent-orange) 100%);
+            transition: width 0.3s ease;
+            border-radius: 6px;
+        }
+
+        .fixed-salt-tag {
+            background: #FFF3E0;
+            color: #E65100;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.88rem;
+            text-align: center;
+            border: 1px solid #FFE0B2;
+            width: 100%;
+        }
+
+        .slider-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-group label {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #424242;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type=range] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #B3E5FC;
+            outline: none;
+            accent-color: var(--ocean-blue);
+            cursor: pointer;
+        }
+
+        .quiz-question {
+            background: var(--sky-blue);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--ocean-dark);
+            margin-bottom: 12px;
+            line-height: 1.4;
+            border-left: 4px solid var(--ocean-blue);
+        }
+
+        .drag-source-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px;
+            background: #F5F5F5;
+            border-radius: 10px;
+            min-height: 50px;
+            margin-bottom: 12px;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #BDBDBD;
+        }
+
+        .drag-item {
+            background: var(--pure-white);
+            color: var(--ocean-dark);
+            border: 2px solid var(--ocean-blue);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            touch-action: none;
+        }
+
+        .drag-item:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+        }
+
+        .drop-target-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 10px;
+            background: #E8F5E9;
+            border-radius: 10px;
+            min-height: 55px;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #A5D6A7;
+            margin-bottom: 12px;
+        }
+
+        .drop-slot {
+            width: 65px;
+            height: 38px;
+            border: 2px dashed #81C784;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.7);
+            transition: background 0.2s;
+        }
+
+        .drop-slot.wide {
+            width: 90px;
+        }
+
+        .drop-slot.hovered {
+            background: #C8E6C9;
+            border-style: solid;
+        }
+
+        .drop-slot .drag-item {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--ocean-blue);
+            color: var(--pure-white);
+        }
+
+        .btn-primary:hover {
+            background: var(--ocean-dark);
+        }
+
+        .btn-secondary {
+            background: #E0E0E0;
+            color: #424242;
+        }
+
+        .calc-input-zone {
+            background: #FFF8E1;
+            border: 2px solid #FFE082;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            opacity: 0.5;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .calc-input-zone.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .calc-input-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .calc-input-row input[type=number] {
+            width: 90px;
+            padding: 6px;
+            font-size: 1rem;
+            font-weight: 700;
+            border: 2px solid var(--ocean-blue);
+            border-radius: 6px;
+            text-align: center;
+            outline: none;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .hint-box {
+            background: #FFF3E0;
+            border-left: 5px solid var(--accent-orange);
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #E65100;
+            display: none;
+            margin-top: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 미션 성공 모달 */
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-card {
+            background: var(--pure-white);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            border: 3px solid var(--brass-gold);
+        }
+
+        @keyframes popUp {
+            from { transform: scale(0.7); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-card h2 {
+            color: var(--ocean-dark);
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+        }
+
+        .modal-card p {
+            font-size: 0.95rem;
+            color: #424242;
+            margin-bottom: 18px;
+            line-height: 1.5;
+            word-break: keep-all;
+        }
+
+        .salt-flower-canvas {
+            width: 100%;
+            height: 120px;
+            margin-bottom: 12px;
+        }
+
+        /* 네비게이션 버튼 (스팀펑크 브라스) */
+        .btn-nav {
+            position: absolute;
+            background: var(--brass-gold);
+            color: var(--parchment);
+            border: 2px solid var(--rusty-brown);
+            padding: 10px 22px;
+            font-family: 'Gowun Dodum', sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            z-index: 20;
+            box-shadow: 2px 2px 6px rgba(0,0,0,0.6), inset 1px 1px 2px rgba(255,255,255,0.3);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-nav:hover {
+            background: #d48844;
+            transform: translateY(-2px);
+        }
+        #btn-prev {
+            left: 20px;
+            bottom: 15px;
+        }
+        #btn-next {
+            right: 20px;
+            bottom: 15px;
+            display: none; /* 정답 제출 전까지 숨김 */
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- 상단 스테이지 표시바 -->
+    <div class="stage-bar">소래포구 MATHTOUR - 제2코스: 소금꽃을 피워라!</div>
+
+    <!-- 등장인물: 서연 (260x320 고정 규격) -->
+    <div class="char-wrapper" id="char-서연" style="left: 15px; bottom: 15px; width: 156px; height: 192px; pointer-events: none;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.6); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 유형 3: 수학 퀴즈 컨테이너 -->
+    <div class="quiz-container">
+        <div class="quiz-inner-wrapper">
+            <!-- Header Card -->
+            <div class="card header-card">
+                <h1><i class="fa-solid fa-gem"></i> 소래습지 생태공원 매쓰투어 - 제2코스</h1>
+                <h2 style="font-size:1.1rem; font-weight:700; margin-bottom:8px; color:#E1F5FE;">"소금꽃을 피워라!"</h2>
+                <p>
+                    염전은 바닷물에서 수분을 증발시켜 소금의 농도를 높이는 곳입니다. 바닷물이 증발해 하얗고 아름다운 <strong>'소금꽃'</strong>이 피어나는 과정에는 일차방정식의 비밀이 숨어있습니다. 여러분은 이제 일일 염전 작업자가 되어, 소금꽃이 가장 아름답게 피어나는 황금 농도의 소금물을 만들어야 합니다!
+                </p>
+            </div>
+
+            <div class="main-grid">
+                <!-- Left: Simulator Area -->
+                <div class="card simulator-area">
+                    <div class="section-title">
+                        <i class="fa-solid fa-flask"></i> 염전 & 비커 시뮬레이터
+                    </div>
+
+                    <div class="fixed-salt-tag">
+                        <i class="fa-solid fa-lock"></i> 소금의 양: <strong>35g (고정)</strong> <span style="font-size:0.75rem; font-weight:normal;">- 물이 증발해도 변하지 않아요!</span>
+                    </div>
+
+                    <div class="beaker-container" id="beaker">
+                        <div class="liquid" id="liquid">
+                            <div class="salt-particles" id="saltParticles"></div>
+                        </div>
+                    </div>
+
+                    <div class="gauge-container">
+                        <div class="gauge-row">
+                            <span>현재 소금물의 농도:</span>
+                            <span id="concentrationVal" style="color:var(--ocean-dark);">3.5%</span>
+                        </div>
+                        <div class="gauge-bar-bg">
+                            <div class="gauge-bar-fill" id="gaugeFill"></div>
+                        </div>
+                        <div class="gauge-row" style="margin-top:4px; font-size:0.8rem; color:var(--salt-gray);">
+                            <span>남은 소금물의 양: <strong id="remainingWaterVal" style="color:#333;">1000g</strong></span>
+                            <span>(1000 - <span id="xValDisp">0</span>) g</span>
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <label>
+                            <span><i class="fa-solid fa-wind"></i> 증발시킨 물의 양 (x g):</span>
+                            <span id="sliderValText" style="color:var(--ocean-blue); font-weight:800;">0 g</span>
+                        </label>
+                        <input type="range" id="evapSlider" min="0" max="900" value="0" step="5">
+                    </div>
+                </div>
+
+                <!-- Right: Quiz & Drag Drop Area -->
+                <div class="card">
+                    <div class="section-title">
+                        <i class="fa-solid fa-puzzle-piece"></i> 일차방정식 세우기 & 계산
+                    </div>
+
+                    <div class="quiz-question">
+                        <i class="fa-solid fa-circle-question"></i> Q. 농도가 3.5%인 바닷물 1000g이 있습니다. 소금꽃이 피기 좋은 농도인 <strong>20%</strong>를 만들려면 물을 얼마나 증발시켜야 할까요?
+                    </div>
+
+                    <div style="font-size:0.82rem; font-weight:700; color:#616161; margin-bottom:6px;">
+                        1단계: 아래 블록을 드래그하여 [증발 후 소금의 양 식]을 완성하세요.
+                    </div>
+
+                    <!-- Drag Sources -->
+                    <div class="drag-source-container" id="dragSource">
+                        <div class="drag-item" draggable="true" data-val="35">35</div>
+                        <div class="drag-item" draggable="true" data-val="=">=</div>
+                        <div class="drag-item" draggable="true" data-val="20/100">20/100</div>
+                        <div class="drag-item" draggable="true" data-val="*">*</div>
+                        <div class="drag-item" draggable="true" data-val="(1000 - x)">(1000 - x)</div>
+                        <div class="drag-item" draggable="true" data-val="1000">1000</div>
+                        <div class="drag-item" draggable="true" data-val="x">x</div>
+                    </div>
+
+                    <!-- Drop Target Slots -->
+                    <div style="font-size:0.78rem; color:var(--ocean-blue); font-weight:700; margin-bottom:4px; text-align:center;">
+                        [ 소금의 양 (35g) ] &nbsp;=&nbsp; [ 증발 후 농도 ] &nbsp;&times;&nbsp; [ 증발 후 소금물의 양 ]
+                    </div>
+                    <div class="drop-target-container" id="dropTarget">
+                        <div class="drop-slot" data-slot="0"></div>
+                        <div class="drop-slot" data-slot="1"></div>
+                        <div class="drop-slot wide" data-slot="2"></div>
+                        <div class="drop-slot" data-slot="3"></div>
+                        <div class="drop-slot wide" data-slot="4"></div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="checkEquation()"><i class="fa-solid fa-check"></i> 방정식 검수하기</button>
+                        <button class="btn btn-secondary" onclick="resetEquation()"><i class="fa-solid fa-rotate-right"></i> 초기화</button>
+                    </div>
+
+                    <!-- Calculation Input Zone -->
+                    <div class="calc-input-zone" id="calcZone">
+                        <div style="font-size:0.88rem; font-weight:800; color:var(--ocean-dark);">
+                            2단계: 방정식을 풀어 x(증발시킬 물의 양)를 구하세요.
+                        </div>
+                        <div class="calc-input-row">
+                            <span>증발시킬 물의 양 (x) =</span>
+                            <input type="number" id="ansInput" placeholder="예: 800" disabled>
+                            <span>g</span>
+                        </div>
+                        <button class="btn btn-primary" style="background:#2E7D32;" onclick="checkFinalAnswer()">
+                            <i class="fa-solid fa-paper-plane"></i> 정답 제출 및 소금꽃 피우기
+                        </button>
+                    </div>
+
+                    <!-- Hint Box -->
+                    <div class="hint-box" id="hintBox"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-card">
+            <canvas class="salt-flower-canvas" id="saltCanvas"></canvas>
+            <h2>🎉 미션 성공!</h2>
+            <p>
+                바닷물을 정확히 <strong>825g</strong> 증발시켜 아름다운 소금꽃을 피워냈습니다!<br>
+                당신을 최고의 <strong>소래 염전 명장</strong>으로 임명합니다.
+            </p>
+            <button class="btn btn-primary" style="background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); margin:0 auto; padding:12px 24px; font-size:1rem;" onclick="goNextStage()">
+                다음 단계로 이동하기 <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 하단 공통 네비게이션 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="window.location.href='B02.html'"><i class="fa-solid fa-chevron-left"></i> 이전</button>
+    <button class="btn-nav" id="btn-next" onclick="window.location.href='B04.html'">다음 <i class="fa-solid fa-chevron-right"></i></button>
+</div>
+
+<script>
+    /* --- State Variables --- */
+    let saltDots = [];
+    const NUM_SALT_DOTS = 35;
+    let currentErrorCount = 0;
+    let isEquationCorrect = false;
+
+    // Elements
+    const slider = document.getElementById('evapSlider');
+    const liquid = document.getElementById('liquid');
+    const saltParticlesContainer = document.getElementById('saltParticles');
+    const concentrationVal = document.getElementById('concentrationVal');
+    const gaugeFill = document.getElementById('gaugeFill');
+    const remainingWaterVal = document.getElementById('remainingWaterVal');
+    const xValDisp = document.getElementById('xValDisp');
+    const sliderValText = document.getElementById('sliderValText');
+
+    const dragSource = document.getElementById('dragSource');
+    const dropTarget = document.getElementById('dropTarget');
+    const slots = document.querySelectorAll('.drop-slot');
+    const calcZone = document.getElementById('calcZone');
+    const ansInput = document.getElementById('ansInput');
+    const hintBox = document.getElementById('hintBox');
+    const successModal = document.getElementById('successModal');
+    const btnNext = document.getElementById('btn-next');
+
+    /* --- Audio Context --- */
+    let audioCtx = null;
+
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    }
+
+    function playChimeSound() {
+        initAudio();
+        if (!audioCtx) return;
+
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.12);
+
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime + idx * 0.12);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.12 + 0.6);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(audioCtx.currentTime + idx * 0.12);
+            osc.stop(audioCtx.currentTime + idx * 0.12 + 0.6);
+        });
+    }
+
+    function playErrorSound() {
+        initAudio();
+        if (!audioCtx) return;
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(140, audioCtx.currentTime + 0.15);
+
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+    }
+
+    /* --- Particle Initialization --- */
+    function initParticles() {
+        saltParticlesContainer.innerHTML = '';
+        saltDots = [];
+        for (let i = 0; i < NUM_SALT_DOTS; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'salt-dot';
+            const relX = Math.random() * 85 + 7;
+            const relY = Math.random() * 85 + 7;
+            dot.dataset.relX = relX;
+            dot.dataset.relY = relY;
+            dot.style.left = relX + '%';
+            dot.style.bottom = relY + '%';
+            saltParticlesContainer.appendChild(dot);
+            saltDots.push(dot);
+        }
+    }
+
+    /* --- Simulator Controls --- */
+    function updateSimulator() {
+        const x = parseFloat(slider.value);
+        sliderValText.innerText = x + ' g';
+        xValDisp.innerText = x;
+
+        const remainingWater = 1000 - x;
+        remainingWaterVal.innerText = remainingWater + 'g';
+
+        const liquidHeightPercent = (remainingWater / 1000) * 80;
+        liquid.style.height = Math.max(liquidHeightPercent, 8) + '%';
+
+        const conc = (35 / remainingWater) * 100;
+        concentrationVal.innerText = conc.toFixed(1) + '%';
+
+        const gaugeWidth = Math.min((conc / 35) * 100, 100);
+        gaugeFill.style.width = gaugeWidth + '%';
+
+        saltDots.forEach(dot => {
+            const relY = parseFloat(dot.dataset.relY);
+            dot.style.bottom = relY + '%';
+        });
+    }
+
+    slider.addEventListener('input', updateSimulator);
+
+    /* --- Drag and Drop --- */
+    let draggedElement = null;
+
+    function setupDragAndDrop() {
+        const items = document.querySelectorAll('.drag-item');
+
+        items.forEach(item => {
+            item.addEventListener('touchstart', handleTouchStart, {passive: false});
+            item.addEventListener('touchmove', handleTouchMove, {passive: false});
+            item.addEventListener('touchend', handleTouchEnd);
+
+            item.addEventListener('dragstart', (e) => {
+                draggedElement = item;
+                e.dataTransfer.setData('text/plain', item.dataset.val);
+                setTimeout(() => item.style.opacity = '0.5', 0);
+            });
+
+            item.addEventListener('dragend', () => {
+                item.style.opacity = '1';
+                draggedElement = null;
+            });
+        });
+
+        slots.forEach(slot => {
+            slot.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                slot.classList.add('hovered');
+            });
+
+            slot.addEventListener('dragleave', () => {
+                slot.classList.remove('hovered');
+            });
+
+            slot.addEventListener('drop', (e) => {
+                e.preventDefault();
+                slot.classList.remove('hovered');
+                if (draggedElement) {
+                    placeItemInSlot(draggedElement, slot);
+                }
+            });
+        });
+    }
+
+    function placeItemInSlot(item, slot) {
+        if (slot.children.length > 0) {
+            dragSource.appendChild(slot.children[0]);
+        }
+        slot.appendChild(item);
+    }
+
+    /* Touch Polyfill */
+    let touchClone = null;
+    let touchOffsetX = 0;
+    let touchOffsetY = 0;
+
+    function handleTouchStart(e) {
+        e.preventDefault();
+        draggedElement = this;
+        const touch = e.touches[0];
+        const rect = this.getBoundingClientRect();
+        touchOffsetX = touch.clientX - rect.left;
+        touchOffsetY = touch.clientY - rect.top;
+
+        touchClone = this.cloneNode(true);
+        touchClone.style.position = 'fixed';
+        touchClone.style.left = (touch.clientX - touchOffsetX) + 'px';
+        touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
+        touchClone.style.zIndex = '1000';
+        touchClone.style.opacity = '0.8';
+        touchClone.style.pointerEvents = 'none';
+        document.body.appendChild(touchClone);
+
+        this.style.opacity = '0.4';
+    }
+
+    function handleTouchMove(e) {
+        if (!touchClone) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        touchClone.style.left = (touch.clientX - touchOffsetX) + 'px';
+        touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
+    }
+
+    function handleTouchEnd(e) {
+        if (!touchClone) return;
+        const touch = e.changedTouches[0];
+        if (touchClone.parentNode) {
+            touchClone.parentNode.removeChild(touchClone);
+        }
+        touchClone = null;
+        this.style.opacity = '1';
+
+        const dropTargetElem = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (dropTargetElem) {
+            const slot = dropTargetElem.closest('.drop-slot');
+            if (slot) {
+                placeItemInSlot(this, slot);
+            } else if (dropTargetElem.closest('#dragSource')) {
+                dragSource.appendChild(this);
+            }
+        }
+        draggedElement = null;
+    }
+
+    /* --- Quiz Evaluation --- */
+    function checkEquation() {
+        const slotVals = Array.from(slots).map(slot => {
+            const child = slot.querySelector('.drag-item');
+            return child ? child.dataset.val : '';
+        });
+
+        const eqStr = slotVals.join(' ');
+        const valid1 = "35 = 20/100 * (1000 - x)";
+        const valid2 = "20/100 * (1000 - x) = 35";
+
+        if (eqStr === valid1 || eqStr === valid2) {
+            isEquationCorrect = true;
+            calcZone.classList.add('active');
+            ansInput.disabled = false;
+            ansInput.focus();
+            showHint("<strong>👍 올바른 방정식입니다!</strong> 이제 방정식을 풀어 x의 값을 구해보세요.", "#2E7D32", "#E8F5E9");
+            playChimeSound();
+        } else {
+            isEquationCorrect = false;
+            currentErrorCount++;
+            playErrorSound();
+            triggerHint();
+        }
+    }
+
+    function resetEquation() {
+        slots.forEach(slot => {
+            if (slot.children.length > 0) {
+                dragSource.appendChild(slot.children[0]);
+            }
+        });
+        calcZone.classList.remove('active');
+        ansInput.disabled = true;
+        ansInput.value = '';
+        isEquationCorrect = false;
+        hintBox.style.display = 'none';
+    }
+
+    function checkFinalAnswer() {
+        if (!isEquationCorrect) {
+            alert('먼저 올바른 방정식을 완성해주세요!');
+            return;
+        }
+
+        const userAns = parseInt(ansInput.value);
+        if (userAns === 825) {
+            playChimeSound();
+            showSaltFlowerCelebration();
+            btnNext.style.display = 'flex'; // 정답 시 다음 버튼 공개
+        } else {
+            currentErrorCount++;
+            playErrorSound();
+            triggerHint();
+        }
+    }
+
+    function triggerHint() {
+        let msg = "";
+        if (currentErrorCount === 1) {
+            msg = "💡 <strong>힌트 1:</strong> 물이 아무리 증발해도 끝까지 그릇 속에 남아 변하지 않는 양은 무엇일까요? 맞아요, '소금의 양'입니다!";
+        } else if (currentErrorCount === 2) {
+            msg = "💡 <strong>힌트 2:</strong> 처음 바닷물 1000g에 들어있던 소금의 양은 1000 &times; (3.5/100) = 35g 입니다. 증발 후에도 이 소금의 양은 그대로 유지되어야 합니다.";
+        } else {
+            msg = "💡 <strong>힌트 3:</strong> 증발 후 소금물의 양은 (1000 - x)g 입니다. 이 소금물의 20%가 35g이 되도록 방정식을 세워보세요!<br><strong>식: 35 = 20/100 * (1000 - x)</strong><br>풀이: 35 = 0.2 &times; (1000 - x) &rarr; 175 = 1000 - x &rarr; <strong>x = 825</strong>";
+        }
+        showHint(msg, "#E65100", "#FFF3E0");
+    }
+
+    function showHint(msg, color, bg) {
+        hintBox.innerHTML = msg;
+        hintBox.style.color = color;
+        hintBox.style.backgroundColor = bg;
+        hintBox.style.borderColor = color;
+        hintBox.style.display = 'block';
+    }
+
+    /* --- Salt Canvas Animation --- */
+    function showSaltFlowerCelebration() {
+        successModal.style.display = 'flex';
+        slider.value = 825;
+        updateSimulator();
+
+        const canvas = document.getElementById('saltCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        let crystals = [];
+        for (let i = 0; i < 40; i++) {
+            crystals.push({
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                angle: (Math.PI * 2 / 40) * i + Math.random() * 0.2,
+                speed: Math.random() * 3 + 1,
+                size: Math.random() * 6 + 4,
+                dist: 0,
+                maxDist: Math.random() * (canvas.width / 2.5) + 20
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            crystals.forEach(c => {
+                if (c.dist < c.maxDist) {
+                    c.dist += c.speed;
+                }
+                const currX = c.x + Math.cos(c.angle) * c.dist;
+                const currY = c.y + Math.sin(c.angle) * c.dist;
+
+                ctx.save();
+                ctx.translate(currX, currY);
+                ctx.rotate(c.angle);
+                ctx.fillStyle = '#0288D1';
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.lineWidth = 2;
+
+                ctx.fillRect(-c.size/2, -c.size/2, c.size, c.size);
+                ctx.strokeRect(-c.size/2, -c.size/2, c.size, c.size);
+                ctx.restore();
+            });
+
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+
+    function goNextStage() {
+        window.location.href = 'B04.html';
+    }
+
+    /* --- DOM Loaded --- */
+    window.addEventListener('DOMContentLoaded', () => {
+        initParticles();
+        updateSimulator();
+        setupDragAndDrop();
+    });
+</script>
+</body>
+</html>

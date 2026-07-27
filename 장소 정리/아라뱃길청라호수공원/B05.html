@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>아라뱃길·청라호수공원 MATHTOUR - B05</title>
+  <style>
+    /* 폰트 설정 */
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+    @import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #0b1d3a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #1a365d;
+      overflow: hidden;
+    }
+
+    /* 16:9 메인 컨테이너 */
+    #game-container {
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      background: linear-gradient(180deg, #e0f7fa 0%, #b2ebf2 60%, #80deea 100%);
+      overflow: hidden;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+      border-radius: 8px;
+    }
+
+    /* 스테이지 상단 표시바 (글래스모피즘) */
+    .stage-header {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      right: 20px;
+      height: 48px;
+      background: rgba(0, 119, 190, 0.2);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(64, 224, 208, 0.5);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 10;
+    }
+
+    .stage-title {
+      font-family: 'NanumSquareRound', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #1a365d;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stage-location {
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 0.95rem;
+      color: #0077be;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 4px 12px;
+      border-radius: 12px;
+    }
+
+    /* 상황 설명 박스 (유형 1 규칙) */
+    #situation-box {
+      position: absolute;
+      top: 75px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 75%;
+      background: rgba(255, 255, 255, 0.85);
+      border: 2px solid #81d4fa;
+      border-radius: 16px;
+      padding: 12px 24px;
+      text-align: center;
+      font-size: 1rem;
+      color: #1a365d;
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+      box-shadow: 0 4px 15px rgba(0, 119, 190, 0.15);
+      z-index: 10;
+      transition: opacity 0.5s ease;
+    }
+
+    /* 무대 영역 */
+    #stage-area {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    /* 캐릭터 Wrapper 및 등장/퇴장 연출 */
+    .char-wrapper {
+      position: absolute;
+      overflow: visible;
+      z-index: 3;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease, filter 0.2s ease;
+    }
+
+    .char-wrapper.appeared {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .char-wrapper.disappeared {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .char-wrapper.inactive {
+      filter: brightness(0.55);
+    }
+
+    /* 대화창 UI */
+    #dialogue-box {
+      position: absolute;
+      bottom: 75px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 85%;
+      height: 125px;
+      background: rgba(26, 54, 93, 0.85);
+      border: 1px solid #40e0d0;
+      border-radius: 16px;
+      padding: 18px 24px;
+      color: #ffffff;
+      z-index: 10;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    #speaker-name {
+      font-family: 'NanumSquareRound', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #40e0d0;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #speaker-name::after {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background-color: #40e0d0;
+      border-radius: 50%;
+    }
+
+    #dialogue-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      word-break: keep-all;
+    }
+
+    .click-prompt {
+      position: absolute;
+      right: 20px;
+      bottom: 12px;
+      font-size: 0.8rem;
+      color: #40e0d0;
+      animation: bounce 0.8s infinite alternate;
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-4px); }
+    }
+
+    /* 공통 이동 버튼 */
+    .btn-nav {
+      position: absolute;
+      height: 42px;
+      padding: 0 24px;
+      background-color: #0077be;
+      color: #ffffff;
+      border: 1px solid #40e0d0;
+      border-radius: 50px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      z-index: 20;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-nav:hover {
+      background-color: #40e0d0;
+      color: #1a365d;
+      border-color: #0077be;
+      transform: translateY(-2px);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+    }
+
+    #btn-next, #btn-skip {
+      right: 20px;
+      bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 상단 표시바 -->
+    <header class="stage-header">
+      <div class="stage-title">🌊 아라뱃길·청라호수공원 MATHTOUR</div>
+      <div class="stage-location">LOCATION: 아라폭포</div>
+    </header>
+
+    <!-- 상황 설명 박스 -->
+    <div id="situation-box">
+      민우와 서연이가 아라폭포에서의 수학 탐구를 마치고 다음 장소로 이동하려고 합니다.
+    </div>
+
+    <!-- 배경 및 무대 개체 영역 -->
+    <main id="stage-area">
+      <!-- 건물 에셋: 아라뱃길_아라폭포 (화면 좌측 ~ 1/3 지점 배치, W=1000 H=500 기준 s=0.75) -->
+      <div style="position: absolute; left: -100px; bottom: 50px; width: 750px; height: 375px; overflow: hidden; z-index: 1;">
+        <iframe src="아라뱃길_아라폭포.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(0.75); transform-origin:top left; pointer-events:none;"></iframe>
+      </div>
+
+      <!-- 등장인물: 민우 (폭포 우측 위치, s=0.9 -> W=234, H=288) -->
+      <div class="char-wrapper" id="char-민우" style="left: 480px; bottom: 40px; width: 234px; height: 288px;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9); transform-origin:bottom left; pointer-events:none;"></iframe>
+      </div>
+
+      <!-- 등장인물: 서연 (민우의 우측 위치, 서로 마주보도록 scaleX(-1)) -->
+      <div class="char-wrapper" id="char-서연" style="left: 740px; bottom: 40px; width: 234px; height: 288px;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+      </div>
+    </main>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+      <div id="speaker-name">서연</div>
+      <div id="dialogue-text">대사를 불러오는 중...</div>
+      <div class="click-prompt">클릭하여 계속 ▼</div>
+    </div>
+
+    <!-- 이동 및 건너뛰기 버튼 -->
+    <button id="btn-prev" class="btn-nav" onclick="goPrev()">이전</button>
+    <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+    <button id="btn-next" class="btn-nav" onclick="goNext()" style="display: none;">다음</button>
+  </div>
+
+  <script>
+    // 스토리 대사 스크립트
+    const dialogues = [
+      { speaker: "서연", text: "와 정말 재미있는 시간이었어!", target: "char-서연" },
+      { speaker: "민우", text: "우리 이제 어디로 갈까?", target: "char-민우" },
+      { speaker: "서연", text: "청라호수공원에 멋진 음악분수가 있다던데, 가보자!", target: "char-서연" }
+    ];
+
+    let currentIndex = 0;
+
+    // 페이지 로드 시 인물 등장 연출 및 대화 시작
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        document.getElementById('char-민우').classList.add('appeared');
+        document.getElementById('char-서연').classList.add('appeared');
+      }, 100);
+
+      renderDialogue();
+    });
+
+    // 대화 및 캐릭터 강조(밝기) 업데이트
+    function renderDialogue() {
+      const current = dialogues[currentIndex];
+      document.getElementById('speaker-name').textContent = current.speaker;
+      document.getElementById('dialogue-text').textContent = current.text;
+
+      const minwoo = document.getElementById('char-민우');
+      const seoyeon = document.getElementById('char-서연');
+
+      if (current.target === 'char-민우') {
+        minwoo.classList.remove('inactive');
+        seoyeon.classList.add('inactive');
+      } else if (current.target === 'char-서연') {
+        seoyeon.classList.remove('inactive');
+        minwoo.classList.add('inactive');
+      }
+    }
+
+    // 대화 순차 진행
+    function advanceDialogue() {
+      currentIndex++;
+      if (currentIndex < dialogues.length) {
+        renderDialogue();
+      } else {
+        finishDialogue();
+      }
+    }
+
+    // 대화 건너뛰기
+    function skipDialogue() {
+      finishDialogue();
+    }
+
+    // 대화 종료 후 캐릭터 사라지는 효과 및 다음 버튼 활성화
+    function finishDialogue() {
+      document.getElementById('dialogue-box').style.display = 'none';
+      document.getElementById('situation-box').style.opacity = '0';
+      document.getElementById('btn-skip').style.display = 'none';
+      document.getElementById('btn-next').style.display = 'flex';
+
+      const minwoo = document.getElementById('char-민우');
+      const seoyeon = document.getElementById('char-서연');
+
+      // 밝기 복구 후 퇴장 애니메이션 적용
+      minwoo.classList.remove('inactive');
+      seoyeon.classList.remove('inactive');
+
+      setTimeout(() => {
+        minwoo.classList.remove('appeared');
+        seoyeon.classList.remove('appeared');
+        minwoo.classList.add('disappeared');
+        seoyeon.classList.add('disappeared');
+      }, 150);
+    }
+
+    // 페이지 이동 로직
+    function goPrev() {
+      window.location.href = "B04.html";
+    }
+
+    function goNext() {
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
