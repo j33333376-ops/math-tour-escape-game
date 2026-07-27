@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>월미도 MATHTOUR - 갈매기 과자 던지기</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+:root{--red:#8c3030;--red2:#661f1f;--gold:#d4af37;--ink:#2d3748;--paper:#f5f0e6;--green:#1f9d68;--orange:#ff9f43;--navy:#12355b}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#211915;font-family:'Noto Sans KR',sans-serif;color:var(--ink)}
+body{display:flex;align-items:center;justify-content:center;padding:10px}
+#game-container{position:relative;width:min(1066px,calc(100vw - 20px));aspect-ratio:16/9;max-height:calc(100vh - 20px);overflow:hidden;background:#111;border:3px solid var(--gold);box-shadow:0 18px 50px rgba(0,0,0,.55)}
+#bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:sepia(.18) saturate(.85) brightness(.82)}
+#veil{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(20,8,5,.52),rgba(20,8,5,.08) 35%,rgba(20,8,5,.08) 65%,rgba(20,8,5,.52));pointer-events:none}
+.stage-bar{position:absolute;left:18px;right:18px;top:14px;z-index:20;padding:9px 16px;border:1px solid var(--gold);background:rgba(20,12,9,.78);color:#f8e7aa;font-family:'Nanum Myeongjo',serif;font-weight:700;letter-spacing:.04em;text-align:center}
+.char-wrapper{position:absolute;z-index:3;overflow:visible;filter:brightness(.55);transition:filter .25s,transform .25s}.char-wrapper.active{filter:brightness(1.08);transform:translateY(-3px)}
+.char-wrapper iframe{border:0;width:260px;height:320px;pointer-events:none}
+#char-민우{left:28px;bottom:48px;width:208px;height:256px}#char-민우 iframe{transform:scale(.8);transform-origin:bottom left}
+#char-서연{right:8px;bottom:48px;width:208px;height:256px;z-index:12}#char-서연 iframe{position:absolute;left:0;bottom:0;transform:scale(.8);transform-origin:bottom left}
+#quiz-panel{position:absolute;z-index:10;left:230px;right:252px;top:58px;bottom:12px;background:rgba(245,240,230,.96);border:2px solid var(--gold);box-shadow:0 12px 35px rgba(0,0,0,.38);padding:13px 15px 12px;overflow:hidden;display:none}
+.quiz-title{margin:0 0 5px;text-align:center;font-family:'Nanum Myeongjo',serif;color:var(--red);font-size:21px}.subtitle{margin:0 0 8px;text-align:center;font-size:12px;color:#4a5568}
+.quiz-grid{display:grid;grid-template-columns:218px 1fr;gap:12px;height:calc(100% - 49px);min-height:0}
+.controls{display:flex;flex-direction:column;gap:7px;min-height:0}.mission,.formula,.progress,.result{border:1px solid #cdbb88;background:#fffaf0;border-radius:5px;padding:7px;font-size:11px;line-height:1.45}.mission{border-left:5px solid var(--red)}.formula{text-align:center;font-family:'Nanum Gothic Coding',monospace}.progress{display:flex;justify-content:space-between;font-weight:700;color:#6b4e19}.dots{display:flex;gap:5px}.dot{width:11px;height:11px;border-radius:50%;background:#c8c8c8}.dot.on{background:var(--green)}
+.range-row{display:grid;grid-template-columns:20px 1fr 42px;gap:6px;align-items:center;padding:4px 6px;background:#fff;border:1px solid #d9c99a;border-radius:4px;font-family:'Nanum Gothic Coding',monospace;font-size:11px}.range-row label{font-weight:700}.range-row output{text-align:center;background:#f3ead2;padding:2px;border-radius:3px}input[type=range]{width:100%;accent-color:var(--red)}
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}button{font-family:'Noto Sans KR',sans-serif}.action{border:1px solid #b58e24;border-radius:4px;padding:7px 5px;font-weight:700;cursor:pointer}.throw{background:var(--red);color:white}.reset{background:#e8dcc0;color:#4b3822}.problem-next{background:var(--green);color:white;width:100%;border:0;border-radius:4px;padding:8px;font-weight:700;cursor:pointer;flex:0 0 auto;min-height:34px}.problem-next:disabled{opacity:.45;cursor:not-allowed}.result{flex:1 1 auto;overflow:auto;min-height:48px}.result.success{border-color:#67b998;background:#effff7}.result.fail{border-color:#d99184;background:#fff5f2}.result-title{font-weight:700;margin-bottom:3px}.math{font-family:'Nanum Gothic Coding',monospace;word-break:break-all}
+.canvas-card{position:relative;overflow:hidden;border:1px solid #cdbb88;background:rgba(255,255,255,.78);height:100%}.toolbar{height:32px;padding:7px 10px;background:rgba(35,24,17,.9);color:#fff1c2;font-family:'Nanum Gothic Coding',monospace;font-size:11px}.canvas-wrap{position:absolute;left:0;right:0;top:32px;bottom:0}canvas{display:block;width:100%;height:100%}.toast{position:absolute;left:50%;top:12px;transform:translate(-50%,-8px);opacity:0;transition:.2s;padding:7px 12px;border-radius:20px;background:rgba(20,12,9,.9);color:white;font-weight:700;font-size:11px;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
+#dialogue-box{position:absolute;z-index:30;left:55px;right:55px;bottom:24px;min-height:112px;background:rgba(0,0,0,.78);border:2px solid var(--gold);color:white;padding:14px 18px 12px;cursor:pointer;box-shadow:0 8px 25px rgba(0,0,0,.45)}#speaker-name{font-family:'Nanum Gothic Coding',monospace;color:#ffe084;font-size:17px;font-weight:700;margin-bottom:5px}#dialogue-text{font-size:14px;line-height:1.6}.dialogue-hint{text-align:right;color:#d8c995;font-size:10px;margin-top:6px}
+.btn-nav{position:absolute;z-index:40;bottom:14px;background:var(--red);color:white;border:1px solid var(--gold);border-radius:4px;padding:9px 20px;font-weight:700;cursor:pointer}.btn-nav:hover{background:var(--red2)}#btn-prev{left:16px}#btn-next{right:16px;display:none}
+@media(max-height:650px){#quiz-panel{top:52px;bottom:8px;padding-top:9px;padding-bottom:8px}.controls{gap:5px}.mission,.formula,.progress,.result{padding:5px 7px}.range-row{padding:3px 6px}.action{padding:6px 5px}.problem-next{padding:7px;min-height:32px}}@media(max-width:850px){#quiz-panel{left:155px;right:155px}.char-wrapper{opacity:.78}.quiz-grid{grid-template-columns:190px 1fr}}@media(max-width:650px){#quiz-panel{left:80px;right:80px}.quiz-grid{grid-template-columns:1fr}.canvas-card{display:none}.controls{overflow:auto}}
+</style>
+</head>
+<body>
+<div id="game-container">
+<img id="bg" src="월미도 앞바다.png" alt="월미도 앞바다">
+<div id="veil"></div>
+<div class="stage-bar">월미도 MATHTOUR · 제3장 — 갈매기와 포물선</div>
+<div class="char-wrapper" id="char-민우"><iframe src="등장인물_민우.html" scrolling="no" title="민우"></iframe></div>
+<div class="char-wrapper" id="char-서연"><iframe src="등장인물_서연.html" scrolling="no" title="서연"></iframe></div>
+
+<section id="quiz-panel" class="quiz-container" aria-label="수학 퀴즈">
+<h1 class="quiz-title">갈매기 과자 던지기</h1>
+<p class="subtitle">이차함수와 직선의 위치 관계를 판별식으로 판단하세요.</p>
+<div class="quiz-grid">
+<div class="controls">
+<div class="mission"><strong>미션</strong><br>갈매기는 <b id="missionLine">y = mx + n</b>을 따라 날고 있습니다. 과자의 포물선이 갈매기 경로와 만나도록 계수를 조절하세요.</div>
+<div class="formula"><b>과자 궤적</b><br>y = ax² + bx + c</div>
+<div class="range-row"><label for="aInput">a</label><input id="aInput" type="range" min="-2" max="-0.1" step="0.1" value="-0.5"><output id="aValue">-0.5</output></div>
+<div class="range-row"><label for="bInput">b</label><input id="bInput" type="range" min="-10" max="10" step="0.1" value="5"><output id="bValue">5</output></div>
+<div class="range-row"><label for="cInput">c</label><input id="cInput" type="range" min="-5" max="10" step="0.1" value="0"><output id="cValue">0</output></div>
+<div class="progress"><span>성공 <b id="successCount">0 / 2</b></span><span class="dots"><i id="dot1" class="dot"></i><i id="dot2" class="dot"></i></span></div>
+<div class="action-row"><button id="throwBtn" class="action throw">과자 던지기</button><button id="resetBtn" class="action reset">초기화</button></div>
+<div id="resultBox" class="result"><div class="result-title">판별식으로 확인해 보세요.</div><div class="math" id="equation">ax² + (b-m)x + (c-n) = 0</div></div>
+<button id="problemNextBtn" class="problem-next" disabled>정답을 맞혀 주세요</button>
+</div>
+<div class="canvas-card"><div class="toolbar">갈매기 경로: <b id="toolbarLine"></b></div><div class="canvas-wrap" id="canvasWrap"><canvas id="gameCanvas"></canvas><div id="toast" class="toast"></div></div></div>
+</div>
+</section>
+
+<div id="dialogue-box" onclick="advanceDialogue()"><div id="speaker-name"></div><div id="dialogue-text"></div><div class="dialogue-hint">대화창을 클릭하여 계속 ▶</div></div>
+<button id="btn-prev" class="btn-nav" onclick="location.href='F02.html'">이전</button>
+<button id="btn-next" class="btn-nav" onclick="location.href='F04.html'">다음</button>
+</div>
+<script>
+const dialogues=[
+ {speaker:'민우',text:'서연아, 저 갈매기들은 마치 한 직선 위를 따라 날아가는 것 같아!',target:'char-민우'},
+ {speaker:'서연',text:'그러네. 갈매기의 경로를 y = mx + n인 직선으로 나타낼 수 있겠어.',target:'char-서연'},
+ {speaker:'민우',text:'그럼 새우 과자를 던지면 과자는 포물선을 그리며 날아가겠지?',target:'char-민우'},
+ {speaker:'서연',text:'맞아! 포물선과 갈매기의 직선 경로가 만나도록 계수를 조절해 보자.',target:'char-서연'},
+ {speaker:'민우',text:'우리 둘 다 성공해서 갈매기에게 과자를 주자!',target:'char-민우'}
+];
+let dialogueIndex=0;
+function renderDialogue(){const d=dialogues[dialogueIndex];document.getElementById('speaker-name').textContent=d.speaker;document.getElementById('dialogue-text').textContent=d.text;document.querySelectorAll('.char-wrapper').forEach(el=>el.classList.toggle('active',el.id===d.target));}
+function advanceDialogue(){dialogueIndex++;if(dialogueIndex>=dialogues.length)finishDialogue();else renderDialogue()}
+function finishDialogue(){document.getElementById('dialogue-box').style.display='none';document.querySelectorAll('.char-wrapper').forEach(el=>el.classList.remove('active'));document.getElementById('quiz-panel').style.display='block';setTimeout(resizeCanvas,30)}
+renderDialogue();
+
+(()=>{
+const canvas=document.getElementById('gameCanvas'),ctx=canvas.getContext('2d'),wrap=document.getElementById('canvasWrap');
+const aInput=document.getElementById('aInput'),bInput=document.getElementById('bInput'),cInput=document.getElementById('cInput');
+const aValue=document.getElementById('aValue'),bValue=document.getElementById('bValue'),cValue=document.getElementById('cValue');
+const resultBox=document.getElementById('resultBox'),nextProblem=document.getElementById('problemNextBtn'),toast=document.getElementById('toast');
+const birdLine={m:-.5,n:10};const world={xMin:-2,xMax:20,yMin:-3,yMax:16};let W=500,H=420,dpr=1,shot=null,traces=[],successCount=0,solved=false,anim=null;
+const fmt=v=>String(Number(Number(v).toFixed(2)));const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function formula(){const m=birdLine.m,n=birdLine.n;const ms=m===1?'':m===-1?'-':fmt(m);return `y = ${ms}x ${n<0?'-':'+'} ${fmt(Math.abs(n))}`}
+function randomLine(){const slopes=[];for(let i=-10;i<=10;i++)if(i)slopes.push(i/10);birdLine.m=slopes[Math.floor(Math.random()*slopes.length)];birdLine.n=6+Math.floor(Math.random()*15)/2;document.getElementById('missionLine').textContent=formula();document.getElementById('toolbarLine').textContent=formula();document.getElementById('equation').textContent=`ax² + (b - ${fmt(birdLine.m)})x + (c - ${fmt(birdLine.n)}) = 0`}
+function updateValues(){aValue.value=fmt(aInput.value);bValue.value=fmt(bInput.value);cValue.value=fmt(cInput.value)}
+function updateProgress(){document.getElementById('successCount').textContent=`${successCount} / 2`;document.getElementById('dot1').classList.toggle('on',successCount>=1);document.getElementById('dot2').classList.toggle('on',successCount>=2);if(successCount>=2){nextProblem.textContent='2문제 성공!';nextProblem.disabled=false}else if(solved){nextProblem.textContent=`다음 문제 (${successCount}/2)`;nextProblem.disabled=false}else{nextProblem.textContent='정답을 맞혀 주세요';nextProblem.disabled=true}}
+function p(x,y){return{x:(x-world.xMin)/(world.xMax-world.xMin)*W,y:H-(y-world.yMin)/(world.yMax-world.yMin)*H}}
+function lineY(x){return birdLine.m*x+birdLine.n}function curveY(x,s){return s.a*x*x+s.b*x+s.c}
+function resizeCanvas(){const r=wrap.getBoundingClientRect();if(!r.width)return;dpr=Math.min(devicePixelRatio||1,2);W=r.width;H=r.height;canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);draw(performance.now())}window.resizeCanvas=resizeCanvas;
+function background(){const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#d8edf2');g.addColorStop(.55,'#e8f4f3');g.addColorStop(.56,'#8fc4cf');g.addColorStop(1,'#477f91');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.strokeStyle='rgba(255,255,255,.35)';for(let y=H*.6;y<H;y+=18){ctx.beginPath();for(let x=0;x<W;x+=8){const yy=y+Math.sin(x*.05+y)*2;x?ctx.lineTo(x,yy):ctx.moveTo(x,yy)}ctx.stroke()}}
+function grid(){ctx.save();ctx.font='9px sans-serif';for(let x=Math.ceil(world.xMin);x<=world.xMax;x++){const q=p(x,0);ctx.strokeStyle=x===0?'rgba(20,40,55,.7)':'rgba(20,40,55,.12)';ctx.beginPath();ctx.moveTo(q.x,0);ctx.lineTo(q.x,H);ctx.stroke()}for(let y=Math.ceil(world.yMin);y<=world.yMax;y++){const q=p(0,y);ctx.strokeStyle=y===0?'rgba(20,40,55,.7)':'rgba(20,40,55,.12)';ctx.beginPath();ctx.moveTo(0,q.y);ctx.lineTo(W,q.y);ctx.stroke()}ctx.restore()}
+function drawCurve(s,color,dash=false){ctx.save();ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.setLineDash(dash?[6,6]:[]);ctx.beginPath();let st=false;for(let x=world.xMin;x<=world.xMax;x+=.04){const q=p(x,curveY(x,s));if(q.y<-50||q.y>H+50){st=false;continue}st?ctx.lineTo(q.x,q.y):(ctx.moveTo(q.x,q.y),st=true)}ctx.stroke();ctx.restore()}
+function bird(x,y,t){const q=p(x,y);ctx.save();ctx.translate(q.x,q.y);ctx.strokeStyle='#2e4050';ctx.lineWidth=2;ctx.beginPath();ctx.quadraticCurveTo(-7,-5-Math.sin(t)*3,-13,-1);ctx.moveTo(0,0);ctx.quadraticCurveTo(7,-5-Math.sin(t)*3,13,-1);ctx.stroke();ctx.restore()}
+function draw(time=0){ctx.clearRect(0,0,W,H);background();grid();traces.forEach(s=>drawCurve(s,'#637381',true));ctx.strokeStyle='#b83228';ctx.lineWidth=2.5;ctx.beginPath();for(let x=world.xMin;x<=world.xMax;x+=.05){const q=p(x,lineY(x));x===world.xMin?ctx.moveTo(q.x,q.y):ctx.lineTo(q.x,q.y)}ctx.stroke();if(shot)drawCurve(shot,'#d17a1c');[2,7,12,17].forEach((x,i)=>bird(x,lineY(x),time*.01+i));}
+function solve(s){const A=s.a,B=s.b-birdLine.m,C=s.c-birdLine.n,D=B*B-4*A*C;if(D<0)return{D,roots:[]};const z=Math.sqrt(Math.max(0,D));return{D,roots:[(-B-z)/(2*A),(-B+z)/(2*A)]}}
+function visible(s,roots){return roots.filter(x=>{const y=curveY(x,s);return x>=world.xMin&&x<=world.xMax&&y>=world.yMin&&y<=world.yMax})}
+function showToast(t){toast.textContent=t;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1800)}
+function throwSnack(){const s={a:+aInput.value,b:+bInput.value,c:+cInput.value};const sol=solve(s),vr=visible(s,sol.roots);s.D=sol.D;s.roots=sol.roots;s.success=s.a<0&&vr.length>0;if(shot)traces.push(shot);if(traces.length>4)traces.shift();shot=s;cancelAnimationFrame(anim);let start=performance.now();function frame(now){draw(now);const t=clamp((now-start)/1600,0,1),x=world.xMin+(world.xMax-world.xMin)*t,y=curveY(x,s),q=p(x,y);ctx.save();ctx.translate(q.x,q.y);ctx.rotate(t*10);ctx.fillStyle='#e0a13b';ctx.fillRect(-6,-4,12,8);ctx.restore();if(t<1)anim=requestAnimationFrame(frame);else{if(s.success&&!solved){solved=true;successCount++}updateProgress();resultBox.className='result '+(s.success?'success':'fail');resultBox.innerHTML=`<div class="result-title">${s.success?'성공! 갈매기 경로와 만났습니다.':'아쉽습니다. 교점이 없습니다.'}</div><div class="math">${fmt(s.a)}x² + (${fmt(s.b-birdLine.m)})x + (${fmt(s.c-birdLine.n)}) = 0</div><div class="math">D = ${fmt(s.D)} ${s.D>=0?'≥ 0':'< 0'}</div>`;if(s.success)showToast('갈매기가 과자를 낚아챘습니다!');draw(performance.now())}}anim=requestAnimationFrame(frame)}
+function reset(newProblem=false){cancelAnimationFrame(anim);shot=null;traces=[];aInput.value='-0.5';bInput.value='5';cInput.value='0';updateValues();if(newProblem){solved=false;randomLine()}resultBox.className='result';resultBox.innerHTML='<div class="result-title">판별식으로 확인해 보세요.</div><div class="math" id="equation">ax² + (b-m)x + (c-n) = 0</div>';document.getElementById('equation').textContent=`ax² + (b - ${fmt(birdLine.m)})x + (c - ${fmt(birdLine.n)}) = 0`;updateProgress();draw()}
+[aInput,bInput,cInput].forEach(i=>i.addEventListener('input',()=>{updateValues();draw()}));document.getElementById('throwBtn').onclick=throwSnack;document.getElementById('resetBtn').onclick=()=>reset(false);nextProblem.onclick=()=>{if(successCount>=2){document.getElementById('btn-next').style.display='block';nextProblem.textContent='미션 완료 ✓';nextProblem.disabled=true;resultBox.className='result success';resultBox.innerHTML='<div class="result-title">2문제 미션 완료!</div><div>오른쪽 아래의 다음 버튼을 눌러 이동하세요.</div>';showToast('수학 미션을 완료했습니다!')}else{reset(true);showToast('새로운 갈매기 경로입니다!')}};
+updateValues();randomLine();updateProgress();window.addEventListener('resize',resizeCanvas);requestAnimationFrame(function loop(t){if(!anim)draw(t);requestAnimationFrame(loop)});
+})();
+</script>
+</body>
+</html>

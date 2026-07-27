@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>아라뱃길·청라호수공원 MATHTOUR</title>
     
-    <!-- 폰트 구성 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css">
 
@@ -145,31 +144,25 @@
 <body>
 
     <div id="game-container">
-        <!-- 스테이지 상단 표시바 -->
         <div id="top-bar">아라폭포 도착</div>
 
-        <!-- 에셋: 아라뱃길_아라폭포 (화면 좌측 ~ 1/3 지점 차지) -->
         <div style="position:absolute; left:-60px; bottom:30px; width:550px; height:275px; overflow:hidden; z-index:1;">
             <iframe src="아라뱃길_아라폭포.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(0.55); transform-origin:top left; pointer-events:none;"></iframe>
         </div>
 
-        <!-- 등장인물: 민우 (아라폭포 우측) -->
         <div class="char-wrapper" id="char-민우" style="position:absolute; left:470px; bottom:40px; width:260px; height:320px; overflow:visible; z-index:3;">
             <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
         </div>
 
-        <!-- 등장인물: 서연 (민우 우측, 마주보도록 좌우반전 적용) -->
         <div class="char-wrapper" id="char-서연" style="position:absolute; left:730px; bottom:40px; width:260px; height:320px; overflow:visible; z-index:3;">
-            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom center; pointer-events:none;"></iframe>
         </div>
 
-        <!-- 상황 설명 박스 -->
         <div id="situation-box" onclick="nextStory()">
             <p id="sit-text">민우와 서연이가 아라폭포에 도착했습니다.</p>
             <div id="click-hint">▼ 클릭하여 진행 ▼</div>
         </div>
 
-        <!-- 네비게이션 버튼 -->
         <button id="btn-prev" class="btn-nav">이전</button>
         <button id="btn-next" class="btn-nav">다음</button>
     </div>

@@ -1,396 +1,404 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>아라뱃길·청라호수공원 MATHTOUR - F04</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
-        @import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>아라뱃길·청라호수공원 MATHTOUR - F04</title>
+  
+  <!-- Google Fonts & Naver Fonts -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+    @import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-        }
+    /* Reset & Base Layout */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
 
-        body {
-            background-color: #0b1d3a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: 'Noto Sans KR', sans-serif;
-            overflow: hidden;
-        }
+    body {
+      background-color: #0b1d3a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #1a365d;
+      overflow: hidden;
+    }
 
-        /* 16:9 비율 유지 게임 컨테이너 */
-        #game-container {
-            position: relative;
-            width: 100%;
-            max-width: 1066px;
-            aspect-ratio: 16 / 9;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
-            border: 2px solid #40e0d0;
-            background-color: #0b1d3a;
-        }
+    /* 16:9 Aspect Ratio Container */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background-color: #e0f7fa;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+    }
 
-        /* 배경 이미지 (배경 규칙 준수: z-index 0) */
-        .bg-img {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 0;
-        }
+    /* Background Image */
+    .bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
 
-        /* 빨려들어가는 워프 오버레이 효과 */
-        #warp-overlay {
-            position: absolute;
-            inset: 0;
-            z-index: 100;
-            pointer-events: none;
-            opacity: 0;
-            background: radial-gradient(circle at center, transparent 0%, #0077be 50%, #0b1d3a 100%);
-            transition: transform 0.8s ease-in, opacity 0.8s ease-in;
-        }
+    /* Header Bar */
+    #header-bar {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      padding: 8px 24px;
+      background: rgba(0, 119, 190, 0.25);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(64, 224, 208, 0.4);
+      border-radius: 30px;
+      z-index: 10;
+      color: #ffffff;
+      font-family: 'NanumSquareRound', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        #game-container.warping #warp-overlay {
-            opacity: 1;
-            transform: scale(3) rotate(180deg);
-        }
+    #header-bar::before {
+      content: "•";
+      color: #40e0d0;
+      font-size: 20px;
+    }
 
-        #game-container.warping .stage-element {
-            transition: transform 0.8s ease-in, opacity 0.6s ease-in;
-            transform: scale(0.01) rotate(-720deg);
-            opacity: 0;
-        }
+    /* Character Positioning Area */
+    /* 서연이를 완전 우측(right: 0), 민우를 좌측(left: 0)에 고정하여 중간 대화창과 절대 겹치지 않게 함 */
+    .char-wrapper {
+      position: absolute;
+      bottom: 0px;
+      width: 260px;
+      height: 320px;
+      z-index: 3;
+      transition: filter 0.25s ease, transform 0.25s ease;
+      overflow: visible;
+    }
 
-        /* 상단 스테이지 표시바 */
-        .stage-header {
-            position: absolute;
-            top: 16px;
-            left: 20px;
-            z-index: 20;
-            background: rgba(0, 119, 190, 0.2);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(64, 224, 208, 0.5);
-            padding: 8px 18px;
-            border-radius: 50px;
-            color: #ffffff;
-            font-family: 'NanumSquareRound', sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
+    .char-wrapper iframe {
+      border: 0;
+      width: 260px;
+      height: 320px;
+      transform-origin: bottom left;
+      pointer-events: none;
+    }
 
-        /* 등장인물 Wrapper (260x320 고정 규격) */
-        .char-wrapper {
-            position: absolute;
-            bottom: 20px;
-            width: 260px;
-            height: 320px;
-            z-index: 3;
-            overflow: visible;
-            transition: filter 0.2s ease;
-        }
+    #char-민우 {
+      left: 10px;
+    }
 
-        .char-wrapper iframe {
-            border: 0;
-            width: 260px;
-            height: 320px;
-            transform-origin: bottom left;
-            pointer-events: none;
-        }
+    #char-서연 {
+      right: 10px;
+    }
 
-        /* 인물 위치: 글상자(285px ~ 781px)와 절대 겹치지 않도록 양 끝에 배치 */
-        #char-민우 {
-            left: 15px;
-        }
+    /* Dimmed Character Styling */
+    .char-wrapper.inactive {
+      filter: brightness(0.5) grayscale(20%);
+    }
 
-        #char-서연 {
-            right: 15px;
-        }
+    /* Dialogue Box UI */
+    #dialogue-box {
+      position: absolute;
+      bottom: 20px;
+      left: 280px; /* 민우(260px + margin) 너비 확보 */
+      right: 280px; /* 서연(260px + margin) 너비 확보 -> 절대 겹치지 않음 */
+      height: 160px;
+      background: rgba(26, 54, 93, 0.88);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 2px solid #40e0d0;
+      border-radius: 16px;
+      padding: 20px 24px;
+      z-index: 10;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      transition: all 0.2s ease;
+    }
 
-        /* 마주보도록 서연 좌우 반전 */
-        #char-서연 iframe {
-            transform: scaleX(-1);
-            transform-origin: center;
-        }
+    #dialogue-box:hover {
+      border-color: #81d4fa;
+      box-shadow: 0 8px 28px rgba(64, 224, 208, 0.25);
+    }
 
-        /* 비활성화 인물 어둡게 처리 (wrapper에 필터 적용) */
-        .char-wrapper.inactive {
-            filter: brightness(0.55);
-        }
+    #speaker-name {
+      font-family: 'NanumSquareRound', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #40e0d0;
+      margin-bottom: 8px;
+      display: inline-block;
+      border-bottom: 2px solid rgba(64, 224, 208, 0.3);
+      padding-bottom: 2px;
+      width: fit-content;
+    }
 
-        /* 대화창 UI (중앙 배치) */
-        #dialogue-box {
-            position: absolute;
-            left: 285px;
-            right: 285px;
-            bottom: 20px;
-            height: 180px;
-            z-index: 10;
-            background: rgba(26, 54, 93, 0.85);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid #40e0d0;
-            border-radius: 16px;
-            padding: 20px 24px;
-            color: #ffffff;
-            cursor: pointer;
-            box-shadow: 0 8px 24px rgba(0, 119, 190, 0.3);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
+    #dialogue-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      word-break: keep-all;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
 
-        #dialogue-box:hover {
-            border-color: #81d4fa;
-            box-shadow: 0 8px 28px rgba(64, 224, 208, 0.4);
-        }
+    .click-indicator {
+      position: absolute;
+      right: 20px;
+      bottom: 12px;
+      font-size: 12px;
+      color: #40e0d0;
+      animation: bounce 1.2s infinite;
+      font-family: 'Nanum Gothic Coding', monospace;
+    }
 
-        /* 화자 명찰 */
-        #speaker-tag {
-            display: inline-block;
-            align-self: flex-start;
-            background: linear-gradient(135deg, #0077be, #005580);
-            border: 1px solid #40e0d0;
-            color: #ffffff;
-            font-family: 'NanumSquareRound', sans-serif;
-            font-weight: 700;
-            font-size: 1.05rem;
-            padding: 4px 16px;
-            border-radius: 20px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-        }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
 
-        /* 대사 본문 */
-        #dialogue-text {
-            font-size: 1.02rem;
-            line-height: 1.6;
-            letter-spacing: -0.02em;
-            color: #ffffff;
-            word-break: keep-all;
-            flex: 1;
-            font-weight: 400;
-        }
+    /* Common Navigation Buttons */
+    .btn-nav {
+      position: absolute;
+      z-index: 20;
+      padding: 10px 24px;
+      background-color: #0077be;
+      color: #ffffff;
+      border: 1px solid #40e0d0;
+      border-radius: 50px;
+      font-family: 'NanumSquareRound', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      outline: none;
+    }
 
-        /* 클릭 진행 안내 */
-        .click-prompt {
-            align-self: flex-end;
-            font-size: 0.85rem;
-            color: #40e0d0;
-            font-family: 'Nanum Gothic Coding', monospace;
-            animation: blink 1.2s infinite;
-        }
+    .btn-nav:hover {
+      background-color: #40e0d0;
+      color: #1a365d;
+      box-shadow: 0 6px 16px rgba(64, 224, 208, 0.4);
+      transform: translateY(-2px);
+    }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+    }
 
-        /* 공통 네비게이션 버튼 */
-        .btn-nav {
-            position: absolute;
-            z-index: 15;
-            background-color: #0077be;
-            color: #ffffff;
-            border: 1px solid #40e0d0;
-            border-radius: 50px;
-            padding: 10px 24px;
-            font-family: 'Noto Sans KR', sans-serif;
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            transition: all 0.25s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+    #btn-next, #btn-skip, #btn-end {
+      right: 20px;
+      bottom: 20px;
+    }
 
-        .btn-nav:hover {
-            background-color: #40e0d0;
-            color: #1a365d;
-            box-shadow: 0 6px 16px rgba(64, 224, 208, 0.4);
-            transform: translateY(-2px);
-        }
+    #btn-skip {
+      background-color: rgba(0, 119, 190, 0.8);
+    }
 
-        #btn-prev {
-            left: 20px;
-            bottom: 20px;
-        }
+    /* Portal Vortex / Suck-in Transition Effect */
+    #vortex-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 0%, #001122 100%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 999;
+      transition: opacity 0.8s ease;
+    }
 
-        #btn-next, #btn-skip {
-            right: 20px;
-            bottom: 20px;
-        }
+    .sucking-in {
+      animation: suckIn 1.2s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards;
+    }
 
-        /* 대화 중 숨김 클래스 */
-        .hidden {
-            display: none !important;
-        }
-    </style>
+    @keyframes suckIn {
+      0% {
+        transform: scale(1) rotate(0deg);
+        filter: blur(0px);
+        opacity: 1;
+      }
+      50% {
+        filter: blur(4px);
+      }
+      100% {
+        transform: scale(0.01) rotate(720deg);
+        filter: blur(12px);
+        opacity: 0;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <div id="game-container">
-        <!-- 배경 이미지 -->
-        <img src="청라루.png" alt="청라루 배경" class="bg-img">
+<div id="game-container">
+  <!-- 배경 이미지 -->
+  <img src="청라루.png" alt="청라루 배경" class="bg-img">
 
-        <!-- 빨려들어가는 워프 효과 오버레이 -->
-        <div id="warp-overlay"></div>
+  <!-- 상단 상태바 -->
+  <div id="header-bar">
+    아라뱃길·청라호수공원 MATHTOUR — 청라루의 아름다운 수학
+  </div>
 
-        <!-- 상단 스테이지 바 -->
-        <div class="stage-header stage-element">
-            <span>🌊</span>
-            <span>청라호수공원 - 청라루의 미학</span>
-        </div>
+  <!-- 왼쪽 캐릭터: 민우 (완전 좌측 밀착) -->
+  <div class="char-wrapper" id="char-민우">
+    <iframe src="등장인물_민우.html" scrolling="no"></iframe>
+  </div>
 
-        <!-- 등장인물: 민우 (좌측) -->
-        <div class="char-wrapper stage-element" id="char-민우">
-            <iframe src="등장인물_민우.html" scrolling="no"></iframe>
-        </div>
+  <!-- 오른쪽 캐릭터: 서연 (완전 우측 밀착 - 겹침 완벽 방지) -->
+  <div class="char-wrapper" id="char-서연">
+    <iframe src="등장인물_서연.html" scrolling="no"></iframe>
+  </div>
 
-        <!-- 등장인물: 서연 (우측) -->
-        <div class="char-wrapper stage-element" id="char-서연">
-            <iframe src="등장인물_서연.html" scrolling="no"></iframe>
-        </div>
+  <!-- 중앙 대화창 (좌/우 캐릭터 사이 완벽한 이격 공간 유지) -->
+  <div id="dialogue-box" onclick="advanceDialogue()">
+    <div id="speaker-name">민우</div>
+    <div id="dialogue-text">대화를 불러오는 중...</div>
+    <div class="click-indicator">CLICK ▶</div>
+  </div>
 
-        <!-- 중앙 대화창 (유형 2) -->
-        <div id="dialogue-box" onclick="advanceDialogue()">
-            <div>
-                <div id="speaker-tag">민우</div>
-                <div id="dialogue-text">대사를 불러오는 중입니다...</div>
-            </div>
-            <div class="click-prompt">▼ 클릭하여 계속하기</div>
-        </div>
+  <!-- 이동 및 제어 버튼 -->
+  <button id="btn-prev" class="btn-nav" onclick="goPrev()">이전</button>
+  <button id="btn-skip" class="btn-nav" onclick="finishDialogue()">건너뛰기</button>
+  <button id="btn-end" class="btn-nav" style="display: none;" onclick="triggerSuckInEnd()">End</button>
 
-        <!-- 네비게이션 버튼 -->
-        <button id="btn-prev" class="btn-nav hidden" onclick="goURL('F03.html')">◀ 이전</button>
-        <button id="btn-skip" class="btn-nav" onclick="finishDialogue()">건너뛰기 ⏩</button>
-        <button id="btn-next" class="btn-nav hidden" onclick="triggerWarpAndGo('index.html')">End ➔</button>
-    </div>
+  <!-- 빨려들어가는 연출용 오버레이 -->
+  <div id="vortex-overlay"></div>
+</div>
 
-    <script>
-        // 대화 진행 스크립트 (수식 제외, 건축물 곡선미와 청라루와의 아름다운 관계 중심)
-        const dialogues = [
-            {
-                speaker: "민우",
-                text: "와... 청라루 아래에서 이렇게 넓고 완평한 호수를 바라보니까 기분이 정말 탁 트이는 것 같아!",
-                target: "char-민우"
-            },
-            {
-                speaker: "서연",
-                text: "응! 전통 한옥 양식인 청라루의 우아한 처마 곡선이 탁 트인 호수 경관이랑 절묘하게 어우러져서 정말 아름답다.",
-                target: "char-서연"
-            },
-            {
-                speaker: "민우",
-                text: "아까 우리가 곡선 형태의 다리와 건축 구조를 살펴볼 때 느꼈지만, 이 유연하게 퍼져나가는 형태에는 다 수학적 이유가 있었어.",
-                target: "char-민우"
-            },
-            {
-                speaker: "서연",
-                text: "맞아. 한 지점에서 시작해서 부드럽게 완만해지는 곡선 구조는 보기에도 아름답지만 하중을 효과적으로 분산해 줘서 건물을 단단하게 지탱해 주지.",
-                target: "char-서연"
-            },
-            {
-                speaker: "민우",
-                text: "조선시대의 고풍스러운 처마 선과 현대적인 호수공원의 물결이 조화를 이루는 모습이 마치 예술과 수학의 완벽한 만남 같아.",
-                target: "char-민우"
-            },
-            {
-                speaker: "서연",
-                text: "오늘 청라호수공원에서 수학 탐구를 마치고 나니, 우리 주변의 익숙한 풍경들이 이전과 달리 훨씬 특별하고 신기하게 보여!",
-                target: "char-서연"
-            }
-        ];
+<script>
+  // 대화 스크립트 데이터 (무리함수식 제외, 청라루와 수학적 곡선의 아름다운 관계 묘사)
+  const dialogues = [
+    {
+      speaker: "민우",
+      text: "와... 석양을 받아 빛나는 청라루의 모습이 정말 장관이다. 호수 수면에 비친 모습까지 완벽해.",
+      target: "char-민우"
+    },
+    {
+      speaker: "서연",
+      text: "맞아. 전통 처마 끝의 유려한 곡선이 청라호수공원의 현대적인 수변 풍경과 부드럽게 어우러지고 있어.",
+      target: "char-서연"
+    },
+    {
+      speaker: "민우",
+      text: "아라뱃길부터 시작해서 청라루까지 오는 동안 우리가 탐구했던 곡선들이 떠올라. 우아하게 솟아오른 처마선 속에도 수학적인 조화가 숨어있었잖아.",
+      target: "char-민우"
+    },
+    {
+      speaker: "서연",
+      text: "자연스러운 상승감을 주는 저 처마의 곡선미는 시각적으로 가장 안정적이면서도 청량한 느낌을 만들어낸대.",
+      target: "char-서연"
+    },
+    {
+      speaker: "민우",
+      text: "단순히 아름답기만 한 게 아니라, 정교한 수학적 비율과 아름다움이 만들어낸 건축의 예술작품인 셈이네!",
+      target: "char-민우"
+    },
+    {
+      speaker: "서연",
+      text: "맞아. 오늘 탐방을 통해 우리 주변의 건축물과 풍경 속에 수학이 얼마나 가깝고 아름답게 녹아있는지 깊이 느꼈어.",
+      target: "char-서연"
+    },
+    {
+      speaker: "민우",
+      text: "이번 아라뱃길·청라호수공원 매스투어는 정말 잊지 못할 탐험이었어. 다음에도 함께 멋진 수학 여행을 떠나자!",
+      target: "char-민우"
+    }
+  ];
 
-        let currentIndex = 0;
-        const PREV_URL = "F03.html";
-        const NEXT_URL = "index.html";
+  let currentIndex = 0;
 
-        // 대화 및 화자 명암 업데이트
-        function updateDialogue() {
-            const current = dialogues[currentIndex];
-            
-            document.getElementById('speaker-tag').innerText = current.speaker;
-            document.getElementById('dialogue-text').innerText = current.text;
+  // 대화 업데이트 함수
+  function updateDialogue() {
+    const current = dialogues[currentIndex];
+    document.getElementById("speaker-name").innerText = current.speaker;
+    document.getElementById("dialogue-text").innerText = current.text;
 
-            // 말하는 인물만 밝게, 나머지는 inactive(어둡게) 처리
-            const allChars = document.querySelectorAll('.char-wrapper');
-            allChars.forEach(char => {
-                if (char.id === current.target) {
-                    char.classList.remove('inactive');
-                } else {
-                    char.classList.add('inactive');
-                }
-            });
-        }
+    // 활성 캐릭터 강조 / 비활성 캐릭터 어둡게
+    const minwoo = document.getElementById("char-민우");
+    const seoyeon = document.getElementById("char-서연");
 
-        // 대화 진행
-        function advanceDialogue() {
-            if (currentIndex < dialogues.length - 1) {
-                currentIndex++;
-                updateDialogue();
-            } else {
-                finishDialogue();
-            }
-        }
+    if (current.target === "char-민우") {
+      minwoo.classList.remove("inactive");
+      seoyeon.classList.add("inactive");
+    } else if (current.target === "char-서연") {
+      seoyeon.classList.remove("inactive");
+      minwoo.classList.add("inactive");
+    }
+  }
 
-        // 대화 완료 처리
-        function finishDialogue() {
-            document.getElementById('dialogue-box').style.display = 'none';
-            document.getElementById('btn-skip').classList.add('hidden');
+  // 대화 진행
+  function advanceDialogue() {
+    currentIndex++;
+    if (currentIndex < dialogues.length) {
+      updateDialogue();
+    } else {
+      finishDialogue();
+    }
+  }
 
-            // 모든 인물 원래 밝기로 복구
-            const allChars = document.querySelectorAll('.char-wrapper');
-            allChars.forEach(char => char.classList.remove('inactive'));
+  // 대화 종료 시 처리
+  function finishDialogue() {
+    // 대화창 및 건너뛰기 버튼 숨김
+    document.getElementById("dialogue-box").style.display = "none";
+    document.getElementById("btn-skip").style.display = "none";
 
-            // 이동 버튼 표시
-            document.getElementById('btn-prev').classList.remove('hidden');
-            
-            const nextBtn = document.getElementById('btn-next');
-            nextBtn.classList.remove('hidden');
-            
-            if (!NEXT_URL || NEXT_URL === 'index.html') {
-                nextBtn.innerHTML = 'End ➔';
-            } else {
-                nextBtn.innerHTML = '다음 ➔';
-            }
-        }
+    // 캐릭터 비활성화 해제 (모두 밝게)
+    document.getElementById("char-민우").classList.remove("inactive");
+    document.getElementById("char-서연").classList.remove("inactive");
 
-        // URL 이동 공통 함수
-        function goURL(url) {
-            window.location.href = url;
-        }
+    // 마지막 페이지이므로 End 버튼 표시
+    document.getElementById("btn-end").style.display = "flex";
+  }
 
-        // 다음 페이지 이동 시 빨려들어가는 워프 연출
-        function triggerWarpAndGo(url) {
-            const container = document.getElementById('game-container');
-            container.classList.add('warping');
+  // 이전 페이지 이동
+  function goPrev() {
+    window.location.href = "F03.html";
+  }
 
-            setTimeout(() => {
-                window.location.href = url;
-            }, 750);
-        }
+  // 다음/End 버튼 클릭 시 '빨려들어가는' 포탈 연출 후 종료 또는 메인 복귀
+  function triggerSuckInEnd() {
+    const container = document.getElementById("game-container");
+    const overlay = document.getElementById("vortex-overlay");
 
-        // 페이지 로드 시 초기 대화 설정
-        window.addEventListener('DOMContentLoaded', () => {
-            updateDialogue();
-        });
-    </script>
+    // 암전 오버레이 및 빨려들어가는 소용돌이 애니메이션 적용
+    overlay.style.opacity = "1";
+    container.classList.add("sucking-in");
+
+    setTimeout(() => {
+      alert("아라뱃길·청라호수공원 MATHTOUR가 모두 완료되었습니다!");
+      window.location.href = "index.html"; // 메인 페이지 또는 지정된 엔딩 경로로 복귀
+    }, 1100);
+  }
+
+  // 초기화
+  window.onload = function() {
+    updateDialogue();
+  };
+</script>
+
 </body>
 </html>

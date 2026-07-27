@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문학경기장 MATHTOUR - C05</title>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #0f172a;
+      font-family: 'Pretendard', sans-serif;
+      overflow: hidden;
+    }
+
+    /* 게임 컨테이너 (16:9 비율) */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+    }
+
+    /* 상단 스테이지 표시바 */
+    .top-bar {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      right: 20px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      z-index: 10;
+    }
+
+    .top-bar .title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .top-bar .title::before {
+      content: '';
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background-color: #2563eb;
+      border-radius: 50%;
+    }
+
+    .top-bar .progress-tag {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      color: #2563eb;
+      background: #eff6ff;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* 무대 레이어 */
+    #stage {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* 에셋 - 건물 wrapper */
+    .building-wrapper {
+      position: absolute;
+      left: 533px;
+      bottom: 120px;
+      width: 500px;
+      height: 375px;
+      transform: translateX(-50%);
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .building-wrapper iframe {
+      border: 0;
+      width: 1000px;
+      height: 750px;
+      transform: scale(0.5);
+      transform-origin: top left;
+      pointer-events: none;
+    }
+
+    /* 캐릭터 wrapper */
+    .char-wrapper {
+      position: absolute;
+      bottom: 90px;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      z-index: 3;
+      transition: filter 0.2s ease, transform 0.2s ease;
+    }
+
+    .char-wrapper.inactive {
+      filter: brightness(0.55);
+    }
+
+    .char-wrapper iframe {
+      border: 0;
+      width: 260px;
+      height: 320px;
+      transform: scale(1);
+      transform-origin: bottom left;
+      pointer-events: none;
+    }
+
+    #char-서연 {
+      left: 60px;
+    }
+
+    #char-민우 {
+      right: 60px;
+    }
+
+    #char-민우 iframe {
+      transform: scale(1) scaleX(-1);
+    }
+
+    /* 바닥 경계 라인 연출 */
+    .ground-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 90px;
+      background: linear-gradient(180deg, rgba(203, 213, 225, 0.4) 0%, rgba(148, 163, 184, 0.6) 100%);
+      border-top: 2px solid #cbd5e1;
+      z-index: 2;
+    }
+
+    /* 대화창 UI */
+    #dialogue-box {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      height: 150px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+      padding: 20px 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      transition: all 0.2s ease;
+    }
+
+    #dialogue-box:hover {
+      background: rgba(255, 255, 255, 1);
+      border-color: #2563eb;
+    }
+
+    .speaker-tag {
+      display: inline-block;
+      font-size: 15px;
+      font-weight: 700;
+      color: #2563eb;
+      background: #eff6ff;
+      padding: 4px 14px;
+      border-radius: 8px;
+      align-self: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .dialogue-text {
+      font-size: 16px;
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+      color: #1e293b;
+      font-weight: 500;
+      flex-grow: 1;
+      word-break: keep-all;
+    }
+
+    .dialogue-hint {
+      align-self: flex-end;
+      font-size: 12px;
+      color: #94a3b8;
+      font-family: 'Roboto Mono', monospace;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dialogue-hint::after {
+      content: '▼';
+      font-size: 10px;
+      color: #2563eb;
+      animation: bounce 1s infinite alternate;
+    }
+
+    @keyframes bounce {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(3px); }
+    }
+
+    /* 공통 이동 버튼 */
+    .btn-nav {
+      position: absolute;
+      bottom: 20px;
+      height: 48px;
+      padding: 0 24px;
+      background-color: #2563eb;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Pretendard', sans-serif;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      z-index: 10;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn-nav:hover {
+      background-color: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .btn-nav:active {
+      transform: translateY(0);
+    }
+
+    #btn-prev {
+      left: 20px;
+    }
+
+    #btn-next, #btn-skip {
+      right: 20px;
+    }
+
+    /* 버튼 기본 상태 제어 */
+    #btn-next {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 상단 진행률 바 -->
+    <div class="top-bar">
+      <div class="title">문학경기장 MATHTOUR - 인천어린이박물관</div>
+      <div class="progress-tag">STAGE C05</div>
+    </div>
+
+    <!-- 메인 무대 레이어 -->
+    <div id="stage">
+      <!-- 배경 건물 에셋: 인천어린이박물관 (원본 힌트: 가로형 1000x750 기준, s=0.5 사용) -->
+      <div class="building-wrapper">
+        <iframe src="인천어린이박물관.html" scrolling="no"></iframe>
+      </div>
+
+      <!-- 바닥 구분선 -->
+      <div class="ground-line"></div>
+
+      <!-- 등장 인물: 서연 -->
+      <div class="char-wrapper" id="char-서연">
+        <iframe src="등장인물_서연.html" scrolling="no"></iframe>
+      </div>
+
+      <!-- 등장 인물: 민우 -->
+      <div class="char-wrapper" id="char-민우">
+        <iframe src="등장인물_민우.html" scrolling="no"></iframe>
+      </div>
+    </div>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+      <div>
+        <div class="speaker-tag" id="speaker-name">서연</div>
+        <div class="dialogue-text" id="dialogue-text">대사를 불러오는 중입니다...</div>
+      </div>
+      <div class="dialogue-hint">CLICK TO NEXT</div>
+    </div>
+
+    <!-- 네비게이션 버튼 -->
+    <button type="button" class="btn-nav" id="btn-prev" onclick="goPrev()">이전</button>
+    <button type="button" class="btn-nav" id="btn-skip" onclick="finishDialogue()">건너뛰기</button>
+    <button type="button" class="btn-nav" id="btn-next" onclick="goNext()">다음</button>
+  </div>
+
+  <script>
+    // 대화 스크립트 데이터
+    const dialogues = [
+      {
+        speaker: "서연",
+        text: "와, 오늘 정말 재미있었어! 전시장마다 직접 체험할 수 있어서 시간이 금방 지나갔어.",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "맞아 정말 재미있었어! 나는 마지막에 관람했던 공룡탐험이 제일 기억에 남아. 진짜 공룡 시대에 다녀온 기분이었어!",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "나도! 처음에는 조금 무서웠지만, 공룡을 가까이에서 보니깐 정말 신기했어.",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "오늘 박물관에 오길 정말 잘한 것 같아.",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "인천에도 이런 곳이 있었다니!! 정말 만족스러운 박물관 관람이었어!",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "이제 다른 곳으로 가볼까?",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "좋아!!",
+        target: "char-서연"
+      }
+    ];
+
+    let currentIndex = 0;
+
+    // 대화 업데이트 및 화자 강조
+    function updateDialogue() {
+      if (currentIndex < dialogues.length) {
+        const current = dialogues[currentIndex];
+        document.getElementById("speaker-name").innerText = current.speaker;
+        document.getElementById("dialogue-text").innerText = current.text;
+
+        // 화자 비활성화/활성화 처리 (.inactive)
+        const allChars = document.querySelectorAll(".char-wrapper");
+        allChars.forEach(char => {
+          if (char.id === current.target) {
+            char.classList.remove("inactive");
+          } else {
+            char.classList.add("inactive");
+          }
+        });
+      } else {
+        finishDialogue();
+      }
+    }
+
+    // 다음 대화 진행
+    function advanceDialogue() {
+      currentIndex++;
+      if (currentIndex < dialogues.length) {
+        updateDialogue();
+      } else {
+        finishDialogue();
+      }
+    }
+
+    // 대화 종료 시 처리
+    function finishDialogue() {
+      // 대화창 및 Skip 버튼 숨김
+      document.getElementById("dialogue-box").style.display = "none";
+      document.getElementById("btn-skip").style.display = "none";
+
+      // 모든 캐릭터 밝기 복구
+      const allChars = document.querySelectorAll(".char-wrapper");
+      allChars.forEach(char => char.classList.remove("inactive"));
+
+      // 다음 버튼 표시
+      document.getElementById("btn-next").style.display = "flex";
+    }
+
+    // 이전 페이지 이동
+    function goPrev() {
+      window.location.href = "C04.html";
+    }
+
+    // 다음 페이지 이동 (메인/시작 페이지로 이동)
+    function goNext() {
+      window.location.href = "index.html";
+    }
+
+    // 초기화 실행
+    window.addEventListener("DOMContentLoaded", () => {
+      updateDialogue();
+    });
+  </script>
+</body>
+</html>

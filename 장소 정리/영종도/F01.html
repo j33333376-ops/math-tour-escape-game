@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>영종도 MATHTOUR - 영종진공원 도착</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    :root {
+      --neon-blue: #00f0ff;
+      --alert-red: #ff003c;
+      --cyan-text: #e0ffff;
+      --space-black: #0b0c10;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at center, rgba(0, 240, 255, 0.08), transparent 55%),
+        var(--space-black);
+      color: #ffffff;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    #game-container {
+      position: relative;
+      width: min(100%, 1066px);
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: var(--space-black);
+      border: 1px solid rgba(0, 240, 255, 0.55);
+      box-shadow:
+        0 0 18px rgba(0, 240, 255, 0.45),
+        inset 0 0 35px rgba(0, 0, 0, 0.65);
+      isolation: isolate;
+      opacity: 1;
+      transform: scale(1);
+      transition:
+        opacity 0.85s ease,
+        transform 0.85s ease,
+        filter 0.85s ease;
+    }
+
+    #game-container.fade-out {
+      opacity: 0;
+      transform: scale(1.02);
+      filter: blur(5px) brightness(0.45);
+      pointer-events: none;
+    }
+
+    #background-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .background-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(5, 10, 18, 0.38) 0%,
+          rgba(5, 10, 18, 0.08) 40%,
+          rgba(5, 10, 18, 0.48) 100%
+        ),
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, 0.018) 0,
+          rgba(255, 255, 255, 0.018) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+    }
+
+    .stage-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 58px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: rgba(4, 9, 15, 0.82);
+      border-bottom: 2px solid var(--neon-blue);
+      box-shadow: 0 4px 18px rgba(0, 240, 255, 0.28);
+      backdrop-filter: blur(8px);
+    }
+
+    .stage-title {
+      margin: 0;
+      color: #ffffff;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(18px, 2.3vw, 29px);
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 12px rgba(0, 240, 255, 0.78);
+    }
+
+    .stage-code {
+      color: var(--neon-blue);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(10px, 1.25vw, 14px);
+      letter-spacing: 0.11em;
+      white-space: nowrap;
+    }
+
+    .hud-corner {
+      position: absolute;
+      z-index: 6;
+      width: 74px;
+      height: 74px;
+      pointer-events: none;
+      opacity: 0.78;
+    }
+
+    .hud-corner::before,
+    .hud-corner::after {
+      content: "";
+      position: absolute;
+      background: var(--neon-blue);
+      box-shadow: 0 0 9px rgba(0, 240, 255, 0.8);
+    }
+
+    .hud-corner::before {
+      width: 100%;
+      height: 2px;
+    }
+
+    .hud-corner::after {
+      width: 2px;
+      height: 100%;
+    }
+
+    .hud-left {
+      top: 78px;
+      left: 18px;
+    }
+
+    .hud-right {
+      top: 78px;
+      right: 18px;
+      transform: scaleX(-1);
+    }
+
+    .char-wrapper {
+      position: absolute;
+      z-index: 4;
+      overflow: visible;
+      filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.52));
+      animation: character-arrive 1.05s ease both;
+    }
+
+    #char-민우 {
+      left: 4.2%;
+      bottom: 68px;
+      width: 218.4px;
+      height: 268.8px;
+      animation-delay: 0.15s;
+    }
+
+    #char-서연 {
+      right: 3.8%;
+      bottom: 68px;
+      width: 218.4px;
+      height: 268.8px;
+      animation-delay: 0.3s;
+    }
+
+    .char-wrapper iframe {
+      display: block;
+      border: 0;
+      width: 260px;
+      height: 320px;
+      transform: scale(0.84);
+      transform-origin: bottom left;
+      pointer-events: none;
+    }
+
+    #char-민우 iframe {
+      transform: scale(0.84);
+    }
+
+    #char-서연 iframe {
+      transform: scale(0.84) scaleX(-1);
+    }
+
+    @keyframes character-arrive {
+      from {
+        opacity: 0;
+        transform: translateY(22px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .situation-box {
+      position: absolute;
+      z-index: 12;
+      top: 50%;
+      left: 50%;
+      width: min(48%, 490px);
+      min-height: 250px;
+      transform: translate(-50%, -48%);
+      padding: 28px 30px 26px;
+      background:
+        linear-gradient(135deg, rgba(0, 240, 255, 0.16), rgba(2, 18, 29, 0.76)),
+        rgba(0, 12, 20, 0.58);
+      border: 1px solid rgba(0, 240, 255, 0.72);
+      border-radius: 8px;
+      box-shadow:
+        0 0 18px rgba(0, 240, 255, 0.33),
+        inset 0 0 22px rgba(0, 240, 255, 0.08);
+      backdrop-filter: blur(10px);
+      animation: box-appear 0.9s ease 0.45s both;
+    }
+
+    .situation-box::before,
+    .situation-box::after {
+      content: "";
+      position: absolute;
+      width: 42px;
+      height: 14px;
+      border-top: 3px solid var(--neon-blue);
+      top: -3px;
+    }
+
+    .situation-box::before {
+      left: 18px;
+      border-left: 3px solid var(--neon-blue);
+    }
+
+    .situation-box::after {
+      right: 18px;
+      border-right: 3px solid var(--neon-blue);
+    }
+
+    @keyframes box-appear {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -43%) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -48%) scale(1);
+      }
+    }
+
+    .mission-label {
+      margin-bottom: 12px;
+      color: var(--neon-blue);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-shadow: 0 0 9px rgba(0, 240, 255, 0.78);
+    }
+
+    .situation-heading {
+      margin: 0 0 17px;
+      color: #ffffff;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(23px, 3vw, 34px);
+      font-weight: 400;
+      line-height: 1.22;
+      letter-spacing: 0.05em;
+      text-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+    }
+
+    .situation-text {
+      margin: 0;
+      color: var(--cyan-text);
+      font-size: clamp(14px, 1.55vw, 18px);
+      line-height: 1.72;
+      letter-spacing: 0.05em;
+      word-break: keep-all;
+    }
+
+    .mission-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 18px;
+      padding: 12px 14px;
+      color: #ffffff;
+      background: rgba(255, 0, 60, 0.11);
+      border-left: 3px solid var(--alert-red);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(12px, 1.35vw, 15px);
+      line-height: 1.55;
+      box-shadow: inset 0 0 16px rgba(255, 0, 60, 0.05);
+    }
+
+    .mission-note strong {
+      color: #ff6b8d;
+      white-space: nowrap;
+    }
+
+    .btn-nav {
+      position: absolute;
+      z-index: 30;
+      bottom: 20px;
+      min-width: 126px;
+      padding: 11px 19px;
+      background: rgba(2, 10, 16, 0.5);
+      border: 2px solid var(--neon-blue);
+      color: var(--neon-blue);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--neon-blue);
+      backdrop-filter: blur(5px);
+      transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .btn-nav:hover,
+    .btn-nav:focus-visible {
+      background: var(--neon-blue);
+      color: #02080d;
+      transform: translateY(-2px);
+      box-shadow:
+        0 0 10px var(--neon-blue),
+        0 0 24px rgba(0, 240, 255, 0.75);
+      outline: none;
+    }
+
+    .btn-nav:active {
+      transform: translateY(0);
+    }
+
+    #btn-prev {
+      left: 20px;
+    }
+
+    #btn-next {
+      right: 20px;
+    }
+
+    .location-chip {
+      position: absolute;
+      z-index: 8;
+      top: 76px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 7px 16px;
+      color: var(--cyan-text);
+      background: rgba(0, 10, 18, 0.65);
+      border: 1px solid rgba(0, 240, 255, 0.45);
+      border-radius: 999px;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(10px, 1.2vw, 13px);
+      letter-spacing: 0.08em;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.18);
+      backdrop-filter: blur(5px);
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 0;
+      }
+
+      #game-container {
+        width: 100vw;
+        border-left: 0;
+        border-right: 0;
+      }
+
+      .stage-header {
+        height: 48px;
+        padding: 0 13px;
+      }
+
+      .situation-box {
+        width: 55%;
+        min-height: 0;
+        padding: 16px 17px;
+      }
+
+      .situation-heading {
+        margin-bottom: 9px;
+      }
+
+      .mission-label {
+        margin-bottom: 7px;
+        font-size: 10px;
+      }
+
+      .mission-note {
+        margin-top: 10px;
+        padding: 8px 9px;
+      }
+
+      #char-민우,
+      #char-서연 {
+        bottom: 53px;
+        width: 171.6px;
+        height: 211.2px;
+      }
+
+      #char-민우 {
+        left: 0;
+      }
+
+      #char-서연 {
+        right: -3px;
+      }
+
+      #char-민우 iframe,
+      #char-서연 iframe {
+        transform: scale(0.66);
+      }
+
+      #char-서연 iframe {
+        transform: scale(0.66) scaleX(-1);
+      }
+
+      .btn-nav {
+        bottom: 10px;
+        min-width: 95px;
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+
+      #btn-prev {
+        left: 10px;
+      }
+
+      #btn-next {
+        right: 10px;
+      }
+
+      .location-chip {
+        top: 57px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main id="game-container" aria-label="영종도 MATHTOUR 상황 장면">
+    <img
+      id="background-image"
+      src="영종진공원.png"
+      alt="영종진공원 전경"
+      draggable="false"
+    />
+
+    <div class="background-overlay" aria-hidden="true"></div>
+
+    <header class="stage-header">
+      <h1 class="stage-title">영종도 MATHTOUR</h1>
+      <div class="stage-code">SECTOR F01 · YEONGJONGJIN PARK</div>
+    </header>
+
+    <div class="location-chip">현재 위치 : 영종진공원 탐사 구역</div>
+
+    <div class="hud-corner hud-left" aria-hidden="true"></div>
+    <div class="hud-corner hud-right" aria-hidden="true"></div>
+
+    <div
+      class="char-wrapper"
+      id="char-민우"
+      aria-label="민우"
+    >
+      <iframe
+        src="등장인물_민우.html"
+        title="민우 캐릭터"
+        scrolling="no"
+      ></iframe>
+    </div>
+
+    <div
+      class="char-wrapper"
+      id="char-서연"
+      aria-label="서연"
+    >
+      <iframe
+        src="등장인물_서연.html"
+        title="서연 캐릭터"
+        scrolling="no"
+      ></iframe>
+    </div>
+
+    <section class="situation-box" aria-labelledby="scene-heading">
+      <div class="mission-label">MISSION SIGNAL DETECTED</div>
+      <h2 class="situation-heading" id="scene-heading">영종진공원에 도착하다</h2>
+
+      <p class="situation-text">
+        민우와 서연은 영종진공원에 도착해 눈앞에 펼쳐진 전경을 감상했다.
+        두 사람은 공원 곳곳에 어떤 역사와 비밀이 숨어 있을지 궁금해하며 주변을 살피기 시작했다.
+      </p>
+
+      <div class="mission-note">
+        <strong>[미션 쪽지]</strong>
+        <span>
+          ‘영종진 영령 위령탑’을 찾아라.<br />
+          탑의 높이를 정확히 구해야 다음 구역으로 이동할 수 있다.
+        </span>
+      </div>
+    </section>
+
+    <button
+      type="button"
+      class="btn-nav"
+      id="btn-prev"
+      onclick="navigateTo('index.html')"
+      aria-label="이전 장면으로 이동"
+    >
+      ◀ 이전
+    </button>
+
+    <button
+      type="button"
+      class="btn-nav"
+      id="btn-next"
+      onclick="navigateTo('F02.html')"
+      aria-label="다음 장면으로 이동"
+    >
+      위령탑 찾기 ▶
+    </button>
+  </main>
+
+  <script>
+    let isNavigating = false;
+
+    function navigateTo(url) {
+      if (isNavigating || !url) return;
+
+      isNavigating = true;
+
+      const container = document.getElementById('game-container');
+      const buttons = document.querySelectorAll('.btn-nav');
+
+      buttons.forEach((button) => {
+        button.disabled = true;
+        button.style.cursor = 'default';
+      });
+
+      container.classList.add('fade-out');
+
+      window.setTimeout(() => {
+        window.location.href = url;
+      }, 820);
+    }
+
+    window.addEventListener('pageshow', () => {
+      const container = document.getElementById('game-container');
+      const buttons = document.querySelectorAll('.btn-nav');
+
+      isNavigating = false;
+      container.classList.remove('fade-out');
+
+      buttons.forEach((button) => {
+        button.disabled = false;
+        button.style.cursor = 'pointer';
+      });
+    });
+  </script>
+</body>
+</html>

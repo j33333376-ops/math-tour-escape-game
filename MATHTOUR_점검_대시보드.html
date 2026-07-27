@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATHTOUR 제작·연결 점검 대시보드</title>
+<style>
+  *{box-sizing:border-box;}
+  :root{
+    --bg:#f1f5f9; --card:#ffffff; --ink:#0f172a; --mut:#64748b; --line:#e2e8f0;
+    --done-bg:#dcfce7; --done-fg:#15803d; --done-ac:#16a34a;
+    --err-bg:#fee2e2; --err-fg:#b91c1c; --err-ac:#dc2626;
+    --wip-bg:#dbeafe; --wip-fg:#1d4ed8; --wip-ac:#2563eb;
+    --todo-bg:#f1f5f9; --todo-fg:#64748b; --todo-ac:#94a3b8;
+    --na-bg:#f8fafc; --na-fg:#cbd5e1;
+    --warn-bg:#fef3c7; --warn-fg:#b45309;
+  }
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:'Segoe UI','Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1200px;margin:0 auto;padding:28px 20px 80px;}
+  header h1{font-size:1.5rem;margin:0 0 4px;letter-spacing:-0.02em;}
+  header .meta{color:var(--mut);font-size:0.86rem;}
+  header .meta b{color:var(--ink);}
+  /* KPI */
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:22px 0 26px;}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;
+    box-shadow:0 1px 2px rgba(15,23,42,.04);}
+  .kpi .n{font-size:1.7rem;font-weight:800;letter-spacing:-0.03em;}
+  .kpi .l{font-size:0.78rem;color:var(--mut);margin-top:2px;}
+  .kpi.t-done .n{color:var(--done-ac);} .kpi.t-err .n{color:var(--err-ac);}
+  .kpi.t-wip .n{color:var(--wip-ac);} .kpi.t-todo .n{color:var(--todo-ac);}
+  h2{font-size:1.05rem;margin:26px 0 12px;display:flex;align-items:center;gap:8px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:8px;box-shadow:0 1px 2px rgba(15,23,42,.04);overflow-x:auto;}
+  /* Matrix */
+  table.matrix{border-collapse:separate;border-spacing:6px;width:100%;min-width:820px;}
+  table.matrix th{font-size:0.8rem;color:var(--mut);font-weight:700;padding:4px 6px;text-align:center;}
+  table.matrix th.place{text-align:left;width:200px;}
+  .pcell{text-align:left;padding:8px 10px;}
+  .pcell .pn{font-weight:700;font-size:0.92rem;}
+  .pcell .pg{font-size:0.75rem;color:var(--mut);}
+  .cell{border-radius:10px;padding:7px 8px;min-height:58px;font-size:0.72rem;
+    border:1px solid transparent;cursor:default;}
+  .cell .nm{font-weight:700;font-size:0.75rem;line-height:1.2;display:block;}
+  .cell .pr{color:inherit;opacity:.8;}
+  .cell .flags{margin-top:3px;font-size:0.68rem;font-weight:700;letter-spacing:.02em;}
+  .cell.done{background:var(--done-bg);color:var(--done-fg);border-color:#bbf7d0;}
+  .cell.error{background:var(--err-bg);color:var(--err-fg);border-color:#fecaca;}
+  .cell.wip{background:var(--wip-bg);color:var(--wip-fg);border-color:#bfdbfe;}
+  .cell.todo{background:var(--todo-bg);color:var(--todo-fg);border:1px dashed #cbd5e1;}
+  .cell.na{background:var(--na-bg);color:var(--na-fg);text-align:center;border:1px dashed #eef2f6;}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;vertical-align:middle;margin-right:2px;}
+  .dot.on{background:var(--done-ac);} .dot.off{background:#cbd5e1;}
+  /* Legend + filters */
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:12px 2px;font-size:0.8rem;color:var(--mut);}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .sw{width:13px;height:13px;border-radius:4px;display:inline-block;}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 12px;}
+  .filters button{font:inherit;font-size:0.82rem;padding:6px 13px;border-radius:20px;
+    border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;}
+  .filters button.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  /* Detail table */
+  table.detail{border-collapse:collapse;width:100%;min-width:900px;font-size:0.84rem;}
+  table.detail th,table.detail td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;}
+  table.detail th{background:#f8fafc;font-weight:700;color:var(--mut);position:sticky;top:0;}
+  table.detail td.c{text-align:center;}
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:0.74rem;font-weight:700;white-space:nowrap;}
+  .b-done{background:var(--done-bg);color:var(--done-fg);}
+  .b-error{background:var(--err-bg);color:var(--err-fg);}
+  .b-wip{background:var(--wip-bg);color:var(--wip-fg);}
+  .b-todo{background:var(--todo-bg);color:var(--todo-fg);}
+  .b-warn{background:var(--warn-bg);color:var(--warn-fg);}
+  .note{background:#fff;border:1px solid var(--line);border-left:4px solid var(--warn-fg);
+    border-radius:10px;padding:12px 16px;margin-top:16px;font-size:0.86rem;color:#3f3f46;}
+  .note b{color:var(--warn-fg);}
+  .mono{font-family:'Nanum Gothic Coding','Consolas',monospace;font-size:0.82em;}
+  .foot{color:var(--mut);font-size:0.8rem;margin-top:24px;text-align:center;}
+  @media(max-width:760px){.kpis{grid-template-columns:repeat(3,1fr);}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🗺️ MATHTOUR 제작·연결 점검 대시보드</h1>
+    <div class="meta">기준표 <b>분임별 장소 및 코스 배정 결과.xlsx</b> × 실제 제작물 · 최종 점검 <b id="ts"></b></div>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <h2>📋 배정 × 제작 현황 매트릭스</h2>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--done-bg);border:1px solid #bbf7d0"></i>연결정상(4쪽↑·이전/다음 정상)</span>
+    <span><i class="sw" style="background:var(--wip-bg);border:1px solid #bfdbfe"></i>진행중(4쪽 미만)</span>
+    <span><i class="sw" style="background:var(--err-bg);border:1px solid #fecaca"></i>링크오류</span>
+    <span><i class="sw" style="background:var(--todo-bg);border:1px dashed #cbd5e1"></i>미착수</span>
+    <span><i class="sw" style="background:var(--na-bg);border:1px dashed #e2e8f0"></i>미배정</span>
+    <span><span class="dot on"></span>/<span class="dot off"></span> index 연결 여부</span>
+  </div>
+  <div class="card"><table class="matrix" id="matrix"></table></div>
+
+  <h2>🔎 코스별 상세</h2>
+  <div class="filters" id="filters"></div>
+  <div class="card"><table class="detail" id="detail"></table></div>
+
+  <div class="note" id="unassigned"></div>
+
+  <p class="foot">이 대시보드는 점검 시점의 스냅샷입니다. 파일이 추가되면 다시 점검을 요청하시면 갱신해 드립니다.</p>
+</div>
+
+<script>
+/* ==== 데이터 (점검 스냅샷) ==== */
+const CHECKED = "2026-07-27 07:19";
+const LETTERS = ["A","B","C","D","E","F"];
+
+/* 배정표 */
+const PLACES = [
+ {group:"1분임",level:"중",place:"문학경기장",courses:{
+   A:{name:"인천SSG랜더스필드",person:"이재현",school:"인천논현중"},
+   B:{name:"월드컵주경기장",person:"안지수",school:"인천공항중"},
+   C:{name:"인천어린이박물관",person:"강진성",school:"인천당하중"},
+   E:{name:"박태환수영장",person:"박소연",school:"인천은송중"},
+   F:{name:"인공암벽장",person:"손민성",school:"검단가온중"}}},
+ {group:"2분임",level:"중",place:"인천차이나타운",courses:{
+   A:{name:"삼국지벽화거리",person:"조아림",school:"검단가온중"},
+   B:{name:"짜장면박물관",person:"권희석",school:"제물포중"},
+   C:{name:"대불호텔",person:"이한결",school:"백령중"},
+   D:{name:"인천개항박물관",person:"김승진",school:"인하대부중"},
+   F:{name:"맥아더장군동상",person:"홍준표",school:"인천하늘중"}}},
+ {group:"3분임",level:"중",place:"영종도",courses:{
+   A:{name:"인천대교기념관",person:"박건웅",school:"진산중"},
+   C:{name:"을왕리해수욕장",person:"조승민",school:"옥련중"},
+   D:{name:"레일바이크",person:"고재준",school:"신흥중"},
+   E:{name:"공항전망대",person:"오수빈",school:"검단가온중"},
+   F:{name:"영종진공원",person:"차수현",school:"인천중산중"}}},
+ {group:"4분임",level:"중",place:"송도센트럴파크",courses:{
+   A:{name:"국립세계문자박물관",person:"한미란",school:"강남중"},
+   B:{name:"송도한옥마을",person:"강민구",school:"동인천중"},
+   D:{name:"수상택시",person:"김경화",school:"인천논현중"},
+   E:{name:"인천도시역사관",person:"남궁환",school:"인천미송중"},
+   F:{name:"트라이보울",person:"김유창",school:"계양중"}}},
+ {group:"5분임",level:"고",place:"소래포구",courses:{
+   A:{name:"소래포구 어시장",person:"이재빈",school:"학익고"},
+   B:{name:"염전체험장",person:"오정규",school:"인천해송고"},
+   C:{name:"소래습지공원전시관",person:"조유나",school:"숭덕여고"},
+   D:{name:"새우타워",person:"김다영",school:"인천신현고"},
+   E:{name:"풍차",person:"황인엽",school:"서운고"},
+   F:{name:"소염교",person:"조성율",school:"진산과학고"}}},
+ {group:"6분임",level:"고",place:"월미도",courses:{
+   A:{name:"월미전통정원",person:"김승민",school:"인천포스코고"},
+   B:{name:"월미전망대",person:"오은미",school:"강남영상미디어고"},
+   C:{name:"월미산 산책로",person:"강경희",school:"신명여고"},
+   D:{name:"디스코팡팡",person:"김경환",school:"연평고"},
+   E:{name:"바이킹",person:"이정아",school:"인천영종고"},
+   F:{name:"월미도 앞바다",person:"이미선",school:"인천문남고"}}},
+ {group:"7분임",level:"고",place:"인천도호부청사·인천향교",courses:{
+   A:{name:"동헌 및 객사",person:"김가연",school:"인천해사고"},
+   B:{name:"옥사(감옥)",person:"서효원",school:"강화고"},
+   D:{name:"향교 대성전",person:"장세원",school:"인화여고"},
+   E:{name:"명륜당",person:"김경옥",school:"인일여고"},
+   F:{name:"투호 놀이장",person:"송현태",school:"인천청라고"}}},
+ {group:"8분임",level:"고",place:"아라뱃길·청라호수공원",courses:{
+   A:{name:"아라타워 전망대",person:"서유란",school:"인항고"},
+   B:{name:"아라폭포",person:"안소현",school:"인천청라고"},
+   D:{name:"음악분수",person:"김범수",school:"안남고"},
+   E:{name:"호수 횡단교량",person:"권희선",school:"계산고"},
+   F:{name:"청라루",person:"강병진",school:"인성여고"}}},
+];
+
+/* 제작·연결 상태 (없으면 미착수) */
+const STATUS = {
+ "문학경기장":{
+   A:{pages:5,num:true,issues:[],index:false,asset:"warn",assetNote:"배경 이미지(인천SSG랜더스필드 외부/내부.png) 없음 · A01의 '야구글러브.html' 경로 오류"},
+   E:{pages:4,num:true,issues:[],index:false,asset:"warn",assetNote:"배경 이미지(박태환수영장 외부/내부.png) 없음"},
+   F:{pages:4,num:true,issues:["F02 '이전'이 F01이 아니라 F02(자기 자신)","F04 '다음(End)'이 존재하지 않는 End.html"],index:false,asset:"ok",assetNote:""}
+ },
+ "영종도":{
+   A:{pages:2,num:true,issues:["A02 '다음'이 아직 없는 A03.html (현재 마지막이면 index여야 함)"],index:false,asset:"ok",assetNote:""}
+ },
+ "월미도":{
+   A:{pages:4,num:true,issues:[],index:false,asset:"warn",assetNote:"파일명이 소문자(a01~a04) — index를 대문자로 연결 시 웹서버에서 깨짐"},
+   B:{pages:4,num:true,issues:[],index:false,asset:"warn",assetNote:"B04 배경 '월미도전망대.PNG' 대소문자(실제 .png)"}
+ }
+};
+
+/* 배정표 밖 장소(연습용/여분)에 존재하는 코스 페이지 */
+const UNASSIGNED = [
+  {place:"강화도", note:"A01.html 1개 존재(1쪽, 미완성). 배정표에 없는 장소."}
+];
+
+/* ==== 상태 판정 ==== */
+function stateOf(place,letter){
+  const s=(STATUS[place]||{})[letter];
+  if(!s) return {k:"todo",label:"미착수"};
+  if(s.issues && s.issues.length) return {k:"error",label:"링크오류",s};
+  if(s.pages<4) return {k:"wip",label:"진행중",s};
+  return {k:"done",label:"연결정상",s};
+}
+
+/* ==== KPI ==== */
+function renderKPIs(){
+  let assigned=0, started=0, done=0, err=0, todo=0, idx=0;
+  PLACES.forEach(p=>Object.keys(p.courses).forEach(L=>{
+    assigned++;
+    const st=stateOf(p.place,L);
+    if(st.k==="todo"){todo++;return;}
+    started++;
+    if(st.k==="done")done++;
+    if(st.k==="error")err++;
+    if(st.s && st.s.index) idx++;
+  }));
+  const items=[
+    {n:assigned,l:"배정 코스",c:""},
+    {n:started,l:"제작 착수",c:"t-wip"},
+    {n:done,l:"연결정상",c:"t-done"},
+    {n:err,l:"링크오류",c:"t-err"},
+    {n:todo,l:"미착수",c:"t-todo"},
+    {n:idx,l:"index 연결",c:idx?"t-done":"t-todo"},
+  ];
+  document.getElementById("kpis").innerHTML=items.map(k=>
+    `<div class="kpi ${k.c}"><div class="n">${k.n}</div><div class="l">${k.l}</div></div>`).join("");
+}
+
+/* ==== 매트릭스 ==== */
+function renderMatrix(){
+  let h="<thead><tr><th class='place'>분임 · 장소</th>"+
+        LETTERS.map(L=>`<th>${L}</th>`).join("")+"</tr></thead><tbody>";
+  PLACES.forEach(p=>{
+    h+=`<tr><td class="pcell"><div class="pn">${p.place}</div><div class="pg">${p.group} · ${p.level}</div></td>`;
+    LETTERS.forEach(L=>{
+      const c=p.courses[L];
+      if(!c){h+=`<td class="cell na">—</td>`;return;}
+      const st=stateOf(p.place,L);
+      const s=st.s;
+      let flags="";
+      if(s){
+        flags=`<span class="dot ${s.index?'on':'off'}"></span>${s.pages}쪽`;
+        if(s.asset==="warn") flags+=" ⚠";
+      }else{flags="—";}
+      const tip=`${L}. ${c.name} / ${c.person}`+(s&&s.issues.length?` / ⚠ ${s.issues.join('; ')}`:'');
+      h+=`<td class="cell ${st.k}" title="${tip.replace(/"/g,'&quot;')}">`+
+         `<span class="nm">${L}. ${c.name}</span>`+
+         `<span class="pr">${c.person}</span>`+
+         `<div class="flags">${flags}</div></td>`;
+    });
+    h+="</tr>";
+  });
+  document.getElementById("matrix").innerHTML=h+"</tbody>";
+}
+
+/* ==== 상세 테이블 ==== */
+let curFilter="all";
+function renderDetail(){
+  const rows=[];
+  PLACES.forEach(p=>LETTERS.forEach(L=>{
+    const c=p.courses[L]; if(!c)return;
+    const st=stateOf(p.place,L); const s=st.s;
+    rows.push({p,L,c,st,s});
+  }));
+  const shown=rows.filter(r=>curFilter==="all"||r.st.k===curFilter);
+  let h="<thead><tr><th>분임</th><th>장소</th><th>코스</th><th>코스명</th><th>담당자</th>"+
+        "<th class='c'>페이지</th><th class='c'>이전/다음</th><th class='c'>index</th><th class='c'>에셋</th><th>상태 · 비고</th></tr></thead><tbody>";
+  shown.forEach(({p,L,c,st,s})=>{
+    const badge=`<span class="badge b-${st.k}">${st.label}</span>`;
+    const pages = s? s.pages+"쪽" : "—";
+    const chain = s? (s.issues.length? `<span class="badge b-error">오류</span>` : `<span class="badge b-done">정상</span>`) : "—";
+    const idx = s? (s.index? "●":"○") : "—";
+    const asset = s? (s.asset==="warn"? `<span class="badge b-warn">⚠</span>`:"OK") : "—";
+    let note = s && s.issues.length ? s.issues.join("<br>") : "";
+    if(s && s.assetNote) note += (note?"<br>":"")+`<span style="color:var(--warn-fg)">${s.assetNote}</span>`;
+    if(s && !s.index) note += (note?"<br>":"")+`<span style="color:var(--mut)">index 카드가 아직 ${L}01로 연결 안 됨</span>`;
+    h+=`<tr><td>${p.group}</td><td>${p.place}</td><td class="c mono">${L}</td><td>${c.name}</td><td>${c.person}<br><span style="color:var(--mut);font-size:.9em">${c.school}</span></td>`+
+       `<td class="c">${pages}</td><td class="c">${chain}</td><td class="c">${idx}</td><td class="c">${asset}</td>`+
+       `<td>${badge}${note?"<br>"+note:""}</td></tr>`;
+  });
+  document.getElementById("detail").innerHTML=h+"</tbody>";
+}
+
+/* ==== 필터 ==== */
+function renderFilters(){
+  const defs=[["all","전체"],["done","연결정상"],["error","링크오류"],["wip","진행중"],["todo","미착수"]];
+  document.getElementById("filters").innerHTML=defs.map(([k,l])=>
+    `<button data-k="${k}" class="${k===curFilter?'active':''}">${l}</button>`).join("");
+  document.querySelectorAll("#filters button").forEach(b=>b.onclick=()=>{
+    curFilter=b.dataset.k;renderFilters();renderDetail();
+  });
+}
+
+function renderUnassigned(){
+  const t=UNASSIGNED.map(u=>`<b>${u.place}</b> — ${u.note}`).join("<br>");
+  document.getElementById("unassigned").innerHTML=
+    "⚠ 배정표에 없는 장소 폴더: 강화도·부평·옹진군·인천대공원·인하대 (연습용/여분으로 보임). 이 중 실제 제작물이 올라온 경우:<br>"+t;
+}
+
+document.getElementById("ts").textContent=CHECKED;
+renderKPIs();renderMatrix();renderFilters();renderDetail();renderUnassigned();
+</script>
+</body>
+</html>

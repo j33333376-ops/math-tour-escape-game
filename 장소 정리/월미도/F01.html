@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>월미도 MATHTOUR - 월미도의 석양</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    :root {
+      --dark-red: #8c3030;
+      --dark-red-hover: #661f1f;
+      --antique-gold: #d4af37;
+      --text-dark: #2d3748;
+      --parchment: #f5f0e6;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      background: radial-gradient(circle at center, #6d5140 0%, #32251f 65%, #1c1512 100%);
+      font-family: 'Noto Sans KR', sans-serif;
+      color: var(--text-dark);
+    }
+
+    button { font-family: 'Noto Sans KR', sans-serif; }
+
+    #game-container {
+      position: relative;
+      width: min(100%, 1066px);
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #2e211c;
+      border: 3px solid var(--antique-gold);
+      box-shadow: 0 0 0 6px rgba(60, 31, 24, 0.8), 0 18px 50px rgba(0, 0, 0, 0.55);
+      isolation: isolate;
+    }
+
+    #background-image {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .background-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(to bottom, rgba(29, 17, 13, 0.12) 0%, rgba(41, 24, 17, 0.03) 40%, rgba(31, 17, 12, 0.28) 100%),
+        radial-gradient(ellipse at center, transparent 45%, rgba(32, 17, 13, 0.35) 100%);
+    }
+
+    .film-grain {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      opacity: 0.15;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0, rgba(255,255,255,.025) 1px, transparent 1px, transparent 4px);
+      mix-blend-mode: overlay;
+    }
+
+    #stage-bar {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      z-index: 20;
+      min-width: 340px;
+      max-width: calc(100% - 80px);
+      padding: 9px 28px;
+      transform: translateX(-50%);
+      border: 1px solid var(--antique-gold);
+      border-radius: 3px;
+      background: rgba(27, 18, 15, 0.78);
+      color: var(--antique-gold);
+      text-align: center;
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: clamp(16px, 2.15vw, 24px);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      box-shadow: 0 3px 14px rgba(0,0,0,.4), inset 0 0 12px rgba(212,175,55,.08);
+      white-space: nowrap;
+    }
+
+    #stage-bar::before,
+    #stage-bar::after {
+      content: "◆";
+      margin: 0 12px;
+      font-size: .6em;
+      vertical-align: middle;
+    }
+
+    .char-wrapper {
+      position: absolute;
+      z-index: 3;
+      overflow: visible;
+      filter: drop-shadow(0 8px 8px rgba(0,0,0,.34));
+    }
+
+    #char-민우 {
+      left: 50px;
+      bottom: 58px;
+      width: 234px;
+      height: 288px;
+    }
+
+    /* 서연을 설명 상자 바깥의 오른쪽 영역으로 이동 */
+    #char-서연 {
+      right: 8px;
+      bottom: 58px;
+      width: 208px;
+      height: 256px;
+      z-index: 4;
+    }
+
+    .char-wrapper iframe {
+      display: block;
+      width: 260px;
+      height: 320px;
+      border: 0;
+      pointer-events: none;
+    }
+
+    #char-민우 iframe {
+      transform: scale(0.9);
+      transform-origin: bottom left;
+    }
+
+    #char-서연 iframe {
+      transform: scale(0.8) scaleX(-1);
+      transform-origin: bottom left;
+    }
+
+    .nameplate {
+      position: absolute;
+      left: 50%;
+      bottom: -2px;
+      z-index: 5;
+      min-width: 92px;
+      padding: 5px 15px;
+      transform: translateX(-50%);
+      border: 1px solid var(--antique-gold);
+      border-radius: 3px;
+      background: rgba(50, 27, 23, 0.88);
+      color: #fff7df;
+      text-align: center;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      box-shadow: 0 4px 10px rgba(0,0,0,.3);
+    }
+
+    #situation-box {
+      position: absolute;
+      top: 112px;
+      left: 50%;
+      z-index: 12;
+      width: min(46%, 490px);
+      min-height: 290px;
+      padding: 34px 38px 31px;
+      transform: translateX(-50%) rotate(-0.2deg);
+      border: 2px solid #8d6a34;
+      color: #3d2a20;
+      background:
+        linear-gradient(rgba(245,240,230,.94), rgba(229,211,170,.95)),
+        repeating-linear-gradient(0deg, rgba(90,58,27,.04) 0, rgba(90,58,27,.04) 1px, transparent 1px, transparent 4px);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 30px rgba(109,72,28,.18);
+      clip-path: polygon(1% 3%,97% 0,100% 6%,99% 94%,95% 100%,4% 98%,0 93%,1% 7%);
+    }
+
+    #situation-box::before,
+    #situation-box::after {
+      content: "";
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      border-color: var(--dark-red);
+      opacity: .75;
+    }
+
+    #situation-box::before {
+      top: 14px;
+      left: 15px;
+      border-top: 2px solid;
+      border-left: 2px solid;
+    }
+
+    #situation-box::after {
+      right: 15px;
+      bottom: 14px;
+      border-right: 2px solid;
+      border-bottom: 2px solid;
+    }
+
+    .situation-kicker {
+      margin-bottom: 8px;
+      color: var(--dark-red);
+      text-align: center;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .18em;
+    }
+
+    #situation-title {
+      position: relative;
+      margin: 0 0 19px;
+      padding-bottom: 14px;
+      color: #5e2525;
+      text-align: center;
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: clamp(22px, 2.6vw, 31px);
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+
+    #situation-title::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 70%;
+      height: 1px;
+      transform: translateX(-50%);
+      background: linear-gradient(to right, transparent, #8d6a34 18%, #8d6a34 82%, transparent);
+    }
+
+    .situation-text {
+      margin: 0;
+      font-size: clamp(14px, 1.55vw, 18px);
+      line-height: 1.85;
+      letter-spacing: -.02em;
+      word-break: keep-all;
+      text-align: justify;
+      text-shadow: 0 1px rgba(255,255,255,.35);
+    }
+
+    .situation-text strong {
+      color: var(--dark-red);
+      font-family: 'Nanum Myeongjo', serif;
+    }
+
+    .sunset-caption {
+      margin-top: 17px;
+      color: #654529;
+      text-align: center;
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: clamp(13px, 1.35vw, 16px);
+      font-weight: 700;
+    }
+
+    .btn-nav {
+      position: absolute;
+      z-index: 30;
+      bottom: 20px;
+      padding: 10px 24px;
+      border: 1px solid var(--antique-gold);
+      border-radius: 4px;
+      background: var(--dark-red);
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 5px 12px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.08);
+      transition: background-color .2s ease, transform .2s ease, box-shadow .2s ease;
+    }
+
+    .btn-nav:hover {
+      background: var(--dark-red-hover);
+      transform: translateY(-2px);
+    }
+
+    #btn-prev { left: 20px; }
+    #btn-next { right: 20px; }
+
+    @media (max-width: 760px) {
+      body { padding: 4px; }
+      #stage-bar { top: 9px; min-width: 260px; padding: 7px 14px; }
+      #stage-bar::before, #stage-bar::after { margin: 0 6px; }
+
+      #situation-box {
+        top: 68px;
+        width: 52%;
+        min-height: 210px;
+        padding: 22px 24px 20px;
+      }
+
+      #char-민우 {
+        left: 8px;
+        bottom: 43px;
+        width: 182px;
+        height: 224px;
+      }
+
+      #char-서연 {
+        right: 0;
+        bottom: 43px;
+        width: 156px;
+        height: 192px;
+      }
+
+      #char-민우 iframe { transform: scale(0.7); }
+      #char-서연 iframe { transform: scale(0.6) scaleX(-1); }
+
+      .nameplate {
+        min-width: 72px;
+        padding: 3px 10px;
+        font-size: 12px;
+      }
+
+      .btn-nav {
+        bottom: 9px;
+        padding: 7px 16px;
+        font-size: 12px;
+      }
+
+      #btn-prev { left: 9px; }
+      #btn-next { right: 9px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main id="game-container" aria-label="월미도 MATHTOUR 상황 연출 장면">
+    <img id="background-image" src="월미도 앞바다.png" alt="석양이 비치는 월미도 앞바다" draggable="false" />
+
+    <div class="background-overlay" aria-hidden="true"></div>
+    <div class="film-grain" aria-hidden="true"></div>
+
+    <header id="stage-bar">월미도 MATHTOUR · 월미도의 석양</header>
+
+    <div class="char-wrapper" id="char-민우" aria-label="등장인물 민우">
+      <iframe src="등장인물_민우.html" scrolling="no" title="민우"></iframe>
+      <div class="nameplate">민우</div>
+    </div>
+
+    <div class="char-wrapper" id="char-서연" aria-label="등장인물 서연">
+      <iframe src="등장인물_서연.html" scrolling="no" title="서연"></iframe>
+      <div class="nameplate">서연</div>
+    </div>
+
+    <section id="situation-box" aria-labelledby="situation-title">
+      <div class="situation-kicker">SCENE A01</div>
+      <h1 id="situation-title">바다와 역사가 만나는 곳</h1>
+
+      <p class="situation-text">
+        인천 앞바다에 자리한 <strong>월미도</strong>는 섬의 생김새가 반달의 꼬리를 닮았다고 하여 이름 붙여졌다고 전해진다. 개항 이후에는 인천항과 가까운 지리적 위치로 인해 여러 시대의 흔적이 켜켜이 쌓인 역사적인 장소가 되었다.
+        <br /><br />
+        민우와 서연은 붉은 석양이 바다 위로 길게 번지는 모습을 바라보며, 월미도에 감춰진 이야기와 앞으로 시작될 수학 탐험을 떠올린다.
+      </p>
+
+      <div class="sunset-caption">“저 노을처럼, 오늘의 여행도 오래 기억되겠지.”</div>
+    </section>
+
+    <button type="button" class="btn-nav" id="btn-prev" onclick="moveToPage('index.html')">이전</button>
+    <button type="button" class="btn-nav" id="btn-next" onclick="moveToPage('F02.html')">다음</button>
+  </main>
+
+  <script>
+    'use strict';
+
+    function moveToPage(url) {
+      window.location.href = url || 'index.html';
+    }
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'ArrowLeft') moveToPage('index.html');
+      if (event.key === 'ArrowRight' || event.key === 'Enter') moveToPage('A02.html');
+    });
+  </script>
+</body>
+</html>

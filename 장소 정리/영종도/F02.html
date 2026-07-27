@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>영종도 MATHTOUR - 위령탑 높이 측정 임무</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    :root {
+      --neon-blue: #00f0ff;
+      --alert-red: #ff003c;
+      --cyan-text: #e0ffff;
+      --deep-space: #0b0c10;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(0, 240, 255, 0.10), transparent 36%),
+        #020409;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #ffffff;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    #game-container {
+      position: relative;
+      width: min(100vw, 1066px);
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      isolation: isolate;
+      background: var(--deep-space);
+      box-shadow:
+        0 0 30px rgba(0, 240, 255, 0.28),
+        inset 0 0 60px rgba(0, 0, 0, 0.75);
+      transition:
+        opacity 0.85s ease,
+        transform 0.85s ease,
+        filter 0.85s ease;
+    }
+
+    #game-container.fade-out {
+      opacity: 0;
+      transform: scale(1.025);
+      filter: blur(8px) brightness(0.45);
+      pointer-events: none;
+    }
+
+    #background-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      user-select: none;
+      pointer-events: none;
+      filter: brightness(0.56) saturate(0.85) contrast(1.08);
+    }
+
+    .background-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(2, 5, 12, 0.20), rgba(2, 5, 12, 0.55)),
+        radial-gradient(circle at center, transparent 35%, rgba(0, 0, 0, 0.58) 100%),
+        repeating-linear-gradient(
+          0deg,
+          rgba(0, 240, 255, 0.025) 0,
+          rgba(0, 240, 255, 0.025) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+    }
+
+    .hud-corner {
+      position: absolute;
+      z-index: 7;
+      width: 42px;
+      height: 42px;
+      pointer-events: none;
+      opacity: 0.75;
+    }
+
+    .hud-corner::before,
+    .hud-corner::after {
+      content: "";
+      position: absolute;
+      background: var(--neon-blue);
+      box-shadow: 0 0 8px var(--neon-blue);
+    }
+
+    .hud-corner::before {
+      width: 100%;
+      height: 2px;
+    }
+
+    .hud-corner::after {
+      width: 2px;
+      height: 100%;
+    }
+
+    .hud-corner.tl {
+      top: 48px;
+      left: 14px;
+    }
+
+    .hud-corner.tr {
+      top: 48px;
+      right: 14px;
+      transform: scaleX(-1);
+    }
+
+    .hud-corner.bl {
+      bottom: 14px;
+      left: 14px;
+      transform: scaleY(-1);
+    }
+
+    .hud-corner.br {
+      right: 14px;
+      bottom: 14px;
+      transform: scale(-1);
+    }
+
+    #stage-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 20;
+      width: 100%;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.74);
+      border-bottom: 1px solid rgba(0, 240, 255, 0.92);
+      box-shadow: 0 4px 18px rgba(0, 240, 255, 0.18);
+    }
+
+    #stage-header::after {
+      content: "";
+      position: absolute;
+      left: -35%;
+      bottom: 0;
+      width: 32%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #ffffff, var(--neon-blue), transparent);
+      animation: headerScan 4s linear infinite;
+    }
+
+    @keyframes headerScan {
+      to { left: 110%; }
+    }
+
+    .stage-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(15px, 2vw, 22px);
+      letter-spacing: 0.08em;
+      color: var(--cyan-text);
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
+      white-space: nowrap;
+    }
+
+    .stage-code {
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(10px, 1.2vw, 13px);
+      color: var(--neon-blue);
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+
+    #mission-box {
+      position: absolute;
+      top: 86px;
+      left: 50%;
+      z-index: 8;
+      width: min(47%, 500px);
+      min-height: 176px;
+      transform: translateX(-50%);
+      padding: 18px 24px 20px;
+      border: 1px solid rgba(0, 240, 255, 0.72);
+      border-radius: 10px;
+      background: rgba(0, 240, 255, 0.10);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow:
+        0 0 18px rgba(0, 240, 255, 0.23),
+        inset 0 0 18px rgba(0, 240, 255, 0.08);
+      text-align: center;
+    }
+
+    #mission-box::before,
+    #mission-box::after {
+      content: "";
+      position: absolute;
+      width: 30px;
+      height: 12px;
+      border-top: 2px solid var(--neon-blue);
+      top: -2px;
+    }
+
+    #mission-box::before {
+      left: 10px;
+      border-left: 2px solid var(--neon-blue);
+    }
+
+    #mission-box::after {
+      right: 10px;
+      border-right: 2px solid var(--neon-blue);
+    }
+
+    .mission-label {
+      margin-bottom: 8px;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--neon-blue);
+      letter-spacing: 0.15em;
+    }
+
+    .mission-title {
+      margin: 0 0 10px;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(22px, 3.2vw, 34px);
+      font-weight: 400;
+      color: #ffffff;
+      letter-spacing: 0.06em;
+      text-shadow: 0 0 12px rgba(0, 240, 255, 0.7);
+    }
+
+    .mission-text {
+      margin: 0;
+      font-size: clamp(13px, 1.55vw, 17px);
+      line-height: 1.65;
+      letter-spacing: 0.05em;
+      color: var(--cyan-text);
+      word-break: keep-all;
+    }
+
+    .mission-formula {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 5px 12px;
+      color: var(--neon-blue);
+      border: 1px solid rgba(0, 240, 255, 0.45);
+      background: rgba(0, 0, 0, 0.35);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(11px, 1.3vw, 14px);
+      box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.08);
+    }
+
+    .char-wrapper {
+      position: absolute;
+      z-index: 6;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      transition:
+        filter 0.25s ease,
+        transform 0.25s ease,
+        opacity 0.25s ease;
+    }
+
+    .char-wrapper.inactive {
+      filter: brightness(0.55);
+    }
+
+    .char-wrapper.active-speaker {
+      filter: brightness(1.08) drop-shadow(0 0 14px rgba(0, 240, 255, 0.35));
+      transform: translateY(-3px);
+    }
+
+    #char-민우 {
+      left: 34px;
+      bottom: 116px;
+    }
+
+    #char-서연 {
+      right: 34px;
+      bottom: 116px;
+    }
+
+    .char-wrapper iframe {
+      display: block;
+      width: 260px;
+      height: 320px;
+      border: 0;
+      pointer-events: none;
+    }
+
+    #char-민우 iframe {
+      transform: scale(0.88);
+      transform-origin: bottom left;
+    }
+
+    #char-서연 iframe {
+      transform: scale(0.88) scaleX(-1);
+      transform-origin: bottom left;
+    }
+
+    .nameplate {
+      position: absolute;
+      left: 50%;
+      bottom: -2px;
+      min-width: 94px;
+      transform: translateX(-50%);
+      padding: 5px 14px 6px;
+      border: 1px solid rgba(0, 240, 255, 0.75);
+      background: rgba(0, 5, 12, 0.86);
+      color: var(--cyan-text);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      text-align: center;
+      letter-spacing: 0.1em;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+    }
+
+    #dialogue-box {
+      position: absolute;
+      left: 50%;
+      bottom: 18px;
+      z-index: 30;
+      width: min(71%, 760px);
+      min-height: 128px;
+      transform: translateX(-50%);
+      padding: 24px 26px 18px;
+      cursor: pointer;
+      border: 1px solid rgba(0, 240, 255, 0.90);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(0, 240, 255, 0.14), rgba(0, 14, 29, 0.92) 45%),
+        rgba(0, 4, 10, 0.88);
+      box-shadow:
+        0 0 20px rgba(0, 240, 255, 0.30),
+        inset 0 0 22px rgba(0, 240, 255, 0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    #dialogue-box:hover {
+      box-shadow:
+        0 0 25px rgba(0, 240, 255, 0.45),
+        inset 0 0 28px rgba(0, 240, 255, 0.12);
+    }
+
+    #dialogue-box::before {
+      content: "COMM-LINK // ACTIVE";
+      position: absolute;
+      top: 5px;
+      right: 14px;
+      color: rgba(0, 240, 255, 0.74);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+    }
+
+    #dialogue-box.hide-dialogue {
+      opacity: 0;
+      transform: translateX(-50%) translateY(18px);
+      pointer-events: none;
+    }
+
+    #speaker-name {
+      position: absolute;
+      top: -22px;
+      left: 24px;
+      min-width: 118px;
+      padding: 7px 18px 8px;
+      border: 1px solid var(--neon-blue);
+      background: rgba(1, 8, 17, 0.96);
+      color: var(--neon-blue);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      text-align: center;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 8px rgba(0, 240, 255, 0.7);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.28);
+    }
+
+    #dialogue-text {
+      min-height: 58px;
+      margin: 7px 0 0;
+      color: #ffffff;
+      font-size: clamp(14px, 1.65vw, 18px);
+      line-height: 1.68;
+      letter-spacing: 0.05em;
+      word-break: keep-all;
+    }
+
+    #dialogue-text.typing::after {
+      content: "▌";
+      margin-left: 3px;
+      color: var(--neon-blue);
+      animation: cursorBlink 0.65s steps(1) infinite;
+    }
+
+    @keyframes cursorBlink {
+      50% { opacity: 0; }
+    }
+
+    .dialogue-guide {
+      position: absolute;
+      right: 17px;
+      bottom: 8px;
+      color: rgba(224, 255, 255, 0.62);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+    }
+
+    .btn-nav {
+      position: absolute;
+      z-index: 40;
+      min-width: 112px;
+      padding: 10px 18px;
+      cursor: pointer;
+      border: 2px solid var(--neon-blue);
+      border-radius: 3px;
+      background: transparent;
+      color: var(--neon-blue);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.78);
+      transition:
+        background 0.22s ease,
+        color 0.22s ease,
+        transform 0.22s ease,
+        opacity 0.3s ease;
+    }
+
+    .btn-nav:hover,
+    .btn-nav:focus-visible {
+      outline: none;
+      background: var(--neon-blue);
+      color: #000000;
+      transform: translateY(-2px);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+      display: none;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+      display: none;
+    }
+
+    #btn-skip {
+      right: 20px;
+      bottom: 20px;
+    }
+
+    .btn-nav.show {
+      display: block !important;
+      animation: buttonReveal 0.35s ease both;
+    }
+
+    @keyframes buttonReveal {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .signal-line {
+      position: absolute;
+      top: 61px;
+      left: 50%;
+      z-index: 4;
+      width: 28%;
+      height: 1px;
+      transform: translateX(-50%);
+      overflow: hidden;
+      background: rgba(0, 240, 255, 0.20);
+    }
+
+    .signal-line::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -25%;
+      width: 25%;
+      height: 100%;
+      background: var(--neon-blue);
+      box-shadow: 0 0 8px var(--neon-blue);
+      animation: signalMove 2.4s linear infinite;
+    }
+
+    @keyframes signalMove {
+      to { left: 110%; }
+    }
+
+    @media (max-width: 760px) {
+      #mission-box {
+        top: 69px;
+        width: 48%;
+        min-height: 145px;
+        padding: 14px 14px 15px;
+      }
+
+      .mission-title {
+        margin-bottom: 6px;
+      }
+
+      .mission-text {
+        line-height: 1.48;
+      }
+
+      #char-민우 {
+        left: 4px;
+        bottom: 98px;
+        transform: scale(0.78);
+        transform-origin: bottom left;
+      }
+
+      #char-서연 {
+        right: -54px;
+        bottom: 98px;
+        transform: scale(0.78);
+        transform-origin: bottom left;
+      }
+
+      #dialogue-box {
+        bottom: 12px;
+        width: 70%;
+        min-height: 108px;
+        padding: 19px 18px 15px;
+      }
+
+      #dialogue-text {
+        line-height: 1.5;
+      }
+
+      .btn-nav {
+        min-width: 90px;
+        padding: 8px 11px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main id="game-container" aria-label="영종도 MATHTOUR 위령탑 높이 측정 대화 장면">
+    <img id="background-image" src="위령탑.png" alt="위령탑 배경" />
+    <div class="background-overlay" aria-hidden="true"></div>
+
+    <header id="stage-header">
+      <div class="stage-title">영종도 MATHTOUR · 위령탑 관측 구역</div>
+      <div class="stage-code">MISSION F02 // HEIGHT SCAN</div>
+    </header>
+
+    <div class="signal-line" aria-hidden="true"></div>
+    <div class="hud-corner tl" aria-hidden="true"></div>
+    <div class="hud-corner tr" aria-hidden="true"></div>
+    <div class="hud-corner bl" aria-hidden="true"></div>
+    <div class="hud-corner br" aria-hidden="true"></div>
+
+    <section id="mission-box" aria-label="상황 설명">
+      <div class="mission-label">MISSION BRIEFING</div>
+      <h1 class="mission-title">위령탑 높이 측정</h1>
+      <p class="mission-text">
+        직접 올라갈 수 없는 위령탑의 높이를 알아내야 한다.<br />
+        거리와 올려다본 각도를 이용해 관측 데이터를 계산하자.
+      </p>
+      <div class="mission-formula">탑의 높이 = 거리 × tan(각도) + 눈높이</div>
+    </section>
+
+    <div class="char-wrapper" id="char-민우">
+      <iframe
+        src="등장인물_민우.html"
+        scrolling="no"
+        title="민우 캐릭터"
+      ></iframe>
+      <div class="nameplate">민우</div>
+    </div>
+
+    <div class="char-wrapper inactive" id="char-서연">
+      <iframe
+        src="등장인물_서연.html"
+        scrolling="no"
+        title="서연 캐릭터"
+      ></iframe>
+      <div class="nameplate">서연</div>
+    </div>
+
+    <section id="dialogue-box" onclick="advanceDialogue()" aria-live="polite">
+      <div id="speaker-name">민우</div>
+      <p id="dialogue-text"></p>
+      <div class="dialogue-guide">화면을 클릭해 통신 계속 ▶</div>
+    </section>
+
+    <button
+      class="btn-nav"
+      id="btn-prev"
+      type="button"
+      onclick="navigateWithFade('F01.html')"
+    >
+      ◀ 이전
+    </button>
+
+    <button
+      class="btn-nav"
+      id="btn-next"
+      type="button"
+      onclick="navigateWithFade('F03.html')"
+    >
+      다음 ▶
+    </button>
+
+    <button
+      class="btn-nav"
+      id="btn-skip"
+      type="button"
+      onclick="skipDialogue(event)"
+    >
+      SKIP ▶▶
+    </button>
+  </main>
+
+  <script>
+    const dialogues = [
+      {
+        speaker: '민우',
+        text: '위령탑 꼭대기까지 직접 올라가서 재는 건 불가능해. 다른 방법을 찾아야겠어.',
+        target: 'char-민우'
+      },
+      {
+        speaker: '서연',
+        text: '탑에서 일정 거리만큼 떨어진 뒤, 꼭대기를 올려다본 각도를 측정하면 돼.',
+        target: 'char-서연'
+      },
+      {
+        speaker: '민우',
+        text: '그러면 지면의 거리와 관측 각도로 직각삼각형을 만들 수 있겠네!',
+        target: 'char-민우'
+      },
+      {
+        speaker: '서연',
+        text: '맞아. 탄젠트를 이용하면 관측자의 눈높이에서 탑 꼭대기까지의 높이를 계산할 수 있어.',
+        target: 'char-서연'
+      },
+      {
+        speaker: '민우',
+        text: '마지막에는 계산한 값에 관측자의 눈높이도 반드시 더해야 정확한 탑의 전체 높이가 나와.',
+        target: 'char-민우'
+      },
+      {
+        speaker: '서연',
+        text: '관측 장비 준비 완료. 이제 측정값을 확인하고 위령탑의 높이를 계산하러 가자!',
+        target: 'char-서연'
+      }
+    ];
+
+    let currentIndex = 0;
+    let typingTimer = null;
+    let isTyping = false;
+    let displayedText = '';
+    let isFinished = false;
+
+    const gameContainer = document.getElementById('game-container');
+    const dialogueBox = document.getElementById('dialogue-box');
+    const dialogueText = document.getElementById('dialogue-text');
+    const speakerName = document.getElementById('speaker-name');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    const btnSkip = document.getElementById('btn-skip');
+    const characterWrappers = Array.from(document.querySelectorAll('.char-wrapper'));
+
+    function setActiveCharacter(targetId) {
+      characterWrappers.forEach((character) => {
+        const isActive = character.id === targetId;
+        character.classList.toggle('inactive', !isActive);
+        character.classList.toggle('active-speaker', isActive);
+      });
+    }
+
+    function typeDialogue(text) {
+      clearInterval(typingTimer);
+      isTyping = true;
+      displayedText = '';
+      dialogueText.textContent = '';
+      dialogueText.classList.add('typing');
+
+      let charIndex = 0;
+
+      typingTimer = setInterval(() => {
+        displayedText += text.charAt(charIndex);
+        dialogueText.textContent = displayedText;
+        charIndex += 1;
+
+        if (charIndex >= text.length) {
+          clearInterval(typingTimer);
+          dialogueText.textContent = text;
+          dialogueText.classList.remove('typing');
+          isTyping = false;
+        }
+      }, 32);
+    }
+
+    function renderDialogue() {
+      const dialogue = dialogues[currentIndex];
+      speakerName.textContent = dialogue.speaker;
+      setActiveCharacter(dialogue.target);
+      typeDialogue(dialogue.text);
+    }
+
+    function advanceDialogue() {
+      if (isFinished) return;
+
+      if (isTyping) {
+        clearInterval(typingTimer);
+        dialogueText.textContent = dialogues[currentIndex].text;
+        dialogueText.classList.remove('typing');
+        isTyping = false;
+        return;
+      }
+
+      currentIndex += 1;
+
+      if (currentIndex >= dialogues.length) {
+        finishDialogue();
+        return;
+      }
+
+      renderDialogue();
+    }
+
+    function finishDialogue() {
+      if (isFinished) return;
+      isFinished = true;
+
+      clearInterval(typingTimer);
+      isTyping = false;
+      dialogueText.classList.remove('typing');
+      dialogueBox.classList.add('hide-dialogue');
+      btnSkip.style.display = 'none';
+
+      characterWrappers.forEach((character) => {
+        character.classList.remove('inactive', 'active-speaker');
+      });
+
+      setTimeout(() => {
+        dialogueBox.style.display = 'none';
+        btnPrev.classList.add('show');
+        btnNext.classList.add('show');
+      }, 360);
+    }
+
+    function skipDialogue(event) {
+      event.stopPropagation();
+      finishDialogue();
+    }
+
+    function navigateWithFade(url) {
+      gameContainer.classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = url;
+      }, 850);
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        if (!isFinished) {
+          event.preventDefault();
+          advanceDialogue();
+        }
+      }
+
+      if (event.key === 'Escape' && !isFinished) {
+        finishDialogue();
+      }
+    });
+
+    renderDialogue();
+  </script>
+</body>
+</html>

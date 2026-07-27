@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>영종도 매쓰투어 - 항공 관제사 미션</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Share+Tech+Mono&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #080f14;
+      color: #33ff66;
+      font-family: 'Noto Sans KR', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* 헤더 UI */
+    header {
+      width: 100%;
+      max-width: 1200px;
+      padding: 15px 20px;
+      border: 1px solid #00ff66;
+      border-radius: 8px;
+      background: rgba(0, 255, 102, 0.05);
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.2);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 20px;
+      font-family: 'Share Tech Mono', 'Noto Sans KR', monospace;
+      color: #00ff66;
+      text-shadow: 0 0 8px #00ff66;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header .status-badge {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      background: #00ff66;
+      color: #080f14;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    /* 메인 그리드 레이아웃 */
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 패널 공통 스타일 */
+    .panel {
+      background: rgba(12, 23, 30, 0.9);
+      border: 1px solid rgba(0, 255, 102, 0.4);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      color: #00ff66;
+      border-bottom: 1px stroke rgba(0, 255, 102, 0.3);
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* 시뮬레이터 (좌측) */
+    .radar-display {
+      width: 100%;
+      height: 320px;
+      background: #050a0e;
+      border: 1px solid #00ff66;
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 레이더 그리드 및 펄스 */
+    .radar-grid {
+      position: absolute;
+      inset: 0;
+      background-size: 30px 30px;
+      background-image: 
+        linear-gradient(to right, rgba(0, 255, 102, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 255, 102, 0.08) 1px, transparent 1px);
+    }
+
+    svg#simulator-svg {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    /* 슬라이더 컨트롤 */
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .control-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #a3ffc2;
+    }
+
+    .control-item input[type="range"] {
+      width: 100%;
+      accent-color: #00ff66;
+      background: #080f14;
+      cursor: pointer;
+    }
+
+    /* 미션 영역 (우측) */
+    .dialogue-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .chat-bubble {
+      background: rgba(0, 255, 102, 0.05);
+      border-left: 3px solid #00ff66;
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #e0ffe8;
+    }
+
+    .chat-bubble .speaker {
+      font-weight: bold;
+      color: #00ff66;
+      margin-bottom: 2px;
+      display: block;
+    }
+
+    /* 정답 입력 영역 */
+    .quiz-box {
+      background: rgba(0, 255, 102, 0.03);
+      border: 1px dashed rgba(0, 255, 102, 0.5);
+      padding: 18px;
+      border-radius: 6px;
+    }
+
+    .quiz-question {
+      font-size: 15px;
+      font-weight: bold;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+
+    .quiz-hint-text {
+      font-size: 12px;
+      color: #88c99e;
+      margin-bottom: 12px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-group input[type="number"] {
+      flex: 1;
+      background: #050a0e;
+      border: 1px solid #00ff66;
+      color: #00ff66;
+      padding: 10px;
+      font-size: 16px;
+      font-family: 'Share Tech Mono', monospace;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .input-group input[type="number"]:focus {
+      box-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
+    }
+
+    .btn-submit {
+      background: #00ff66;
+      color: #080f14;
+      border: none;
+      padding: 10px 20px;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: #33ff88;
+      box-shadow: 0 0 12px #00ff66;
+    }
+
+    /* 피드백 및 안내 메시지 */
+    #feedback-msg {
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: bold;
+      min-height: 20px;
+    }
+
+    .feedback-success {
+      color: #00ff66;
+      text-shadow: 0 0 8px rgba(0, 255, 102, 0.6);
+    }
+
+    .feedback-error {
+      color: #ff3366;
+      text-shadow: 0 0 8px rgba(255, 51, 102, 0.6);
+    }
+
+    /* 다음 단계 버튼 */
+    #btn-next {
+      display: none;
+      width: 100%;
+      margin-top: 15px;
+      background: transparent;
+      border: 2px solid #00ff66;
+      color: #00ff66;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      animation: pulse 1.5s infinite;
+    }
+
+    #btn-next:hover {
+      background: #00ff66;
+      color: #080f14;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(0, 255, 102, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>📡 영종도 공항전망대 MATH TOUR</h1>
+    <div class="status-badge">MISSION 01 : AIR TRAFFIC CONTROL</div>
+  </header>
+
+  <div class="container">
+    <!-- 좌측: 시뮬레이터 -->
+    <div class="panel">
+      <div class="panel-title">
+        <span>✈️ RADAR SIMULATOR</span>
+      </div>
+      
+      <div class="radar-display">
+        <div class="radar-grid"></div>
+        <svg id="simulator-svg" viewBox="0 0 400 300">
+          <!-- 직각삼각형 및 라인 -->
+          <polygon id="tri-fill" points="50,250 350,250 350,250" fill="rgba(0, 255, 102, 0.12)" />
+          <line id="line-base" x1="50" y1="250" x2="350" y2="250" stroke="#00ff66" stroke-width="2" stroke-dasharray="4" />
+          <line id="line-height" x1="350" y1="250" x2="350" y2="250" stroke="#ff3366" stroke-width="2" />
+          <line id="line-hyp" x1="50" y1="250" x2="350" y2="250" stroke="#00ff66" stroke-width="2" />
+
+          <!-- 비행기 위치 그룹 -->
+          <g id="plane-group" transform="translate(350, 250)">
+            <circle r="6" fill="#ff3366" />
+            <text x="10" y="-5" fill="#ffffff" font-size="12" font-family="Share Tech Mono">TARGET A</text>
+          </g>
+
+          <!-- 각도 및 수치 표시 -->
+          <text id="label-angle" x="90" y="242" fill="#00ff66" font-size="12" font-family="Share Tech Mono">θ = 30°</text>
+          <text id="label-base" x="170" y="270" fill="#a3ffc2" font-size="12" font-family="Share Tech Mono">x = 500m</text>
+          <text id="label-height" x="358" y="150" fill="#ff3366" font-size="12" font-family="Share Tech Mono">h = ?</text>
+        </svg>
+      </div>
+
+      <div class="controls">
+        <div class="control-item">
+          <div class="control-label">
+            <span>수평 거리 (x)</span>
+            <span id="dist-val" style="font-family: monospace;">500 m</span>
+          </div>
+          <input type="range" id="slider-dist" min="100" max="1000" step="50" value="500">
+        </div>
+
+        <div class="control-item">
+          <div class="control-label">
+            <span>관측 앙각 (θ)</span>
+            <span id="angle-val" style="font-family: monospace;">30 °</span>
+          </div>
+          <input type="range" id="slider-angle" min="0" max="60" step="1" value="30">
+        </div>
+      </div>
+    </div>
+
+    <!-- 우측: 미션 수행 및 대화창 -->
+    <div class="panel">
+      <div class="panel-title">
+        <span>📋 MISSION BRIEFING</span>
+      </div>
+
+      <div class="dialogue-container">
+        <div class="chat-bubble">
+          <span class="speaker">인보</span>
+          "긴급 상황! 레이더에 이륙 중인 비행기가 포착되었습니다. 수평거리는 500m, 앙각은 30도입니다!"
+        </div>
+        <div class="chat-bubble">
+          <span class="speaker">서연</span>
+          "민우야, 우리 아까 배운 탄젠트 공식 쓰면 되겠다! 높이는 수평거리 곱하기 탄젠트 각도 맞지?"
+        </div>
+        <div class="chat-bubble">
+          <span class="speaker">민우</span>
+          "응! 계산해보니까 답이 나와. 정답 입력창에 넣고 승인 요청 눌러보자!"
+        </div>
+      </div>
+
+      <div class="quiz-box">
+        <div class="quiz-question">Q. 현재 포착된 비행기의 고도(h)는 몇 m인가요?</div>
+        <div class="quiz-hint-text">
+          * 수평거리: 500m, 앙각: 30°<br>
+          * $\tan(30^\circ) = \frac{1}{\sqrt{3}} \approx 0.577$<br>
+          * 소수점 첫째 자리에서 반올림한 정수값(약 289m)을 입력하세요.
+        </div>
+
+        <div class="input-group">
+          <input type="number" id="user-answer" placeholder="고도 입력 (m)" />
+          <button class="btn-submit" onclick="checkAnswer()">승인 요청</button>
+        </div>
+
+        <div id="feedback-msg"></div>
+        <button id="btn-next" onclick="nextStage()">다음 미션으로 이동 ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // DOM 요소
+    const sliderDist = document.getElementById('slider-dist');
+    const sliderAngle = document.getElementById('slider-angle');
+    const distVal = document.getElementById('dist-val');
+    const angleVal = document.getElementById('angle-val');
+
+    const triFill = document.getElementById('tri-fill');
+    const lineBase = document.getElementById('line-base');
+    const lineHeight = document.getElementById('line-height');
+    const lineHyp = document.getElementById('line-hyp');
+    const planeGroup = document.getElementById('plane-group');
+
+    const labelAngle = document.getElementById('label-angle');
+    const labelBase = document.getElementById('label-base');
+    const labelHeight = document.getElementById('label-height');
+
+    // 시뮬레이터 SVG 갱신 함수
+    function updateSimulator() {
+      const xMeter = parseFloat(sliderDist.value);
+      const angleDeg = parseFloat(sliderAngle.value);
+
+      distVal.innerText = `${xMeter} m`;
+      angleVal.innerText = `${angleDeg} °`;
+
+      // SVG 좌표 기준점
+      const startX = 50;
+      const startY = 250;
+      
+      // 스케일링 (1000m -> 300px 가로 폭)
+      const scaleX = 300 / 1000;
+      const widthPx = xMeter * scaleX;
+      
+      // 삼각비를 통한 높이 계산 (px)
+      const rad = angleDeg * (Math.PI / 180);
+      const heightPx = widthPx * Math.tan(rad);
+
+      const endX = startX + widthPx;
+      const endY = startY - heightPx;
+
+      // SVG 요소를 업데이트
+      triFill.setAttribute('points', `${startX},${startY} ${endX},${startY} ${endX},${endY}`);
+      
+      lineBase.setAttribute('x1', startX);
+      lineBase.setAttribute('y1', startY);
+      lineBase.setAttribute('x2', endX);
+      lineBase.setAttribute('y2', startY);
+
+      lineHeight.setAttribute('x1', endX);
+      lineHeight.setAttribute('y1', startY);
+      lineHeight.setAttribute('x2', endX);
+      lineHeight.setAttribute('y2', Math.max(endY, 20)); // 화면 이탈 방지
+
+      lineHyp.setAttribute('x1', startX);
+      lineHyp.setAttribute('y1', startY);
+      lineHyp.setAttribute('x2', endX);
+      lineHyp.setAttribute('y2', Math.max(endY, 20));
+
+      planeGroup.setAttribute('transform', `translate(${endX}, ${Math.max(endY, 20)})`);
+
+      // 텍스트 라벨 위치 업데이트
+      labelAngle.innerText = `θ = ${angleDeg}°`;
+      labelBase.innerText = `x = ${xMeter}m`;
+      labelBase.setAttribute('x', startX + widthPx / 2 - 25);
+
+      const calculatedHeight = Math.round(xMeter * Math.tan(rad));
+      labelHeight.innerText = `h = ${calculatedHeight}m`;
+      labelHeight.setAttribute('x', endX + 8);
+      labelHeight.setAttribute('y', Math.max((startY + endY) / 2, 30));
+    }
+
+    // 슬라이더 이벤트 연결
+    sliderDist.addEventListener('input', updateSimulator);
+    sliderAngle.addEventListener('input', updateSimulator);
+
+    // 정답 검증 로직
+    function checkAnswer() {
+      const inputEl = document.getElementById('user-answer');
+      const feedback = document.getElementById('feedback-msg');
+      const btnNext = document.getElementById('btn-next');
+      const userAns = parseInt(inputEl.value);
+
+      // 정확한 특수각 값 계산 (500 * tan(30deg) = 288.675...)
+      const exactVal = 500 * Math.tan(30 * Math.PI / 180);
+      const roundedVal = Math.round(exactVal); // 289
+
+      if (isNaN(userAns)) {
+        feedback.innerText = "⚠️ 고도 수치를 입력해주세요.";
+        feedback.className = "feedback-error";
+        return;
+      }
+
+      // 약 289m 오차 범위 ±2 이내 수용
+      if (Math.abs(userAns - roundedVal) <= 2) {
+        feedback.innerText = "🎉 이륙 허가 (Takeoff Cleared)! 정확한 계산입니다.";
+        feedback.className = "feedback-success";
+        btnNext.style.display = "block";
+      } else {
+        feedback.innerText = "❌ 탄젠트 값을 다시 확인해보세요! (h = x × tan30°)";
+        feedback.className = "feedback-error";
+      }
+    }
+
+    function nextStage() {
+      alert("다음 단계 미션으로 이동합니다!");
+    }
+
+    // 페이지 로드 초기화
+    window.onload = () => {
+      updateSimulator();
+    };
+  </script>
+</body>
+</html>
