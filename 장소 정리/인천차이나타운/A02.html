@@ -11,142 +11,131 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      user-select: none;
     }
 
     body {
-      background-color: #1a1816;
+      background-color: #1a1a1a;
+      color: #2d3748;
+      font-family: 'Noto Sans KR', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      font-family: 'Noto Sans KR', sans-serif;
-      color: #2d3748;
+      overflow: hidden;
     }
 
-    /* 화면 비율: 16 / 9, 최대 1066px */
+    /* 16:9 메인 컨테이너 */
     #game-container {
       position: relative;
       width: 100%;
       max-width: 1066px;
       aspect-ratio: 16 / 9;
       background-color: #f5f0e6;
+      border: 3px solid #d4af37;
+      border-radius: 4px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
       overflow: hidden;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
-      border: 2px solid #d4af37;
-    }
-
-    /* 무대 요소 레이어링 */
-    .bg-asset {
-      position: absolute;
-      z-index: 1;
-    }
-
-    /* 등장인물 래퍼 */
-    .char-wrapper {
-      position: absolute;
-      z-index: 3;
-      transition: filter 0.2s ease, transform 0.3s ease;
-    }
-
-    .char-wrapper.inactive {
-      filter: brightness(0.55);
     }
 
     /* 상단 스테이지 표시바 */
-    #stage-header {
+    .stage-bar {
       position: absolute;
-      top: 16px;
+      top: 15px;
       left: 20px;
-      z-index: 10;
-      background: rgba(20, 15, 10, 0.75);
+      background: rgba(0, 0, 0, 0.65);
       border: 1px solid #d4af37;
       border-radius: 4px;
       padding: 8px 18px;
-      color: #d4af37;
-      font-family: 'Nanum Myeongjo', serif;
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      z-index: 10;
     }
 
-    /* 하단 대화창 UI */
-    #dialogue-box {
+    .stage-title {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 1.1rem;
+      color: #d4af37;
+      letter-spacing: -0.02em;
+    }
+
+    /* 건물/장소 에셋 레이어 (z-index: 1) */
+    .asset-building {
       position: absolute;
-      bottom: 20px;
+      left: 50%;
+      bottom: 10px;
+      transform: translateX(-50%);
+      width: 750px;
+      height: 375px;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    /* 캐릭터 무대 레이어 (z-index: 3) */
+    .char-stage {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .char-wrapper {
+      position: absolute;
+      overflow: visible;
+    }
+
+    /* 유형 1: 양피지 느낌의 상황 설명 박스 (z-index: 10) */
+    .situation-box {
+      position: absolute;
+      top: 70px;
       left: 50%;
       transform: translateX(-50%);
-      width: 90%;
-      height: 130px;
-      background: rgba(0, 0, 0, 0.85);
+      width: calc(100% - 120px);
+      max-width: 900px;
+      background: #fcf8ed;
       border: 2px solid #d4af37;
       border-radius: 6px;
-      padding: 16px 24px;
+      padding: 18px 24px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(212, 175, 55, 0.15);
       z-index: 10;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      user-select: none;
     }
 
-    #speaker-name {
+    .situation-header {
       font-family: 'Nanum Gothic Coding', monospace;
-      font-size: 18px;
+      font-size: 1.05rem;
       font-weight: bold;
-      color: #d4af37;
+      color: #8c3030;
       margin-bottom: 8px;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+      border-bottom: 1px dashed #d4af37;
+      padding-bottom: 4px;
     }
 
-    #dialogue-text {
+    .situation-text {
       font-family: 'Noto Sans KR', sans-serif;
-      font-size: 15px;
-      color: #ffffff;
+      font-size: 0.95rem;
       line-height: 1.6;
+      color: #2d3748;
       letter-spacing: -0.02em;
       word-break: keep-all;
     }
 
-    #click-prompt {
-      position: absolute;
-      right: 20px;
-      bottom: 12px;
-      font-size: 12px;
-      color: #d4af37;
-      opacity: 0.8;
-      animation: blink 1.2s infinite alternate;
-    }
-
-    @keyframes blink {
-      from { opacity: 0.3; }
-      to { opacity: 1; }
-    }
-
-    /* 이동 및 내비게이션 버튼 공통 */
+    /* 공통 이동 버튼 (z-index: 11) */
     .btn-nav {
       position: absolute;
-      z-index: 12;
       background-color: #8c3030;
       color: #ffffff;
       border: 1px solid #d4af37;
       border-radius: 4px;
       padding: 10px 24px;
-      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 0.95rem;
       font-weight: bold;
-      font-size: 14px;
+      font-family: 'Noto Sans KR', sans-serif;
       cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-      transition: background-color 0.2s ease, transform 0.1s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      z-index: 11;
+      transition: background-color 0.2s;
     }
 
     .btn-nav:hover {
       background-color: #661f1f;
-    }
-
-    .btn-nav:active {
-      transform: scale(0.96);
     }
 
     #btn-prev {
@@ -154,174 +143,55 @@
       bottom: 20px;
     }
 
-    #btn-next, #btn-skip {
+    #btn-next {
       right: 20px;
       bottom: 20px;
-    }
-
-    /* 페이드인 애니메이션 */
-    .fade-in-scene {
-      animation: fadeIn 1s ease-in-out forwards;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
     }
   </style>
 </head>
 <body>
 
-<div id="game-container" class="fade-in-scene">
-  <!-- 상단 스테이지 표시바 -->
-  <div id="stage-header">인천차이나타운 MATHTOUR - 삼국지 벽화거리</div>
+  <div id="game-container">
+    <!-- 스테이지 상단 표시바 -->
+    <div class="stage-bar">
+      <div class="stage-title">인천차이나타운 MATHTOUR - 대불호텔 앞 탐구</div>
+    </div>
 
-  <!-- 에셋: 인천차이나타운_삼국지벽화거리 (원본 규격 약 1000x500 가변 비율 적용, 배경 역할 z-index:1) -->
-  <div class="bg-asset" style="position:absolute; left:33px; bottom:100px; width:1000px; height:500px; overflow:hidden;">
-    <iframe src="인천차이나타운_삼국지벽화거리.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(1); transform-origin:top left; pointer-events:none;"></iframe>
+    <!-- 상황 설명 박스 (유형 1) -->
+    <div class="situation-box">
+      <div class="situation-header">[민우의 이야기]</div>
+      <div class="situation-text">
+        "대불호텔에서 맥아더 동상까지 가려면 버스를 타고 갈 수도 있고, 택시를 타고 가는 방법도 있고, 걸어갈 수도 있어. 버스를 타고 가려면 중간에 환승을 해야 하는데 환승 지점까지 2가지 노선, 환승 지점에서 맥아더 동상까지는 3가지 노선이 있어. 버스를 타거나, 택시를 타거나, 걸어간다고 할 때, 대불호텔에서 맥아더 동상까지 가는 방법의 경우의 수는 어떻게 될까?"
+      </div>
+    </div>
+
+    <!-- 배경 건물 에셋: 인천차이나타운_대불호텔 -->
+    <div class="asset-building">
+      <iframe src="인천차이나타운_대불호텔.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(0.75); transform-origin:top left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장인물 무대 (너비 260px 인물들이 겹치지 않도록 left 위치 수정) -->
+    <div class="char-stage">
+      <!-- 민우: 좌측 (left: 180px) -->
+      <div class="char-wrapper" id="char-민우" style="position: absolute; left: 180px; bottom: 20px; width: 260px; height: 320px; overflow: visible;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+      </div>
+
+      <!-- 서연: 우측 (left: 626px - 좌우 반전 시 기준선 고려 간격 확보) -->
+      <div class="char-wrapper" id="char-서연" style="position: absolute; left: 626px; bottom: 20px; width: 260px; height: 320px; overflow: visible;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+      </div>
+    </div>
+
+    <!-- 공통 이동 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="goPage('A01.html')">이전</button>
+    <button class="btn-nav" id="btn-next" onclick="goPage('A03.html')">다음</button>
   </div>
 
-  <!-- 등장인물: 민우 (왼쪽 배치, z-index:3) -->
-  <div class="char-wrapper" id="char-민우" style="position:absolute; left:180px; bottom:80px; width:260px; height:320px; overflow:visible;">
-    <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
-  </div>
-
-  <!-- 등장인물: 서연 (오른쪽 배치, 좌우 반전으로 민우 바라보기, z-index:3) -->
-  <div class="char-wrapper" id="char-서연" style="position:absolute; left:620px; bottom:80px; width:260px; height:320px; overflow:visible;">
-    <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
-  </div>
-
-  <!-- 하단 대화창 -->
-  <div id="dialogue-box" onclick="advanceDialogue()">
-    <div id="speaker-name">민우</div>
-    <div id="dialogue-text">대사를 불러오는 중입니다...</div>
-    <div id="click-prompt">클릭하여 계속 ▼</div>
-  </div>
-
-  <!-- 내비게이션 버튼 -->
-  <button id="btn-prev" class="btn-nav" style="display:none;" onclick="goPrev()">이전</button>
-  <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
-  <button id="btn-next" class="btn-nav" style="display:none;" onclick="goNext()">다음</button>
-</div>
-
-<script>
-  // 대화 데이터 정의
-  const dialogues = [
-    {
-      speaker: "민우",
-      text: "와, 여기가 바로 인천 차이나타운의 삼국지 벽화거리구나! 벽화가 길게 이어져 있어서 정말 장관이다.",
-      target: "char-민우"
-    },
-    {
-      speaker: "서연",
-      text: "응! 위촉오 삼국시대의 유비, 관우, 장비 같은 수많은 영웅들의 주요 사건들이 벽화로 펼쳐져 있어.",
-      target: "char-서연"
-    },
-    {
-      speaker: "민우",
-      text: "벽화를 보니까 문득 궁금해지는데... 이 벽화 전체에서 가장 많이 등장한 영웅은 과연 누구일까?",
-      target: "char-민우"
-    },
-    {
-      speaker: "서연",
-      text: "음, 아무래도 삼국지의 중심인 유비가 제일 많이 그려져 있지 않을까?",
-      target: "char-서연"
-    },
-    {
-      speaker: "민우",
-      text: "글쎄? 의리의 상징이자 충신인 관우가 더 많이 나왔을 수도 있어! 장비도 만만치 않고.",
-      target: "char-민우"
-    },
-    {
-      speaker: "서연",
-      text: "서로 추측만 해서는 결론이 안 나겠는걸. 벽화에 등장하는 인물들의 횟수를 정확히 파악할 좋은 방법이 없을까?",
-      target: "char-서연"
-    },
-    {
-      speaker: "민우",
-      text: "아! 우리 얼마 전에 수학 시간에 배운 그 개념 있잖아! 데이터를 구간별로 정리하는 방법!",
-      target: "char-민우"
-    },
-    {
-      speaker: "서연",
-      text: "맞다! 도수분포표! 각 영웅의 등장 횟수나 구간별 데이터를 정리하면 가장 많이 등장한 인물을 한눈에 알 수 있어!",
-      target: "char-서연"
-    },
-    {
-      speaker: "민우",
-      text: "좋아, 그럼 벽화를 차근차근 둘러보면서 데이터를 모으고 직접 표를 완성해 보자!",
-      target: "char-민우"
+  <script>
+    function goPage(url) {
+      window.location.href = url;
     }
-  ];
-
-  let currentIndex = 0;
-
-  // 대화 진행 및 인물 활성화/비활성화 처리
-  function updateDialogue() {
-    if (currentIndex < dialogues.length) {
-      const current = dialogues[currentIndex];
-      document.getElementById('speaker-name').innerText = current.speaker;
-      document.getElementById('dialogue-text').innerText = current.text;
-
-      // 모든 캐릭터 비활성화(어둡게) 처리 후 말하는 캐릭터만 활성화(밝게)
-      const allChars = document.querySelectorAll('.char-wrapper');
-      allChars.forEach(char => char.classList.add('inactive'));
-
-      if (current.target) {
-        const targetChar = document.getElementById(current.target);
-        if (targetChar) {
-          targetChar.classList.remove('inactive');
-        }
-      }
-    } else {
-      endDialogue();
-    }
-  }
-
-  // 대화 클릭 시 진행
-  function advanceDialogue() {
-    currentIndex++;
-    if (currentIndex < dialogues.length) {
-      updateDialogue();
-    } else {
-      endDialogue();
-    }
-  }
-
-  // 건너뛰기
-  function skipDialogue() {
-    endDialogue();
-  }
-
-  // 대화 종료 시 UI 전환
-  function endDialogue() {
-    // 대화창 및 건너뛰기 버튼 숨김
-    document.getElementById('dialogue-box').style.display = 'none';
-    document.getElementById('btn-skip').style.display = 'none';
-
-    // 모든 캐릭터 밝게 복구
-    const allChars = document.querySelectorAll('.char-wrapper');
-    allChars.forEach(char => char.classList.remove('inactive'));
-
-    // 이전 / 다음 버튼 표시
-    document.getElementById('btn-prev').style.display = 'block';
-    document.getElementById('btn-next').style.display = 'block';
-  }
-
-  // 페이지 이동 함수
-  function goPrev() {
-    window.location.href = 'A01.html';
-  }
-
-  function goNext() {
-    window.location.href = 'A03.html';
-  }
-
-  // 초기화 실행
-  window.onload = function() {
-    updateDialogue();
-  };
-</script>
-
+  </script>
 </body>
 </html>

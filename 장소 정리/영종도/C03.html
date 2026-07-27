@@ -39,18 +39,21 @@
     .slider-row{margin:6px 0}.slider-label{display:flex;justify-content:space-between;font-family:'Nanum Gothic Coding',monospace;font-size:12px;color:var(--cyan)}
     input[type=range]{width:100%;accent-color:var(--neon)}
     .hint-line{font-size:10px;color:rgba(224,255,255,.7);margin-top:2px}
-    #math-info{font-family:'Nanum Gothic Coding',monospace;font-size:10px;line-height:1.5;color:#d8ffff;margin-top:6px;padding-top:6px;border-top:1px solid rgba(0,240,255,.25)}
-    #action-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.btn-small{min-height:38px;padding:8px 7px;border:2px solid var(--neon);background:rgba(0,0,0,.72);color:var(--neon);font-family:'Nanum Gothic Coding',monospace;font-size:12px;font-weight:700;letter-spacing:.05em;cursor:pointer;box-shadow:0 0 9px rgba(0,240,255,.55);transition:background .2s ease,color .2s ease,transform .2s ease,box-shadow .2s ease}
+    #math-info{position:absolute;left:20px;top:190px;z-index:18;width:150px;min-height:205px;padding:12px 11px;border:1px solid rgba(0,240,255,.72);border-left:5px solid var(--neon);background:rgba(0,20,30,.82);backdrop-filter:blur(8px);box-shadow:0 0 16px rgba(0,240,255,.28),inset 0 0 16px rgba(0,240,255,.07);font-family:'Nanum Gothic Coding',monospace;font-size:13px;line-height:1.65;color:#d8ffff;text-shadow:0 1px 3px #000;overflow-wrap:anywhere}
+    #action-row{position:absolute;left:16px;right:16px;bottom:4px;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0}.btn-small{min-height:38px;padding:8px 7px;border:2px solid var(--neon);background:rgba(0,0,0,.72);color:var(--neon);font-family:'Nanum Gothic Coding',monospace;font-size:12px;font-weight:700;letter-spacing:.05em;cursor:pointer;box-shadow:0 0 9px rgba(0,240,255,.55);transition:background .2s ease,color .2s ease,transform .2s ease,box-shadow .2s ease}
     .btn-small:hover,.btn-small:focus-visible{background:var(--neon);color:#000;transform:translateY(-2px);box-shadow:0 0 10px var(--neon),0 0 20px rgba(0,240,255,.75);outline:none}.btn-small:disabled{opacity:.35;cursor:not-allowed;transform:none}
-    #status-bar{position:absolute;left:190px;bottom:20px;z-index:15;width:560px;padding:9px 14px;border:1px solid rgba(0,240,255,.65);background:rgba(0,20,30,.72);font-family:'Nanum Gothic Coding',monospace;font-size:12px;color:var(--cyan);display:flex;justify-content:space-between;gap:12px}
-    #feedback{flex:1}.score{white-space:nowrap}
+    #status-bar{position:absolute;left:190px;bottom:20px;z-index:15;width:560px;padding:9px 14px;border:1px solid rgba(0,240,255,.65);background:rgba(0,20,30,.72);font-family:'Nanum Gothic Coding',monospace;font-size:12px;color:var(--cyan)}
+    #feedback{width:100%}
+    #score-hud{position:absolute;left:20px;top:102px;z-index:18;width:150px;padding:12px 10px;border:1px solid rgba(0,240,255,.72);border-left:5px solid var(--neon);background:rgba(0,20,30,.78);backdrop-filter:blur(8px);box-shadow:0 0 16px rgba(0,240,255,.28),inset 0 0 16px rgba(0,240,255,.07);font-family:'Nanum Gothic Coding',monospace;text-align:center}
+    #score-hud .hud-label{font-size:10px;color:rgba(224,255,255,.68);letter-spacing:.12em;margin-bottom:5px}
+    #scoreText{font-size:13px;font-weight:700;line-height:1.55;color:var(--neon);text-shadow:0 0 8px rgba(0,240,255,.65);white-space:normal}
     #dialogue-box{position:absolute;left:50%;bottom:92px;z-index:40;width:min(76%,800px);min-height:112px;padding:17px 24px 18px;overflow:hidden;border:1px solid rgba(0,240,255,.75);border-left:5px solid var(--neon);background:rgba(0,35,48,.42);backdrop-filter:blur(10px);box-shadow:0 0 18px rgba(0,240,255,.3),inset 0 0 22px rgba(0,240,255,.08);transform:translateX(-50%);cursor:pointer}
     #speaker-name{min-height:25px;margin-bottom:5px;font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--neon);letter-spacing:.08em;text-shadow:0 0 7px rgba(0,240,255,.8)}
     #dialogue-text{min-height:49px;font-size:15px;line-height:1.6;letter-spacing:.05em;text-shadow:0 2px 3px #000}
     #dialogue-guide{position:absolute;right:18px;top:12px;font-family:'Nanum Gothic Coding',monospace;font-size:10px;color:rgba(0,240,255,.78)}
     #dialogue-progress{position:absolute;right:18px;bottom:8px;font-family:'Nanum Gothic Coding',monospace;font-size:11px;color:rgba(224,255,255,.72)}
     .btn-nav{position:absolute;z-index:35;min-width:116px;padding:10px 20px;border:2px solid var(--neon);background:rgba(0,0,0,.72);box-shadow:0 0 10px var(--neon);font-family:'Nanum Gothic Coding',monospace;font-size:clamp(12px,1.4vw,16px);font-weight:700;color:var(--neon);letter-spacing:.08em;cursor:pointer;transition:background .2s ease,color .2s ease,transform .2s ease,box-shadow .2s ease}
-    .btn-nav:hover,.btn-nav:focus-visible{color:#000;background:var(--neon);box-shadow:0 0 10px var(--neon),0 0 22px rgba(0,240,255,.8);transform:translateY(-2px);outline:none}.btn-nav:active{transform:translateY(0)}#btn-prev{left:20px;bottom:20px}#btn-next{right:20px;bottom:20px;display:none}#btn-stage2{right:20px;bottom:20px;display:none}
+    .btn-nav:hover,.btn-nav:focus-visible{color:#000;background:var(--neon);box-shadow:0 0 10px var(--neon),0 0 22px rgba(0,240,255,.8);transform:translateY(-2px);outline:none}.btn-nav:active{transform:translateY(0)}#btn-prev{left:20px;bottom:20px}#btn-next{right:20px;bottom:20px;display:none}#btn-stage2,#btn-stage3{right:20px;bottom:20px;display:none}#btn-retry{right:156px;bottom:20px;display:none}
     #modal{position:absolute;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.72)}
     #modal-card{width:min(70%,650px);padding:24px;border:2px solid var(--neon);background:rgba(0,18,28,.95);box-shadow:0 0 24px rgba(0,240,255,.6);text-align:center}
     #modal-title{font-family:'Black Han Sans',sans-serif;font-size:28px;color:var(--neon);margin-bottom:10px}#modal-text{line-height:1.7;font-size:15px}
@@ -59,7 +62,7 @@
     .shake{animation:shake .45s linear 2}.drop{transform:translateY(90px) rotate(14deg);opacity:.2}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
     #game-container.impact-shake{animation:impactShake .52s cubic-bezier(.36,.07,.19,.97)}
     @keyframes impactShake{0%,100%{transform:translate(0,0) rotate(0)}15%{transform:translate(-8px,3px) rotate(-.25deg)}30%{transform:translate(7px,-4px) rotate(.2deg)}45%{transform:translate(-6px,-2px) rotate(-.15deg)}60%{transform:translate(5px,3px) rotate(.12deg)}75%{transform:translate(-3px,1px) rotate(-.08deg)}90%{transform:translate(2px,-1px) rotate(.04deg)}}
-    @media(max-width:800px){#char-민우{display:block;left:6px;bottom:38px;transform:scale(.82);transform-origin:bottom left}#char-서연{display:block;left:78px;bottom:38px;transform:scale(.82);transform-origin:bottom left}#graph-panel{left:10px;top:96px;width:63%;height:355px}#control-panel{right:10px;top:96px;width:34%;height:355px;padding:10px}#status-bar{left:10px;width:63%;bottom:10px}.stage-tab{padding:5px 7px;font-size:9px}#control-title{font-size:14px}.hint-line,#math-info{font-size:8px}}
+    @media(max-width:800px){#char-민우{display:block;left:6px;bottom:38px;transform:scale(.82);transform-origin:bottom left}#char-서연{display:block;left:78px;bottom:38px;transform:scale(.82);transform-origin:bottom left}#graph-panel{left:10px;top:96px;width:63%;height:355px}#control-panel{right:10px;top:96px;width:34%;height:355px;padding:10px}#status-bar{left:10px;width:63%;bottom:10px}#score-hud{left:12px;top:58px;width:138px;padding:7px 8px}#score-hud .hud-label{font-size:8px;margin-bottom:2px}#scoreText{font-size:10px;line-height:1.35}#math-info{left:12px;top:132px;width:138px;min-height:178px;padding:8px 7px;font-size:9px;line-height:1.45}#action-row{left:10px;right:10px;bottom:6px;gap:6px}#btn-retry{right:112px;bottom:12px}.stage-tab{padding:5px 7px;font-size:9px}#control-title{font-size:14px}.hint-line{font-size:8px}}
   </style>
 </head>
 <body>
@@ -67,7 +70,7 @@
   <img id="bg" src="을왕리해수욕장.png" alt="을왕리해수욕장" />
   <div class="overlay"></div>
   <header id="stage-header"><div class="stage-title" id="headerTitle">드론 요격 작전 · 꼭짓점 좌표 제어</div><div class="stage-code">C03 · QUADRATIC TRAJECTORY CONTROL</div></header>
-  <div id="stage-tabs"><div class="stage-tab active" id="tab1">01 꼭짓점 좌표 제어</div><div class="stage-tab locked" id="tab2">🔒 02 일반형 계수 제어</div></div>
+  <div id="stage-tabs"><div class="stage-tab active" id="tab1">01 꼭짓점 좌표 제어</div><div class="stage-tab locked" id="tab2">🔒 02 일반형 계수 제어</div><div class="stage-tab locked" id="tab3">🔒 03 갈매기 회피 요격</div></div>
   <div class="char-wrapper" id="char-민우"><iframe src="등장인물_민우.html" scrolling="no"></iframe></div>
   <div class="char-wrapper" id="char-서연"><iframe src="등장인물_서연.html" scrolling="no"></iframe></div>
   <div id="drone-wrap"><iframe src="드론.html" scrolling="no"></iframe></div><div id="target-ring"></div>
@@ -77,89 +80,716 @@
     <div id="mission-text">MISSION 01 · 꼭짓점을 이동하여 드론의 좌표를 지나는 포물선을 만드세요.</div>
     <div id="equation-box">y = -0.2(x - 3)² + 4</div>
     <div id="sliders"></div>
-    <div id="math-info"></div>
     <div id="action-row"><button class="btn-small" id="btn-launch">돌 발사</button><button class="btn-small" id="btn-hint">AI 힌트</button></div>
   </aside>
-  <div id="status-bar"><div id="feedback">계수를 조절해 예상 궤적을 만들어 보세요.</div><div class="score" id="scoreText">SCORE 2000 · ATTEMPT 1</div></div>
+  <div id="score-hud" aria-live="polite"><div class="hud-label">MISSION SCORE</div><div id="scoreText">SCORE 2000<br>ATTEMPT 1</div></div>
+  <div id="math-info" aria-live="polite"></div>
+  <div id="status-bar"><div id="feedback">계수를 조절해 예상 궤적을 만들어 보세요.</div></div>
   <section id="dialogue-box" tabindex="0"><div id="dialogue-guide">CLICK / SPACE ▶</div><div id="speaker-name">민우</div><div id="dialogue-text"></div><div id="dialogue-progress">01 / 04</div></section>
-  <button class="btn-nav" id="btn-prev">◀ 이전</button><button class="btn-nav" id="btn-stage2">다음 작전 ▶</button><button class="btn-nav" id="btn-next">다음 ▶</button>
+  <button class="btn-nav" id="btn-prev">◀ 이전</button><button class="btn-nav" id="btn-retry">다시하기</button><button class="btn-nav" id="btn-stage2">다음 ▶</button><button class="btn-nav" id="btn-stage3">다음 ▶</button><button class="btn-nav" id="btn-next">다음 ▶</button>
   <div id="modal"><div id="modal-card"><div id="modal-title"></div><div id="modal-text"></div><div style="margin-top:16px"><button class="btn-small" id="modal-close">확인</button></div></div></div>
 </main>
 <script>
 'use strict';
-const canvas=document.getElementById('graphCanvas'),ctx=canvas.getContext('2d');
-const slidersEl=document.getElementById('sliders'),equationBox=document.getElementById('equation-box'),mathInfo=document.getElementById('math-info'),feedback=document.getElementById('feedback'),scoreText=document.getElementById('scoreText');
-const droneWrap=document.getElementById('drone-wrap'),targetRing=document.getElementById('target-ring');
-const introDialogues=[
- {speaker:'민우',text:'드론의 위치를 좌표평면에 표시했어. 돌의 궤적을 포물선으로 맞춰야 해.',target:'char-민우'},
- {speaker:'서연',text:'먼저 꼭짓점이 보이는 y=a(x-p)²+q의 그래프로 조준해 보자.',target:'char-서연'},
- {speaker:'민우',text:'a로 폭을 조절하고, p와 q로 꼭짓점을 드론 쪽으로 이동하면 되겠네.',target:'char-민우'},
- {speaker:'서연',text:'첫 번째 드론을 맞힌 뒤에는 y=ax²+bx+c의 계수만으로 다시 도전해 보자!',target:'char-서연'}
+
+const canvas = document.getElementById('graphCanvas');
+const ctx = canvas.getContext('2d');
+const slidersEl = document.getElementById('sliders');
+const equationBox = document.getElementById('equation-box');
+const mathInfo = document.getElementById('math-info');
+const feedback = document.getElementById('feedback');
+const scoreText = document.getElementById('scoreText');
+const droneWrap = document.getElementById('drone-wrap');
+const targetRing = document.getElementById('target-ring');
+
+const introDialogues = [
+  {speaker:'민우', text:'드론의 위치를 좌표평면에 표시했어. 돌의 궤적을 포물선으로 맞춰야 해.', target:'char-민우'},
+  {speaker:'서연', text:'먼저 꼭짓점이 보이는 y=a(x-p)²+q의 그래프로 조준해 보자.', target:'char-서연'},
+  {speaker:'민우', text:'a로 폭을 조절하고, p와 q로 꼭짓점을 드론 쪽으로 이동하면 되겠네.', target:'char-민우'},
+  {speaker:'서연', text:'첫 번째 드론을 맞힌 뒤에는 y=ax²+bx+c의 계수만으로 다시 도전해 보자!', target:'char-서연'}
 ];
-const stage2Dialogues=[
- {speaker:'서연',text:'이번에는 꼭짓점의 좌표가 식에 바로 보이지 않아.',target:'char-서연'},
- {speaker:'민우',text:'y=ax²+bx+c의 계수를 보고 대칭축과 꼭짓점을 찾아야겠네.',target:'char-민우'},
- {speaker:'서연',text:'첫 번째 작전에서 알아낸 꼭짓점과 대칭축의 성질을 활용해 보자!',target:'char-서연'}
+
+const stage2Dialogues = [
+  {speaker:'서연', text:'이번에는 꼭짓점의 좌표가 식에 바로 보이지 않아.', target:'char-서연'},
+  {speaker:'민우', text:'y=ax²+bx+c의 계수를 보고 대칭축과 꼭짓점을 찾아야겠네.', target:'char-민우'},
+  {speaker:'서연', text:'첫 번째 작전에서 알아낸 꼭짓점과 대칭축의 성질을 활용해 보자!', target:'char-서연'}
 ];
-let currentStage=1,stage1Completed=false,stage2Completed=false,isLaunching=false,score=2000,attempt=1,hintIndex=0;
-let vertexA=-.2,vertexP=3,vertexQ=4,generalA=-.2,generalB=1.5,generalC=1;
-const drones={1:{x:6,y:7},2:{x:7,y:6}};
-const ORIGIN_TOLERANCE=1.8;
-const DRONE_HITBOX={width:76,height:52};
-let activeDialogues=introDialogues,dialogueIndex=0,typing=false,typeTimer=null,fullText='';
-const graph={xmin:0,xmax:10,ymin:0,ymax:10,pad:45};
-function mx(x){return graph.pad+(x-graph.xmin)/(graph.xmax-graph.xmin)*(canvas.width-graph.pad*2)}
-function my(y){return canvas.height-graph.pad-(y-graph.ymin)/(graph.ymax-graph.ymin)*(canvas.height-graph.pad*2)}
-function currentY(x){return currentStage===1?vertexA*(x-vertexP)*(x-vertexP)+vertexQ:generalA*x*x+generalB*x+generalC}
-function currentVertex(){if(currentStage===1)return{x:vertexP,y:vertexQ};const x=-generalB/(2*generalA);return{x,y:currentY(x)}}
-function fmt(n){return Math.abs(n)<1e-9?'0':Number(n.toFixed(2)).toString()}
-function signed(n,variable=''){return n>=0?` + ${fmt(n)}${variable}`:` - ${fmt(Math.abs(n))}${variable}`}
-function equationText(){if(currentStage===1){const p=vertexP>=0?`(x - ${fmt(vertexP)})`:`(x + ${fmt(Math.abs(vertexP))})`;return `y = ${fmt(vertexA)}${p}²${signed(vertexQ)}`}
- return `y = ${fmt(generalA)}x²${signed(generalB,'x')}${signed(generalC)}`}
-function makeSlider(id,label,min,max,step,value,hint){return `<div class="slider-row"><div class="slider-label"><label for="${id}">${label}</label><span id="${id}-value">${fmt(value)}</span></div><input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${value}"><div class="hint-line">${hint}</div></div>`}
-function renderSliders(){slidersEl.innerHTML=currentStage===1?
- makeSlider('sA','a',-2,-.1,.1,vertexA,'포물선의 방향과 폭')+makeSlider('sP','p',1,9,.1,vertexP,'꼭짓점과 대칭축의 가로 위치')+makeSlider('sQ','q',2,9,.1,vertexQ,'꼭짓점의 세로 위치'):
- makeSlider('sA','a',-2,-.1,.1,generalA,'포물선의 방향과 폭')+makeSlider('sB','b',-5,8,.1,generalB,'대칭축과 꼭짓점의 가로 위치')+makeSlider('sC','c',0,5,.1,generalC,'y절편과 출발 높이');
- slidersEl.querySelectorAll('input').forEach(el=>el.addEventListener('input',()=>{if(currentStage===1){vertexA=+document.getElementById('sA').value;vertexP=+document.getElementById('sP').value;vertexQ=+document.getElementById('sQ').value}else{generalA=+document.getElementById('sA').value;generalB=+document.getElementById('sB').value;generalC=+document.getElementById('sC').value}updateUI()}))
+
+const stage3Dialogues = [
+  {speaker:'민우', text:'새 드론 주변에 갈매기 두 마리가 날고 있어. 이번에는 안전한 경로가 필요해.', target:'char-민우'},
+  {speaker:'서연', text:'y=ax²+bx+c의 그래프가 드론은 지나면서 갈매기의 위험 구역은 피하도록 조절하자.', target:'char-서연'},
+  {speaker:'민우', text:'드론만 정확히 요격해야 해. 갈매기를 스치면 작전 실패야!', target:'char-민우'}
+];
+
+let currentStage = 1;
+let stage1Completed = false;
+let stage2Completed = false;
+let stage3Completed = false;
+let isLaunching = false;
+let score = 2000;
+let attempt = 1;
+let hintIndex = 0;
+
+let vertexA = -0.2;
+let vertexP = 3;
+let vertexQ = 4;
+let generalA = -0.2;
+let generalB = 1.5;
+let generalC = 1;
+
+const BASE_DRONES = {
+  1: {x:6, y:7},
+  2: {x:7, y:6},
+  3: {x:8, y:7}
+};
+const drones = {
+  1: {...BASE_DRONES[1]},
+  2: {...BASE_DRONES[2]},
+  3: {...BASE_DRONES[3]}
+};
+
+const seagulls = [
+  {x:3, y:2.5, label:'갈매기 A'},
+  {x:6, y:9.2, label:'갈매기 B'}
+];
+
+const ORIGIN_TOLERANCE = 1.8;
+const DRONE_HITBOX = {width:76, height:52};
+const SEAGULL_HITBOX = {width:58, height:34};
+
+const RETRY_BUTTON = document.getElementById('btn-retry');
+const STAGE_NEXT_BUTTONS = {
+  1: document.getElementById('btn-stage2'),
+  2: document.getElementById('btn-stage3'),
+  3: document.getElementById('btn-next')
+};
+
+function randomRange(min,max,step=0.1){
+  const count=Math.round((max-min)/step);
+  return Number((min+Math.floor(Math.random()*(count+1))*step).toFixed(2));
 }
-function updateUI(){equationBox.textContent=equationText();slidersEl.querySelectorAll('input').forEach(el=>{document.getElementById(el.id+'-value').textContent=fmt(+el.value)});const v=currentVertex(),d=drones[currentStage],gap=Math.abs(currentY(d.x)-d.y);mathInfo.innerHTML=`꼭짓점: (${fmt(v.x)}, ${fmt(v.y)})<br>대칭축: x = ${fmt(v.x)}<br>드론 좌표: (${d.x}, ${d.y})<br>드론 x에서 함수값: ${fmt(currentY(d.x))}<br>높이 차이: ${fmt(gap)}`;draw();placeDrone()}
-function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='rgba(0,10,18,.7)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.lineWidth=1;ctx.strokeStyle='rgba(0,240,255,.13)';ctx.fillStyle='rgba(224,255,255,.65)';ctx.font='22px Nanum Gothic Coding';for(let x=0;x<=10;x++){const px=mx(x);ctx.beginPath();ctx.moveTo(px,my(0));ctx.lineTo(px,my(10));ctx.stroke();ctx.fillText(String(x),px-6,my(0)+28)}for(let y=0;y<=10;y++){const py=my(y);ctx.beginPath();ctx.moveTo(mx(0),py);ctx.lineTo(mx(10),py);ctx.stroke();if(y>0)ctx.fillText(String(y),mx(0)-30,py+6)}ctx.strokeStyle='rgba(224,255,255,.7)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(mx(0),my(0));ctx.lineTo(mx(10),my(0));ctx.moveTo(mx(0),my(0));ctx.lineTo(mx(0),my(10));ctx.stroke();
- const v=currentVertex();ctx.setLineDash([10,10]);ctx.strokeStyle='rgba(0,240,255,.7)';ctx.beginPath();ctx.moveTo(mx(v.x),my(0));ctx.lineTo(mx(v.x),my(10));ctx.stroke();ctx.setLineDash([]);ctx.strokeStyle='#00f0ff';ctx.lineWidth=5;ctx.shadowColor='#00f0ff';ctx.shadowBlur=12;ctx.beginPath();let started=false;for(let x=0;x<=10;x+=.02){const y=currentY(x);if(y<0||y>10){started=false;continue}const px=mx(x),py=my(y);if(!started){ctx.moveTo(px,py);started=true}else ctx.lineTo(px,py)}ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='#e0ffff';ctx.beginPath();ctx.arc(mx(v.x),my(v.y),9,0,Math.PI*2);ctx.fill();ctx.font='20px Nanum Gothic Coding';ctx.fillText(`VERTEX (${fmt(v.x)}, ${fmt(v.y)})`,mx(v.x)+14,my(v.y)-14);
- const d=drones[currentStage],graphRect=document.getElementById('graph-panel').getBoundingClientRect();
- const sx=graphRect.width/canvas.width,sy=graphRect.height/canvas.height;
- const hitRx=(DRONE_HITBOX.width/2)/sx,hitRy=(DRONE_HITBOX.height/2)/sy;
- ctx.save();ctx.strokeStyle='rgba(255,0,60,.8)';ctx.lineWidth=2;ctx.setLineDash([8,6]);ctx.beginPath();ctx.ellipse(mx(d.x),my(d.y),hitRx,hitRy,0,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#ffdbe4';ctx.fillText(`DRONE (${d.x}, ${d.y})`,mx(d.x)+hitRx+12,my(d.y)-hitRy);ctx.restore()}
-function placeDrone(){const rect=document.getElementById('graph-panel').getBoundingClientRect(),game=document.getElementById('game-container').getBoundingClientRect(),d=drones[currentStage],scaleX=rect.width/canvas.width,scaleY=rect.height/canvas.height;const centerX=rect.left-game.left+mx(d.x)*scaleX,centerY=rect.top-game.top+my(d.y)*scaleY;droneWrap.style.left=(centerX-45)+'px';droneWrap.style.top=(centerY-45)+'px';targetRing.style.left=(centerX-DRONE_HITBOX.width/2)+'px';targetRing.style.top=(centerY-DRONE_HITBOX.height/2)+'px'}
-function setControlsDisabled(disabled){slidersEl.querySelectorAll('input').forEach(i=>i.disabled=disabled);document.getElementById('btn-launch').disabled=disabled}
+function distance(a,b){
+  return Math.hypot(a.x-b.x,a.y-b.y);
+}
+function randomizeDrone(stage){
+  const base=BASE_DRONES[stage];
+  drones[stage]={
+    x:randomRange(Math.max(4.5,base.x-1),Math.min(9,base.x+1),0.1),
+    y:randomRange(Math.max(4.5,base.y-1),Math.min(9,base.y+1),0.1)
+  };
+}
+function randomizeStage3Targets(){
+  randomizeDrone(3);
+  const d=drones[3];
+  const zones=[
+    {xmin:2.2,xmax:4.4,ymin:2.0,ymax:5.0,label:'갈매기 A'},
+    {xmin:5.0,xmax:7.2,ymin:7.1,ymax:9.3,label:'갈매기 B'}
+  ];
+  let placed=[];
+  for(const zone of zones){
+    let candidate=null;
+    for(let tries=0;tries<200;tries++){
+      const c={x:randomRange(zone.xmin,zone.xmax,.1),y:randomRange(zone.ymin,zone.ymax,.1),label:zone.label};
+      const clearOfDrone=distance(c,d)>=2.1;
+      const clearOfOthers=placed.every(g=>distance(c,g)>=2.0);
+      if(clearOfDrone&&clearOfOthers){candidate=c;break;}
+    }
+    placed.push(candidate||{x:zone.xmin,y:zone.ymin,label:zone.label});
+  }
+  seagulls[0]=placed[0];
+  seagulls[1]=placed[1];
+}
+function prepareRandomTargets(stage){
+  if(stage===3) randomizeStage3Targets();
+  else randomizeDrone(stage);
+}
+function hideProgressButtons(){
+  document.getElementById('btn-stage2').style.display='none';
+  document.getElementById('btn-stage3').style.display='none';
+  document.getElementById('btn-next').style.display='none';
+  RETRY_BUTTON.style.display='none';
+}
+
+let activeDialogues = introDialogues;
+let dialogueIndex = 0;
+let typing = false;
+let typeTimer = null;
+let fullText = '';
+
+const graph = {xmin:0, xmax:10, ymin:0, ymax:10, pad:45};
+
+function mx(x){
+  return graph.pad + (x-graph.xmin)/(graph.xmax-graph.xmin)*(canvas.width-graph.pad*2);
+}
+function my(y){
+  return canvas.height-graph.pad-(y-graph.ymin)/(graph.ymax-graph.ymin)*(canvas.height-graph.pad*2);
+}
+function currentY(x){
+  return currentStage === 1
+    ? vertexA*(x-vertexP)*(x-vertexP)+vertexQ
+    : generalA*x*x+generalB*x+generalC;
+}
+function currentVertex(){
+  if(currentStage === 1) return {x:vertexP, y:vertexQ};
+  const x = -generalB/(2*generalA);
+  return {x, y:currentY(x)};
+}
+function fmt(n){
+  return Math.abs(n)<1e-9 ? '0' : Number(n.toFixed(2)).toString();
+}
+function signed(n, variable=''){
+  return n>=0 ? ` + ${fmt(n)}${variable}` : ` - ${fmt(Math.abs(n))}${variable}`;
+}
+function equationText(){
+  if(currentStage === 1){
+    const p = vertexP>=0 ? `(x - ${fmt(vertexP)})` : `(x + ${fmt(Math.abs(vertexP))})`;
+    return `y = ${fmt(vertexA)}${p}²${signed(vertexQ)}`;
+  }
+  return `y = ${fmt(generalA)}x²${signed(generalB,'x')}${signed(generalC)}`;
+}
+function makeSlider(id,label,min,max,step,value,hint){
+  return `<div class="slider-row"><div class="slider-label"><label for="${id}">${label}</label><span id="${id}-value">${fmt(value)}</span></div><input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${value}"><div class="hint-line">${hint}</div></div>`;
+}
+function renderSliders(){
+  slidersEl.innerHTML = currentStage===1
+    ? makeSlider('sA','a',-2,-.1,.01,vertexA,'포물선의 방향과 폭')
+      +makeSlider('sP','p',1,9,.01,vertexP,'꼭짓점과 대칭축의 가로 위치')
+      +makeSlider('sQ','q',2,9,.01,vertexQ,'꼭짓점의 세로 위치')
+    : makeSlider('sA','a',-2,-.1,.01,generalA,'포물선의 방향과 폭')
+      +makeSlider('sB','b',-5,8,.01,generalB,'대칭축과 꼭짓점의 가로 위치')
+      +makeSlider('sC','c',0,5,.01,generalC,'y절편과 출발 높이');
+
+  slidersEl.querySelectorAll('input').forEach(el=>{
+    el.addEventListener('input',()=>{
+      if(currentStage===1){
+        vertexA=+document.getElementById('sA').value;
+        vertexP=+document.getElementById('sP').value;
+        vertexQ=+document.getElementById('sQ').value;
+      }else{
+        generalA=+document.getElementById('sA').value;
+        generalB=+document.getElementById('sB').value;
+        generalC=+document.getElementById('sC').value;
+      }
+      updateUI();
+    });
+  });
+}
+function updateUI(){
+  equationBox.textContent=equationText();
+  slidersEl.querySelectorAll('input').forEach(el=>{
+    document.getElementById(el.id+'-value').textContent=fmt(+el.value);
+  });
+  const v=currentVertex();
+  const d=drones[currentStage];
+  const gap=Math.abs(currentY(d.x)-d.y);
+  let extra='';
+  if(currentStage===3){
+    extra=`<br>갈매기 A: (${seagulls[0].x}, ${seagulls[0].y}) · 함수값 ${fmt(currentY(seagulls[0].x))}
+      <br>갈매기 B: (${seagulls[1].x}, ${seagulls[1].y}) · 함수값 ${fmt(currentY(seagulls[1].x))}`;
+  }
+  mathInfo.innerHTML=`꼭짓점: (${fmt(v.x)}, ${fmt(v.y)})<br>대칭축: x = ${fmt(v.x)}<br>드론 좌표: (${d.x}, ${d.y})<br>드론 x에서 함수값: ${fmt(currentY(d.x))}<br>높이 차이: ${fmt(gap)}${extra}`;
+  draw();
+  placeDrone();
+}
+function drawSeagull(x,y,label){
+  const px=mx(x), py=my(y);
+  const graphRect=document.getElementById('graph-panel').getBoundingClientRect();
+  const sx=graphRect.width/canvas.width, sy=graphRect.height/canvas.height;
+  const rx=(SEAGULL_HITBOX.width/2)/sx;
+  const ry=(SEAGULL_HITBOX.height/2)/sy;
+
+  ctx.save();
+  ctx.strokeStyle='rgba(255,215,80,.9)';
+  ctx.lineWidth=3;
+  ctx.setLineDash([7,5]);
+  ctx.beginPath();
+  ctx.ellipse(px,py,rx,ry,0,0,Math.PI*2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.strokeStyle='#fff4b3';
+  ctx.lineWidth=7;
+  ctx.lineCap='round';
+  ctx.shadowColor='rgba(255,225,120,.9)';
+  ctx.shadowBlur=10;
+  ctx.beginPath();
+  ctx.moveTo(px-24,py+2);
+  ctx.quadraticCurveTo(px-12,py-15,px,py);
+  ctx.quadraticCurveTo(px+12,py-15,px+24,py+2);
+  ctx.stroke();
+  ctx.shadowBlur=0;
+
+  ctx.fillStyle='#fff4b3';
+  ctx.font='18px Nanum Gothic Coding';
+  ctx.fillText(`${label} (${x}, ${y})`,px+rx+8,py-ry-6);
+  ctx.restore();
+}
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='rgba(0,10,18,.7)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(0,240,255,.13)';
+  ctx.fillStyle='rgba(224,255,255,.65)';
+  ctx.font='22px Nanum Gothic Coding';
+
+  for(let x=0;x<=10;x++){
+    const px=mx(x);
+    ctx.beginPath();
+    ctx.moveTo(px,my(0));
+    ctx.lineTo(px,my(10));
+    ctx.stroke();
+    ctx.fillText(String(x),px-6,my(0)+28);
+  }
+  for(let y=0;y<=10;y++){
+    const py=my(y);
+    ctx.beginPath();
+    ctx.moveTo(mx(0),py);
+    ctx.lineTo(mx(10),py);
+    ctx.stroke();
+    if(y>0) ctx.fillText(String(y),mx(0)-30,py+6);
+  }
+
+  ctx.strokeStyle='rgba(224,255,255,.7)';
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(mx(0),my(0));
+  ctx.lineTo(mx(10),my(0));
+  ctx.moveTo(mx(0),my(0));
+  ctx.lineTo(mx(0),my(10));
+  ctx.stroke();
+
+  const v=currentVertex();
+  ctx.setLineDash([10,10]);
+  ctx.strokeStyle='rgba(0,240,255,.7)';
+  ctx.beginPath();
+  ctx.moveTo(mx(v.x),my(0));
+  ctx.lineTo(mx(v.x),my(10));
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.strokeStyle='#00f0ff';
+  ctx.lineWidth=5;
+  ctx.shadowColor='#00f0ff';
+  ctx.shadowBlur=12;
+  ctx.beginPath();
+  let started=false;
+  for(let x=0;x<=10;x+=.02){
+    const y=currentY(x);
+    if(y<0||y>10){
+      started=false;
+      continue;
+    }
+    const px=mx(x), py=my(y);
+    if(!started){
+      ctx.moveTo(px,py);
+      started=true;
+    }else{
+      ctx.lineTo(px,py);
+    }
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+
+  ctx.fillStyle='#e0ffff';
+  ctx.beginPath();
+  ctx.arc(mx(v.x),my(v.y),9,0,Math.PI*2);
+  ctx.fill();
+  ctx.font='20px Nanum Gothic Coding';
+  ctx.fillText(`VERTEX (${fmt(v.x)}, ${fmt(v.y)})`,mx(v.x)+14,my(v.y)-14);
+
+  const d=drones[currentStage];
+  const graphRect=document.getElementById('graph-panel').getBoundingClientRect();
+  const sx=graphRect.width/canvas.width, sy=graphRect.height/canvas.height;
+  const hitRx=(DRONE_HITBOX.width/2)/sx;
+  const hitRy=(DRONE_HITBOX.height/2)/sy;
+
+  ctx.save();
+  ctx.strokeStyle='rgba(255,0,60,.8)';
+  ctx.lineWidth=2;
+  ctx.setLineDash([8,6]);
+  ctx.beginPath();
+  ctx.ellipse(mx(d.x),my(d.y),hitRx,hitRy,0,0,Math.PI*2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#ffdbe4';
+  ctx.fillText(`DRONE (${d.x}, ${d.y})`,mx(d.x)+hitRx+12,my(d.y)-hitRy);
+  ctx.restore();
+
+  if(currentStage===3){
+    seagulls.forEach(g=>drawSeagull(g.x,g.y,g.label));
+  }
+}
+function placeDrone(){
+  const rect=document.getElementById('graph-panel').getBoundingClientRect();
+  const game=document.getElementById('game-container').getBoundingClientRect();
+  const d=drones[currentStage];
+  const scaleX=rect.width/canvas.width;
+  const scaleY=rect.height/canvas.height;
+  const centerX=rect.left-game.left+mx(d.x)*scaleX;
+  const centerY=rect.top-game.top+my(d.y)*scaleY;
+  droneWrap.style.left=(centerX-45)+'px';
+  droneWrap.style.top=(centerY-45)+'px';
+  targetRing.style.left=(centerX-DRONE_HITBOX.width/2)+'px';
+  targetRing.style.top=(centerY-DRONE_HITBOX.height/2)+'px';
+}
+function setControlsDisabled(disabled){
+  slidersEl.querySelectorAll('input').forEach(i=>i.disabled=disabled);
+  document.getElementById('btn-launch').disabled=disabled;
+}
+function pointHitsEllipse(x,y,target,box,stoneRadiusCss,scaleX,scaleY){
+  const dx=(mx(x)-mx(target.x))*scaleX;
+  const dy=(my(y)-my(target.y))*scaleY;
+  const hitX=box.width/2+stoneRadiusCss;
+  const hitY=box.height/2+stoneRadiusCss;
+  return (dx*dx)/(hitX*hitX)+(dy*dy)/(hitY*hitY)<=1;
+}
 function launchStone(){
-  if(isLaunching||stage2Completed)return;
+  if(isLaunching||stage3Completed) return;
+
   const launchY=currentY(0);
   if(Math.abs(launchY)>ORIGIN_TOLERANCE){
     feedback.textContent=`돌 발사 지점을 원점 주변 범위에 맞춰주세요. 현재 시작점은 (0, ${fmt(launchY)})입니다.`;
     draw();
     ctx.save();
-    ctx.strokeStyle='#ff003c';ctx.fillStyle='#ff003c';ctx.lineWidth=3;ctx.shadowColor='#ff003c';ctx.shadowBlur=12;
-    ctx.beginPath();ctx.arc(mx(0),my(0),16,0,Math.PI*2);ctx.stroke();
-    ctx.font='20px Nanum Gothic Coding';ctx.fillText('발사 지점 (0, 0)',mx(0)+22,my(0)-18);ctx.restore();
+    ctx.strokeStyle='#ff003c';
+    ctx.fillStyle='#ff003c';
+    ctx.lineWidth=3;
+    ctx.shadowColor='#ff003c';
+    ctx.shadowBlur=12;
+    ctx.beginPath();
+    ctx.arc(mx(0),my(0),16,0,Math.PI*2);
+    ctx.stroke();
+    ctx.font='20px Nanum Gothic Coding';
+    ctx.fillText('발사 가능 구역',mx(0)+22,my(0)-18);
+    ctx.restore();
     return;
   }
-  isLaunching=true;setControlsDisabled(true);attempt++;score=Math.max(0,score-100);scoreText.textContent=`SCORE ${score} · ATTEMPT ${attempt}`;let x=0,last=performance.now();
-  function frame(now){if(now-last<14){requestAnimationFrame(frame);return}last=now;draw();const y=currentY(x);ctx.fillStyle='#c9c9c9';ctx.shadowColor='#fff';ctx.shadowBlur=8;ctx.beginPath();ctx.arc(mx(x),my(y),12,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;const d=drones[currentStage],rect=document.getElementById('graph-panel').getBoundingClientRect(),scaleX=rect.width/canvas.width,scaleY=rect.height/canvas.height;const stoneRadiusCss=12*((scaleX+scaleY)/2);const dx=(mx(x)-mx(d.x))*scaleX,dy=(my(y)-my(d.y))*scaleY;const hitX=DRONE_HITBOX.width/2+stoneRadiusCss,hitY=DRONE_HITBOX.height/2+stoneRadiusCss;const hit=(dx*dx)/(hitX*hitX)+(dy*dy)/(hitY*hitY)<=1;if(hit){success();return}x+=.06;if(x>10||y<-1.2||y>11){failure();return}requestAnimationFrame(frame)}
-  requestAnimationFrame(frame)
+
+  isLaunching=true;
+  setControlsDisabled(true);
+  attempt++;
+  score=Math.max(0,score-100);
+  scoreText.innerHTML=`SCORE ${score}<br>ATTEMPT ${attempt}`;
+
+  let x=0;
+  let last=performance.now();
+
+  function frame(now){
+    if(now-last<14){
+      requestAnimationFrame(frame);
+      return;
+    }
+    last=now;
+    draw();
+
+    const y=currentY(x);
+    ctx.fillStyle='#c9c9c9';
+    ctx.shadowColor='#fff';
+    ctx.shadowBlur=8;
+    ctx.beginPath();
+    ctx.arc(mx(x),my(y),12,0,Math.PI*2);
+    ctx.fill();
+    ctx.shadowBlur=0;
+
+    const rect=document.getElementById('graph-panel').getBoundingClientRect();
+    const scaleX=rect.width/canvas.width;
+    const scaleY=rect.height/canvas.height;
+    const stoneRadiusCss=12*((scaleX+scaleY)/2);
+
+    if(currentStage===3){
+      const hitGull=seagulls.find(g=>pointHitsEllipse(x,y,g,SEAGULL_HITBOX,stoneRadiusCss,scaleX,scaleY));
+      if(hitGull){
+        seagullFailure(hitGull);
+        return;
+      }
+    }
+
+    const d=drones[currentStage];
+    if(pointHitsEllipse(x,y,d,DRONE_HITBOX,stoneRadiusCss,scaleX,scaleY)){
+      success();
+      return;
+    }
+
+    x+=.06;
+    if(x>10||y<-1.2||y>11){
+      failure();
+      return;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 }
-function sparks(){const game=document.getElementById('game-container'),r=droneWrap.getBoundingClientRect(),g=game.getBoundingClientRect();for(let i=0;i<20;i++){const s=document.createElement('span');s.className='spark';s.style.left=(r.left-g.left+r.width/2)+'px';s.style.top=(r.top-g.top+r.height/2)+'px';s.style.setProperty('--dx',(Math.random()*180-90)+'px');s.style.setProperty('--dy',(Math.random()*180-90)+'px');game.appendChild(s);setTimeout(()=>s.remove(),800)}}
-function success(){isLaunching=false;const game=document.getElementById('game-container');game.classList.remove('impact-shake');void game.offsetWidth;game.classList.add('impact-shake');setTimeout(()=>game.classList.remove('impact-shake'),620);sparks();droneWrap.classList.add('shake');setTimeout(()=>droneWrap.classList.add('drop'),500);const accuracy=Math.max(0,Math.round(100-Math.abs(currentY(drones[currentStage].x)-drones[currentStage].y)*18));score+=accuracy*2;scoreText.textContent=`SCORE ${score} · ACCURACY ${accuracy}%`;if(currentStage===1){stage1Completed=true;document.getElementById('tab1').className='stage-tab done';document.getElementById('tab1').textContent='✓ 01 꼭짓점 좌표 제어';document.getElementById('tab2').className='stage-tab';document.getElementById('tab2').textContent='02 일반형 계수 제어';showModal('1차 요격 성공!','y = a(x-p)² + q의 꼭짓점은 (p, q), 대칭축은 x = p입니다.<br>a는 방향과 폭을, p와 q는 그래프의 위치를 결정합니다.');document.getElementById('btn-stage2').style.display='block'}else{stage2Completed=true;document.getElementById('tab2').className='stage-tab done';document.getElementById('tab2').textContent='✓ 02 일반형 계수 제어';showModal('최종 요격 성공!','y = ax² + bx + c에서는 x = -b/(2a)로 대칭축을 구할 수 있습니다.<br>두 식은 형태는 다르지만 같은 포물선을 나타낼 수 있습니다.');document.getElementById('btn-next').style.display='block'}feedback.textContent='요격 성공! 포물선이 드론의 좌표를 통과했습니다.'}
-function failure(){isLaunching=false;setControlsDisabled(false);const launchY=currentY(0),d=drones[currentStage],fy=currentY(d.x),v=currentVertex();let msg;if(Math.abs(launchY)>ORIGIN_TOLERANCE){msg=`돌 발사 지점을 원점 주변 범위에 맞춰주세요. 현재 시작점은 (0, ${fmt(launchY)})입니다.`}else{msg=fy<d.y?'궤적이 너무 낮습니다. 최고 높이를 높여 보세요.':'궤적이 너무 높습니다. 꼭짓점의 높이를 낮춰 보세요.';if(Math.abs(fy-d.y)<1.2)msg=v.x<d.x?'꼭짓점이 목표보다 왼쪽에 있습니다. 단, 발사점을 원점 근방에 유지하면서 그래프를 조절해 보세요.':'꼭짓점이 목표보다 오른쪽에 있습니다. 단, 발사점을 원점 근방에 유지하면서 그래프를 조절해 보세요.'}feedback.textContent=msg;draw()}
-function showHint(){score=Math.max(0,score-50);const hints=currentStage===1?['p는 꼭짓점의 가로 위치입니다.','q는 꼭짓점의 높이입니다.','포물선이 너무 넓다면 |a|를 크게 해 보세요.','대칭축은 x = p입니다.']:['대칭축은 x = -b/(2a)입니다.','c는 y절편과 시작 높이에 관련됩니다.','b를 바꾸면 꼭짓점의 가로 위치가 달라집니다.','일반형을 꼭짓점형으로 바꾸어 생각해 보세요.'];feedback.textContent='AI HINT · '+hints[hintIndex++%hints.length];scoreText.textContent=`SCORE ${score} · ATTEMPT ${attempt}`}
-function showModal(title,text){document.getElementById('modal-title').textContent=title;document.getElementById('modal-text').innerHTML=text;document.getElementById('modal').style.display='flex'}
-function startStage2(){currentStage=2;document.getElementById('btn-stage2').style.display='none';document.getElementById('headerTitle').textContent='드론 요격 작전 · 계수 분석 제어';document.getElementById('control-title').textContent='GENERAL FORM TRAJECTORY CONTROL';document.getElementById('mission-text').textContent='MISSION 02 · 계수 a, b, c를 분석하여 드론의 좌표를 통과하는 포물선을 만드세요.';document.getElementById('tab2').className='stage-tab active';droneWrap.classList.remove('shake','drop');targetRing.style.opacity='1';droneWrap.style.opacity='1';attempt=1;hintIndex=0;isLaunching=false;renderSliders();setControlsDisabled(false);updateUI();feedback.textContent='일반형의 그래프가 원점 근방에서 시작하도록 c를 먼저 조절해 보세요.';activeDialogues=stage2Dialogues;dialogueIndex=0;document.getElementById('dialogue-box').style.display='block';renderDialogue()}
-function typeText(text){clearInterval(typeTimer);typing=true;fullText=text;const el=document.getElementById('dialogue-text');el.textContent='';let i=0;typeTimer=setInterval(()=>{el.textContent+=text[i++]||'';if(i>=text.length){clearInterval(typeTimer);typing=false}},28)}
-function renderDialogue(){const d=activeDialogues[dialogueIndex];document.getElementById('speaker-name').textContent=d.speaker;document.querySelectorAll('.char-wrapper').forEach(c=>c.classList.toggle('inactive',c.id!==d.target));document.getElementById('dialogue-progress').textContent=`${String(dialogueIndex+1).padStart(2,'0')} / ${String(activeDialogues.length).padStart(2,'0')}`;typeText(d.text)}
-function advanceDialogue(){if(typing){clearInterval(typeTimer);typing=false;document.getElementById('dialogue-text').textContent=fullText;return}dialogueIndex++;if(dialogueIndex>=activeDialogues.length){document.getElementById('dialogue-box').style.display='none';document.querySelectorAll('.char-wrapper').forEach(c=>c.classList.remove('inactive'));return}renderDialogue()}
-function go(url){window.location.href=url}
-document.getElementById('dialogue-box').addEventListener('click',advanceDialogue);document.getElementById('dialogue-box').addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();advanceDialogue()}});document.addEventListener('keydown',e=>{if((e.key===' '||e.key==='Enter')&&document.getElementById('dialogue-box').style.display!=='none'){e.preventDefault();advanceDialogue()}});
-document.getElementById('btn-launch').addEventListener('click',launchStone);document.getElementById('btn-hint').addEventListener('click',showHint);document.getElementById('btn-prev').addEventListener('click',()=>go('C02.html'));document.getElementById('btn-next').addEventListener('click',()=>go('C04.html'));document.getElementById('btn-stage2').addEventListener('click',startStage2);document.getElementById('modal-close').addEventListener('click',()=>document.getElementById('modal').style.display='none');window.addEventListener('resize',placeDrone);
-renderSliders();updateUI();renderDialogue();
+function sparks(){
+  const game=document.getElementById('game-container');
+  const r=droneWrap.getBoundingClientRect();
+  const g=game.getBoundingClientRect();
+  for(let i=0;i<20;i++){
+    const s=document.createElement('span');
+    s.className='spark';
+    s.style.left=(r.left-g.left+r.width/2)+'px';
+    s.style.top=(r.top-g.top+r.height/2)+'px';
+    s.style.setProperty('--dx',(Math.random()*180-90)+'px');
+    s.style.setProperty('--dy',(Math.random()*180-90)+'px');
+    game.appendChild(s);
+    setTimeout(()=>s.remove(),800);
+  }
+}
+function success(){
+  isLaunching=false;
+  const game=document.getElementById('game-container');
+  game.classList.remove('impact-shake');
+  void game.offsetWidth;
+  game.classList.add('impact-shake');
+  setTimeout(()=>game.classList.remove('impact-shake'),620);
+  sparks();
+  droneWrap.classList.add('shake');
+  setTimeout(()=>droneWrap.classList.add('drop'),500);
+
+  const accuracy=Math.max(0,Math.round(100-Math.abs(currentY(drones[currentStage].x)-drones[currentStage].y)*18));
+  score+=accuracy*2;
+  const completedAttempts=Math.max(1,attempt-1);
+  const resultSummary=`<br><br><strong>작전 결과</strong><br>시도 횟수: ${completedAttempts}회<br>정확도: ${accuracy}%<br>점수: ${score}점`;
+  scoreText.innerHTML=`SCORE ${score}<br>ACCURACY ${accuracy}%`;
+
+  if(currentStage===1){
+    stage1Completed=true;
+    document.getElementById('tab1').className='stage-tab done';
+    document.getElementById('tab1').textContent='✓ 01 꼭짓점 좌표 제어';
+    document.getElementById('tab2').className='stage-tab';
+    document.getElementById('tab2').textContent='02 일반형 계수 제어';
+    showModal('1차 요격 성공!',`y = a(x-p)² + q의 꼭짓점은 (p, q), 대칭축은 x = p입니다.<br>a는 방향과 폭을, p와 q는 그래프의 위치를 결정합니다.${resultSummary}`);
+    document.getElementById('btn-stage2').style.display='block';
+  }else if(currentStage===2){
+    stage2Completed=true;
+    document.getElementById('tab2').className='stage-tab done';
+    document.getElementById('tab2').textContent='✓ 02 일반형 계수 제어';
+    document.getElementById('tab3').className='stage-tab';
+    document.getElementById('tab3').textContent='03 갈매기 회피 요격';
+    showModal('2차 요격 성공!',`y = ax² + bx + c에서는 x = -b/(2a)로 대칭축을 구할 수 있습니다.<br>이제 같은 일반형으로 갈매기를 피해 드론만 요격해 보세요.${resultSummary}`);
+    document.getElementById('btn-stage3').style.display='block';
+  }else{
+    stage3Completed=true;
+    document.getElementById('tab3').className='stage-tab done';
+    document.getElementById('tab3').textContent='✓ 03 갈매기 회피 요격';
+    showModal('안전 요격 성공!',`포물선이 두 갈매기의 위험 구역을 모두 피하고 드론만 정확히 통과했습니다.<br>함수의 값을 비교하면 목표와 장애물을 동시에 고려한 경로를 설계할 수 있습니다.${resultSummary}`);
+    document.getElementById('btn-next').style.display='block';
+  }
+  RETRY_BUTTON.style.display='block';
+  feedback.textContent=currentStage===3
+    ? '안전 요격 성공! 갈매기를 피해 드론만 정확히 맞혔습니다.'
+    : '요격 성공! 포물선이 드론의 좌표를 통과했습니다.';
+}
+function seagullFailure(gull){
+  isLaunching=false;
+  setControlsDisabled(false);
+  score=Math.max(0,score-250);
+  scoreText.innerHTML=`SCORE ${score}<br>ATTEMPT ${attempt}`;
+  feedback.textContent=`작전 중지! ${gull.label}의 위험 구역을 통과했습니다. 해당 x에서 포물선의 높이를 바꿔 갈매기를 피하세요.`;
+  draw();
+  const game=document.getElementById('game-container');
+  game.classList.remove('impact-shake');
+  void game.offsetWidth;
+  game.classList.add('impact-shake');
+  setTimeout(()=>game.classList.remove('impact-shake'),620);
+}
+function failure(){
+  isLaunching=false;
+  setControlsDisabled(false);
+  const launchY=currentY(0);
+  const d=drones[currentStage];
+  const fy=currentY(d.x);
+  const v=currentVertex();
+  let msg;
+
+  if(Math.abs(launchY)>ORIGIN_TOLERANCE){
+    msg=`돌 발사 지점을 원점 주변 범위에 맞춰주세요. 현재 시작점은 (0, ${fmt(launchY)})입니다.`;
+  }else{
+    msg=fy<d.y?'궤적이 너무 낮습니다. 최고 높이를 높여 보세요.':'궤적이 너무 높습니다. 꼭짓점의 높이를 낮춰 보세요.';
+    if(Math.abs(fy-d.y)<1.2){
+      msg=v.x<d.x
+        ? '꼭짓점이 목표보다 왼쪽에 있습니다. 발사점을 원점 근방에 유지하면서 그래프를 조절해 보세요.'
+        : '꼭짓점이 목표보다 오른쪽에 있습니다. 발사점을 원점 근방에 유지하면서 그래프를 조절해 보세요.';
+    }
+    if(currentStage===3) msg+=' 갈매기의 노란 위험 구역도 함께 확인하세요.';
+  }
+  feedback.textContent=msg;
+  draw();
+}
+function showHint(){
+  score=Math.max(0,score-50);
+  let hints;
+  if(currentStage===1){
+    hints=['p는 꼭짓점의 가로 위치입니다.','q는 꼭짓점의 높이입니다.','포물선이 너무 넓다면 |a|를 크게 해 보세요.','대칭축은 x = p입니다.'];
+  }else if(currentStage===2){
+    hints=['대칭축은 x = -b/(2a)입니다.','c는 y절편과 시작 높이에 관련됩니다.','b를 바꾸면 꼭짓점의 가로 위치가 달라집니다.','일반형을 꼭짓점형으로 바꾸어 생각해 보세요.'];
+  }else{
+    hints=[
+      `먼저 x=${fmt(drones[3].x)}에서 함수값이 ${fmt(drones[3].y)}에 가까운지 확인하세요.`,
+      `갈매기 A의 x=${fmt(seagulls[0].x)}에서 함수값이 ${fmt(seagulls[0].y)}와 충분히 떨어져야 합니다.`,
+      `갈매기 B의 x=${fmt(seagulls[1].x)}에서 함수값이 ${fmt(seagulls[1].y)}와 충분히 떨어져야 합니다.`,
+      'c는 원점 근방의 출발 높이, b는 포물선의 가로 위치에 큰 영향을 줍니다.'
+    ];
+  }
+  feedback.textContent='AI HINT · '+hints[hintIndex++%hints.length];
+  scoreText.innerHTML=`SCORE ${score}<br>ATTEMPT ${attempt}`;
+}
+function showModal(title,text){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-text').innerHTML=text;
+  document.getElementById('modal').style.display='flex';
+}
+function resetDroneVisual(){
+  droneWrap.classList.remove('shake','drop');
+  targetRing.style.opacity='1';
+  droneWrap.style.opacity='1';
+}
+function startStage2(){
+  currentStage=2;
+  hideProgressButtons();
+  prepareRandomTargets(2);
+  document.getElementById('btn-stage2').style.display='none';
+  document.getElementById('headerTitle').textContent='드론 요격 작전 · 계수 분석 제어';
+  document.getElementById('control-title').textContent='GENERAL FORM TRAJECTORY CONTROL';
+  document.getElementById('mission-text').textContent='MISSION 02 · 계수 a, b, c를 분석하여 드론의 좌표를 통과하는 포물선을 만드세요.';
+  document.getElementById('tab2').className='stage-tab active';
+  resetDroneVisual();
+  attempt=1;
+  hintIndex=0;
+  isLaunching=false;
+  renderSliders();
+  setControlsDisabled(false);
+  updateUI();
+  feedback.textContent='일반형의 그래프가 원점 근방에서 시작하도록 c를 먼저 조절해 보세요.';
+  activeDialogues=stage2Dialogues;
+  dialogueIndex=0;
+  document.getElementById('dialogue-box').style.display='block';
+  renderDialogue();
+}
+function startStage3(){
+  currentStage=3;
+  hideProgressButtons();
+  prepareRandomTargets(3);
+  document.getElementById('btn-stage3').style.display='none';
+  document.getElementById('headerTitle').textContent='드론 요격 작전 · 갈매기 안전 회피';
+  document.getElementById('control-title').textContent='WILDLIFE-SAFE TRAJECTORY CONTROL';
+  document.getElementById('mission-text').textContent='MISSION 03 · y=ax²+bx+c를 조절해 갈매기 두 마리의 위험 구역을 피하고 드론만 요격하세요.';
+  document.getElementById('tab3').className='stage-tab active';
+  generalA=-0.3;
+  generalB=2;
+  generalC=0.5;
+  resetDroneVisual();
+  attempt=1;
+  hintIndex=0;
+  isLaunching=false;
+  renderSliders();
+  setControlsDisabled(false);
+  updateUI();
+  feedback.textContent='노란 위험 구역은 갈매기입니다. 포물선이 두 구역을 지나지 않도록 조절하세요.';
+  activeDialogues=stage3Dialogues;
+  dialogueIndex=0;
+  document.getElementById('dialogue-box').style.display='block';
+  renderDialogue();
+}
+function retryCurrentStage(){
+  hideProgressButtons();
+  document.getElementById('modal').style.display='none';
+  prepareRandomTargets(currentStage);
+  resetDroneVisual();
+  isLaunching=false;
+  attempt=1;
+  hintIndex=0;
+  scoreText.innerHTML=`SCORE ${score}<br>ATTEMPT ${attempt}`;
+  if(currentStage===1){
+    stage1Completed=false;
+    document.getElementById('tab1').className='stage-tab active';
+    document.getElementById('tab1').textContent='01 꼭짓점 좌표 제어';
+    feedback.textContent='새로운 드론 좌표가 설정되었습니다. 꼭짓점형 그래프로 다시 요격하세요.';
+  }else if(currentStage===2){
+    stage2Completed=false;
+    document.getElementById('tab2').className='stage-tab active';
+    document.getElementById('tab2').textContent='02 일반형 계수 제어';
+    feedback.textContent='새로운 드론 좌표가 설정되었습니다. 일반형 계수를 다시 조절하세요.';
+  }else{
+    stage3Completed=false;
+    document.getElementById('tab3').className='stage-tab active';
+    document.getElementById('tab3').textContent='03 갈매기 회피 요격';
+    feedback.textContent='드론과 갈매기의 위치가 새로 설정되었습니다. 안전한 포물선 경로를 다시 설계하세요.';
+  }
+  renderSliders();
+  setControlsDisabled(false);
+  updateUI();
+}
+
+function typeText(text){
+  clearInterval(typeTimer);
+  typing=true;
+  fullText=text;
+  const el=document.getElementById('dialogue-text');
+  el.textContent='';
+  let i=0;
+  typeTimer=setInterval(()=>{
+    el.textContent+=text[i++]||'';
+    if(i>=text.length){
+      clearInterval(typeTimer);
+      typing=false;
+    }
+  },28);
+}
+function renderDialogue(){
+  const d=activeDialogues[dialogueIndex];
+  document.getElementById('speaker-name').textContent=d.speaker;
+  document.querySelectorAll('.char-wrapper').forEach(c=>c.classList.toggle('inactive',c.id!==d.target));
+  document.getElementById('dialogue-progress').textContent=`${String(dialogueIndex+1).padStart(2,'0')} / ${String(activeDialogues.length).padStart(2,'0')}`;
+  typeText(d.text);
+}
+function advanceDialogue(){
+  if(typing){
+    clearInterval(typeTimer);
+    typing=false;
+    document.getElementById('dialogue-text').textContent=fullText;
+    return;
+  }
+  dialogueIndex++;
+  if(dialogueIndex>=activeDialogues.length){
+    document.getElementById('dialogue-box').style.display='none';
+    document.querySelectorAll('.char-wrapper').forEach(c=>c.classList.remove('inactive'));
+    return;
+  }
+  renderDialogue();
+}
+function go(url){
+  window.location.href=url;
+}
+
+document.getElementById('dialogue-box').addEventListener('click',advanceDialogue);
+document.getElementById('dialogue-box').addEventListener('keydown',e=>{
+  if(e.key===' '||e.key==='Enter'){
+    e.preventDefault();
+    advanceDialogue();
+  }
+});
+document.addEventListener('keydown',e=>{
+  if((e.key===' '||e.key==='Enter')&&document.getElementById('dialogue-box').style.display!=='none'){
+    e.preventDefault();
+    advanceDialogue();
+  }
+});
+document.getElementById('btn-launch').addEventListener('click',launchStone);
+document.getElementById('btn-hint').addEventListener('click',showHint);
+document.getElementById('btn-prev').addEventListener('click',()=>go('C02.html'));
+document.getElementById('btn-next').addEventListener('click',()=>go('C04.html'));
+document.getElementById('btn-stage2').addEventListener('click',startStage2);
+document.getElementById('btn-stage3').addEventListener('click',startStage3);
+RETRY_BUTTON.addEventListener('click',retryCurrentStage);
+document.getElementById('modal-close').addEventListener('click',()=>document.getElementById('modal').style.display='none');
+window.addEventListener('resize',placeDrone);
+
+prepareRandomTargets(1);
+renderSliders();
+updateUI();
+renderDialogue();
 </script>
 </body>
 </html>
