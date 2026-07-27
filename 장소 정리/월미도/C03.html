@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>월미도 MATHTOUR - C03</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                processEscapes: true
+            },
+            displayAlign: "center",
+            "HTML-CSS": { scale: 100, linebreaks: { automatic: true } }
+        });
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&family=Pretendard:wght@400;600;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f5f0e6;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid #d4af37;
+        }
+
+        /* 스테이지 상단 표시바 */
+        #stage-header {
+            position: absolute;
+            top: 12px;
+            left: 20px;
+            z-index: 20;
+            background: rgba(20, 15, 10, 0.85);
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 6px 14px;
+            color: #d4af37;
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+
+        /* 에셋 레이어 기본 위치 */
+        .asset-wrapper {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        /* 캐릭터 레이어 */
+        .char-wrapper {
+            position: absolute;
+            overflow: visible;
+            transition: filter 0.3s ease;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* 퀴즈 컨테이너 */
+        .quiz-container {
+            position: absolute;
+            top: 52px;
+            left: 20px;
+            right: 20px;
+            bottom: 60px;
+            z-index: 10;
+            background: rgba(245, 240, 230, 0.92);
+            border: 2px solid #d4af37;
+            border-radius: 12px;
+            padding: 12px;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+        }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            z-index: 30;
+            background-color: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 8px 20px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        .btn-nav:active {
+            transform: scale(0.98);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 12px;
+        }
+
+        #btn-next {
+            right: 20px;
+            bottom: 12px;
+        }
+
+        /* 커스텀 스크롤바 */
+        .quiz-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .quiz-container::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 3px;
+        }
+        .quiz-container::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 3px;
+        }
+
+        .canvas-container { 
+            position: relative; 
+            border-radius: 1.5rem; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); 
+            border: 2px solid #cedecf; 
+            overflow: hidden; 
+            background: #d9f7be; 
+        }
+        canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+        .shake-error { animation: shake 0.4s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="stage-header">월미도 MATHTOUR - Stage 03. 삼각함수 산책로 설계</div>
+
+        <div class="asset-wrapper" style="left: 33px; bottom: 20px; width: 1000px; height: 500px; overflow: hidden; z-index: 1;">
+            <iframe src="월미산산책로.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(1); transform-origin:top left; pointer-events:none;"></iframe>
+        </div>
+
+        <div class="char-wrapper" id="char-서연" style="left: 30px; bottom: 10px; width: 182px; height: 224px;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.7); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <div class="char-wrapper" id="char-민우" style="right: 30px; bottom: 10px; width: 182px; height: 224px;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.7) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <div class="quiz-container font-sans text-slate-900">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 h-full items-stretch">
+                <section class="lg:col-span-7 flex flex-col gap-2 relative h-full">
+                    <div class="flex justify-between items-center bg-white/95 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm border border-slate-200 z-10">
+                        <h2 class="text-sm font-black text-slate-700 flex items-center gap-2 italic">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span> 실시간 탐사 지도
+                        </h2>
+                        <div class="text-xs font-black text-emerald-700 bg-emerald-50 px-3 py-0.5 rounded-full border border-emerald-100">
+                            삼각함수 경로 조율 중
+                        </div>
+                    </div>
+
+                    <div class="canvas-container flex-grow min-h-[280px] relative" id="canvas-wrap">
+                        <canvas id="mapCanvas"></canvas>
+                    </div>
+                </section>
+
+                <section class="lg:col-span-5 flex flex-col h-full relative">
+                    <div id="panel-1" class="bg-white p-5 rounded-2xl shadow-lg border border-slate-200 flex flex-col h-full justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="bg-emerald-100 text-emerald-700 text-xs font-black px-3 py-1 rounded-lg">MISSION 01</span>
+                                <h3 class="text-xl font-black text-slate-800 tracking-tight">삼각함수 산책로</h3>
+                            </div>
+
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                월미산의 아름답고 울창한 숲길 곡선을 설계합니다.<br>
+                                높낮이와 오르내림 주기를 조절하여 실제 경로(갈색 점선)와 일치시키세요.
+                            </p>
+
+                            <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-100 mb-4 shadow-inner">
+                                <div>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <label class="text-xs font-black text-slate-600">진폭 (높낮이):</label>
+                                        <span id="val-a" class="text-xl font-black text-emerald-600 underline">1</span>
+                                    </div>
+                                    <input type="range" id="slider-a" min="1" max="5" step="1" value="1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600">
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <label class="text-xs font-black text-slate-600">주기 (반복 횟수):</label>
+                                        <span id="val-w" class="text-xl font-black text-emerald-600 underline">1</span>
+                                    </div>
+                                    <input type="range" id="slider-w" min="1" max="5" step="1" value="1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600">
+                                </div>
+
+                                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                                    <p class="text-[10px] text-center text-slate-400 font-black uppercase mb-1 tracking-wider">현재 함수식</p>
+                                    <div id="formula-1" class="text-lg font-bold text-slate-700 text-center py-1 min-h-[2.2rem] flex items-center justify-center">
+                                        $y = 1 \sin(1 x)$
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="btn-verify-1" class="w-full bg-slate-950 hover:bg-emerald-600 text-white font-black py-3 rounded-xl shadow-md transition-all flex justify-center items-center gap-2 text-base group">
+                            <span>산책로 설계 완료</span>
+                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div id="modal-success" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm hidden">
+            <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border-4 border-emerald-500">
+                <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 animate-bounce">🎉</div>
+                <h4 class="text-2xl font-black text-slate-900 mb-2 leading-tight">미션 1 성공!</h4>
+                <p class="text-slate-600 text-sm leading-relaxed mb-6">아름다운 삼각함수 산책로 곡선 설계를 완료했습니다!</p>
+                <button onclick="handleSuccessConfirm()" class="w-full bg-emerald-700 text-white font-black py-3 rounded-xl text-base hover:bg-emerald-800 transition-colors shadow-md">확인 및 다음으로 이동</button>
+            </div>
+        </div>
+
+        <button id="btn-prev" class="btn-nav" onclick="navigate('C02.html')">이전</button>
+        <button id="btn-next" class="btn-nav" style="display:none;" onclick="navigate('C04.html')">다음</button>
+    </div>
+
+    <script>
+        // 정수 단위 상태 관리 (정답: A = 3, W = 2)
+        const state = { A: 1, W: 1, targetA: 3, targetW: 2 };
+        const canvas = document.getElementById('mapCanvas');
+        const ctx = canvas.getContext('2d');
+        const formula1 = document.getElementById('formula-1');
+
+        function updateMath(element, latex) {
+            if(!element) return;
+            element.innerHTML = latex;
+            if (window.MathJax) MathJax.Hub.Queue(["Typeset", MathJax.Hub, element]);
+        }
+
+        function resize() {
+            const wrap = document.getElementById('canvas-wrap');
+            if(!wrap) return;
+            canvas.width = wrap.clientWidth * window.devicePixelRatio;
+            canvas.height = wrap.clientHeight * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            draw();
+        }
+        window.addEventListener('resize', resize);
+
+        function drawForestBackground(ctx, w, h) {
+            ctx.fillStyle = '#f0fdf4'; ctx.fillRect(0, 0, w, h);
+            ctx.fillStyle = '#d9f7be'; ctx.beginPath(); ctx.moveTo(0, h * 0.1);
+            ctx.bezierCurveTo(w * 0.2, h * -0.1, w * 0.4, h * 0.3, w * 0.6, h * 0.05);
+            ctx.bezierCurveTo(w * 0.8, h * -0.05, w * 0.9, h * 0.2, w, h * 0.1);
+            ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
+
+            const drawPine = (ctx, x, y, scale, colorLeaves, colorTrunk) => {
+                ctx.save(); ctx.translate(x, y); ctx.scale(scale, scale);
+                ctx.fillStyle = colorTrunk; ctx.fillRect(-2.5, 0, 5, 18);
+                ctx.fillStyle = colorLeaves;
+                ctx.beginPath(); ctx.moveTo(0, -18); ctx.lineTo(-14, 0); ctx.lineTo(14, 0); ctx.closePath(); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(0, -28); ctx.lineTo(-12, -8); ctx.lineTo(12, -8); ctx.closePath(); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(0, -38); ctx.lineTo(-10, -16); ctx.lineTo(10, -16); ctx.closePath(); ctx.fill();
+                ctx.restore();
+            };
+
+            const colorsTrunk = ['#a18262', '#c19a6b', '#8e6e46'];
+            for(let i=0; i<80; i++) drawPine(ctx, (i*17)%w, h*0.15 + ((i*23)%(h*0.35)), 0.7 + (i%3)*0.1, '#bef264', colorsTrunk[i%3]);
+            ctx.fillStyle = '#a3e635'; ctx.beginPath(); ctx.moveTo(0, h * 0.3);
+            ctx.bezierCurveTo(w * 0.2, h * 0.15, w * 0.5, h * 0.6, w * 0.8, h * 0.3);
+            ctx.bezierCurveTo(w * 0.9, h * 0.2, w, h * 0.4, w, h * 0.3);
+            ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
+            for(let i=0; i<60; i++) drawPine(ctx, (i*29)%w, h*0.35 + ((i*37)%(h*0.4)), 1.0 + (i%3)*0.1, '#84cc16', colorsTrunk[i%3]);
+            ctx.fillStyle = '#65a30d'; ctx.beginPath(); ctx.moveTo(0, h * 0.6);
+            ctx.bezierCurveTo(w * 0.3, h * 0.4, w * 0.6, h * 0.8, w, h * 0.6);
+            ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
+            for(let i=0; i<40; i++) drawPine(ctx, (i*41)%w, h*0.6 + ((i*19)%(h*0.35)), 1.4 + (i%2)*0.2, '#4d7c0f', colorsTrunk[i%3]);
+        }
+
+        function drawSine(xS, yS, xE, yE, A, W, color, isDashed = false) {
+            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = isDashed ? 3 : 5;
+            if (isDashed) ctx.setLineDash([8, 6]); else ctx.setLineDash([]);
+            const dx = xE - xS;
+            for (let x = 0; x <= dx; x++) {
+                const t = x / dx; const ty = Math.sin(t * Math.PI * 2 * W) * (A * 10);
+                if (x === 0) ctx.moveTo(xS + x, yS + ty); else ctx.lineTo(xS + x, yS + ty);
+            }
+            ctx.stroke(); ctx.setLineDash([]);
+        }
+
+        function draw() {
+            const w = canvas.width / window.devicePixelRatio;
+            const h = canvas.height / window.devicePixelRatio;
+            ctx.clearRect(0, 0, w, h);
+            drawForestBackground(ctx, w, h);
+
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.05)'; ctx.lineWidth = 1;
+            for(let i=0; i<w; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,h); ctx.stroke(); }
+            for(let i=0; i<h; i+=40) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i); ctx.stroke(); }
+
+            const pA = { x: w * 0.15, y: h * 0.5 };
+            const pB = { x: w * 0.85, y: h * 0.5 };
+
+            drawSine(pA.x, pA.y, pB.x, pB.y, state.targetA, state.targetW, '#8c6239', true);
+            const activeColor = (state.A === state.targetA && state.W === state.targetW) ? '#166534' : '#1d4ed8';
+            drawSine(pA.x, pA.y, pB.x, pB.y, state.A, state.W, activeColor);
+
+            const drawPoint = (p, label1, label2, color) => {
+                ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.arc(p.x + 2, p.y + 2, 12, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = color; ctx.beginPath(); ctx.arc(p.x, p.y, 12, 0, Math.PI*2); ctx.fill();
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
+                ctx.font = 'bold 16px Pretendard, sans-serif'; ctx.fillStyle = '#0f172a'; ctx.fillText(label1, p.x - 16, p.y - 20);
+                ctx.font = 'bold 12px Pretendard, sans-serif'; ctx.fillStyle = '#1e3a24'; ctx.fillText(label2, p.x - 45, p.y + 28);
+            };
+
+            drawPoint(pA, '입구', '산책로 입구', '#1e293b');
+            drawPoint(pB, '정상', '월미산 정상', '#be123c');
+        }
+
+        const sliderA = document.getElementById('slider-a');
+        const sliderW = document.getElementById('slider-w');
+
+        function updateStep1UI() {
+            state.A = parseInt(sliderA.value);
+            state.W = parseInt(sliderW.value);
+            document.getElementById('val-a').innerText = state.A;
+            document.getElementById('val-w').innerText = state.W;
+            updateMath(formula1, `$y = ${state.A} \\sin(${state.W} x)$`);
+            draw();
+        }
+
+        sliderA.addEventListener('input', updateStep1UI);
+        sliderW.addEventListener('input', updateStep1UI);
+
+        document.getElementById('btn-verify-1').addEventListener('click', () => {
+            if (state.A === state.targetA && state.W === state.targetW) {
+                document.getElementById('modal-success').classList.remove('hidden');
+                document.getElementById('btn-next').style.display = 'block';
+            } else {
+                document.getElementById('panel-1').classList.add('shake-error');
+                setTimeout(() => document.getElementById('panel-1').classList.remove('shake-error'), 500);
+            }
+        });
+
+        function handleSuccessConfirm() {
+            document.getElementById('modal-success').classList.add('hidden');
+            navigate('C04.html');
+        }
+
+        function navigate(url) {
+            window.location.href = url;
+        }
+
+        window.addEventListener('load', () => {
+            resize();
+            updateMath(formula1, `$y = 1 \\sin(1 x)$`);
+        });
+    </script>
+</body>
+</html>

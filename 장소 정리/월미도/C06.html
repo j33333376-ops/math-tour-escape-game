@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>월미도 MATHTOUR - C06</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #1a1714;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f5f0e6;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            border: 2px solid #d4af37;
+        }
+
+        /* Stage Header */
+        #stage-header {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            padding: 8px 18px;
+            background: rgba(20, 15, 10, 0.8);
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            color: #d4af37;
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            z-index: 10;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+
+        /* Asset Layer (월미산산책로) */
+        .asset-wrapper {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        /* Character Wrapper */
+        .char-wrapper {
+            position: absolute;
+            transition: filter 0.25s ease;
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        .char-wrapper.inactive {
+            filter: brightness(0.55);
+        }
+
+        /* Common Navigation Buttons */
+        .btn-nav {
+            position: absolute;
+            background-color: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 20;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        .btn-nav:active {
+            transform: scale(0.98);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+            display: none;
+        }
+
+        #btn-next {
+            right: 20px;
+            bottom: 20px;
+            display: none;
+        }
+
+        #btn-skip {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        /* Dialogue Box UI */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 120px);
+            max-width: 900px;
+            height: 140px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 2px solid #d4af37;
+            border-radius: 6px;
+            padding: 18px 24px;
+            z-index: 15;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.05rem;
+            color: #ffffff;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            white-space: pre-line;
+        }
+
+        #dialogue-prompt {
+            position: absolute;
+            bottom: 10px;
+            right: 18px;
+            font-size: 0.8rem;
+            color: #d4af37;
+            opacity: 0.8;
+            animation: blink 1.2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="stage-header">월미도 MATHTOUR - 월미산 산책로</div>
+
+        <div class="asset-wrapper" style="left: 33px; bottom: 0px; width: 1000px; height: 500px; overflow: hidden; z-index: 1;">
+            <iframe src="월미산산책로.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(1); transform-origin:top left; pointer-events:none;"></iframe>
+        </div>
+
+        <div class="char-wrapper" id="char-민우" style="left: 180px; bottom: 30px; width: 260px; height: 320px; z-index: 3;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <div class="char-wrapper" id="char-서연" style="left: 626px; bottom: 30px; width: 260px; height: 320px; z-index: 3;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <div id="dialogue-box" onclick="advanceDialogue()">
+            <div id="speaker-name">화자</div>
+            <div id="dialogue-text">대사 내용이 들어갑니다.</div>
+            <div id="dialogue-prompt">▼ 클릭하여 계속</div>
+        </div>
+
+        <button class="btn-nav" id="btn-prev" onclick="goToUrl('C05.html')">이전</button>
+        <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
+        <button class="btn-nav" id="btn-next" onclick="goToUrl('index.html')">End</button>
+    </div>
+
+    <script>
+        const dialogues = [
+            {
+                speaker: "민우",
+                text: "완벽해! 월미산 산책로에 숨겨진 삼각함수의 원리를 드디어 풀어냈어!",
+                target: "char-민우"
+            },
+            {
+                speaker: "서연",
+                text: "복잡해 보이던 경사각과 단서들이 삼각비 개념과 딱 맞아떨어졌을 때 정말 소름돋았어.",
+                target: "char-서연"
+            },
+            {
+                speaker: "민우",
+                text: "맞아. 개항기 시절의 오래된 기록과 수학적 원리가 이렇게 연결될 줄은 몰랐는데 말이야.",
+                target: "char-민우"
+            },
+            {
+                speaker: "서연",
+                text: "후후, 뿌듯함에 취해 있을 시간은 없어! 이제 다음 목적지로 이동해서 남은 비밀도 밝혀내자.",
+                target: "char-서연"
+            },
+            {
+                speaker: "민우",
+                text: "좋아, 다음 장소로 출발하자!",
+                target: "char-민우"
+            }
+        ];
+
+        let currentIndex = 0;
+
+        function updateDialogue() {
+            if (currentIndex >= dialogues.length) {
+                endDialogue();
+                return;
+            }
+
+            const current = dialogues[currentIndex];
+            document.getElementById('speaker-name').textContent = current.speaker;
+            document.getElementById('dialogue-text').textContent = current.text;
+
+            // Highlight active speaking character
+            const allChars = document.querySelectorAll('.char-wrapper');
+            allChars.forEach(char => {
+                if (char.id === current.target) {
+                    char.classList.remove('inactive');
+                } else {
+                    char.classList.add('inactive');
+                }
+            });
+        }
+
+        function advanceDialogue() {
+            currentIndex++;
+            updateDialogue();
+        }
+
+        function endDialogue() {
+            // Hide dialogue box and skip button
+            document.getElementById('dialogue-box').style.display = 'none';
+            document.getElementById('btn-skip').style.display = 'none';
+
+            // Restore brightness to all characters
+            const allChars = document.querySelectorAll('.char-wrapper');
+            allChars.forEach(char => char.classList.remove('inactive'));
+
+            // Show navigation buttons
+            document.getElementById('btn-prev').style.display = 'block';
+            document.getElementById('btn-next').style.display = 'block';
+        }
+
+        function skipDialogue() {
+            endDialogue();
+        }
+
+        function goToUrl(url) {
+            window.location.href = url;
+        }
+
+        // Initialize dialogue on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            updateDialogue();
+        });
+    </script>
+</body>
+</html>

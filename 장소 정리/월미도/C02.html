@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>월미도 MATHTOUR - 월미산 산책로와 주기함수</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f5f0e6;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid #d4af37;
+        }
+
+        /* 스테이지 상단 표시바 */
+        #stage-header {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(20, 15, 10, 0.75);
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 8px 16px;
+            color: #d4af37;
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        /* 에셋 레이어 기본 위치 */
+        .asset-wrapper {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        /* 캐릭터 레이어 */
+        .char-wrapper {
+            position: absolute;
+            overflow: visible;
+            transition: filter 0.3s ease;
+            z-index: 3;
+        }
+
+        .char-wrapper.inactive {
+            filter: brightness(0.55);
+        }
+
+        /* 대화창 UI */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            padding: 16px 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 15;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+            word-break: keep-all;
+        }
+
+        #click-indicator {
+            position: absolute;
+            bottom: 12px;
+            right: 20px;
+            font-size: 12px;
+            color: #d4af37;
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-4px); }
+        }
+
+        /* 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            z-index: 20;
+            background-color: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        .btn-nav:active {
+            transform: scale(0.98);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next, #btn-skip {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="stage-header">월미도 MATHTOUR - Stage 02. 월미산 산책로</div>
+
+        <div class="asset-wrapper" style="left: 33px; bottom: 80px; width: 1000px; height: 500px; overflow: hidden; z-index: 1;">
+            <iframe src="월미산산책로.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(1); transform-origin:top left; pointer-events:none;"></iframe>
+        </div>
+
+        <div class="char-wrapper" id="char-서연" style="left: 150px; bottom: 60px; width: 260px; height: 320px;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <div class="char-wrapper" id="char-민우" style="left: 650px; bottom: 60px; width: 260px; height: 320px;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <div id="dialogue-box" onclick="advanceDialogue()">
+            <div id="speaker-name">민우</div>
+            <div id="dialogue-text">대사가 여기에 표시됩니다.</div>
+            <div id="click-indicator">▼ 클릭하여 계속</div>
+        </div>
+
+        <button id="btn-prev" class="btn-nav hidden" onclick="navigate('C01.html')">이전</button>
+        <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+        <button id="btn-next" class="btn-nav hidden" onclick="navigate('C03.html')">다음</button>
+    </div>
+
+    <script>
+        // 대화 데이터 정의
+        const dialogues = [
+            {
+                speaker: "민우",
+                text: "서연아, 저기 아래 펼쳐진 월미산 산책로 좀 봐! 능선을 따라서 굽이굽이 일정하게 올라갔다 내려가는 모양이 인상적인데?",
+                target: "char-민우"
+            },
+            {
+                speaker: "서연",
+                text: "정말네! 곡선이 아주 매끄럽고 일정한 주기로 오르내리는 모습이 마치 수학 시간에 배운 주기함수 그래프 같아.",
+                target: "char-서연"
+            },
+            {
+                speaker: "민우",
+                text: "맞아! 일정한 간격마다 일정한 높이가 반복되니까, 삼각함수인 사인함수 y = a sin(bx) 형태 모델로 딱 표현할 수 있겠어.",
+                target: "char-민우"
+            },
+            {
+                speaker: "서연",
+                text: "좋은 생각이야! 산책로의 최고 높낮이를 진폭으로 잡고, 봉우리 사이의 거리를 주기 계산에 활용하면 함수식을 완성할 수 있겠는데?",
+                target: "char-서연"
+            },
+            {
+                speaker: "민우",
+                text: "그럼 여기서 측정값을 기반으로 산책로의 모양을 수학적 수식으로 직접 해석해 볼까?",
+                target: "char-민우"
+            },
+            {
+                speaker: "서연",
+                text: "좋아, 다음 지점으로 이동해서 본격적으로 주기함수 문제를 풀어보자!",
+                target: "char-서연"
+            }
+        ];
+
+        let currentIndex = 0;
+
+        function updateDialogue() {
+            if (currentIndex < dialogues.length) {
+                const current = dialogues[currentIndex];
+                document.getElementById('speaker-name').innerText = current.speaker;
+                document.getElementById('dialogue-text').innerText = current.text;
+
+                // 캐릭터 비활성화(어둡게) 처리
+                const allChars = document.querySelectorAll('.char-wrapper');
+                allChars.forEach(char => {
+                    if (char.id === current.target) {
+                        char.classList.remove('inactive');
+                    } else {
+                        char.classList.add('inactive');
+                    }
+                });
+            } else {
+                endDialogue();
+            }
+        }
+
+        function advanceDialogue() {
+            currentIndex++;
+            if (currentIndex < dialogues.length) {
+                updateDialogue();
+            } else {
+                endDialogue();
+            }
+        }
+
+        function endDialogue() {
+            // 대화창 hide
+            document.getElementById('dialogue-box').style.display = 'none';
+            document.getElementById('btn-skip').style.display = 'none';
+
+            // 모든 캐릭터 밝기 원복
+            const allChars = document.querySelectorAll('.char-wrapper');
+            allChars.forEach(char => {
+                char.classList.remove('inactive');
+            });
+
+            // 이전 / 다음 버튼 표시
+            document.getElementById('btn-prev').classList.remove('hidden');
+            document.getElementById('btn-next').classList.remove('hidden');
+        }
+
+        function skipDialogue() {
+            endDialogue();
+        }
+
+        function navigate(url) {
+            window.location.href = url;
+        }
+
+        // 초기 대화 시작
+        window.onload = function() {
+            updateDialogue();
+        };
+    </script>
+</body>
+</html>

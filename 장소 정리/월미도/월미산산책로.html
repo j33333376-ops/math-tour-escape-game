@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>월미산 산책로</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-width: 1000px;
+    }
+  </style>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500">
+  <defs>
+    <linearGradient id="vibrantForest" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#76cc27"/>
+      <stop offset="40%" stop-color="#41a01d"/>
+      <stop offset="80%" stop-color="#216311"/>
+      <stop offset="100%" stop-color="#123d08"/>
+    </linearGradient>
+
+    <radialGradient id="brightGreenBush" cx="40%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#a2f033"/>
+      <stop offset="50%" stop-color="#52ba18"/>
+      <stop offset="100%" stop-color="#23660d"/>
+    </radialGradient>
+
+    <radialGradient id="freshGreenBush" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#c5f84d"/>
+      <stop offset="60%" stop-color="#69c81b"/>
+      <stop offset="100%" stop-color="#1e5c09"/>
+    </radialGradient>
+
+    <linearGradient id="woodPost" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a0724e"/>
+      <stop offset="30%" stop-color="#734e32"/>
+      <stop offset="70%" stop-color="#543720"/>
+      <stop offset="100%" stop-color="#382211"/>
+    </linearGradient>
+
+    <linearGradient id="woodDeckFloor" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#bf946f"/>
+      <stop offset="50%" stop-color="#8a6142"/>
+      <stop offset="100%" stop-color="#573a24"/>
+    </linearGradient>
+
+    <radialGradient id="azaleaRed" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#ff3b56"/>
+      <stop offset="60%" stop-color="#d90b28"/>
+      <stop offset="100%" stop-color="#7a0010"/>
+    </radialGradient>
+
+    <linearGradient id="stoneBase" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4a4f56"/>
+      <stop offset="40%" stop-color="#2f3338"/>
+      <stop offset="100%" stop-color="#181a1d"/>
+    </linearGradient>
+
+    <linearGradient id="stoneTop" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6c737d"/>
+      <stop offset="50%" stop-color="#828a96"/>
+      <stop offset="100%" stop-color="#555b63"/>
+    </linearGradient>
+
+    <linearGradient id="brassPlaque" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f3d078"/>
+      <stop offset="50%" stop-color="#c19532"/>
+      <stop offset="100%" stop-color="#6e4f13"/>
+    </linearGradient>
+
+    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <g id="sculpture-object" filter="url(#dropShadow)">
+    <polygon points="120,470 880,470 910,440 90,440" fill="#111215"/>
+    <polygon points="120,470 880,470 880,482 120,482" fill="#090a0b"/>
+
+    <polygon points="140,440 860,440 860,415 140,415" fill="url(#stoneBase)"/>
+    <polygon points="140,415 860,415 880,395 120,395" fill="url(#stoneTop)"/>
+    <polygon points="860,415 880,395 880,440 860,440" fill="#202226"/>
+
+    <polygon points="160,395 840,395 840,360 160,360" fill="url(#stoneBase)"/>
+    <polygon points="160,360 840,360 860,340 140,340" fill="url(#stoneTop)"/>
+    <polygon points="840,360 860,340 860,395 840,395" fill="#17191c"/>
+
+    <line x1="140" y1="340" x2="860" y2="340" stroke="#aab2bf" stroke-width="2" opacity="0.8"/>
+    <line x1="160" y1="360" x2="840" y2="360" stroke="#7e8691" stroke-width="1.5" opacity="0.6"/>
+
+    <path d="M 160,340 
+             C 150,230 220,130 350,90 
+             C 430,65  520,110 600,40 
+             C 680,20  780,60  830,160 
+             C 850,220 840,290 840,340 Z" 
+          fill="url(#vibrantForest)"/>
+
+    <path d="M 180,340 
+             C 210,210 320,140 450,150 
+             C 560,160 620,80  710,60 
+             C 770,80  810,180 820,340 Z" 
+          fill="#318216"/>
+
+    <path d="M 230,340 
+             C 280,220 370,180 480,190 
+             C 580,200 640,110 730,100 
+             C 780,120 800,230 810,340 Z" 
+          fill="#48a623"/>
+
+    <g>
+      <circle cx="210" cy="280" r="35" fill="url(#brightGreenBush)"/>
+      <circle cx="240" cy="240" r="42" fill="url(#freshGreenBush)"/>
+      <circle cx="280" cy="210" r="45" fill="url(#brightGreenBush)"/>
+      <circle cx="330" cy="180" r="50" fill="url(#freshGreenBush)"/>
+      <circle cx="380" cy="160" r="48" fill="url(#brightGreenBush)"/>
+      <circle cx="430" cy="175" r="40" fill="url(#freshGreenBush)"/>
+    </g>
+
+    <g>
+      <circle cx="560" cy="140" r="42" fill="url(#brightGreenBush)"/>
+      <circle cx="610" cy="100" r="45" fill="url(#freshGreenBush)"/>
+      <circle cx="670" cy="80"  r="50" fill="url(#brightGreenBush)"/>
+      <circle cx="730" cy="95"  r="46" fill="url(#freshGreenBush)"/>
+      <circle cx="780" cy="140" r="42" fill="url(#brightGreenBush)"/>
+      <circle cx="800" cy="200" r="48" fill="url(#freshGreenBush)"/>
+    </g>
+
+    <g filter="drop-shadow(0px 4px 6px rgba(0,0,0,0.3))">
+      <circle cx="190" cy="310" r="25" fill="url(#azaleaRed)"/>
+      <circle cx="215" cy="325" r="20" fill="url(#azaleaRed)"/>
+      <circle cx="200" cy="295" r="18" fill="url(#azaleaRed)"/>
+
+      <circle cx="680" cy="260" r="16" fill="url(#azaleaRed)"/>
+      <circle cx="700" cy="250" r="14" fill="url(#azaleaRed)"/>
+      <circle cx="720" cy="265" r="18" fill="url(#azaleaRed)"/>
+    </g>
+
+    <path d="M 430,340 
+             C 410,290 310,260 360,200 
+             C 410,140 580,180 620,130 
+             C 650,90  600,60  620,45" 
+          fill="none" stroke="#2c1a0e" stroke-width="48" stroke-linecap="butt" stroke-linejoin="round"/>
+
+    <path d="M 430,340 
+             C 410,290 310,260 360,200 
+             C 410,140 580,180 620,130 
+             C 650,90  600,60  620,45" 
+          fill="none" stroke="url(#woodDeckFloor)" stroke-width="40" stroke-linecap="butt" stroke-linejoin="round"/>
+
+    <path d="M 410,335 L 450,335 M 405,320 L 445,320 M 398,305 L 438,305 
+             M 380,290 L 420,285 M 360,270 L 400,262 M 345,250 L 382,240 
+             M 345,228 L 382,220 M 355,208 L 392,205 M 380,195 L 418,198 
+             M 420,185 L 458,193 M 470,175 L 508,185 M 520,162 L 555,172 
+             M 565,148 L 598,158 M 595,130 L 625,138 M 608,110 L 635,116 
+             M 602,90 L 626,94 M 610,70 L 630,73" 
+          stroke="#3d2413" stroke-width="2.5" opacity="0.75"/>
+
+    <path d="M 390,340 
+             C 370,290 270,260 320,200 
+             C 370,140 540,180 580,130 
+             C 610,90  560,60  580,45" 
+          fill="none" stroke="url(#woodPost)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M 394,340 
+             C 374,290 274,260 324,200 
+             C 374,140 544,180 584,130 
+             C 614,90  564,60  584,45" 
+          fill="none" stroke="#e0aa7d" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+
+    <path d="M 470,340 
+             C 450,290 350,260 400,200 
+             C 450,140 620,180 660,130 
+             C 690,90  640,60  660,45" 
+          fill="none" stroke="url(#woodPost)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M 474,340 
+             C 454,290 354,260 404,200 
+             C 454,140 624,180 664,130 
+             C 694,90  644,60  664,45" 
+          fill="none" stroke="#e0aa7d" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+
+    <g fill="url(#woodPost)" stroke="#26150a" stroke-width="1">
+      <rect x="382" y="310" width="12" height="30" rx="2"/>
+      <polygon points="380,310 388,303 396,310"/>
+
+      <rect x="462" y="310" width="12" height="30" rx="2"/>
+      <polygon points="460,310 468,303 476,310"/>
+
+      <rect x="365" y="270" width="10" height="26" rx="1.5"/>
+      <rect x="442" y="270" width="10" height="26" rx="1.5"/>
+
+      <rect x="330" y="230" width="9" height="22" rx="1.5"/>
+      <rect x="405" y="230" width="9" height="22" rx="1.5"/>
+
+      <rect x="335" y="190" width="8" height="20" rx="1"/>
+      <rect x="408" y="190" width="8" height="20" rx="1"/>
+
+      <rect x="420" y="160" width="7" height="18" rx="1"/>
+      <rect x="495" y="160" width="7" height="18" rx="1"/>
+
+      <rect x="525" y="130" width="6" height="16" rx="1"/>
+      <rect x="600" y="130" width="6" height="16" rx="1"/>
+
+      <rect x="585" y="95" width="5" height="14" rx="1"/>
+      <rect x="650" y="95" width="5" height="14" rx="1"/>
+    </g>
+
+    <g>
+      <circle cx="300" cy="280" r="22" fill="url(#freshGreenBush)"/>
+      <circle cx="320" cy="300" r="26" fill="url(#brightGreenBush)"/>
+      <circle cx="475" cy="285" r="24" fill="url(#freshGreenBush)"/>
+      <circle cx="440" cy="245" r="20" fill="url(#brightGreenBush)"/>
+      <circle cx="535" cy="180" r="22" fill="url(#freshGreenBush)"/>
+      <circle cx="625" cy="145" r="20" fill="url(#brightGreenBush)"/>
+    </g>
+
+    <rect x="350" y="372" width="300" height="52" rx="5" fill="url(#brassPlaque)" stroke="#4a330a" stroke-width="2"/>
+    <rect x="356" y="378" width="288" height="40" rx="3" fill="none" stroke="#fff1b5" stroke-width="1.2" opacity="0.8"/>
+
+    <circle cx="363" cy="385" r="2.5" fill="#3b2706"/>
+    <circle cx="637" cy="385" r="2.5" fill="#3b2706"/>
+    <circle cx="363" cy="411" r="2.5" fill="#3b2706"/>
+    <circle cx="637" cy="411" r="2.5" fill="#3b2706"/>
+
+    <text x="502" y="406" font-family="'Gungsuh', 'Batang', 'Noto Serif CJK KR', serif" font-size="24" font-weight="bold" letter-spacing="5" text-anchor="middle" fill="#1c1002">
+      월미산 산책로
+    </text>
+    <text x="500" y="405" font-family="'Gungsuh', 'Batang', 'Noto Serif CJK KR', serif" font-size="24" font-weight="bold" letter-spacing="5" text-anchor="middle" fill="#ffea9f">
+      월미산 산책로
+    </text>
+
+    <path d="M 200,320 C 300,140 550,50 750,30" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.2"/>
+  </g>
+</svg>
+
+</body>
+</html>

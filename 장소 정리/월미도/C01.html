@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>월미도 MATHTOUR - C01</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+        }
+
+        /* 게임 화면 컨테이너 (16:9 비율 유지, 최대 1066px) */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background-color: #f5f0e6;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            border: 2px solid #d4af37;
+        }
+
+        /* 전체 배경 이미지 (z-index: 0) */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 장소 에셋 wrapper (z-index: 1) */
+        .asset-place {
+            position: absolute;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .asset-place iframe {
+            border: 0;
+            pointer-events: none;
+        }
+
+        /* 등장인물 Wrapper 및 iframe 설정 (260x320 고정 규격, z-index: 3) */
+        .char-wrapper {
+            position: absolute;
+            z-index: 3;
+            overflow: visible;
+            transition: filter 0.2s ease;
+        }
+
+        .char-wrapper iframe {
+            border: 0;
+            width: 260px;
+            height: 320px;
+            pointer-events: none;
+        }
+
+        /* 인물 위치 세팅 (좌: 민우, 우: 서연) */
+        #char-민우 {
+            left: 30px;
+            bottom: 20px;
+            width: 260px;
+            height: 320px;
+        }
+
+        #char-서연 {
+            right: 30px;
+            bottom: 20px;
+            width: 260px;
+            height: 320px;
+        }
+
+        /* 서연 캐릭터 좌우 반전 (민우를 마주보도록 연출) */
+        #char-서연 iframe {
+            transform: scaleX(-1);
+            transform-origin: bottom center;
+        }
+
+        /* 상단 스테이지 표시바 (z-index: 10) */
+        #top-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #d4af37;
+            padding: 8px 24px;
+            border-radius: 4px;
+            z-index: 10;
+            color: #d4af37;
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+
+        /* 유형 1: 상황 설명 박스 (상단으로 위치 이동 및 크기 조절, z-index: 10) */
+        .situation-box {
+            position: absolute;
+            top: 22%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            max-width: 620px;
+            background: #f5f0e6;
+            border: 2px solid #8c3030;
+            outline: 1px solid #d4af37;
+            outline-offset: -5px;
+            padding: 22px 28px;
+            border-radius: 4px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+            text-align: center;
+        }
+
+        .situation-title {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 20px;
+            font-weight: bold;
+            color: #8c3030;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed #d4af37;
+        }
+
+        .situation-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 14.5px;
+            color: #2d3748;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            word-break: keep-all;
+            text-align: justify;
+        }
+
+        /* 공통 이동 버튼 스타일 */
+        .btn-nav {
+            position: absolute;
+            background-color: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        .btn-nav:active {
+            transform: scale(0.98);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next {
+            right: 20px;
+            bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <img src="월미공원_산책로" alt="월미공원 산책로 배경" class="bg-img" onerror="this.style.display='none'; document.getElementById('game-container').style.backgroundColor='#d8c8b0';">
+
+        <div id="top-bar">월미도 MATHTOUR — 월미산 산책로</div>
+
+        <div class="asset-place" style="left: 133px; bottom: 0px; width: 800px; height: 400px;">
+            <iframe src="월미산산책로배경.html" scrolling="no" title="월미산 산책로 배경 조형" style="width: 1000px; height: 500px; transform: scale(0.8); transform-origin: top left;"></iframe>
+        </div>
+
+        <div class="char-wrapper" id="char-민우">
+            <iframe src="등장인물_민우.html" scrolling="no" title="민우"></iframe>
+        </div>
+
+        <div class="char-wrapper" id="char-서연">
+            <iframe src="등장인물_서연.html" scrolling="no" title="서연"></iframe>
+        </div>
+
+        <div class="situation-box">
+            <div class="situation-title">월미산 산책로</div>
+            <div class="situation-text">
+                월미산 산책로는 월미산 중턱의 2.3km(만남의광장~야생화단지~돈대삼거리~만남의 광장)의 산책로 길로 산책하면 보통 약 30~40분 소요되어 가볍게 숲속을 거닐며 자연과 함께하는 산책코스입니다. 사시사철 변하는 숲속을 거닐며 시시각각 색을 달리입는 숲속에서 맑은 공기를 마시며 그간의 스트레스를 풀고 재충전하는 월미공원 추천 0순위 장소입니다.
+            </div>
+        </div>
+
+        <button class="btn-nav" id="btn-prev" onclick="navigateTo('index.html')">이전</button>
+        <button class="btn-nav" id="btn-next" onclick="navigateTo('C02.html')">다음</button>
+    </div>
+
+    <script>
+        // 페이지 이동 함수
+        function navigateTo(url) {
+            if (url) {
+                window.location.href = url;
+            }
+        }
+    </script>
+</body>
+</html>

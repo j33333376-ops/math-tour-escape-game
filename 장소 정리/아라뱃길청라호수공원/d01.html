@@ -236,7 +236,7 @@
   // 대사 스크립트 배열
   const dialogues = [
     { speaker: "", target: "", text: "청라호수공원 음악분수에서 화려한 조명과 함께 시원한 물줄기가 춤을 추기 시작한다." },
-    { speaker: "민우", target: "char-민우", text: "우와! 물줄기가 음악에 맞춰 춤을 ={`추는`} 것 같아! 정말 멋지다." },
+    { speaker: "민우", target: "char-민우", text: "우와! 물줄기가 음악에 맞춰 춤을 추는 것 같아! 정말 멋지다." },
     { speaker: "서연", target: "char-서연", text: "응! 조명 색깔도 계속 변해서 에메랄드빛 바다 속에 있는 기분이야." }
   ];
 
@@ -263,15 +263,10 @@
   };
 
   function advanceDialogue() {
-    if (currentIndex < dialogues.log) {
-      // ...
-    }
-  }
-
-  function advanceDialogue() {
     if (currentIndex < dialogues.length) {
       const current = dialogues[currentIndex];
       
+      // 첫 번째 나레이션 출력 직후 캐릭터들 등장
       if (currentIndex === 1) {
         charWrappers.forEach(wrapper => wrapper.classList.add('visible'));
       }
@@ -315,12 +310,10 @@
     });
   }
 
-  // 이전 버튼 클릭 시 연동 (이전 페이지가 없다면 index.html 등으로 설정 가능)
   function goPrev() {
-    window.location.href = 'index.html';
+    window.location.href = 'd01.html';
   }
 
-  // 다음 버튼 클릭 시 연동
   function goNext() {
     window.location.href = 'd02.html';
   }
@@ -328,3 +321,4 @@
 
 </body>
 </html>
+```[cite: 4]

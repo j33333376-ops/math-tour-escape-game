@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>월미도 MATHTOUR - C04</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+        }
+
+        /* 16:9 메인 게임 컨테이너 */
+        #game-container {
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            position: relative;
+            background-color: #f5f0e6;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            border: 2px solid #d4af37;
+        }
+
+        /* 상단 스테이지 표시바 */
+        #top-bar {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(20, 20, 20, 0.75);
+            border: 1px solid #d4af37;
+            padding: 8px 18px;
+            border-radius: 4px;
+            color: #d4af37;
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* 공통 이동 버튼 스타일 */
+        .btn-nav {
+            position: absolute;
+            z-index: 20;
+            background-color: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        .btn-nav:active {
+            transform: scale(0.98);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next, #btn-skip {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        /* 에셋 배치 영역 (z-index 관리) */
+        .asset-wrapper {
+            position: absolute;
+        }
+
+        /* 등장인물 래퍼 */
+        .char-wrapper {
+            position: absolute;
+            overflow: visible;
+            transition: filter 0.2s ease;
+        }
+
+        .char-wrapper.inactive {
+            filter: brightness(0.55);
+        }
+
+        /* 대화창 UI (유형 2) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 180px);
+            height: 130px;
+            background: rgba(0, 0, 0, 0.82);
+            border: 2px solid #d4af37;
+            border-radius: 6px;
+            padding: 15px 25px;
+            z-index: 15;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+            user-select: none;
+        }
+
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 16px;
+            color: #ffffff;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            word-break: keep-all;
+        }
+
+        #click-prompt {
+            position: absolute;
+            right: 15px;
+            bottom: 10px;
+            font-size: 12px;
+            color: #d4af37;
+            animation: blink 1.2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="top-bar">월미도 MATHTOUR : 돈대광장</div>
+
+    <div class="asset-wrapper" style="position:absolute; left:33px; bottom:120px; width:800px; height:400px; overflow:hidden; z-index:1;">
+        <iframe src="월미산산책로.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(0.8); transform-origin:top left; pointer-events:none;"></iframe>
+    </div>
+
+    <div class="char-wrapper" id="char-민우" style="position:absolute; left:220px; bottom:100px; width:260px; height:320px; z-index:3;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <div class="char-wrapper" id="char-서연" style="position:absolute; left:580px; bottom:100px; width:260px; height:320px; z-index:3;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-name">화자</div>
+        <div id="dialogue-text">대사 내용이 들어갑니다.</div>
+        <div id="click-prompt">▼ 클릭하여 계속</div>
+    </div>
+
+    <button id="btn-prev" class="btn-nav" style="display:none;" onclick="goToUrl('C03.html')">이전</button>
+    <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+    <button id="btn-next" class="btn-nav" style="display:none;" onclick="goToUrl('C05.html')">다음</button>
+</div>
+
+<script>
+    // 대화 데이터 스크립트
+    const dialogues = [
+        {
+            speaker: "민우",
+            text: "드디어 산책로의 돈대광장에 도착했어! 여기서 바라보니까 시야가 확 트이네.",
+            target: "char-민우"
+        },
+        {
+            speaker: "서연",
+            text: "정말 그렇다. 입구 쪽부터 저 멀리 산 정상까지 한눈에 다 보여!",
+            target: "char-서연"
+        },
+        {
+            speaker: "민우",
+            text: "구불구불한 산책로를 따라 올라왔지만, 저 입구부터 정상까지의 실제 '직선거리'는 얼마나 될까?",
+            target: "char-민우"
+        },
+        {
+            speaker: "서연",
+            text: "좋은 호기심이야! 우리가 있는 이 지점과 고도차를 이용하면 수학적으로 직선거리를 계산해볼 수 있을 것 같은데?",
+            target: "char-서연"
+        },
+        {
+            speaker: "민우",
+            text: "좋아, 필요한 단서들을 찾아서 입구부터 정상까지의 직선거리를 직접 구해 지형을 파악해 보자!",
+            target: "char-민우"
+        }
+    ];
+
+    let currentIndex = 0;
+
+    function updateDialogue() {
+        if (currentIndex < dialogues.length) {
+            const current = dialogues[currentIndex];
+            document.getElementById("speaker-name").innerText = current.speaker;
+            document.getElementById("dialogue-text").innerText = current.text;
+
+            // 모든 인물 어둡게 처리
+            const charWrappers = document.querySelectorAll('.char-wrapper');
+            charWrappers.forEach(wrapper => wrapper.classList.add('inactive'));
+
+            // 말하는 인물만 밝게 처리
+            if (current.target) {
+                const activeChar = document.getElementById(current.target);
+                if (activeChar) {
+                    activeChar.classList.remove('inactive');
+                }
+            }
+        } else {
+            endDialogue();
+        }
+    }
+
+    function advanceDialogue() {
+        currentIndex++;
+        if (currentIndex < dialogues.length) {
+            updateDialogue();
+        } else {
+            endDialogue();
+        }
+    }
+
+    function skipDialogue() {
+        endDialogue();
+    }
+
+    function endDialogue() {
+        // 대화창 및 건너뛰기 버튼 숨기기
+        document.getElementById("dialogue-box").style.display = "none";
+        document.getElementById("btn-skip").style.display = "none";
+
+        // 모든 캐릭터 원래 밝기로 복구
+        const charWrappers = document.querySelectorAll('.char-wrapper');
+        charWrappers.forEach(wrapper => wrapper.classList.remove('inactive'));
+
+        // 이전/다음 버튼 표시
+        document.getElementById("btn-prev").style.display = "block";
+        document.getElementById("btn-next").style.display = "block";
+    }
+
+    function goToUrl(url) {
+        if (url) {
+            window.location.href = url;
+        }
+    }
+
+    // 초기화 실행
+    window.onload = function() {
+        updateDialogue();
+    };
+</script>
+
+</body>
+</html>

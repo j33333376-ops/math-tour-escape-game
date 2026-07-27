@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>월미도 MATHTOUR - C05</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                processEscapes: true
+            },
+            displayAlign: "center",
+            "HTML-CSS": { 
+                scale: 100, 
+                linebreaks: { automatic: true }
+            }
+        });
+    </script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #1a1714;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        /* 16:9 비율 유지 게임 컨테이너 */
+        #game-container {
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            position: relative;
+            background-color: #f5f0e6;
+            border: 3px solid #d4af37;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 상단 스테이지 표시바 */
+        #stage-header {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            height: 38px;
+            background: rgba(20, 15, 10, 0.75);
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 20;
+        }
+        .stage-title {
+            font-family: 'Nanum Myeongjo', serif;
+            color: #d4af37;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .stage-badge {
+            font-family: 'Nanum Gothic Coding', monospace;
+            color: #ffffff;
+            font-size: 12px;
+            background: #8c3030;
+            padding: 2px 8px;
+            border-radius: 3px;
+            border: 1px solid #d4af37;
+        }
+
+        /* 배경 무대 및 에셋 레이어 */
+        #stage-canvas {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* 퀴즈 오버레이 컨테이너 */
+        .quiz-container {
+            position: absolute;
+            top: 55px;
+            left: 20px;
+            right: 20px;
+            bottom: 60px;
+            z-index: 10;
+            background: rgba(245, 240, 230, 0.93);
+            border: 2px solid #d4af37;
+            border-radius: 12px;
+            box-shadow: inset 0 0 15px rgba(140, 48, 48, 0.15);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            background: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 8px 20px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 30;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .btn-nav:hover { background: #661f1f; }
+        .btn-nav:active { transform: scale(0.96); }
+        #btn-prev { left: 20px; bottom: 12px; }
+        #btn-next { right: 20px; bottom: 12px; display: none; }
+
+        /* 퀴즈 세부 스타일 */
+        .canvas-container { position: relative; border-radius: 1.5rem; box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15); border: 2px solid #cedecf; overflow: hidden; background: #d9f7be; }
+        canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+        .draggable-tool { touch-action: none; cursor: grab; transition: transform 0.2s; }
+        .draggable-tool:active { cursor: grabbing; transform: scale(1.05); }
+        .shake-error { animation: shake 0.4s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+        
+        .law-formula-box { font-size: 1.25rem !important; } 
+        @media (min-width: 768px) { .law-formula-box { font-size: 1.5rem !important; } }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="stage-header">
+        <span class="stage-title">월미도 MATHTOUR — 근대 개항기 탐사</span>
+        <span class="stage-badge">MISSION 02 : 두 지점 간 직선거리 측량</span>
+    </div>
+
+    <div id="stage-canvas">
+        <div style="position:absolute; left:0px; bottom:0px; width:1066px; height:600px; overflow:hidden; z-index:1; opacity: 0.4;">
+            <iframe src="월미산산책로.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(1.066); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <div class="char-wrapper" id="char-민우" style="position:absolute; left:40px; bottom:20px; width:182px; height:224px; overflow:visible; z-index:2; opacity: 0.7;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.7); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <div class="char-wrapper" id="char-서연" style="position:absolute; right:40px; bottom:20px; width:182px; height:224px; overflow:visible; z-index:2; opacity: 0.7;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.7) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+    </div>
+
+    <div class="quiz-container p-4 md:p-6 text-slate-900">
+        <div class="w-full flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            
+            <section class="lg:col-span-7 flex flex-col gap-3 relative">
+                <div class="flex justify-between items-center bg-white/95 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm border border-slate-200 z-10">
+                    <h2 class="text-xs font-black text-slate-700 flex items-center gap-2 italic">
+                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span> 돈대광장 측량 지도
+                    </h2>
+                    <div class="text-[11px] font-black text-amber-800 bg-amber-50 px-3 py-0.5 rounded-full border border-amber-200">
+                        직선거리 계산 중
+                    </div>
+                </div>
+
+                <div class="canvas-container flex-grow min-h-[260px] relative" id="canvas-wrap">
+                    <canvas id="mapCanvas"></canvas>
+
+                    <div id="step2-tools" class="absolute top-3 left-3 bg-white/95 backdrop-blur-sm p-3 rounded-2xl shadow-lg border border-slate-200 z-10">
+                        <p class="text-[9px] font-black text-slate-400 mb-2 uppercase tracking-widest text-center">탐사 도구 (C지점으로 드래그)</p>
+                        <div id="rangefinder" class="draggable-tool bg-slate-900 text-white p-3 rounded-xl shadow-md flex items-center gap-3">
+                            <span class="text-2xl">📡</span>
+                            <div>
+                                <p class="text-xs font-black">레이저 거리측정기</p>
+                                <p class="text-[9px] text-slate-400">POINT C에서 측량</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="lg:col-span-5 h-full relative">
+                <div id="panel-2" class="bg-white p-5 rounded-2xl shadow-md border border-slate-200 flex flex-col h-full justify-between overflow-y-auto">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="bg-amber-100 text-amber-800 text-[10px] font-black px-3 py-1 rounded-lg">MISSION 02</span>
+                            <h3 class="text-lg font-black text-slate-800 tracking-tight" style="font-family:'Nanum Myeongjo', serif;">직선거리 측량</h3>
+                        </div>
+
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4">
+                            민우와 서연이가 돈대광장에 도착했습니다.<br>
+                            입구와 정상 사이의 <strong>직선거리($c$)</strong>를 구하기 위해 지점 $C$에서 <strong>코사인법칙</strong>을 활용하세요.
+                        </p>
+
+                        <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 mb-4 shadow-inner">
+                            <p class="text-xs font-black text-amber-800 uppercase mb-2 flex items-center gap-1.5 tracking-wide">
+                                📐 핵심 공식 : 코사인 법칙
+                            </p>
+                            <div class="law-formula-box font-black text-amber-950 text-center py-2 bg-white/80 rounded-xl border border-amber-100 shadow-sm flex items-center justify-center">
+                                $c^2 = a^2 + b^2 - 2ab \cos(C)$
+                            </div>
+                            <div id="measure-result" class="text-xs font-bold text-amber-900 border-t border-amber-200/60 pt-2 mt-2 leading-relaxed text-center min-h-[45px]">
+                                거리측정기를 지점 C(돈대광장)로 옮기면 측량 데이터가 나타납니다.
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
+                            <label class="block text-xs font-black text-slate-500 mb-2 tracking-tight">입구와 정상 사이의 직선거리 ($c$) 계산값</label>
+                            <div class="flex items-center gap-3">
+                                <input type="number" id="input-c" placeholder="7" class="w-full bg-white border-2 border-slate-300 rounded-xl px-4 py-2 text-xl font-black focus:border-amber-600 outline-none transition-all placeholder:text-slate-200 text-center">
+                                <span class="text-lg font-black text-slate-500">km</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button id="btn-verify-2" class="w-full bg-amber-800 hover:bg-amber-900 text-white font-black py-3 rounded-xl shadow-md transition-all text-base border border-amber-600">
+                            직선거리 측정 완료
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div id="modal-success" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-8 text-center shadow-2xl border-4 border-amber-500">
+            <div class="w-16 h-16 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 animate-bounce">🎉</div>
+            <h4 class="text-2xl font-black text-slate-900 mb-2" style="font-family:'Nanum Myeongjo', serif;">측량 성공!</h4>
+            <p class="text-slate-600 text-sm leading-relaxed mb-6">정교한 코사인법칙 계산으로 입구와 정상 사이의 직선거리(7km)를 정확히 구했습니다!</p>
+            <button id="btn-modal-close" class="w-full bg-amber-800 text-white font-black py-3 rounded-xl text-base hover:bg-amber-900 transition-colors border border-amber-600">다음 단계로 이동</button>
+        </div>
+    </div>
+
+    <button id="btn-prev" class="btn-nav">이전</button>
+    <button id="btn-next" class="btn-nav">다음</button>
+</div>
+
+<script>
+    // 네비게이션 URL 처리
+    const prevUrl = "C04.html";
+    const nextUrl = "C06.html";
+
+    document.getElementById('btn-prev').addEventListener('click', () => {
+        window.location.href = prevUrl;
+    });
+
+    document.getElementById('btn-next').addEventListener('click', () => {
+        window.location.href = nextUrl;
+    });
+
+    document.getElementById('btn-modal-close').addEventListener('click', () => {
+        document.getElementById('modal-success').classList.add('hidden');
+        document.getElementById('btn-next').style.display = 'block';
+    });
+
+    // 퀴즈 및 지도 시뮬레이션 JS Logic
+    const state = { isMeasured: false, correctC: 7, isCompleted: false };
+    const canvas = document.getElementById('mapCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function updateMath(element, latex) {
+        if(!element) return;
+        element.innerHTML = latex;
+        if (window.MathJax) MathJax.Hub.Queue(["Typeset", MathJax.Hub, element]);
+    }
+
+    function resize() {
+        const wrap = document.getElementById('canvas-wrap');
+        if(!wrap) return;
+        canvas.width = wrap.clientWidth * window.devicePixelRatio;
+        canvas.height = wrap.clientHeight * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        draw();
+    }
+    window.addEventListener('resize', resize);
+
+    function drawForestBackground(ctx, w, h) {
+        ctx.fillStyle = '#f0fdf4'; ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = '#d9f7be'; ctx.beginPath(); ctx.moveTo(0, h * 0.1);
+        ctx.bezierCurveTo(w * 0.2, h * -0.1, w * 0.4, h * 0.3, w * 0.6, h * 0.05);
+        ctx.bezierCurveTo(w * 0.8, h * -0.05, w * 0.9, h * 0.2, w, h * 0.1);
+        ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
+
+        const drawPine = (ctx, x, y, scale, colorLeaves, colorTrunk) => {
+            ctx.save(); ctx.translate(x, y); ctx.scale(scale, scale);
+            ctx.fillStyle = colorTrunk; ctx.fillRect(-2.5, 0, 5, 18);
+            ctx.fillStyle = colorLeaves;
+            ctx.beginPath(); ctx.moveTo(0, -18); ctx.lineTo(-14, 0); ctx.lineTo(14, 0); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(0, -28); ctx.lineTo(-12, -8); ctx.lineTo(12, -8); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(0, -38); ctx.lineTo(-10, -16); ctx.lineTo(10, -16); ctx.closePath(); ctx.fill();
+            ctx.restore();
+        };
+
+        const colorsTrunk = ['#a18262', '#c19a6b', '#8e6e46'];
+        for(let i=0; i<60; i++) drawPine(ctx, (i*17)%w, h*0.15 + ((i*23)%(h*0.35)), 0.6 + (i%3)*0.1, '#bef264', colorsTrunk[i%3]);
+        ctx.fillStyle = '#a3e635'; ctx.beginPath(); ctx.moveTo(0, h * 0.3);
+        ctx.bezierCurveTo(w * 0.2, h * 0.15, w * 0.5, h * 0.6, w * 0.8, h * 0.3);
+        ctx.bezierCurveTo(w * 0.9, h * 0.2, w, h * 0.4, w, h * 0.3);
+        ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
+        for(let i=0; i<40; i++) drawPine(ctx, (i*29)%w, h*0.35 + ((i*37)%(h*0.4)), 0.8 + (i%3)*0.1, '#84cc16', colorsTrunk[i%3]);
+        ctx.fillStyle = '#65a30d'; ctx.beginPath(); ctx.moveTo(0, h * 0.6);
+        ctx.bezierCurveTo(w * 0.3, h * 0.4, w * 0.6, h * 0.8, w, h * 0.6);
+        ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
+        for(let i=0; i<30; i++) drawPine(ctx, (i*41)%w, h*0.6 + ((i*19)%(h*0.35)), 1.1 + (i%2)*0.2, '#4d7c0f', colorsTrunk[i%3]);
+    }
+
+    function drawSineGuide(xS, yS, xE, yE, A, W, color) {
+        ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 2;
+        ctx.setLineDash([8, 6]);
+        const dx = xE - xS;
+        for (let x = 0; x <= dx; x++) {
+            const t = x / dx; const ty = Math.sin(t * Math.PI * 2 * W) * (A * 10);
+            if (x === 0) ctx.moveTo(xS + x, yS + ty); else ctx.lineTo(xS + x, yS + ty);
+        }
+        ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    function draw() {
+        const w = canvas.width / window.devicePixelRatio;
+        const h = canvas.height / window.devicePixelRatio;
+        ctx.clearRect(0, 0, w, h);
+        drawForestBackground(ctx, w, h);
+
+        const pA = { x: w * 0.15, y: h * 0.4 };
+        const pB = { x: w * 0.85, y: h * 0.4 };
+        const pC = { x: w * 0.5, y: h * 0.8 };
+
+        drawSineGuide(pA.x, pA.y, pB.x, pB.y, 2, 2, '#8c6239');
+
+        const drawPoint = (p, label1, label2, color) => {
+            ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.arc(p.x + 2, p.y + 2, 12, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = color; ctx.beginPath(); ctx.arc(p.x, p.y, 12, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
+            ctx.font = 'bold 14px Pretendard'; ctx.fillStyle = '#0f172a'; ctx.fillText(label1, p.x - 14, p.y - 20);
+            ctx.font = '11px Pretendard'; ctx.fillStyle = '#1e3a24'; ctx.fillText(label2, p.x - 45, p.y + 28);
+        };
+
+        drawPoint(pA, '입구', '월미산 입구', '#1e293b');
+        drawPoint(pB, '정상', '월미산 정상', '#be123c');
+
+        ctx.fillStyle = '#d97706'; ctx.beginPath(); ctx.arc(pC.x, pC.y, 14, 0, Math.PI*2); ctx.fill();
+        ctx.strokeStyle = '#cedecf'; ctx.lineWidth = 3; ctx.stroke();
+        ctx.font = 'bold 13px Pretendard'; ctx.fillStyle = '#78350f'; ctx.fillText('돈대광장 (C지점)', pC.x - 45, pC.y + 30);
+
+        if (state.isMeasured) {
+            ctx.setLineDash([4, 4]); ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(pA.x, pA.y); ctx.lineTo(pC.x, pC.y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(pB.x, pB.y); ctx.lineTo(pC.x, pC.y); ctx.stroke();
+            ctx.setLineDash([]);
+            
+            ctx.font = 'bold 15px Pretendard'; ctx.fillStyle = '#991b1b';
+            ctx.fillText('b = 8 km', (pA.x+pC.x)/2 - 50, (pA.y+pC.y)/2 - 8);
+            ctx.fillText('a = 5 km', (pB.x+pC.x)/2 + 15, (pB.y+pC.y)/2 + 15);
+            
+            ctx.font = 'bold 14px Pretendard'; ctx.fillStyle = '#a16207';
+            ctx.fillText('∠C = 60°', pC.x - 28, pC.y - 35);
+        }
+        
+        if (state.isCompleted) {
+            ctx.strokeStyle = '#262626'; ctx.lineWidth = 8;
+            ctx.beginPath(); ctx.moveTo(pA.x, pA.y); ctx.lineTo(pB.x, pB.y); ctx.stroke();
+            ctx.font = 'bold 15px Pretendard'; ctx.fillStyle = '#0f172a';
+            ctx.fillText('⚡ 입구~정상 직선거리 (c = 7 km)', (pA.x+pB.x)/2 - 110, pA.y - 18);
+        }
+    }
+
+    // 드래그 탐사 도구
+    const tool = document.getElementById('rangefinder');
+    let isDragging = false;
+
+    tool.addEventListener('pointerdown', (e) => {
+        isDragging = true;
+        tool.setPointerCapture(e.pointerId);
+    });
+
+    tool.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        const wrap = document.getElementById('canvas-wrap').getBoundingClientRect();
+        const x = e.clientX - wrap.left;
+        const y = e.clientY - wrap.top;
+        const w = canvas.width / window.devicePixelRatio;
+        const h = canvas.height / window.devicePixelRatio;
+        const dist = Math.hypot(x - w*0.5, y - h*0.8);
+        
+        if (dist < 50 && !state.isMeasured) {
+            state.isMeasured = true;
+            const info = document.getElementById('measure-result');
+            updateMath(info, `측량 완료: $a=5\\text{km}, b=8\\text{km}, \\angle C=60^\\circ$ <br> $(\\cos 60^\\circ = 0.5)$`);
+            draw();
+        }
+    });
+
+    tool.addEventListener('pointerup', () => isDragging = false);
+
+    // 정답 검증 버튼 클릭 이벤트
+    document.getElementById('btn-verify-2').addEventListener('click', () => {
+        const ans = parseInt(document.getElementById('input-c').value);
+        if (ans === state.correctC) {
+            state.isCompleted = true;
+            draw();
+            document.getElementById('modal-success').classList.remove('hidden');
+        } else {
+            document.getElementById('panel-2').classList.add('shake-error');
+            setTimeout(() => document.getElementById('panel-2').classList.remove('shake-error'), 500);
+        }
+    });
+
+    window.addEventListener('load', () => {
+        resize();
+    });
+</script>
+
+</body>
+</html>
