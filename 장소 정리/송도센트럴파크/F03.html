@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>송도센트럴파크 MATHTOUR - 수학 미션</title>
+    <style>
+        /* [공통 UI/UX 및 폰트 규칙 — 신비로운 숲속 스타일] */
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1e1e1e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 16:9 가로 고정 비율 컴포넌트 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f2f7f2;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+        }
+
+        /* 배경 이미지 */
+        .bg-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 상단 타이틀 바 */
+        #stage-bar {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background-color: #6d4c41;
+            border: 3px solid #f4a261;
+            border-radius: 12px;
+            padding: 8px 18px;
+            color: #fdfbf7;
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.05rem;
+            font-weight: bold;
+            z-index: 20;
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            padding: 10px 24px;
+            background-color: #2d5a27;
+            color: #ffffff;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.05rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(45, 90, 39, 0.2);
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            z-index: 50;
+        }
+
+        .btn-nav:hover { background-color: #6d4c41; }
+        .btn-nav:active { transform: scale(0.95); }
+
+        #btn-prev { left: 20px; bottom: 15px; }
+        #btn-next { right: 20px; bottom: 15px; display: none; }
+
+        /* 수학 퀴즈 컨테이너 (세로 길이를 최적화하여 버튼 잘림 방지) */
+        .quiz-container {
+            position: absolute;
+            top: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 62%;
+            height: 84%;
+            background-color: rgba(255, 255, 255, 0.96);
+            border: 4px solid #8aa171;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(45, 90, 39, 0.25);
+            z-index: 10;
+            padding: 15px 25px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .quiz-header {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.25rem;
+            color: #2d5a27;
+            margin-bottom: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .quiz-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .tab-button {
+            padding: 6px 18px;
+            background-color: #e2ebe2;
+            border: 2px solid #8aa171;
+            border-radius: 8px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-weight: bold;
+            color: #3e4a3d;
+            transition: background-color 0.2s;
+        }
+
+        .tab-button.active {
+            background-color: #2d5a27;
+            color: #ffffff;
+        }
+
+        .tab-button.locked {
+            background-color: #dcdcdc;
+            color: #888;
+            border-color: #bbb;
+            cursor: not-allowed;
+        }
+
+        /* 퀴즈 본문 영역 */
+        .quiz-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-guide {
+            width: 100%;
+            background-color: #f9fbf9;
+            border-radius: 8px;
+            padding: 10px 15px;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.92rem;
+            line-height: 1.4;
+            color: #3e4a3d;
+            text-align: center;
+        }
+
+        .panel-guide strong {
+            color: #6d4c41;
+            font-size: 1.05rem;
+        }
+
+        .panel-draw-container {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .panel-draw {
+            position: relative;
+            width: 280px;
+            height: 190px;
+            background-color: #fdfdfd;
+            border: 2px dashed #8aa171;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: crosshair;
+        }
+
+        .panel-control {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 10px 18px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            transition: transform 0.1s;
+        }
+        
+        .btn-action:active { transform: scale(0.95); }
+        .btn-clear { background-color: #6d4c41; color: white; }
+        .btn-check { background-color: #f4a261; color: #3e4a3d; border: 2px solid #e09650; }
+
+        /* 결과 알림창 */
+        #status-msg {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.05rem;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 5px;
+            min-height: 22px;
+        }
+        .text-success { color: #2d5a27; }
+        .text-fail { color: #d9534f; }
+        .text-info { color: #3e4a3d; }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- 배경 이미지 -->
+        <img class="bg-image" src="트라이보울.PNG" alt="트라이볼 배경">
+
+        <!-- 스테이지 타이틀 -->
+        <div id="stage-bar">송도센트럴파크 MATHTOUR - 수학 미션</div>
+
+        <!-- 등장인물: 민우 (좌측 끝 10px 고정) -->
+        <div class="char-wrapper" id="char-민우" style="position:absolute; left:10px; bottom:0px; width:221px; height:272px; overflow:visible; z-index:15;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.85); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 등장인물: 서연 (우측 끝 10px 완벽 대칭) -->
+        <div class="char-wrapper" id="char-서연" style="position:absolute; right:10px; bottom:0px; width:221px; height:272px; overflow:visible; z-index:15;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.85) scaleX(-1); transform-origin:bottom left; margin-left:221px; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 수학 퀴즈 컨테이너 -->
+        <div class="quiz-container">
+            <div class="quiz-header" id="quiz-title">MISSION: 회전체와 단면 탐구하기</div>
+            
+            <div class="quiz-tabs">
+                <button class="tab-button active" id="tab1" onclick="switchQuiz(1)">퀴즈 1: 회전축과 평면도형</button>
+                <button class="tab-button locked" id="tab2" onclick="switchQuiz(2)">🔒 퀴즈 2: 회전체의 단면</button>
+            </div>
+
+            <div class="quiz-body">
+                <div class="panel-guide" id="quiz-guide">
+                    <!-- 스크립트로 동적 가이드 내용 삽입 -->
+                </div>
+
+                <div class="panel-draw-container">
+                    <!-- 그림판 영역 (캔버스 높이 최적화 190px) -->
+                    <div class="panel-draw" style="width: 280px; height: 190px;">
+                        <canvas id="bgCanvas" width="280" height="190"></canvas>
+                        <canvas id="drawCanvas" width="280" height="190"></canvas>
+                    </div>
+
+                    <!-- 컨트롤 버튼 -->
+                    <div class="panel-control">
+                        <button class="btn-action btn-clear" onclick="clearCanvas(true)">그림 초기화</button>
+                        <button class="btn-action btn-check" onclick="checkAnswer()">정답 확인하기</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="status-msg" class="text-info">오른쪽 그림판에 도형을 스케치해 주세요!</div>
+        </div>
+
+        <!-- 네비게이션 시스템 -->
+        <button id="btn-prev" class="btn-nav" onclick="window.location.href='F02.html'">⬅ 이전</button>
+        <button id="btn-next" class="btn-nav" onclick="window.location.href='F04.html'">미션 성공! 다음 ➔</button>
+    </div>
+
+    <script>
+        let currentTab = 1;
+        let quiz1Step = 1; 
+        let quiz2Step = 1; 
+        let quiz1Done = false;
+        let quiz2Done = false;
+
+        const drawCanvas = document.getElementById('drawCanvas');
+        const drawCtx = drawCanvas.getContext('2d');
+        const bgCanvas = document.getElementById('bgCanvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        const msgEl = document.getElementById('status-msg');
+
+        let isDrawing = false;
+
+        drawCtx.lineWidth = 9;
+        drawCtx.lineCap = 'round';
+        drawCtx.strokeStyle = '#2d5a27';
+
+        drawCanvas.addEventListener('mousedown', (e) => { isDrawing = true; draw(e); });
+        drawCanvas.addEventListener('mousemove', draw);
+        window.addEventListener('mouseup', () => isDrawing = false);
+
+        drawCanvas.addEventListener('touchstart', (e) => { isDrawing = true; draw(e.touches[0]); });
+        drawCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); }, { passive: false });
+        window.addEventListener('touchend', () => isDrawing = false);
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const rect = drawCanvas.getBoundingClientRect();
+            const x = (e.clientX || e.pageX) - rect.left;
+            const y = (e.clientY || e.pageY) - rect.top;
+
+            if (e.type === 'mousedown' || e.type === 'touchstart') {
+                drawCtx.beginPath();
+                drawCtx.moveTo(x, y);
+            } else {
+                drawCtx.lineTo(x, y);
+                drawCtx.stroke();
+            }
+        }
+
+        function clearCanvas(showMsg = false) {
+            drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+            if (showMsg) {
+                msgEl.className = 'text-info';
+                msgEl.textContent = "그림판이 초기화되었습니다. 다시 그려보세요!";
+            }
+        }
+
+        function switchQuiz(id) {
+            if (id === 2 && !quiz1Done) {
+                msgEl.className = 'text-fail';
+                msgEl.textContent = "🔒 퀴즈 1의 [1단계], [2단계]를 모두 완료해야 퀴즈 2를 풀 수 있습니다!";
+                return;
+            }
+
+            currentTab = id;
+            document.getElementById('tab1').classList.toggle('active', id === 1);
+            document.getElementById('tab2').classList.toggle('active', id === 2);
+            
+            clearCanvas();
+            renderQuizTemplate();
+            msgEl.className = 'text-info';
+            msgEl.textContent = "그림판에 도형을 스케치해 주세요!";
+        }
+
+        function renderQuizTemplate() {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            const guideEl = document.getElementById('quiz-guide');
+
+            // 회전축 위치를 캔버스 가로 중앙(140px)으로 조정
+            bgCtx.strokeStyle = '#6d4c41';
+            bgCtx.lineWidth = 2;
+            bgCtx.setLineDash([5, 5]);
+            bgCtx.beginPath();
+            bgCtx.moveTo(140, 10);
+            bgCtx.lineTo(140, 180);
+            bgCtx.stroke();
+            bgCtx.setLineDash([]);
+
+            bgCtx.font = "12px 'Gowun Batang'";
+            bgCtx.fillStyle = "#6d4c41";
+            bgCtx.fillText("회전축", 148, 22);
+
+            if (currentTab === 1) {
+                if (quiz1Step === 1) {
+                    guideEl.innerHTML = `
+                        <strong>[1단계] 원뿔 만들기</strong> | 회전축을 중심으로 어떤 평면도형을 회전시켜야 <strong>'원뿔'</strong>이 될까요?<br>
+                        <span style="font-size:0.88rem; color:#8aa171;">💡 힌트: 회전축 <strong>오른쪽</strong>에 위가 뾰족하고 아래가 평평한 '직각삼각형'을 붙여 그리세요.</span>
+                    `;
+                } else if (quiz1Step === 2) {
+                    guideEl.innerHTML = `
+                        <strong>[2단계] 트라이보울 만들기</strong> | 송도 <strong>'트라이보울'</strong>을 만들려면 어떤 평면도형을 회전시켜야 할까요?<br>
+                        <span style="font-size:0.88rem; color:#8aa171;">💡 힌트: 회전축 <strong>오른쪽</strong>에 아래는 좁고 위가 넓은 '반쪽 그릇 모양'을 그리세요.</span>
+                    `;
+                }
+                if (quiz1Done) {
+                    guideEl.innerHTML = `<strong>🎉 퀴즈 1의 모든 단계를 통과했습니다!</strong> 상단의 '퀴즈 2' 탭을 눌러주세요.`;
+                }
+            } else {
+                if (quiz2Step === 1) {
+                    guideEl.innerHTML = `
+                        <strong>[1단계] 수직 절단면</strong> | 트라이보울을 <strong>회전축에 수직인 평면(가로)</strong>으로 자른 단면은 무엇일까요?<br>
+                        <span style="font-size:0.88rem; color:#8aa171;">💡 힌트: 회전체의 가로 단면은 항상 반듯한 '원' 모양입니다. 그림판 가운데에 그려보세요.</span>
+                    `;
+                } else if (quiz2Step === 2) {
+                    guideEl.innerHTML = `
+                        <strong>[2단계] 회전축 포함 절단면</strong> | 트라이보울을 <strong>회전축을 포함하는 평면(세로)</strong>으로 자른 단면은?<br>
+                        <span style="font-size:0.88rem; color:#8aa171;">💡 힌트: 축을 기준으로 좌우 대칭인 '사다리꼴(그릇)' 모양을 그려보세요.</span>
+                    `;
+                }
+                if (quiz2Done) {
+                    guideEl.innerHTML = `<strong>🎉 퀴즈 2의 모든 단계를 통과했습니다!</strong> 우측 하단의 '다음' 버튼을 눌러주세요.`;
+                }
+            }
+        }
+
+        function checkAnswer() {
+            if ((currentTab === 1 && quiz1Done) || (currentTab === 2 && quiz2Done)) {
+                msgEl.className = 'text-success';
+                msgEl.textContent = "이미 완료한 퀴즈입니다! 다음 미션을 진행해 주세요.";
+                return;
+            }
+
+            const imgData = drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height);
+            const pixels = imgData.data;
+            let paintedPixels = [];
+            
+            for (let i = 0; i < pixels.length; i += 4) {
+                if (pixels[i + 3] > 50) { 
+                    const index = i / 4;
+                    paintedPixels.push({
+                        x: index % drawCanvas.width,
+                        y: Math.floor(index / drawCanvas.width)
+                    });
+                }
+            }
+
+            if (paintedPixels.length < 40) {
+                msgEl.className = 'text-fail';
+                msgEl.textContent = "그려진 선이 너무 짧거나 없습니다! 형태를 뚜렷하게 그려주세요.";
+                return;
+            }
+
+            let minX = 999, maxX = -999, minY = 999, maxY = -999;
+            paintedPixels.forEach(p => {
+                if(p.x < minX) minX = p.x;
+                if(p.x > maxX) maxX = p.x;
+                if(p.y < minY) minY = p.y;
+                if(p.y > maxY) maxY = p.y;
+            });
+
+            let width = maxX - minX;
+            let height = maxY - minY;
+            let boxCenterX = (minX + maxX) / 2;
+            let boxCenterY = (minY + maxY) / 2;
+
+            if (width < 25 || height < 25) {
+                msgEl.className = 'text-fail';
+                msgEl.textContent = "도형이 너무 작습니다. 그림판에 큼직하게 그려주세요.";
+                return;
+            }
+
+            let topMinX = 999, topMaxX = -999, botMinX = 999, botMaxX = -999;
+            paintedPixels.forEach(p => {
+                if (p.y <= minY + height * 0.3) {
+                    if (p.x < topMinX) topMinX = p.x;
+                    if (p.x > topMaxX) topMaxX = p.x;
+                }
+                if (p.y >= maxY - height * 0.3) {
+                    if (p.x < botMinX) botMinX = p.x;
+                    if (p.x > botMaxX) botMaxX = p.x;
+                }
+            });
+            
+            let topWidth = (topMinX <= topMaxX) ? (topMaxX - topMinX) : 0;
+            let botWidth = (botMinX <= botMaxX) ? (botMaxX - botMinX) : 0;
+
+            let isCorrect = false;
+            let failReason = "";
+
+            if (currentTab === 1) {
+                if (quiz1Step === 1) {
+                    // Q1-1: 원뿔 평면 (회전축 140 기준 오른쪽, 위가 좁고 아래가 넓음)
+                    if (minX >= 115 && minX <= 170) { 
+                        if (topWidth < botWidth * 0.6 && botWidth > 25) { 
+                            isCorrect = true;
+                        } else {
+                            failReason = "위가 뾰족하고 아래가 넓은 '직각삼각형' 모양이어야 합니다.";
+                        }
+                    } else {
+                        failReason = "회전축(가운데 점선)의 오른쪽에 선을 붙여서 그려주세요.";
+                    }
+                } else if (quiz1Step === 2) {
+                    // Q1-2: 트라이보울 평면 (회전축 140 기준 오른쪽, 아래가 좁고 위가 넓음)
+                    if (minX >= 115 && minX <= 170) { 
+                        if (topWidth > botWidth * 1.2 && topWidth > 25) { 
+                            isCorrect = true;
+                        } else {
+                            failReason = "아래가 좁고 위가 넓은 '반쪽 그릇' 모양이어야 합니다.";
+                        }
+                    } else {
+                        failReason = "회전축(가운데 점선)의 오른쪽에 선을 붙여서 그려주세요.";
+                    }
+                }
+            } else {
+                if (quiz2Step === 1) {
+                    // Q2-1: 수직 단면 (원)
+                    let aspectRatio = width / height;
+                    if (aspectRatio > 0.6 && aspectRatio < 1.4) {
+                        let sumDist = 0;
+                        let dists = [];
+                        paintedPixels.forEach(p => {
+                            let d = Math.sqrt(Math.pow(p.x - boxCenterX, 2) + Math.pow(p.y - boxCenterY, 2));
+                            dists.push(d);
+                            sumDist += d;
+                        });
+                        let avgDist = sumDist / paintedPixels.length;
+                        
+                        let badPixels = 0;
+                        dists.forEach(d => {
+                            if (Math.abs(d - avgDist) > avgDist * 0.35) badPixels++;
+                        });
+
+                        if (badPixels / paintedPixels.length < 0.25) {
+                            isCorrect = true;
+                        } else {
+                            failReason = "모서리가 각졌습니다. 반듯하게 둥근 '원' 모양으로 그려주세요.";
+                        }
+                    } else {
+                        failReason = "가로세로 비율이 맞지 않습니다. 반듯한 '원'을 그려주세요.";
+                    }
+                } else if (quiz2Step === 2) {
+                    // Q2-2: 축 포함 단면 (사다리꼴)
+                    if (Math.abs(boxCenterX - 140) < 35) { 
+                        let leftPixels = 0, rightPixels = 0;
+                        paintedPixels.forEach(p => {
+                            if (p.x < 140) leftPixels++;
+                            else rightPixels++;
+                        });
+                        let symmetry = Math.min(leftPixels, rightPixels) / Math.max(leftPixels, rightPixels);
+                        
+                        if (symmetry > 0.5) { 
+                            if (botWidth > 15 && topWidth > botWidth * 1.2) {
+                                isCorrect = true;
+                            } else {
+                                failReason = "아래가 좁고 위가 넓은 사다리꼴(그릇) 모양으로 그려주세요.";
+                            }
+                        } else {
+                            failReason = "회전축(점선)을 중심으로 '좌우 대칭'이 되도록 그려주세요.";
+                        }
+                    } else {
+                        failReason = "회전축(가운데 점선)을 기준으로 양쪽에 대칭이 되도록 그려주세요.";
+                    }
+                }
+            }
+
+            if (isCorrect) {
+                if (currentTab === 1) {
+                    if (quiz1Step === 1) {
+                        quiz1Step = 2;
+                        msgEl.className = 'text-success';
+                        msgEl.textContent = "🎯 정답! 1단계 완료. 2단계 평면도형 미션을 진행하세요.";
+                        setTimeout(() => { clearCanvas(); renderQuizTemplate(); }, 1500);
+                    } else {
+                        quiz1Done = true;
+                        document.getElementById('tab2').classList.remove('locked');
+                        document.getElementById('tab2').innerHTML = '🔓 퀴즈 2: 회전체의 단면';
+                        msgEl.className = 'text-success';
+                        msgEl.textContent = "🎯 퀴즈 1 통과! 상단의 '퀴즈 2' 탭을 눌러 이동하세요.";
+                        clearCanvas();
+                        renderQuizTemplate();
+                    }
+                } else {
+                    if (quiz2Step === 1) {
+                        quiz2Step = 2;
+                        msgEl.className = 'text-success';
+                        msgEl.textContent = "🎯 정답! 완벽한 원 모양입니다. 2단계 단면 미션을 진행하세요.";
+                        setTimeout(() => { clearCanvas(); renderQuizTemplate(); }, 1500);
+                    } else {
+                        quiz2Done = true;
+                        msgEl.className = 'text-success';
+                        msgEl.textContent = "🎯 정답! 퀴즈 2를 모두 완료했습니다.";
+                        clearCanvas();
+                        renderQuizTemplate();
+                    }
+                }
+
+                if (quiz1Done && quiz2Done) {
+                    document.getElementById('btn-next').style.display = 'block';
+                    msgEl.textContent = "🎉 모든 수학 미션을 클리어했습니다! 우측 하단의 '다음'을 눌러주세요.";
+                }
+            } else {
+                msgEl.className = 'text-fail';
+                msgEl.textContent = `❌ 오답입니다. (${failReason})`;
+            }
+        }
+
+        window.onload = () => {
+            renderQuizTemplate();
+        };
+    </script>
+</body>
+</html>

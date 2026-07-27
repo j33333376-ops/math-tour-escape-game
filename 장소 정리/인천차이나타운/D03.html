@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인천차이나타운 MATHTOUR - D03</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+:root{--red:#8c3030;--red-dark:#661f1f;--gold:#d4af37;--ink:#2d3748;--paper:#f5f0e6;--brown:#70533b;--panel:#eadcc7;--grid:rgba(112,83,59,.25)}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#241a15}body{display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;color:var(--ink)}
+#game-container{position:relative;width:min(100vw,1066px);max-width:1066px;aspect-ratio:16/9;overflow:hidden;background:radial-gradient(circle at 50% 25%,#fffaf0 0,#eadcc7 58%,#c9aa7f 100%);box-shadow:0 0 35px #0009;border:1px solid #3c281d}
+#game-container:before{content:"";position:absolute;inset:0;z-index:0;opacity:.18;background-image:repeating-linear-gradient(0deg,transparent 0 29px,#6e503a22 30px),repeating-linear-gradient(90deg,transparent 0 29px,#6e503a18 30px)}
+.stage-bar{position:absolute;z-index:20;left:18px;right:18px;top:14px;height:50px;background:rgba(38,23,18,.88);border:1px solid var(--gold);box-shadow:0 3px 10px #0005;display:flex;align-items:center;justify-content:space-between;padding:0 18px;color:#fff}
+.stage-title{font:700 22px 'Nanum Myeongjo',serif;color:#f6df8c}.stage-label{font:700 13px 'Nanum Gothic Coding',monospace;color:#fff3c0}
+.char-wrapper{position:absolute;z-index:3;overflow:visible;pointer-events:none;filter:drop-shadow(0 8px 6px #0004)}
+#char-민우{left:8px;bottom:42px;width:182px;height:224px}#char-서연{right:8px;bottom:42px;width:182px;height:224px}
+.character-name{position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);padding:3px 12px;background:rgba(40,24,18,.86);border:1px solid var(--gold);color:#fff;font:700 13px 'Nanum Gothic Coding',monospace;border-radius:3px;z-index:4}
+.quiz-container{position:absolute;z-index:10;left:50%;top:74px;transform:translateX(-50%);width:76%;height:455px;padding:14px;background:rgba(245,240,230,.96);border:3px double var(--gold);box-shadow:0 12px 28px #0005;display:grid;grid-template-columns:55% 45%;gap:12px}
+.map-wrapper{position:relative;background:#fcf8f2;border:3px solid var(--brown);box-shadow:inset 0 0 24px #9a795633;overflow:hidden}.map-wrapper canvas{position:absolute;inset:0;width:100%;height:100%}.grid-labels{position:absolute;inset:0;pointer-events:none}.axis-label{position:absolute;font:700 10px 'Nanum Gothic Coding',monospace;color:#765a43}
+.control-panel{background:var(--panel);border:2px solid var(--brown);padding:10px;display:flex;flex-direction:column;gap:7px;overflow:auto}.quiz-heading{font:700 18px 'Nanum Myeongjo',serif;color:var(--red);text-align:center;margin:0 0 2px}.quiz-subtitle{font:700 11px 'Nanum Gothic Coding',monospace;text-align:center;margin-bottom:2px}
+.info-box{background:#fffaf2;border:1px solid #9a7956;padding:8px;border-radius:3px}.info-box h3{margin:0 0 4px;color:var(--red);font:700 13px 'Nanum Gothic Coding',monospace;border-bottom:1px dashed #9a7956;padding-bottom:3px}.info-box p,.legend{margin:0;font-size:11px;line-height:1.45}.coord-display{text-align:center;font:700 15px 'Nanum Gothic Coding',monospace;color:var(--red)}.input-group{display:flex;gap:5px;align-items:center;justify-content:center}.input-group input{width:45px;padding:4px;border:1px solid #8c6d53;text-align:center;font:700 12px 'Nanum Gothic Coding',monospace}.legend{list-style:none;padding:0}.legend li{margin:2px 0}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}.mission{background:#edd3b5}.btn-small{background:#70533b;color:#fff;border:1px solid var(--gold);padding:5px 9px;cursor:pointer;border-radius:3px;font:700 11px 'Noto Sans KR',sans-serif}.btn-small:hover{background:var(--red)}
+.btn-nav{position:absolute;z-index:30;bottom:20px;background:var(--red);color:#fff;border:1px solid var(--gold);border-radius:4px;padding:10px 24px;font-weight:700;cursor:pointer}.btn-nav:hover{background:var(--red-dark)}#btn-prev{left:20px}#btn-next{right:20px;display:none}
+.modal-overlay{position:absolute;inset:0;z-index:50;background:#000a;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.25s}.modal-overlay.active{opacity:1;pointer-events:auto}.modal{width:min(440px,82%);background:var(--paper);border:4px double var(--gold);padding:20px;text-align:center;box-shadow:0 16px 35px #0008}.modal h2{font:700 25px 'Nanum Myeongjo',serif;color:var(--red);margin:0 0 10px}.modal p{font-size:14px;line-height:1.55;margin:8px 0}.formula{background:#fff;border-left:4px solid var(--red);padding:10px;margin:10px 0;font:700 14px 'Nanum Gothic Coding',monospace}.modal input{width:130px;padding:8px;text-align:center;border:2px solid #8c6d53;font:700 16px 'Nanum Gothic Coding',monospace}.success-mark{font-size:48px}.feedback{min-height:22px;color:var(--red);font-weight:700;margin-top:7px}
+@keyframes pop{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}.modal.pop{animation:pop .45s ease-out}
+@media(max-width:800px){.stage-title{font-size:17px}.quiz-container{width:79%;height:430px;top:70px;grid-template-columns:57% 43%;padding:9px}.control-panel{padding:7px}.info-box{padding:5px}.info-box p,.legend{font-size:9px}.quiz-heading{font-size:14px}#char-민우,#char-서연{transform:scale(.82);transform-origin:bottom}.btn-nav{padding:7px 16px}}
+</style>
+</head>
+<body>
+<div id="game-container">
+  <div class="stage-bar"><span class="stage-title">인천차이나타운 MATHTOUR</span><span class="stage-label">D03 · 경인선 열차와 최단 경로</span></div>
+
+  <div class="char-wrapper" id="char-민우"><iframe src="등장인물_민우.html" scrolling="no" style="border:0;width:260px;height:320px;transform:scale(.7);transform-origin:bottom left;pointer-events:none"></iframe><div class="character-name">민우</div></div>
+  <div class="char-wrapper" id="char-서연"><iframe src="등장인물_서연.html" scrolling="no" style="border:0;width:260px;height:320px;transform:scale(.7) scaleX(-1);transform-origin:bottom left;pointer-events:none"></iframe><div class="character-name">서연</div></div>
+
+  <section class="quiz-container" aria-label="경인선 열차 좌표 퀴즈">
+    <div class="map-wrapper" id="mapWrapper"><canvas id="gridCanvas" width="500" height="420"></canvas><div class="grid-labels" id="gridLabels"></div></div>
+    <div class="control-panel">
+      <div><h1 class="quiz-heading">경인선 열차의 출발</h1><div class="quiz-subtitle">[좌표와 경로] 기차 좌석과 최단 경로</div></div>
+      <div class="info-box"><h3>📍 현재 열차 위치</h3><div class="coord-display" id="currentCoord">인천역 (1, 1)</div></div>
+      <div class="info-box"><h3>🕹️ 좌표 직접 이동</h3><div class="input-group"><label>x:</label><input type="number" id="inputX" min="0" max="10" value="1"><label>y:</label><input type="number" id="inputY" min="0" max="10" value="1"><button class="btn-small" onclick="moveByInput()">이동</button></div></div>
+      <div class="info-box"><h3>🗺️ 범례</h3><ul class="legend"><li><span class="dot" style="background:#008000"></span>인천역(1,1), 주안역(7,7)</li><li><span class="dot" style="background:#4682b4"></span>제물포역(4,4)</li><li><span class="dot" style="background:#8b0000"></span>선로 점검 구간</li></ul></div>
+      <div class="info-box mission"><p><b>💡 미션:</b> 장애물을 피해 인접한 칸으로 이동하여 <b>주안역(7,7)</b>에 도착하세요.</p></div>
+      <button class="btn-small" onclick="resetTrain()">경로 초기화</button>
+    </div>
+  </section>
+
+  <button id="btn-prev" class="btn-nav" onclick="window.location.href='D03.html'">이전</button>
+  <button id="btn-next" class="btn-nav" onclick="window.location.href='D04.html'">다음</button>
+
+  <div class="modal-overlay" id="quizModal">
+    <div class="modal"><h2>🎉 주안역 도착!</h2><p>인천역에서 주안역까지의 <b>직선거리</b>를 계산하세요.</p><div class="formula">√((7−1)²+(7−1)²) = √72 ≈ ?</div><p>소수점 둘째 자리까지 입력하세요.</p><input type="number" step="0.01" id="quizAnswer" placeholder="예: 8.49"><div class="feedback" id="feedback"></div><button class="btn-small" onclick="checkAnswer()">정답 확인</button></div>
+  </div>
+  <div class="modal-overlay" id="successModal"><div class="modal pop"><div class="success-mark">🚂💨</div><h2>미션 성공!</h2><p>경인선 열차가 안전하게 주안역에 도착했습니다.<br><b>다음 버튼</b>을 눌러 계속 진행하세요.</p><button class="btn-small" onclick="closeSuccessModal()">확인</button></div></div>
+</div>
+<script>
+const canvas=document.getElementById('gridCanvas'),ctx=canvas.getContext('2d');
+const gridSize=10,cellSize=35,offsetX=45,offsetY=385;
+const startNode={x:1,y:1,name:'인천역'},wayNode={x:4,y:4,name:'제물포역'},targetNode={x:7,y:7,name:'주안역'};
+const obstacles=[{x:3,y:3},{x:5,y:5},{x:3,y:4},{x:4,y:3}];
+let currentPos={x:1,y:1},pathHistory=[{x:1,y:1}],missionComplete=false;
+const toCanvasX=x=>offsetX+x*cellSize,toCanvasY=y=>offsetY-y*cellSize,toGridX=px=>Math.round((px-offsetX)/cellSize),toGridY=py=>Math.round((offsetY-py)/cellSize);
+function drawGridLabels(){const box=document.getElementById('gridLabels');box.innerHTML='';for(let i=0;i<=gridSize;i++){const x=document.createElement('span');x.className='axis-label';x.textContent=i;x.style.left=(toCanvasX(i)-3)+'px';x.style.top=(offsetY+5)+'px';box.appendChild(x);const y=document.createElement('span');y.className='axis-label';y.textContent=i;y.style.left=(offsetX-20)+'px';y.style.top=(toCanvasY(i)-7)+'px';box.appendChild(y)}}
+function drawStation(x,y,color,label){const cx=toCanvasX(x),cy=toCanvasY(y);ctx.fillStyle=color;ctx.beginPath();ctx.arc(cx,cy,8,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#4a3525';ctx.font='bold 11px Nanum Gothic Coding';ctx.textAlign='center';ctx.fillText(label,cx,cy-14)}
+function render(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.strokeStyle='rgba(112,83,59,.25)';ctx.lineWidth=1;for(let i=0;i<=gridSize;i++){ctx.beginPath();ctx.moveTo(toCanvasX(i),toCanvasY(0));ctx.lineTo(toCanvasX(i),toCanvasY(10));ctx.stroke();ctx.beginPath();ctx.moveTo(toCanvasX(0),toCanvasY(i));ctx.lineTo(toCanvasX(10),toCanvasY(i));ctx.stroke()}ctx.strokeStyle='#4a3525';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(offsetX,offsetY);ctx.lineTo(offsetX+gridSize*cellSize+18,offsetY);ctx.moveTo(offsetX,offsetY);ctx.lineTo(offsetX,offsetY-gridSize*cellSize-18);ctx.stroke();if(pathHistory.length>1){ctx.beginPath();ctx.strokeStyle='#d97706';ctx.lineWidth=4;ctx.setLineDash([6,6]);ctx.moveTo(toCanvasX(pathHistory[0].x),toCanvasY(pathHistory[0].y));pathHistory.slice(1).forEach(p=>ctx.lineTo(toCanvasX(p.x),toCanvasY(p.y)));ctx.stroke();ctx.setLineDash([])}drawStation(1,1,'#008000','인천역');drawStation(4,4,'#4682b4','제물포역');drawStation(7,7,'#008000','주안역');obstacles.forEach(o=>{const x=toCanvasX(o.x),y=toCanvasY(o.y);ctx.fillStyle='#8b0000';ctx.beginPath();ctx.arc(x,y,11,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff';ctx.beginPath();ctx.moveTo(x-5,y-5);ctx.lineTo(x+5,y+5);ctx.moveTo(x+5,y-5);ctx.lineTo(x-5,y+5);ctx.stroke()});ctx.font='24px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🚂',toCanvasX(currentPos.x),toCanvasY(currentPos.y))}
+const isObstacle=(x,y)=>obstacles.some(o=>o.x===x&&o.y===y);
+function moveTo(x,y){if(missionComplete)return;if(x<0||x>10||y<0||y>10){alert('좌표평면 범위는 0~10입니다.');return}const dx=Math.abs(x-currentPos.x),dy=Math.abs(y-currentPos.y);if((dx===0&&dy===0)||dx>1||dy>1){alert('인접한 칸으로만 이동할 수 있습니다.');return}if(isObstacle(x,y)){alert('⚠️ 선로 점검 구간입니다. 다른 길을 선택하세요.');return}currentPos={x,y};pathHistory.push({x,y});document.getElementById('currentCoord').textContent=(x===1&&y===1?'인천역 ':x===7&&y===7?'주안역 ':'')+`(${x}, ${y})`;inputX.value=x;inputY.value=y;render();if(x===7&&y===7)setTimeout(()=>quizModal.classList.add('active'),250)}
+function moveByInput(){const x=parseInt(inputX.value),y=parseInt(inputY.value);if(!Number.isNaN(x)&&!Number.isNaN(y))moveTo(x,y)}
+canvas.addEventListener('click',e=>{const r=canvas.getBoundingClientRect(),sx=canvas.width/r.width,sy=canvas.height/r.height;moveTo(toGridX((e.clientX-r.left)*sx),toGridY((e.clientY-r.top)*sy))});
+function checkAnswer(){const ans=parseFloat(quizAnswer.value);if(ans>=8.48&&ans<=8.49){quizModal.classList.remove('active');missionComplete=true;document.getElementById('btn-next').style.display='block';playTrainWhistle();successModal.classList.add('active')}else{feedback.textContent='다시 계산해 보세요. √72는 약 8.48입니다.'}}
+function closeSuccessModal(){successModal.classList.remove('active')}
+function resetTrain(){missionComplete=false;currentPos={x:1,y:1};pathHistory=[{x:1,y:1}];currentCoord.textContent='인천역 (1, 1)';inputX.value=1;inputY.value=1;feedback.textContent='';quizAnswer.value='';quizModal.classList.remove('active');successModal.classList.remove('active');document.getElementById('btn-next').style.display='none';render()}
+function playTrainWhistle(){try{const AC=window.AudioContext||window.webkitAudioContext,a=new AC(),g=a.createGain(),o1=a.createOscillator(),o2=a.createOscillator();o1.type=o2.type='sawtooth';o1.frequency.value=293.66;o2.frequency.value=369.99;g.gain.setValueAtTime(.001,a.currentTime);g.gain.exponentialRampToValueAtTime(.22,a.currentTime+.08);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+1);o1.connect(g);o2.connect(g);g.connect(a.destination);o1.start();o2.start();o1.stop(a.currentTime+1);o2.stop(a.currentTime+1)}catch(e){}}
+drawGridLabels();render();
+</script>
+</body>
+</html>

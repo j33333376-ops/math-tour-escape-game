@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천도호부청사·인천향교 MATHTOUR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* Reset & Base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+        body {
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Game Container */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f5f0e6;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Background Image */
+        #bg-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* Characters */
+        .char-wrapper {
+            position: absolute;
+            z-index: 3;
+            overflow: visible;
+            transition: filter 0.2s ease-in-out;
+        }
+        .inactive {
+            filter: brightness(0.55);
+        }
+
+        /* Dialogue Box */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            padding: 20px 30px;
+            z-index: 10;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #d4af37;
+        }
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #ffffff;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+        }
+        .dialogue-hint {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.8rem;
+            color: #aaaaaa;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Buttons */
+        .btn-nav {
+            position: absolute;
+            background-color: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 11;
+            transition: background-color 0.2s;
+        }
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+            display: none;
+        }
+        #btn-next {
+            right: 20px;
+            bottom: 20px;
+            display: none;
+        }
+        #btn-skip {
+            right: 20px;
+            bottom: 130px; /* Positioned slightly above dialogue box */
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- Background Image -->
+    <img src="옥사내부.PNG" id="bg-image" alt="옥사 내부 배경">
+
+    <!-- Characters -->
+    <!-- 1cm = 38px -> 2cm = 76px. 좌측 76px, 하단 76px 이동 (z-index:3 이라 대화창(z-index:10) 뒤로 감춰짐) -->
+    
+    <!-- 서연: 좌측 배치, 스케일 1.4 -->
+    <div class="char-wrapper inactive" id="char-서연" style="left: calc(100px - 2cm); bottom: calc(30px - 2cm); width: 364px; height: 448px;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1.4); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 민우: 중앙 좌측 배치, 스케일 1.4 -->
+    <div class="char-wrapper inactive" id="char-민우" style="left: calc(350px - 2cm); bottom: calc(30px - 2cm); width: 364px; height: 448px;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1.4); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 노인: 우측 배치, 스케일 1.4, 좌우 반전 -->
+    <div class="char-wrapper inactive" id="char-노인" style="left: calc(900px - 2cm); bottom: calc(30px - 2cm); width: 364px; height: 448px;">
+        <iframe src="등장인물_노인.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1.4) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- Dialogue UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-name"></div>
+        <div id="dialogue-text"></div>
+        <div class="dialogue-hint">클릭하여 진행 ▼</div>
+    </div>
+
+    <!-- Buttons -->
+    <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+    <button id="btn-prev" class="btn-nav" onclick="goPrev()">이전</button>
+    <button id="btn-next" class="btn-nav" onclick="goNext()">다음</button>
+</div>
+
+<script>
+    // 스토리 및 대사 데이터
+    const dialogues = [
+        { speaker: '서연', target: 'char-서연', text: '와... 진짜 신호가 하나도 안 잡혀. 민우야, 우리 진짜 어쩌지? 이 자물쇠도 특이하고.' },
+        { speaker: '민우', target: 'char-민우', text: '밖의 포졸은 저렇게 자고 있고... 창살은 끄떡도 안 해. 어떻게든 탈출해야 하는데.' },
+        { speaker: '노인', target: 'char-노인', text: '거참, 소란스럽군.' },
+        { speaker: '민우', target: 'char-민우', text: '헛! 어르신... 죄송합니다. 혹시 여기서 나갈 방법을 아시나요?' },
+        { speaker: '노인', target: 'char-노인', text: '이 방 어딘가에 직사각형 모양으로 배열된 숫자들과, 그것들을 설명하는 문장들이 이리저리 숨겨져 있어. 그것들을 찾아 조합해야 저 자물쇠를 풀 수 있다더군.' },
+        { speaker: '서연', target: 'char-서연', text: '직사각형 모양의 숫자 배열? 민우야, 이거 혹시 수학 시간에 배운...' },
+        { speaker: '민우', target: 'char-민우', text: '행렬! 그래, 행렬이야! 할아버지가 말한 건 행렬이었어. 이 방 안에 탈출의 열쇠가 되는 행렬들이 숨겨져 있다는 뜻이잖아.' },
+        { speaker: '서연', target: 'char-서연', text: '그럼 이 벽의 낙서들이 그냥 낙서가 아니었던 거야? 여기 \'두 행렬을 곱하고 한 행렬을 더하라\'는 문장이 보여. 다같이 찾아보자.' },
+        { speaker: '노인', target: 'char-노인', text: '부디, 이번에는 성공하기를...' }
+    ];
+
+    let currentIndex = 0;
+    const dialogueBox = document.getElementById('dialogue-box');
+    const speakerNameEl = document.getElementById('speaker-name');
+    const dialogueTextEl = document.getElementById('dialogue-text');
+    const btnSkip = document.getElementById('btn-skip');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+
+    // 대화 업데이트
+    function updateDialogue() {
+        if (currentIndex < dialogues.length) {
+            const currentData = dialogues[currentIndex];
+            
+            // 텍스트 및 화자 갱신
+            speakerNameEl.textContent = currentData.speaker;
+            dialogueTextEl.textContent = currentData.text;
+
+            // 모든 캐릭터 어둡게 처리
+            document.querySelectorAll('.char-wrapper').forEach(char => {
+                char.classList.add('inactive');
+            });
+
+            // 현재 말하는 캐릭터만 밝게 처리
+            const activeChar = document.getElementById(currentData.target);
+            if (activeChar) {
+                activeChar.classList.remove('inactive');
+            }
+        } else {
+            endDialogue();
+        }
+    }
+
+    // 대화 진행 (클릭 시)
+    function advanceDialogue() {
+        currentIndex++;
+        updateDialogue();
+    }
+
+    // 대화 건너뛰기
+    function skipDialogue() {
+        currentIndex = dialogues.length;
+        endDialogue();
+    }
+
+    // 대화 종료 및 네비게이션 활성화
+    function endDialogue() {
+        dialogueBox.style.display = 'none';
+        btnSkip.style.display = 'none';
+        
+        // 모든 캐릭터 원래 밝기로 복구
+        document.querySelectorAll('.char-wrapper').forEach(char => {
+            char.classList.remove('inactive');
+        });
+
+        // 이전/다음 버튼 표시
+        btnPrev.style.display = 'block';
+        btnNext.style.display = 'block';
+    }
+
+    // URL 이동
+    function goPrev() {
+        window.location.href = 'B01.html';
+    }
+
+    function goNext() {
+        window.location.href = 'B03.html';
+    }
+
+    // 초기화
+    window.onload = () => {
+        updateDialogue();
+    };
+</script>
+
+</body>
+</html>

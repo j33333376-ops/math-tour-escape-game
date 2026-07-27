@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>송도센트럴파크 MATHTOUR - 트라이보울</title>
+    <style>
+        /* [공통 UI/UX 및 폰트 규칙 — 신비로운 숲속 스타일] */
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1e1e1e; /* 화면 밖 어두운 배경 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 16:9 비율 유지, 최대 가로 1066px */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f2f7f2; /* 소프트 모스 베이지 */
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+        }
+
+        /* [배경 이미지 규칙] 배경 이미지 파일명이 지정되었으므로 inset:0 전체 배치 */
+        .bg-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 스테이지 상단 표시바 (나무 팻말 느낌) */
+        #stage-bar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #6d4c41; /* 우드 브라운 */
+            border: 3px solid #5a3d33;
+            border-radius: 12px;
+            padding: 10px 20px;
+            color: #fdfbf7;
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+            z-index: 20;
+        }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            padding: 12px 28px;
+            background-color: #2d5a27; /* 딥 포레스트 그린 */
+            color: #ffffff;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 20px; /* 알약형 */
+            box-shadow: 0 4px 6px rgba(45, 90, 39, 0.2);
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            z-index: 50;
+            display: none; /* 대화 완료 전까지 숨김 */
+        }
+
+        .btn-nav:hover {
+            background-color: #6d4c41; /* 호버 시 우드 브라운 */
+        }
+
+        .btn-nav:active {
+            transform: scale(0.95);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next, #btn-skip {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        #btn-skip {
+            display: block; /* 대화 진행 중 기본 노출 */
+        }
+
+        /* 대화창 (유형 2) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            background-color: rgba(45, 90, 39, 0.85); /* 반투명 짙은 녹색 */
+            border: 3px solid #6d4c41; /* 우드 브라운 테두리 */
+            border-radius: 15px;
+            padding: 20px 30px;
+            box-sizing: border-box;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            z-index: 40;
+            cursor: pointer;
+            color: #fdfbf7; /* 상아색 텍스트 */
+        }
+
+        #speaker-name {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #f4a261; /* 이름 강조 - 햇살 옐로우 */
+            margin-bottom: 8px;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            word-break: keep-all;
+        }
+
+        /* 캐릭터 래퍼 및 포커싱 트랜지션 */
+        .char-wrapper {
+            transition: filter 0.2s ease;
+        }
+
+        .inactive {
+            filter: brightness(0.55);
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- [배경 이미지 규칙] 배경 파일명이 있으므로 이미지만 노출하고 iframe 중복 로드를 차단해 에러 박스 발생 원인 제거 -->
+        <img class="bg-image" src="트라이보울.PNG" alt="트라이볼 배경">
+
+        <!-- 스테이지 표시바 -->
+        <div id="stage-bar">송도센트럴파크 MATHTOUR</div>
+
+        <!-- 등장인물: 민우 (좌측 1번 배치, 하반신까지 온전히 보이도록 크기와 위치 최적화 s=0.9) -->
+        <div class="char-wrapper inactive" id="char-민우" style="position:absolute; left:60px; bottom:55px; width:234px; height:288px; overflow:visible; z-index:3;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 등장인물: 서연 (민우 오른쪽에 나란히 배치, s=0.9) -->
+        <div class="char-wrapper inactive" id="char-서연" style="position:absolute; left:280px; bottom:55px; width:234px; height:288px; overflow:visible; z-index:3;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 대화 UI 인터페이스 영역 -->
+        <div id="dialogue-box" onclick="advanceDialogue()">
+            <div id="speaker-name"></div>
+            <div id="dialogue-text"></div>
+        </div>
+
+        <!-- 네비게이션 트리거 시스템 -->
+        <button id="btn-skip" class="btn-nav" onclick="endDialogue()">건너뛰기 ➔</button>
+        <button id="btn-prev" class="btn-nav" onclick="window.location.href='F01.html'">⬅ 이전</button>
+        <button id="btn-next" class="btn-nav" onclick="window.location.href='F03.html'">다음 ➔</button>
+    </div>
+
+    <script>
+        // 비주얼 노벨 타입 대화 스크립트 데이터셋
+        const dialogues = [
+            { speaker: "민우", text: "우와, 서연아 저기 좀 봐! 저 건물 진짜 신기하게 생겼다. 마치 우주선이 물 위에 떠 있는 것 같기도 하고, 거대한 팽이 세 개가 붙어 있는 것 같기도 해!", target: "char-민우" },
+            { speaker: "서연", text: "그치? 저게 바로 송도 센트럴파크의 명물, '트라이보울(Tri-bowl)'이야. '트라이(Tri)'는 셋을 뜻하고, '보울(bowl)'은 그릇을 뜻해. 하늘, 바다, 땅이 어우러진 인천을 상징하는 세 개의 그릇 모양을 본떠 만든 복합문화공간이지.", target: "char-서연" },
+            { speaker: "민우", text: "이름이랑 모양이 찰떡이네! 근데 계속 보고 있으니까 우리가 1학년 2학기 때 배웠던 '입체도형' 단원이 떠오르지 않아? 원기둥이나 원뿔 같은 거 말이야.", target: "char-민우" },
+            { speaker: "서연", text: "오, 눈썰미 좋은데? 맞아. 트라이보울은 일반적인 건축물과 다르게 아래가 좁고 위로 갈수록 넓어지는 '역셸(Reverse Shell)' 구조로 되어 있어. 원뿔나 원뿔대를 거꾸로 뒤집어 놓은 것과 비슷한데, 옆면이 직선이 아니라 아름다운 3D 곡면으로 이루어져 있지. 그리고 놀라운 건 겉모습뿐만이 아니야. 저 내부의 공연장은 '타원' 모양으로 만들어져 있대.", target: "char-서연" },
+            { speaker: "민우", text: "타원? 찌그러진 동그라미 모양 말하는 거지? 그게 왜 놀라운 건데?", target: "char-민우" },
+            { speaker: "서연", text: "타원에는 '초점'이라고 부르는 두 개의 특별한 점이 있어. 타원 모양의 벽으로 둘러싸인 공간에서는 한 초점에서 소리를 내면, 그 소리가 벽에 반사된 후 건너편에 있는 다른 초점 위치로 정확하게 모이게 돼.", target: "char-서연" },
+            { speaker: "민우", text: "대박... 난 수학은 그냥 교과서에 있는 공식이나 문제 푸는 건 줄 알았는데, 이렇게 멋진 건축물을 세우고 소리를 설계하는 데 다 쓰이고 있었다니! 트라이보울이 갑자기 거대한 수학책으로 보여.", target: "char-민우" },
+            { speaker: "서연", text: "그럼 트라이보울의 진짜 구조를 파악했으니, 우리의 다음 수학 미션을 수행해 볼까? 이 트라이보울 그릇 하나를 거대한 '회전체'라고 상상해 보는 거야. 우리가 직각삼각형을 돌리면 원뿔이 되고, 직사각형을 돌리면 원기둥이 된다고 배웠잖아? 그럼 이 트라이보울 모양을 만들려면 도대체 어떤 평면도형을 회전축을 중심으로 돌려야 할까?", target: "char-서연" },
+            { speaker: "민우", text: "음... 옆면이 밖으로 볼록한 곡선이니까... 평범한 다각형은 절대 아닐 것 같은데? 머릿속으로만 생각하려니까 쉽지 않네. 직접 그려봐야 알겠어!", target: "char-민우" },
+            { speaker: "서연", text: "좋아! 그리고 미션 하나 더! 이 회전체를 가로로, 즉 '회전축에 수직인 평면'으로 자를 때 나오는 단면과 세로로, 즉 '회전축을 포함하는 평면'으로 자를 때 나오는 단면이 각각 어떤 모양일지도 직접 스케치해 보는 거야. 아까 밑동은 3개고 위로 갈수록 하나로 둥글게 합쳐진다고 했으니까, 가로로 자르는 위치에 따라 단면 모양이 완전히 다르게 나오겠지?", target: "char-서연" },
+            { speaker: "민우", text: "와, 완전 흥미진진하겠다! 당장 스케치북 꺼내서 트라이보울을 회전시키기 전의 원래 평면도형의 모습이랑, 요리조리 잘랐을 때 나오는 숨겨진 단면의 모양을 추리해 보자!", target: "char-민우" }
+        ];
+
+        let currentIndex = 0;
+        const charIds = ['char-민우', 'char-서연'];
+
+        function initDialogue() {
+            updateDialogue();
+        }
+
+        function advanceDialogue() {
+            currentIndex++;
+            if (currentIndex < dialogues.length) {
+                updateDialogue();
+            } else {
+                endDialogue();
+            }
+        }
+
+        function updateDialogue() {
+            const current = dialogues[currentIndex];
+            
+            document.getElementById('speaker-name').textContent = current.speaker;
+            document.getElementById('dialogue-text').textContent = current.text;
+
+            // 포커스 인터랙션: 활성화 캐릭터 외 .inactive 딤 처리
+            charIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (id === current.target) {
+                    el.classList.remove('inactive');
+                } else {
+                    el.classList.add('inactive');
+                }
+            });
+        }
+
+        function endDialogue() {
+            document.getElementById('dialogue-box').style.display = 'none';
+            document.getElementById('btn-skip').style.display = 'none';
+            
+            charIds.forEach(id => {
+                document.getElementById(id).classList.remove('inactive');
+            });
+
+            // 네비게이션 요소 표시 활성화
+            document.getElementById('btn-prev').style.display = 'block';
+            document.getElementById('btn-next').style.display = 'block';
+        }
+
+        window.onload = initDialogue;
+    </script>
+</body>
+</html>

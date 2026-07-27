@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>송도센트럴파크 MATHTOUR</title>
+    <style>
+        /* [공통 폰트 규칙] */
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* 초기화 및 전체 화면 설정 */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #222; /* 게임 밖 배경(어둡게) */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* [화면 비율 규칙] */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f2f7f2; /* 소프트 모스 베이지 (배경 이미지가 없을 때의 기본 배경색) */
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* [배경 이미지 규칙] */
+        .bg-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* [스테이지 상단 표시바] */
+        #stage-bar {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            background-color: #6d4c41; /* 우드 브라운 */
+            color: #fdfbf7;
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.4rem;
+            padding: 12px 24px;
+            border: 3px solid #f4a261; /* 햇살 옐로우(나무결 포인트 느낌) */
+            border-radius: 12px;
+            box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        /* [상황 설명 박스 (유형1)] */
+        .situation-box {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 75%;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 4px solid #8aa171; /* 연한 세이지 그린 */
+            border-radius: 20px;
+            padding: 30px 40px;
+            box-shadow: 0 8px 16px rgba(45, 90, 39, 0.15);
+            z-index: 15;
+            
+            color: #3e4a3d; /* 짙은 올리브 그레이 */
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.3rem;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            text-align: center;
+            word-break: keep-all;
+        }
+
+        /* [공통 이동 버튼] */
+        .btn-nav {
+            position: absolute;
+            padding: 14px 32px;
+            background-color: #2d5a27; /* 딥 포레스트 그린 */
+            color: #ffffff;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(45, 90, 39, 0.3);
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            z-index: 20;
+        }
+
+        .btn-nav:hover {
+            background-color: #6d4c41; /* 우드 브라운 */
+        }
+
+        .btn-nav:active {
+            transform: scale(0.95);
+        }
+
+        #btn-next {
+            right: 25px;
+            bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 배경 이미지 -->
+        <img class="bg-image" src="트라이보울.PNG" alt="트라이볼 배경">
+
+        <!-- 스테이지 상단 표시바 -->
+        <div id="stage-bar">송도센트럴파크 MATHTOUR</div>
+
+        <!-- 상황 설명 박스 -->
+        <div class="situation-box">
+            지금까지 송도센트럴파크에서 국립세계문자박물관, 송도한옥마을, 수상택시, 인천도시역사관을 살펴봤고, 마지막으로 송도 트라이보울 건물을 보러왔어. 저 신기한 건물로 빨리 가보자!
+        </div>
+
+        <!-- 등장인물: 민우 (좌측 배치, 스케일 1) -->
+        <div class="char-wrapper" id="민우" style="position:absolute; left:120px; bottom:40px; width:260px; height:320px; overflow:visible; z-index:3;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 등장인물: 서연 (우측 배치, 마주보게 하기 위해 반전(scaleX(-1)), 스케일 1) -->
+        <div class="char-wrapper" id="서연" style="position:absolute; right:120px; bottom:40px; width:260px; height:320px; overflow:visible; z-index:3;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 다음 버튼 -->
+        <button id="btn-next" class="btn-nav" onclick="window.location.href='F02.html'">다음</button>
+    </div>
+
+</body>
+</html>

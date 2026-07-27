@@ -41,70 +41,59 @@
     .name-font { font-family: 'Nanum Gothic Coding', monospace; }
     .body-font { font-family: 'Noto Sans KR', sans-serif; line-height: 1.6; letter-spacing: -0.02em; }
 
-    /* 화면 우측 상단 타이머 표시바 */
-    #timer-bar {
+    /* 스테이지 상단 표시바 (퀘스트) */
+    #quest-bar {
       position: absolute;
       top: 20px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.75);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
       border: 1px solid var(--secondary-gold);
-      color: #ff4444;
-      padding: 8px 18px;
+      color: var(--secondary-gold);
+      padding: 10px 24px;
       z-index: 10;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: bold;
       border-radius: 4px;
       text-align: center;
       white-space: nowrap;
-      box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
     }
 
-    /* 대화창 UI (유형 2 기준 스타일 적용) */
-    #dialogue-box {
+    /* 상황 설명 박스 (유형 1 - 양피지 느낌) */
+    .situation-box {
       position: absolute;
-      bottom: 20px;
-      left: 20px;
-      right: 20px;
-      height: 130px;
-      background: rgba(0, 0, 0, 0.8);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: var(--bg-beige);
       border: 2px solid var(--secondary-gold);
-      border-radius: 6px;
-      padding: 18px 24px;
-      z-index: 25;
-      box-sizing: border-box;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      color: var(--text-dark);
+      padding: 30px 40px;
+      width: 75%;
+      max-width: 700px;
+      box-shadow: 5px 5px 20px rgba(0,0,0,0.6);
+      z-index: 15;
+      border-radius: 4px;
+      display: none; /* 스크립트로 제어 */
     }
-
-    #speaker-name {
-      color: var(--secondary-gold);
-      font-size: 1.1rem;
+    .situation-box::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, transparent 30%, rgba(140, 48, 48, 0.05) 100%);
+      pointer-events: none;
+    }
+    .situation-text-title {
+      color: var(--primary-red);
+      font-size: 1.3rem;
       font-weight: bold;
-      margin-bottom: 6px;
+      margin-bottom: 15px;
+      border-bottom: 1px dashed var(--secondary-gold);
+      padding-bottom: 5px;
     }
-
-    #dialogue-text {
-      color: var(--text-light);
-      font-size: 1.05rem;
-      margin: 0;
-      flex-grow: 1;
-    }
-
-    .dialogue-guide {
-      text-align: right;
-      color: #b0b0b0;
-      font-size: 0.85rem;
-      margin-top: 4px;
-    }
-
-    /* 캐릭터 밝기 제어 (.inactive 클래스) */
-    .char-wrapper {
-      transition: filter 0.2s ease;
-    }
-    .char-wrapper.inactive {
-      filter: brightness(0.55);
+    .situation-text-body {
+      font-size: 1.1rem;
+      margin-bottom: 0;
     }
 
     /* 공통 버튼 */
@@ -118,7 +107,7 @@
       font-size: 1rem;
       font-weight: bold;
       cursor: pointer;
-      z-index: 30;
+      z-index: 20;
       transition: background-color 0.2s, transform 0.1s;
       font-family: 'Noto Sans KR', sans-serif;
     }
@@ -128,146 +117,154 @@
     .btn-nav:active {
       transform: scale(0.95);
     }
-    #btn-prev {
-      left: 20px;
-      bottom: 20px;
-    }
     #btn-next {
       right: 20px;
       bottom: 20px;
     }
-    #btn-skip {
-      right: 20px;
-      bottom: 20px;
+
+    /* =========================================
+       연출 효과 CSS (글리치, 경고, 조준선 등) 
+       ========================================= */
+    
+    /* 글리치 애니메이션 */
+    .glitch-anim {
+      animation: glitch 0.15s linear 6;
+    }
+    @keyframes glitch {
+      0% { transform: translate(0); filter: hue-rotate(0deg); }
+      20% { transform: translate(-10px, 5px); filter: hue-rotate(90deg); }
+      40% { transform: translate(-10px, -5px); filter: hue-rotate(0deg); }
+      60% { transform: translate(10px, 5px); filter: hue-rotate(180deg); }
+      80% { transform: translate(10px, -5px); filter: hue-rotate(0deg); }
+      100% { transform: translate(0); filter: hue-rotate(0deg); }
+    }
+
+    /* 화면 어두워짐(그림자 드리워짐) */
+    #dark-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0);
+      pointer-events: none;
+      z-index: 5;
+      transition: background 2s ease-out;
+    }
+
+    /* 붉은색 경고 점멸 */
+    #warning-sign {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ff3333;
+      font-size: 2.5rem;
+      font-weight: bold;
+      text-shadow: 0 0 15px #ff0000;
+      z-index: 12;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .blink-anim {
+      animation: blink 1s infinite alternate;
+    }
+    @keyframes blink {
+      from { opacity: 1; }
+      to { opacity: 0.2; }
+    }
+
+    /* 붉은 조준선 (비행선 레이저) */
+    #laser-sight {
+      position: absolute;
+      top: -100px;
+      left: 60%;
+      width: 3px;
+      height: 150%;
+      background: rgba(255, 0, 0, 0.8);
+      box-shadow: 0 0 15px rgba(255, 0, 0, 1);
+      transform: rotate(25deg);
+      transform-origin: top center;
+      z-index: 8;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.5s ease-in;
     }
 
   </style>
 </head>
 <body>
 
-  <div id="game-container">
+  <div id="game-container" class="glitch-anim">
     
     <!-- 배경 이미지 (대불호텔) -->
-    <img src="대불호텔침략.png" alt="대불호텔" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;">
+    <img src="대불호텔.png" alt="대불호텔" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;">
 
-    <!-- 화면 우측 상단 포격 타이머 -->
-    <div id="timer-bar" class="name-font">
-      포격까지 남은 시간: <span id="time-display">03:00</span>
+    <!-- 전환 연출을 위한 오버레이 -->
+    <div id="dark-overlay"></div>
+    <div id="laser-sight"></div>
+    
+    <!-- 상단 퀘스트 창 -->
+    <div id="quest-bar" class="title-font">
+      목표: 대불호텔을 보호하라!
+    </div>
+
+    <!-- 붉은색 경고 -->
+    <div id="warning-sign" class="title-font blink-anim">
+      [ 경 고 ]
     </div>
 
     <!-- 캐릭터 배치: 민우 (좌측 끝 0px) -->
-    <div class="char-wrapper inactive" id="char-민우" style="position:absolute; left:0px; bottom:0px; width:260px; height:320px; overflow:visible; z-index:3;">
+    <div class="char-wrapper" id="char-민우" style="position:absolute; left:0px; bottom:0px; width:260px; height:320px; overflow:visible; z-index:3;">
       <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
     </div>
 
-    <!-- 캐릭터 배치: 서연 (우측 끝 0px, 마주보도록 좌우 반전, 중심점 조절) -->
-    <div class="char-wrapper inactive" id="char-서연" style="position:absolute; right:0px; bottom:0px; width:260px; height:320px; overflow:visible; z-index:3;">
+    <!-- 캐릭터 배치: 서연 (우측 끝 0px, 마주보도록 좌우 반전 시 중심점을 center로 변경하여 밀림 방지) -->
+    <div class="char-wrapper" id="char-서연" style="position:absolute; right:0px; bottom:0px; width:260px; height:320px; overflow:visible; z-index:3;">
       <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:center bottom; pointer-events:none;"></iframe>
     </div>
 
-    <!-- 대화창 UI (클릭 시 다음 대화로 진행) -->
-    <div id="dialogue-box" onclick="advanceDialogue()" class="body-font">
-      <div>
-        <div id="speaker-name" class="name-font">화자</div>
-        <p id="dialogue-text">대화 내용이 출력되는 공간입니다.</p>
+    <!-- 상황 설명 박스 (유형 1) -->
+    <div id="situation-box" class="situation-box">
+      <div class="situation-text-title title-font">시스템 내레이션</div>
+      <div class="situation-text-body body-font">
+        "서기 1888년, 인천 개항장. 시간의 틈새를 넘어온 당신의 눈앞에 우리나라 최초의 서양식 숙박시설 '대불호텔'이 우뚝 서 있습니다. 하지만 웅장함을 감상할 틈도 없이, 역사를 파괴하려는 시간 침략자들의 비행선이 나타났습니다!"
       </div>
-      <div class="dialogue-guide">[클릭하여 계속]</div>
     </div>
 
-    <!-- 하단 이동 버튼 (대화 완료 후 또는 스킵 시 표시) -->
-    <button id="btn-prev" class="btn-nav" style="display: none;" onclick="window.location.href='index.html'">이전</button>
-    <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
-    <button id="btn-next" class="btn-nav" style="display: none;" onclick="window.location.href='C02.html'">다음</button>
+    <!-- 네비게이션 버튼 (이전 버튼은 첫 화면이므로 생략) -->
+    <button id="btn-next" class="btn-nav" onclick="window.location.href='C02.html'">다음</button>
 
   </div>
 
   <script>
-    // 대화 스크립트 데이터 관리
-    const dialogues = [
-      {
-        speaker: "민우",
-        text: "(다급하게 서연의 팔을 당기며) \"위험해! 일단 이리로 숨어!\"",
-        target: "char-민우"
-      },
-      {
-        speaker: "서연",
-        text: "\"누, 누구세요?! 저 비행선은 대체 뭐고요!\"",
-        target: "char-서연"
-      },
-      {
-        speaker: "민우",
-        text: "\"나는 이 시대의 역사를 지키는 방어군 요원 민우라고 해. 설명할 시간이 없어! 저 침략자들은 조선 근대화의 상징인 대불호텔을 파괴해 역사를 뒤바꾸려 하고 있어.\"",
-        target: "char-민우"
-      },
-      {
-        speaker: "민우",
-        text: "\"저 건물을 덮을 전자기 방어막이 있지만, 방어막의 높이 좌표를 옥상에 정확히 맞추지 않으면 포격을 막을 수 없어. 서연, 네가 가진 이 디지털 클리노미터로 저 건물의 정확한 높이를 측정해 줘!\"",
-        target: "char-민우"
-      }
-    ];
-
-    let currentIndex = 0;
-
-    // 대화창 업데이트 및 캐릭터 명함 밝기 제어 함수
-    function updateDialogue() {
-      if (currentIndex < dialogues.length) {
-        const current = dialogues[currentIndex];
-        document.getElementById('speaker-name').innerText = current.speaker;
-        document.getElementById('dialogue-text').innerText = current.text;
-
-        // 모든 캐릭터 비활성화 후 현재 화자만 활성화
-        document.querySelectorAll('.char-wrapper').forEach(el => el.classList.add('inactive'));
-        const activeWrapper = document.getElementById(current.target);
-        if (activeWrapper) {
-          activeWrapper.classList.remove('inactive');
-        }
-      } else {
-        endDialogue();
-      }
-    }
-
-    // 대화창 클릭 시 다음 대사로 진행
-    function advanceDialogue() {
-      currentIndex++;
-      updateDialogue();
-    }
-
-    // 대화 건너뛰기 기능
-    function skipDialogue() {
-      endDialogue();
-    }
-
-    // 대화 종료 후 UI 전환 처리
-    function endDialogue() {
-      document.getElementById('dialogue-box').style.display = 'none';
-      document.getElementById('btn-skip').style.display = 'none';
-      
-      // 모든 캐릭터 원래 밝기로 복구
-      document.querySelectorAll('.char-wrapper').forEach(el => el.classList.remove('inactive'));
-
-      // 이전 및 다음 버튼 표시
-      document.getElementById('btn-prev').style.display = 'block';
-      document.getElementById('btn-next').style.display = 'block';
-    }
-
-    // 타이머 구현 (03:00부터 1초씩 감소)
-    let totalSeconds = 180;
-    const timeDisplay = document.getElementById('time-display');
-
-    const timerInterval = setInterval(() => {
-      if (totalSeconds > 0) {
-        totalSeconds--;
-        let minutes = Math.floor(totalSeconds / 60);
-        let seconds = totalSeconds % 60;
-        timeDisplay.innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-      } else {
-        clearInterval(timerInterval);
-      }
-    }, 1000);
-
-    // 페이지 로드 시 최초 대화 세팅 실행
     window.onload = function() {
-      updateDialogue();
+      const container = document.getElementById('game-container');
+      const darkOverlay = document.getElementById('dark-overlay');
+      const warningSign = document.getElementById('warning-sign');
+      const laserSight = document.getElementById('laser-sight');
+      const situationBox = document.getElementById('situation-box');
+      
+      // 1. 글리치 효과(0.15초 * 6 = 0.9초) 종료 후 연출 시작
+      setTimeout(() => {
+        container.classList.remove('glitch-anim'); // 글리치 클래스 제거
+        
+        // 하늘에 거대한 그림자가 드리워짐 (화면 어두워짐)
+        darkOverlay.style.background = 'rgba(0, 0, 0, 0.65)';
+        
+        // 붉은 조준선 등장
+        laserSight.style.opacity = '1';
+
+        // 상단 [경고] 표시 점멸 시작
+        warningSign.style.opacity = '1';
+
+        // 2. 약간의 텀을 두고 상황 설명 박스 페이드 인
+        setTimeout(() => {
+          situationBox.style.display = 'block';
+          situationBox.animate([
+            { opacity: 0, transform: 'translate(-50%, -40%)' },
+            { opacity: 1, transform: 'translate(-50%, -50%)' }
+          ], { duration: 600, fill: 'forwards', easing: 'ease-out' });
+        }, 800);
+
+      }, 1000); // 페이지 로드 후 1초 뒤 진행
     };
   </script>
 </body>

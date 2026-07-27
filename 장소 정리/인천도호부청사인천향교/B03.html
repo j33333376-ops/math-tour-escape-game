@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천도호부청사·인천향교 MATHTOUR - A03</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background-color: #f5f0e6;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .bg-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 공통 버튼 스타일 */
+        .btn-nav {
+            position: absolute;
+            background-color: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 50;
+            transition: background-color 0.2s;
+        }
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+        #btn-prev { left: 20px; bottom: 20px; }
+        #btn-next { right: 20px; bottom: 20px; }
+
+        /* 퀴즈 컨테이너 스타일 */
+        .quiz-container {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+        
+        .quiz-container h1 {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 2.2rem;
+            color: #8c3030;
+            text-shadow: 2px 2px 0px #f5f0e6, -2px -2px 0px #f5f0e6, 2px -2px 0px #f5f0e6, -2px 2px 0px #f5f0e6;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            z-index: 11;
+        }
+
+        /* 기존 퀴즈 디자인을 템플릿에 맞게 병합 및 세피아톤(근대 개항기) 분위기 가미 */
+        .room {
+            position: relative;
+            width: 800px;
+            height: 460px;
+            background: linear-gradient(180deg, rgba(26,26,26,0.95) 0%, rgba(13,13,13,0.95) 100%);
+            border: 4px solid #d4af37;
+            box-shadow: inset 0 0 50px #000, 0 0 20px rgba(0,0,0,0.7);
+            border-radius: 8px;
+            overflow: hidden;
+            color: #d3d3d3;
+        }
+
+        .clue-panel {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid #d4af37;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            min-width: 200px;
+            min-height: 100px;
+            color: #f5f0e6;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .clue-item { margin-bottom: 10px; display: none; }
+        
+        .matrix {
+            display: inline-grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            background: #2d3748;
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-align: center;
+            vertical-align: middle;
+            border-left: 2px solid #d4af37;
+            border-right: 2px solid #d4af37;
+            margin-left: 10px;
+        }
+
+        .interactive {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.2s, filter 0.2s;
+            user-select: none;
+        }
+        .interactive:hover {
+            transform: scale(1.15);
+            filter: brightness(1.3);
+        }
+
+        .wall {
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 100%;
+            background: repeating-linear-gradient(45deg, #222, #222 10px, #1a1a1a 10px, #1a1a1a 20px);
+            opacity: 0.5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            transition: opacity 0.3s;
+        }
+        .wall:hover { opacity: 0.8; }
+        .wall-blood {
+            display: none;
+            color: #8c3030;
+            font-family: 'Nanum Myeongjo', serif;
+            font-weight: bold;
+            font-size: 1.3rem;
+            text-align: center;
+            background: rgba(0,0,0,0.85);
+            padding: 15px;
+            border: 1px solid #8c3030;
+            border-radius: 4px;
+        }
+
+        .straw-container {
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 15px;
+            position: absolute;
+        }
+        .straw { 
+            font-size: 1.2rem;
+            background: repeating-linear-gradient(90deg, #d4af37, #d4af37 5px, #c59b27 5px, #c59b27 10px);
+            color: #3e2723;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #8d6e63;
+            font-weight: bold;
+            font-family: 'Noto Sans KR', sans-serif;
+            position: relative;
+        }
+        .old-man { bottom: 30px; right: 250px; font-size: 4rem; }
+
+        .door {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: absolute;
+        }
+        .lock { font-size: 3rem; margin-top: -40px; z-index: 10; }
+        
+        .unlock-anim { animation: unlock 0.5s ease-in-out forwards; }
+        @keyframes unlock {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.3) rotate(10deg); }
+            100% { transform: scale(1.1) rotate(0deg); }
+        }
+
+        /* 자물쇠 모달 */
+        .modal-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .modal {
+            background: #f5f0e6;
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #d4af37;
+            text-align: center;
+            color: #2d3748;
+            box-shadow: 0 0 15px rgba(0,0,0,0.8);
+        }
+        
+        .modal h2 { margin-bottom: 20px; font-family: 'Nanum Myeongjo', serif; color: #8c3030; }
+        
+        .matrix-input {
+            display: inline-grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            border-left: 3px solid #d4af37;
+            border-right: 3px solid #d4af37;
+            background: #e9e3d6;
+            border-radius: 4px;
+        }
+        
+        .matrix-input input {
+            width: 60px;
+            height: 40px;
+            font-size: 1.5rem;
+            text-align: center;
+            background: #ffffff;
+            color: #2d3748;
+            border: 1px solid #8c3030;
+            border-radius: 4px;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-weight: bold;
+        }
+        
+        .btn {
+            background: #8c3030;
+            color: #fff;
+            border: 1px solid #d4af37;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s;
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0 5px;
+        }
+        .btn:hover { background: #661f1f; }
+        .btn-cancel { background: #2d3748; border-color: #2d3748; }
+        .btn-cancel:hover { background: #1a202c; }
+
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- 배경 이미지 -->
+    <img src="옥사내부.PNG" class="bg-image" alt="배경">
+
+    <!-- 퀴즈 컨테이너 -->
+    <div class="quiz-container">
+        <h1>옥문 암호 해독하기</h1>
+
+        <div class="room">
+            <!-- 단서 패널 -->
+            <div class="clue-panel">
+                <div id="clue-a" class="clue-item">
+                    단서 1: 행렬 A = 
+                    <div class="matrix">
+                        <span>2</span><span>3</span>
+                        <span>4</span><span>5</span>
+                    </div>
+                </div>
+                <div id="clue-b" class="clue-item">
+                    단서 2: 행렬 B = 
+                    <div class="matrix">
+                        <span>0</span><span>-1</span>
+                        <span>3</span><span>6</span>
+                    </div>
+                </div>
+                <div id="clue-hint" class="clue-item">
+                    노인의 힌트: "2A + B"
+                </div>
+            </div>
+
+            <!-- 벽면 -->
+            <div class="interactive wall" id="wall">
+                🧱
+                <div class="wall-blood" id="wall-blood">벽에 적힌<br>행렬 B<br>[[0, -1], [3, 6]]</div>
+            </div>
+
+            <!-- 볏짚 4개 -->
+            <div class="straw-container">
+                <div class="interactive straw" onclick="checkStraw(1)">볏짚</div>
+                <div class="interactive straw" onclick="checkStraw(2)">볏짚</div>
+                <div class="interactive straw" onclick="checkStraw(3)">볏짚</div>
+                <div class="interactive straw" onclick="checkStraw(4)">볏짚</div>
+            </div>
+
+            <!-- 노인 -->
+            <div class="interactive old-man" onclick="checkMan()">👴📜</div>
+
+            <!-- 문과 자물쇠 -->
+            <div class="door">
+                🚪
+                <div class="interactive lock" id="lock" onclick="openModal()">🔒</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 자물쇠 모달 (게임 컨테이너 내부에 오버레이) -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h2>자물쇠에 답을 입력하시오</h2>
+            <div class="matrix-input">
+                <input type="number" id="ans-11" placeholder="a11">
+                <input type="number" id="ans-12" placeholder="a12">
+                <input type="number" id="ans-21" placeholder="a21">
+                <input type="number" id="ans-22" placeholder="a22">
+            </div>
+            <br>
+            <button class="btn" onclick="verifyAnswer()">열기</button>
+            <button class="btn btn-cancel" onclick="closeModal()">취소</button>
+        </div>
+    </div>
+
+    <!-- 네비게이션 버튼 -->
+    <button id="btn-prev" class="btn-nav" onclick="window.location.href='B02.html'">이전</button>
+    <button id="btn-next" class="btn-nav" style="display:none;" onclick="window.location.href='B04.html'">다음</button>
+</div>
+
+<script>
+    function checkStraw(num) {
+        if (num === 3) {
+            alert("숨겨진 단서 발견! 행렬 A = [[2, 3], [4, 5]]");
+            document.getElementById('clue-a').style.display = 'block';
+        } else {
+            const messages = ["먼지만 날립니다.", "찍찍! 생쥐가 도망갑니다.", "썩은 냄새만 진동합니다."];
+            alert(messages[Math.floor(Math.random() * messages.length)]);
+        }
+    }
+
+    const wall = document.getElementById('wall');
+    const wallBlood = document.getElementById('wall-blood');
+    
+    // 벽을 클릭했을 때만 행렬 B가 나타나도록 수정
+    wall.addEventListener('click', () => {
+        wallBlood.style.display = 'block';
+        alert("벽에 적힌 단서 발견! 행렬 B = [[0, -1], [3, 6]]");
+        document.getElementById('clue-b').style.display = 'block';
+    });
+
+    function checkMan() {
+        alert("비밀은 이것이네... '숫자 2와 행렬 A를 곱하고, 행렬 B를 더해라.' (즉, 2A + B)");
+        document.getElementById('clue-hint').style.display = 'block';
+    }
+
+    const modal = document.getElementById('modal');
+    function openModal() {
+        modal.style.display = 'flex';
+    }
+    function closeModal() {
+        modal.style.display = 'none';
+        document.getElementById('ans-11').value = '';
+        document.getElementById('ans-12').value = '';
+        document.getElementById('ans-21').value = '';
+        document.getElementById('ans-22').value = '';
+    }
+
+    function verifyAnswer() {
+        const a11 = document.getElementById('ans-11').value;
+        const a12 = document.getElementById('ans-12').value;
+        const a21 = document.getElementById('ans-21').value;
+        const a22 = document.getElementById('ans-22').value;
+
+        // 2A + B = [[4, 6], [8, 10]] + [[0, -1], [3, 6]] = [[4, 5], [11, 16]]
+        if (a11 == 4 && a12 == 5 && a21 == 11 && a22 == 16) {
+            closeModal();
+            const lock = document.getElementById('lock');
+            lock.textContent = '🔓';
+            lock.classList.add('unlock-anim');
+            
+            setTimeout(() => {
+                alert("성공! 옥문이 열렸습니다!");
+                document.getElementById('btn-next').style.display = 'block';
+                lock.onclick = null;
+                lock.style.cursor = 'default';
+            }, 600);
+        } else {
+            alert("자물쇠가 꿈쩍도 하지 않습니다. 계산을 다시 해보세요.");
+        }
+    }
+</script>
+</body>
+</html>

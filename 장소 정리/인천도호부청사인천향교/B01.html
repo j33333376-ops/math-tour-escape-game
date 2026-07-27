@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천도호부청사·인천향교 MATHTOUR</title>
+    <style>
+        /* 폰트 불러오기 */
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* 기본 초기화 */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a; /* 게임 영역 밖 배경 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 16:9 화면 비율 및 공통 컨테이너 설정 */
+        #game-container {
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            position: relative;
+            overflow: hidden;
+            background-color: #f5f0e6; /* 따뜻한 연베이지 (양피지 느낌) */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+        }
+
+        /* 배경 이미지 셋팅 */
+        .bg-image {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 스테이지 상단 표시바 (근대 개항기 스타일) */
+        .top-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.6);
+            border: 2px solid #d4af37; /* 앤틱 골드 */
+            color: #d4af37;
+            padding: 10px 40px;
+            border-radius: 4px;
+            font-family: 'Nanum Myeongjo', serif; /* 역사적이고 진중한 느낌 */
+            font-size: 1.25rem;
+            font-weight: bold;
+            z-index: 10;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 인물 래퍼 */
+        .char-wrapper {
+            position: absolute;
+            overflow: visible;
+            z-index: 3;
+        }
+
+        /* 상황 설명 박스 (유형1: 양피지 느낌) */
+        .situation-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 55%;
+            background-color: rgba(245, 240, 230, 0.95);
+            border: 2px solid #d4af37; /* 앤틱 골드 */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            padding: 40px;
+            border-radius: 8px;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .situation-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.2rem;
+            color: #2d3748;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            word-break: keep-all;
+        }
+
+        /* 공통 이동 버튼 설정 */
+        .btn-nav {
+            position: absolute;
+            background-color: #8c3030; /* 다크 레드 */
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 20;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+
+        .btn-nav:active {
+            transform: scale(0.95);
+        }
+
+        /* 이전 버튼 (현재 화면에서는 숨김 처리) */
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+            display: none;
+        }
+
+        /* 다음 버튼 */
+        #btn-next {
+            right: 20px;
+            bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- 1. 배경 이미지 로드 -->
+    <img src="옥사.png" class="bg-image" alt="옥사 배경">
+
+    <!-- 2. 스테이지 타이틀바 -->
+    <div class="top-bar">제 1 장 : 옥사 내부로의 이동</div>
+
+    <!-- 3. 등장 인물 로드 (iframe 사용 및 크기 고정) -->
+    <!-- 민우 (좌측 끝으로 이동) -->
+    <div class="char-wrapper" id="char-민우" style="left: 10px; bottom: 5%; width: 260px; height: 320px;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border: 0; width: 260px; height: 320px; transform: scale(1); transform-origin: bottom left; pointer-events: none;"></iframe>
+    </div>
+    
+    <!-- 서연 (우측 끝으로 이동, 중앙을 바라보도록 좌우 반전 scaleX(-1) 적용) -->
+    <div class="char-wrapper" id="char-서연" style="right: 10px; bottom: 5%; width: 260px; height: 320px;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border: 0; width: 260px; height: 320px; transform: scaleX(-1); transform-origin: bottom center; pointer-events: none;"></iframe>
+    </div>
+
+    <!-- 4. 상황 연출 장면 (유형1 텍스트 박스) -->
+    <div class="situation-box">
+        <div class="situation-text">
+            민우와 서연은 인천 도호부 청사의 옥사 내부로 순간이동되었다.<br><br>
+            옥사에는 포졸 한 명이 자고 있고 여러 죄인들이 갇혀있는 상황이다.
+        </div>
+    </div>
+
+    <!-- 5. 네비게이션 버튼 (이전 버튼 숨김, 다음 버튼 활성화) -->
+    <button id="btn-prev" class="btn-nav">이전</button>
+    <button id="btn-next" class="btn-nav" onclick="window.location.href='B02.html'">다음</button>
+</div>
+
+</body>
+</html>

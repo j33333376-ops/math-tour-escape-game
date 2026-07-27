@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>송도센트럴파크 MATHTOUR - 엔딩 대화</title>
+    <style>
+        /* [공통 UI/UX 및 폰트 규칙 — 신비로운 숲속 스타일] */
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1e1e1e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 16:9 가로 고정 비율 컴포넌트 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f2f7f2; /* 소프트 모스 베이지 */
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+        }
+
+        /* 배경 이미지 규칙 */
+        .bg-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 스테이지 상단 표시바 (나무 팻말 느낌) */
+        #stage-bar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #6d4c41; /* 우드 브라운 */
+            border: 3px solid #5a3d33;
+            border-radius: 12px;
+            padding: 10px 20px;
+            color: #fdfbf7;
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+            z-index: 20;
+        }
+
+        /* 공통 이동 버튼 (알약형) */
+        .btn-nav {
+            position: absolute;
+            padding: 12px 28px;
+            background-color: #2d5a27; /* 딥 포레스트 그린 */
+            color: #ffffff;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(45, 90, 39, 0.2);
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            z-index: 50;
+            display: none; /* 대화 완료 전 숨김 */
+        }
+
+        .btn-nav:hover {
+            background-color: #6d4c41; /* 우드 브라운 */
+        }
+
+        .btn-nav:active {
+            transform: scale(0.95);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next, #btn-skip {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        #btn-skip {
+            display: block; /* 대화 진행 중 기본 노출 */
+        }
+
+        /* 대화창 (유형 2) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            background-color: rgba(45, 90, 39, 0.85); /* 반투명 짙은 녹색 */
+            border: 3px solid #6d4c41; /* 우드 브라운 테두리 */
+            border-radius: 15px;
+            padding: 20px 30px;
+            box-sizing: border-box;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            z-index: 40;
+            cursor: pointer;
+            color: #fdfbf7; /* 상아색 텍스트 */
+        }
+
+        #speaker-name {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #f4a261; /* 이름 강조 - 햇살 옐로우 */
+            margin-bottom: 8px;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            word-break: keep-all;
+        }
+
+        /* 캐릭터 래퍼 및 비활성(어둡게) 처리 */
+        .char-wrapper {
+            transition: filter 0.2s ease;
+        }
+
+        .inactive {
+            filter: brightness(0.55);
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- 배경 이미지 규칙: 트라이보울.PNG 깔기 -->
+        <img class="bg-image" src="트라이보울.PNG" alt="트라이볼 배경">
+
+        <!-- 스테이지 상단 표시바 -->
+        <div id="stage-bar">송도센트럴파크 MATHTOUR - 엔딩</div>
+
+        <!-- 등장인물: 민우 (세로 2/3 크기 s=1.25 적용, 왼쪽 영역에 겹치지 않게 배치) -->
+        <div class="char-wrapper inactive" id="char-민우" style="position:absolute; left:120px; bottom:0px; width:325px; height:400px; overflow:visible; z-index:3;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1.25); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 등장인물: 서연 (세로 2/3 크기 s=1.25 적용, 오른쪽 영역에 겹치지 않게 배치, 마주보게 반전 scaleX(-1)) -->
+        <div class="char-wrapper inactive" id="char-서연" style="position:absolute; right:120px; bottom:0px; width:325px; height:400px; overflow:visible; z-index:3;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1.25) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 대화창 UI (유형 2) -->
+        <div id="dialogue-box" onclick="advanceDialogue()">
+            <div id="speaker-name"></div>
+            <div id="dialogue-text"></div>
+        </div>
+
+        <!-- 네비게이션 버튼 -->
+        <button id="btn-skip" class="btn-nav" onclick="endDialogue()">건너뛰기 ➔</button>
+        <button id="btn-prev" class="btn-nav" onclick="window.location.href='F03.html'">⬅ 이전</button>
+        <!-- 마지막 페이지 처리: 다음 장면 URL이 없으므로 'End' 버튼 표시 (index.html 복귀) -->
+        <button id="btn-next" class="btn-nav" onclick="window.location.href='index.html'">End 🏁</button>
+    </div>
+
+    <script>
+        // 대화 진행 스크립트 데이터셋
+        const dialogues = [
+            { speaker: "민우", text: "후아, 트라이볼이 어떤 평면도형을 돌려서 만들어졌는지 추론해 보고, 가로·세로로 요리조리 잘라보면서 단면까지 그려보니까 진짜 입체도형 마스터가 된 기분이야!", target: "char-민우" },
+            { speaker: "서연", text: "그치? 처음엔 그냥 특이하게 생긴 그릇 모양 건물인 줄 알았는데, 직접 수학적으로 뜯어보니까 구조가 훨씬 더 정확하게 눈에 들어오지?", target: "char-서연" },
+            { speaker: "민우", text: "맞아. 솔직히 그동안 학교에서 입체도형이나 회전체 배울 때는 '이걸 도대체 어디다 쓰지?'라는 생각에 그냥 공식을 외우기만 바빴거든? 그런데 오늘 이렇게 송도 센트럴파크에 직접 와서 트라이보울을 보니까 생각이 완전히 달라졌어.", target: "char-민우" },
+            { speaker: "서연", text: "수학이 교과서 속에만 갇혀 있는 게 아니라, 우리 실생활 구석구석에 진짜 많이 쓰이고 있다는 걸 느꼈지?", target: "char-서연" },
+            { speaker: "민우", text: "응! 건물이 무너지지 않게 안전한 구조를 만들고, 공연장 안에서 소리가 잘 울려 퍼지게 음향을 설계하는 것 전부 다 수학적 원리가 없으면 절대 불가능한 거였어.", target: "char-민우" },
+            { speaker: "서연", text: "맞아. 수학은 단순히 숫자를 계산하는 도구가 아니라, 인간이 상상하는 멋진 아이디어를 현실의 거대한 건축물이나 예술 작품으로 만들어주는 가장 강력한 열쇠인 셈이지.", target: "char-서연" },
+            { speaker: "민우", text: "내 말이! 오늘 이후로 내게 수학은 그냥 지루한 과목이 아니라, 세상을 전혀 새로운 눈으로 보게 해주는 '마법의 안경' 같은 존재가 된 것 같아. 다음엔 또 어떤 수학을 만나러 갈지 벌써부터 기대되는데?", target: "char-민우" },
+            { speaker: "서연", text: "좋아, 그럼 다음 수학 탐방을 위해 센트럴파크 끝까지 힘내서 걸어볼까? 출발!", target: "char-서연" }
+        ];
+
+        let currentIndex = 0;
+        const charIds = ['char-민우', 'char-서연'];
+
+        function initDialogue() {
+            updateDialogue();
+        }
+
+        function advanceDialogue() {
+            currentIndex++;
+            if (currentIndex < dialogues.length) {
+                updateDialogue();
+            } else {
+                endDialogue();
+            }
+        }
+
+        function updateDialogue() {
+            const current = dialogues[currentIndex];
+            
+            document.getElementById('speaker-name').textContent = current.speaker;
+            document.getElementById('dialogue-text').textContent = current.text;
+
+            // 화자만 밝게, 나머지는 .inactive 처리
+            charIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (id === current.target) {
+                    el.classList.remove('inactive');
+                } else {
+                    el.classList.add('inactive');
+                }
+            });
+        }
+
+        function endDialogue() {
+            document.getElementById('dialogue-box').style.display = 'none';
+            document.getElementById('btn-skip').style.display = 'none';
+            
+            charIds.forEach(id => {
+                document.getElementById(id).classList.remove('inactive');
+            });
+
+            // 이전 및 End 버튼 표시
+            document.getElementById('btn-prev').style.display = 'block';
+            document.getElementById('btn-next').style.display = 'block';
+        }
+
+        window.onload = initDialogue;
+    </script>
+</body>
+</html>

@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>인천차이나타운 MATHTOUR - C03: 역사를 지켜내다</title>
+    <title>인천차이나타운 MATHTOUR - 3장: 방어막 가동을 위한 계산</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
 
         :root {
+            /* 근대 개항기 테마 색상 */
             --point-red: #8c3030;
             --point-gold: #d4af37;
             --bg-beige: #f5f0e6;
             --text-dark: #2d3748;
             --text-light: #ffffff;
-            --shield-blue: rgba(64, 169, 255, 0.45);
-            --shield-border: rgba(140, 215, 255, 0.85);
         }
 
         * {
@@ -26,7 +25,7 @@
 
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            background-color: #111111;
+            background-color: #111; /* 배경 바깥쪽 여백용 */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -35,7 +34,7 @@
             touch-action: none;
         }
 
-        /* 16:9 메인 컨테이너 */
+        /* 16:9 컨테이너 */
         #game-container {
             position: relative;
             width: 100vw;
@@ -43,7 +42,7 @@
             aspect-ratio: 16 / 9;
             background-color: var(--bg-beige);
             overflow: hidden;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.9);
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
 
         /* 배경 이미지 */
@@ -54,213 +53,9 @@
             height: 100%;
             object-fit: cover;
             z-index: 0;
-            transition: filter 1s ease;
         }
 
-        /* 스테이지 상단 표시바 */
-        #stage-header {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--point-gold);
-            border-radius: 4px;
-            padding: 6px 16px;
-            color: var(--point-gold);
-            font-family: 'Nanum Myeongjo', serif;
-            font-size: 1rem;
-            font-weight: bold;
-            z-index: 20;
-            letter-spacing: 0.05em;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-        }
-
-        /* 방어막 연출 (반구형 돔) */
-        #shield-dome {
-            position: absolute;
-            bottom: 15%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 75%;
-            height: 75%;
-            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-            background: radial-gradient(circle at 50% 30%, rgba(120, 200, 255, 0.35) 0%, rgba(30, 100, 200, 0.15) 70%, rgba(10, 50, 120, 0) 100%);
-            border: 3px solid var(--shield-border);
-            border-bottom: none;
-            box-shadow: 0 0 30px var(--shield-blue), inset 0 0 25px var(--shield-blue);
-            z-index: 1;
-            opacity: 0.9;
-            animation: shieldPulse 3s infinite ease-in-out;
-            pointer-events: none;
-        }
-
-        @keyframes shieldPulse {
-            0%, 100% { opacity: 0.8; box-shadow: 0 0 25px var(--shield-blue), inset 0 0 20px var(--shield-blue); }
-            50% { opacity: 1; box-shadow: 0 0 45px rgba(100, 200, 255, 0.8), inset 0 0 35px rgba(100, 200, 255, 0.6); }
-        }
-
-        /* 방어막 타격/무력화 이펙트 */
-        .spark {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #ffffff;
-            border-radius: 50%;
-            box-shadow: 0 0 15px #40a9ff, 0 0 30px #ffffff;
-            opacity: 0;
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        /* 시각 자료 (역사 자료 카드 팝업) */
-        .photo-card {
-            position: absolute;
-            top: 20%;
-            left: 50%;
-            transform: translateX(-50%) scale(0.9);
-            width: 340px;
-            background: var(--bg-beige);
-            border: 2px solid var(--point-gold);
-            border-radius: 6px;
-            padding: 14px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
-            z-index: 15;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.4s ease;
-            pointer-events: none;
-            text-align: center;
-        }
-
-        .photo-card.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) scale(1);
-        }
-
-        .photo-card .card-frame {
-            border: 1px dashed var(--point-red);
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.7);
-        }
-
-        .photo-card .card-title {
-            font-family: 'Nanum Myeongjo', serif;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--point-red);
-            margin-bottom: 8px;
-        }
-
-        .photo-card .card-desc {
-            font-family: 'Noto Sans KR', sans-serif;
-            font-size: 0.9rem;
-            color: var(--text-dark);
-            line-height: 1.5;
-        }
-
-        .photo-card .card-badge {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 4px 12px;
-            background: var(--point-red);
-            color: white;
-            font-family: 'Nanum Gothic Coding', monospace;
-            font-size: 0.8rem;
-            border-radius: 3px;
-        }
-
-        /* 등장 인물 래퍼 */
-        .char-wrapper {
-            position: absolute;
-            bottom: 0px;
-            width: 260px;
-            height: 320px;
-            overflow: visible;
-            z-index: 3;
-            transition: filter 0.25s ease, transform 0.3s ease;
-        }
-
-        #char-민우 {
-            left: 50px !important;
-            right: auto !important;
-        }
-
-        #char-서연 {
-            left: auto !important;
-            right: 10px !important; /* 오른쪽 끝으로 강력하게 고정 */
-        }
-
-        /* 서연 귀환 빛 이펙트 */
-        #light-aura {
-            position: absolute;
-            left: auto !important;
-            right: 10px !important;
-            bottom: 0px;
-            width: 260px;
-            height: 320px;
-            background: radial-gradient(circle, rgba(255, 245, 200, 0.95) 0%, rgba(212, 175, 55, 0.6) 50%, rgba(255, 255, 255, 0) 75%);
-            border-radius: 50%;
-            z-index: 4;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 1.5s ease;
-            mix-blend-mode: screen;
-        }
-
-        /* 대화창 UI */
-        #dialogue-box {
-            position: absolute;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 85%;
-            max-width: 800px;
-            min-height: 110px;
-            background: rgba(0, 0, 0, 0.75);
-            border: 2px solid var(--point-gold);
-            border-radius: 4px;
-            padding: 16px 24px;
-            z-index: 80;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-            box-sizing: border-box;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-
-        .speaker {
-            font-family: 'Nanum Gothic Coding', monospace;
-            font-weight: bold;
-            margin-bottom: 8px;
-            font-size: 1.2rem;
-            color: var(--point-gold);
-            letter-spacing: 0.02em;
-        }
-
-        .dialogue-text {
-            font-family: 'Noto Sans KR', sans-serif;
-            font-size: 1.05rem;
-            line-height: 1.6;
-            letter-spacing: -0.02em;
-            color: var(--text-light);
-            word-break: keep-all;
-        }
-
-        .dialogue-hint {
-            position: absolute;
-            bottom: 12px;
-            right: 20px;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.6);
-            animation: blink 1.5s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-
-        /* 이동/제어 버튼 공통 */
+        /* 공통 이동 버튼 */
         .btn-nav {
             position: absolute;
             background: var(--point-red);
@@ -273,103 +68,280 @@
             font-family: 'Noto Sans KR', sans-serif;
             cursor: pointer;
             z-index: 100;
-            transition: background-color 0.2s, transform 0.1s;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+            transition: background-color 0.2s;
+        }
+        .btn-nav:hover { background-color: #661f1f; }
+        
+        #btn-prev { left: 20px; bottom: 20px; }
+        #btn-next { right: 20px; bottom: 20px; display: none; }
+
+        /* --- 타겟 영역 (호텔 옥상 부근) --- */
+        #target {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            border: 2px dashed var(--point-gold);
+            border-radius: 50%;
+            cursor: crosshair;
+            z-index: 20;
+            animation: pulse 1.5s infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #target::after {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background-color: var(--point-red);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--point-red);
+        }
+        @keyframes pulse {
+            0% { transform: translateX(-50%) scale(1); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); }
+            70% { transform: translateX(-50%) scale(1.2); box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
+            100% { transform: translateX(-50%) scale(1); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
         }
 
-        .btn-nav:hover {
-            background-color: #661f1f;
+        /* --- 십자선 (조준경) --- */
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            height: 60px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 50;
+            transition: 0.05s ease-out; 
+        }
+        .crosshair-line {
+            position: absolute;
+            background: rgba(140, 48, 48, 0.8);
+            box-shadow: 0 0 5px var(--point-red);
+        }
+        .ch-h { top: 50%; left: 0; width: 100%; height: 2px; transform: translateY(-50%); }
+        .ch-v { top: 0; left: 50%; width: 2px; height: 100%; transform: translateX(-50%); }
+        .ch-circle {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 40px; height: 40px;
+            border: 2px solid rgba(212, 175, 55, 0.8);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
         }
 
-        .btn-nav:active {
-            transform: scale(0.95);
+        /* --- 텍스트 이펙트 --- */
+        #effect-text {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--point-gold);
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+            opacity: 0;
+            z-index: 100;
+            pointer-events: none;
+            transition: opacity 0.5s, transform 0.5s;
         }
 
-        #btn-prev {
-            left: 20px;
+        /* --- 기록 일지 (상황 설명/AR 패널 대체) --- */
+        #ar-panel {
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            width: 32%;
+            background: rgba(245, 240, 230, 0.95);
+            border: 2px solid var(--point-gold);
+            border-radius: 4px;
+            padding: 15px;
+            color: var(--text-dark);
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.5);
+            z-index: 40;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s;
+        }
+        #ar-panel h2 { 
+            font-family: 'Nanum Myeongjo', serif; 
+            font-size: 1.2rem; 
+            margin-bottom: 10px; 
+            border-bottom: 1px solid var(--point-red); 
+            padding-bottom: 5px;
+            color: var(--point-red);
+        }
+        #ar-panel ul { 
+            font-family: 'Nanum Gothic Coding', monospace;
+            list-style: none; 
+            font-size: 1rem; 
+            line-height: 1.6; 
+        }
+        #ar-panel strong { color: var(--point-red); font-weight: bold; }
+        .ar-note { font-size: 0.85rem; color: #555; }
+
+        /* --- 대화창 --- */
+        #dialogue-box {
+            position: absolute;
             bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 700px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--point-gold);
+            border-radius: 4px;
+            padding: 15px 20px;
+            z-index: 80;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s;
+            cursor: pointer;
         }
-
-        #btn-skip {
-            right: 20px;
-            bottom: 20px;
+        .speaker { 
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-weight: bold; 
+            margin-bottom: 5px; 
+            font-size: 1.1rem;
+            color: var(--point-gold);
         }
-
-        #btn-next {
-            right: 20px;
-            bottom: 20px;
-            display: none;
-            background: #2d3748;
-            border-color: var(--point-gold);
+        .dialogue-text { 
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1rem; 
+            line-height: 1.6; 
+            letter-spacing: -0.02em;
+            color: white;
         }
-
-        #btn-next:hover {
-            background-color: #1a202c;
+        .dialogue-hint {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 0.8rem;
+            color: #aaa;
+            animation: blink 1.5s infinite;
         }
+        @keyframes blink { 50% { opacity: 0; } }
 
-        /* 미션 클리어 연출 오버레이 (페이드아웃용) */
-        #clear-overlay {
+        /* --- 숫자 키패드 UI --- */
+        #input-ui {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -40%);
+            width: 300px;
+            background: rgba(245, 240, 230, 0.95);
+            border: 2px solid var(--point-gold);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            z-index: 60;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s, transform 0.5s;
+        }
+        #answer-display {
+            width: 100%;
+            height: 50px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 1.8rem;
+            color: var(--text-dark);
+            text-align: right;
+            padding: 0 15px;
+            line-height: 48px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .key-btn {
+            background: white;
+            border: 1px solid var(--point-gold);
+            border-radius: 4px;
+            color: var(--text-dark);
+            font-size: 1.5rem;
+            padding: 12px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-weight: bold;
+        }
+        .key-btn:active { background: var(--point-gold); color: white; }
+        .key-btn.action { background: #e0e0e0; border-color: var(--point-red); color: var(--point-red); }
+        .key-btn.action:active { background: var(--point-red); color: white; }
+        .key-submit {
+            grid-column: span 3;
+            background: var(--point-red);
+            border-color: var(--point-red);
+            color: white;
+        }
+        .key-submit:active { background: #661f1f; }
+
+        /* --- 오답 시 5초 팝업 힌트 오버레이 --- */
+        #hint-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 90;
+            padding: 20px;
+            text-align: center;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 1.5s ease, visibility 1.5s ease;
+            transition: opacity 0.3s;
         }
-
-        #clear-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .clear-badge {
-            border: 2px solid var(--point-gold);
-            padding: 30px 50px;
-            background: rgba(245, 240, 230, 0.95);
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 0 40px rgba(212, 175, 55, 0.6);
-            transform: scale(0.8);
-            transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        #clear-overlay.active .clear-badge {
-            transform: scale(1);
-        }
-
-        .clear-title {
+        #hint-overlay .sys-title {
             font-family: 'Nanum Myeongjo', serif;
-            font-size: 2.5rem;
-            font-weight: bold;
             color: var(--point-red);
-            margin-bottom: 12px;
-            letter-spacing: 0.15em;
-        }
-
-        .clear-subtitle {
-            font-family: 'Noto Sans KR', sans-serif;
-            font-size: 1.1rem;
-            color: var(--text-dark);
+            font-size: 1.5rem;
             margin-bottom: 20px;
+            font-weight: bold;
+        }
+        #hint-overlay .sys-desc {
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        #hint-overlay .sys-formula {
+            font-family: 'Nanum Gothic Coding', monospace;
+            background: var(--bg-beige);
+            border: 2px solid var(--point-gold);
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 1.8rem;
+            color: var(--point-red);
+            font-weight: bold;
         }
 
-        .clear-divider {
-            width: 100px;
-            height: 2px;
-            background: var(--point-gold);
-            margin: 0 auto 20px auto;
+        /* --- 화면 피드백 이펙트 --- */
+        #screen-flash {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
+        .flash-red { background: rgba(140, 48, 48, 0.4); }
+        .flash-gold { background: rgba(212, 175, 55, 0.4); }
 
-        .clear-desc {
-            font-family: 'Noto Sans KR', sans-serif;
-            font-size: 0.95rem;
-            color: #4a5568;
-            line-height: 1.6;
+        /* 캐릭터 래퍼 트랜지션 (어두워지는 효과) */
+        .char-wrapper {
+            transition: filter 0.2s;
         }
     </style>
 </head>
@@ -377,246 +349,341 @@
 
 <div id="game-container">
     <!-- 배경 이미지 -->
-    <img src="대불호텔승리.png" class="bg-img" id="bg-main" alt="대불호텔 배경">
+    <img src="대불호텔침략.png" class="bg-img" alt="대불호텔 배경">
 
-    <!-- 스테이지 상단 표시바 -->
-    <div id="stage-header">인천차이나타운 MATHTOUR</div>
+    <!-- 화면 이펙트 -->
+    <div id="screen-flash"></div>
 
-    <!-- 방어막 연출 -->
-    <div id="shield-dome"></div>
-    <div class="spark" style="top: 30%; left: 35%;"></div>
-    <div class="spark" style="top: 25%; left: 60%;"></div>
-    <div class="spark" style="top: 40%; left: 45%;"></div>
+    <!-- 등장 인물 -->
+    <!-- 민우: 왼쪽 배치 -->
+    <div class="char-wrapper" id="char-민우" style="position:absolute; left:20px; bottom:0px; width:260px; height:320px; overflow:visible; z-index:10;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+    <!-- 서연: 오른쪽 배치 (좌우반전되어 왼쪽을 바라봄). 원점이 bottom left이므로 scaleX(-1) 적용 시 width만큼 왼쪽으로 이동함. 이를 상쇄하기 위해 left 위치 보정 -->
+    <div class="char-wrapper" id="char-서연" style="position:absolute; left:calc(100% - 20px); bottom:0px; width:260px; height:320px; overflow:visible; z-index:10;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
 
-    <!-- 역사 자료 카드 팝업 1: 최초의 서양식 호텔 -->
-    <div class="photo-card" id="photo-1">
-        <div class="card-frame">
-            <div class="card-title">☕ 대불호텔</div>
-            <div class="card-desc">
-                1888년경 건립된 <strong>한국 최초의 서양식 호텔</strong>.<br>
-                서양 외교관과 선교사들이 머물며 서양식 식사와 커피 문화를 조선에 들여온 중요한 창구였습니다.
-            </div>
-            <div class="card-badge">근대 문화의 유입</div>
+    <!-- 타겟 영역 -->
+    <div id="target"></div>
+
+    <!-- 십자선 (조준경) -->
+    <div id="crosshair">
+        <div class="crosshair-line ch-h"></div>
+        <div class="crosshair-line ch-v"></div>
+        <div class="ch-circle"></div>
+    </div>
+
+    <!-- 성공 이펙트 텍스트 -->
+    <div id="effect-text">측정 완료!</div>
+
+    <!-- 기록 일지 패널 (AR 패널 대체) -->
+    <div id="ar-panel">
+        <h2>[ 현장 관측 기록 ]</h2>
+        <ul>
+            <li>▶ 관측 목표: 대불호텔 옥상</li>
+            <li>▶ 서연부터 건물까지 거리: <strong>10m</strong></li>
+            <li>▶ 올려본각(앙각): <strong>45°</strong> <span class="ar-note"></span></li>
+            <li>▶ 서연의 눈높이: <strong>1.5m</strong></li>
+        </ul>
+    </div>
+
+    <!-- 숫자 키패드 UI -->
+    <div id="input-ui">
+        <div id="answer-display"></div>
+        <div class="keypad">
+            <button class="key-btn" onclick="inputNum('7')">7</button>
+            <button class="key-btn" onclick="inputNum('8')">8</button>
+            <button class="key-btn" onclick="inputNum('9')">9</button>
+            <button class="key-btn" onclick="inputNum('4')">4</button>
+            <button class="key-btn" onclick="inputNum('5')">5</button>
+            <button class="key-btn" onclick="inputNum('6')">6</button>
+            <button class="key-btn" onclick="inputNum('1')">1</button>
+            <button class="key-btn" onclick="inputNum('2')">2</button>
+            <button class="key-btn" onclick="inputNum('3')">3</button>
+            <button class="key-btn" onclick="inputNum('.')">.</button>
+            <button class="key-btn" onclick="inputNum('0')">0</button>
+            <button class="key-btn action" onclick="deleteNum()">지우기</button>
+            <button class="key-btn key-submit" onclick="submitAnswer()">입력</button>
         </div>
     </div>
 
-    <!-- 역사 자료 카드 팝업 2: 중화루 시기 -->
-    <div class="photo-card" id="photo-2">
-        <div class="card-frame">
-            <div class="card-title">🪧 중화루(中華樓)</div>
-            <div class="card-desc">
-                1899년 경인선 개통 후 숙박객이 줄자,<br>
-                유명한 중국 요릿집 <strong>'중화루'</strong>로 변모하여 차이나타운의 역사를 이어갔습니다.
-            </div>
-            <div class="card-badge">현 대불호텔 전시관</div>
-        </div>
+    <!-- 오답 시 출력되는 5초 전체 화면 힌트 -->
+    <div id="hint-overlay">
+        <div class="sys-title">[ 계산 오류 ]</div>
+        <div class="sys-desc">다음 수식을 계산하여 대불호텔의 총 높이 H를 구하세요.</div>
+        <div class="sys-formula">H = 10 × tan(45°) + 1.5</div>
     </div>
 
-    <!-- 등장 인물: 민우 (좌측) -->
-    <div class="char-wrapper" id="char-민우">
-        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; pointer-events:none;"></iframe>
-    </div>
-
-    <!-- 등장 인물: 서연 (우측 끝 밀착, 좌우 반전) -->
-    <div class="char-wrapper" id="char-서연">
-        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scaleX(-1); transform-origin:center; pointer-events:none;"></iframe>
-    </div>
-
-    <!-- 서연 귀환 빛 효과 -->
-    <div id="light-aura"></div>
-
-    <!-- 대화창 UI -->
+    <!-- 대화창 -->
     <div id="dialogue-box" onclick="advanceDialogue()">
-        <div class="speaker" id="speaker-name">민우</div>
-        <div class="dialogue-text" id="dialogue-text">대사를 불러오는 중...</div>
-        <div class="dialogue-hint">클릭하여 계속 ▶</div>
+        <div class="speaker" id="speaker-name">시스템</div>
+        <div class="dialogue-text" id="dialogue-text">호텔 옥상의 타겟을 조준경으로 맞춘 후 클릭하세요.</div>
+        <div class="dialogue-hint">클릭하여 진행 ▶</div>
     </div>
 
-    <!-- 미션 클리어 연출 오버레이 -->
-    <div id="clear-overlay">
-        <div class="clear-badge">
-            <div class="clear-title">MISSION CLEAR</div>
-            <div class="clear-subtitle">대불호텔의 시공간 방어 성공!</div>
-            <div class="clear-divider"></div>
-            <div class="clear-desc">
-                정확한 계산으로 방어막을 전개하여<br>
-                개항기 소중한 역사 유적인 대불호텔을 지켜냈습니다.
-            </div>
-        </div>
-    </div>
-
-    <!-- 이동 / 제어 버튼 -->
+    <!-- 내비게이션 버튼 -->
     <button class="btn-nav" id="btn-prev" onclick="window.location.href='C02.html'">이전</button>
-    <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
-    <button class="btn-nav" id="btn-next" onclick="window.location.href='index.html'">다음</button>
+    <button class="btn-nav" id="btn-next" onclick="window.location.href='C04.html'">다음</button>
+
 </div>
 
 <script>
-    /* 대화 시퀀스 데이터 */
-    const dialogues = [
-        {
-            speaker: "민우",
-            text: "해냈어, 서연! 네 정확한 계산 덕분에 방어막이 완벽하게 작동했어. 소중한 역사를 지켜낸 거야.",
-            activeChar: "char-민우",
-            action: null
-        },
-        {
-            speaker: "서연",
-            text: "휴, 십년감수했네. 근데 이 대불호텔이 역사를 뒤바꿀 만큼 그렇게 중요한 곳이야?",
-            activeChar: "char-서연",
-            action: null
-        },
-        {
-            speaker: "민우",
-            text: "그럼. 이곳은 1888년에 세워진 한국 최초의 서양식 호텔이야. 서양 외교관과 선교사들이 머물며 서양식 식사와 커피를 즐겼던, 근대 문화가 조선에 유입되는 가장 중요한 창구였지.",
-            activeChar: "char-민우",
-            action: "show-photo-1"
-        },
-        {
-            speaker: "서연",
-            text: "아하, 최초의 서양식 호텔이구나!",
-            activeChar: "char-서연",
-            action: "show-photo-1"
-        },
-        {
-            speaker: "민우",
-            text: "맞아. 비록 1899년 경인선 철도가 개통되며 숙박객이 줄어들어 나중엔 '중화루'라는 중국 요릿집으로 바뀌었고, 지금은 원본 건물이 사라졌지만… 오늘 네가 지켜낸 이 건물의 기억은 '대불호텔 전시관'이라는 이름으로 영원히 남을 거야.",
-            activeChar: "char-민우",
-            action: "show-photo-2"
-        },
-        {
-            speaker: "서연",
-            text: "정말 다행이다. 우리가 이 역사를 지켜낸 거네!",
-            activeChar: "char-서연",
-            action: null
-        },
-        {
-            speaker: "시스템",
-            text: "민우가 웃으며 서연에게 악수를 청하고, 서연의 몸이 다시 빛으로 감싸이며 현대의 시간으로 돌아갑니다.",
-            activeChar: null,
-            action: "ending-effect"
-        }
-    ];
-
-    let currentIndex = 0;
-    let isFinished = false;
-
-    // DOM 요소 캐싱
+    /* 게임 상태 및 DOM 변수 */
+    let currentPhase = 1;
+    let currentInput = "";
+    
+    const crosshair = document.getElementById('crosshair');
+    const target = document.getElementById('target');
+    const effectText = document.getElementById('effect-text');
+    const arPanel = document.getElementById('ar-panel');
+    const dialogueBox = document.getElementById('dialogue-box');
     const speakerName = document.getElementById('speaker-name');
     const dialogueText = document.getElementById('dialogue-text');
-    const dialogueBox = document.getElementById('dialogue-box');
-    const charMinwoo = document.getElementById('char-민우');
-    const charSeoyeon = document.getElementById('char-서연');
-    const photo1 = document.getElementById('photo-1');
-    const photo2 = document.getElementById('photo-2');
-    const lightAura = document.getElementById('light-aura');
-    const clearOverlay = document.getElementById('clear-overlay');
-    const btnSkip = document.getElementById('btn-skip');
+    const inputUI = document.getElementById('input-ui');
+    const answerDisplay = document.getElementById('answer-display');
+    const screenFlash = document.getElementById('screen-flash');
+    const hintOverlay = document.getElementById('hint-overlay');
+    const gameContainer = document.getElementById('game-container');
     const btnNext = document.getElementById('btn-next');
 
-    // 초기화 및 첫 대사 렌더링
-    window.addEventListener('DOMContentLoaded', () => {
-        renderDialogue();
-        createSparkEffects();
-    });
+    // 캐릭터 래퍼
+    const charMinwoo = document.getElementById('char-민우');
+    const charSeoyeon = document.getElementById('char-서연');
 
-    // 대화 진행
-    function advanceDialogue() {
-        if (isFinished) return;
+    // 대화 시스템 변수
+    let dialogues = [];
+    let currentDialogueIndex = 0;
+    let isDialogueActive = false;
+    let onDialogueComplete = null;
 
-        currentIndex++;
-        if (currentIndex < dialogues.length) {
-            renderDialogue();
-        } else {
-            finishDialogue();
-        }
-    }
+    /* 초기 상황: 대화창 등장 (시스템 안내) */
+    setTimeout(() => {
+        dialogueBox.style.visibility = 'visible';
+        dialogueBox.style.opacity = '1';
+        setCharactersBrightness('시스템');
+    }, 500);
 
-    // 대화 건너뛰기
-    function skipDialogue() {
-        if (isFinished) return;
-        currentIndex = dialogues.length - 1;
-        renderDialogue();
-        setTimeout(finishDialogue, 1500);
-    }
-
-    // 현재 대화 출력 및 화면 연출 처리
-    function renderDialogue() {
-        const current = dialogues[currentIndex];
-
-        // 화자 및 대사 텍스트 업데이트
-        speakerName.innerText = current.speaker;
-        dialogueText.innerText = current.text;
-
-        // 화자 하이라이트 (비활성 캐릭터 어둡게)
-        if (current.activeChar === 'char-민우') {
+    /* 캐릭터 밝기 조절 함수 */
+    function setCharactersBrightness(activeSpeaker) {
+        if (activeSpeaker === '민우') {
             charMinwoo.style.filter = 'brightness(1)';
             charSeoyeon.style.filter = 'brightness(0.55)';
-        } else if (current.activeChar === 'char-서연') {
+        } else if (activeSpeaker === '서연') {
             charMinwoo.style.filter = 'brightness(0.55)';
             charSeoyeon.style.filter = 'brightness(1)';
         } else {
+            // 시스템이거나 기타
             charMinwoo.style.filter = 'brightness(0.55)';
             charSeoyeon.style.filter = 'brightness(0.55)';
         }
+    }
 
-        // 시각 자료(팝업) 액션 제어
-        if (current.action === 'show-photo-1') {
-            photo1.classList.add('active');
-            photo2.classList.remove('active');
-        } else if (current.action === 'show-photo-2') {
-            photo1.classList.remove('active');
-            photo2.classList.add('active');
-        } else {
-            photo1.classList.remove('active');
-            photo2.classList.remove('active');
+    /* 대화 진행 함수 */
+    function startDialogueSequence(sequence, onComplete) {
+        dialogues = sequence;
+        currentDialogueIndex = 0;
+        isDialogueActive = true;
+        onDialogueComplete = onComplete;
+        
+        dialogueBox.style.visibility = 'visible';
+        dialogueBox.style.opacity = '1';
+        
+        renderCurrentDialogue();
+    }
+
+    function renderCurrentDialogue() {
+        if (currentDialogueIndex >= dialogues.length) {
+            // 대화 종료
+            dialogueBox.style.opacity = '0';
+            setTimeout(() => {
+                dialogueBox.style.visibility = 'hidden';
+                isDialogueActive = false;
+                if (onDialogueComplete) onDialogueComplete();
+            }, 300);
+            return;
         }
 
-        // 엔딩 빛 효과 연출
-        if (current.action === 'ending-effect') {
-            lightAura.style.opacity = '1';
-            charSeoyeon.style.filter = 'brightness(1.5) drop-shadow(0 0 20px gold)';
+        const data = dialogues[currentDialogueIndex];
+        speakerName.innerText = data.speaker;
+        dialogueText.innerText = data.text;
+        
+        // 에러 색상 처리 등 부가 기능
+        if(data.isError) {
+            speakerName.style.color = 'var(--point-red)';
+            dialogueText.style.color = 'var(--point-red)';
+            dialogueBox.style.borderColor = 'var(--point-red)';
         } else {
-            lightAura.style.opacity = '0';
+            speakerName.style.color = 'var(--point-gold)';
+            dialogueText.style.color = 'white';
+            dialogueBox.style.borderColor = 'var(--point-gold)';
+        }
+        
+        setCharactersBrightness(data.speaker);
+    }
+
+    // 대화창 클릭 시 다음 대사로 넘어가기
+    function advanceDialogue() {
+        if (!isDialogueActive) return;
+        currentDialogueIndex++;
+        renderCurrentDialogue();
+    }
+
+
+    /* --- Phase 1: 조준경 이동 --- */
+    function moveCrosshair(clientX, clientY) {
+        if (currentPhase === 1) {
+            const rect = gameContainer.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+            crosshair.style.left = x + 'px';
+            crosshair.style.top = y + 'px';
         }
     }
 
-    // 대화 종료 및 미션 클리어 페이드아웃 처리
-    function finishDialogue() {
-        if (isFinished) return;
-        isFinished = true;
+    gameContainer.addEventListener('mousemove', (e) => {
+        moveCrosshair(e.clientX, e.clientY);
+    });
+    gameContainer.addEventListener('touchmove', (e) => {
+        moveCrosshair(e.touches[0].clientX, e.touches[0].clientY);
+    });
 
-        // UI 숨기기
-        dialogueBox.style.opacity = '0';
-        dialogueBox.style.visibility = 'hidden';
-        btnSkip.style.display = 'none';
-        photo1.classList.remove('active');
-        photo2.classList.remove('active');
+    /* --- Phase 1 -> 2: 타겟 조준 및 클릭 --- */
+    target.addEventListener('click', () => {
+        if (currentPhase !== 1) return;
+        
+        // 시스템 초기 대화가 켜져있다면 강제로 끔
+        if(!isDialogueActive && dialogueBox.style.visibility === 'visible') {
+            dialogueBox.style.opacity = '0';
+            setTimeout(() => dialogueBox.style.visibility = 'hidden', 300);
+        }
 
-        // 캐릭터 밝기 복구 및 서연 빛 효과 유지
-        charMinwoo.style.filter = 'brightness(1)';
-        charSeoyeon.style.filter = 'brightness(1)';
-        lightAura.style.opacity = '1';
+        currentPhase = 2;
 
-        // 1.5초 뒤 미션 클리어 오버레이 등장
+        // 이펙트 텍스트 팝업
+        effectText.style.opacity = '1';
+        effectText.style.transform = 'translate(-50%, -100%)';
+        
+        // 조준선을 타겟에 고정
+        const targetRect = target.getBoundingClientRect();
+        const containerRect = gameContainer.getBoundingClientRect();
+        
+        crosshair.style.left = (targetRect.left - containerRect.left + targetRect.width/2) + 'px';
+        crosshair.style.top = (targetRect.top - containerRect.top + targetRect.height/2) + 'px';
+        crosshair.style.transition = 'all 0.5s';
+        
         setTimeout(() => {
-            clearOverlay.classList.add('active');
-            btnNext.style.display = 'block';
+            effectText.style.opacity = '0';
+            crosshair.style.opacity = '0'; // 십자선 소멸
+            target.style.animation = 'none'; 
+            target.style.borderColor = 'var(--point-gold)';
+            target.style.opacity = '0.5';
+            
+            // Phase 2 UI 등장 (상황 기록 패널)
+            arPanel.style.visibility = 'visible';
+            arPanel.style.opacity = '1';
+            
+            // 타겟 클릭 후의 대화 시퀀스 시작
+            const phase2Dialogues = [
+                { speaker: '서연', text: '좋아, 측정 완료! 건물까지의 거리는 10m, 옥상을 올려본 각도는 45°, 내 눈높이는 1.5m야.' },
+                { speaker: '민우', text: '다행이야! 삼각비를 이용하면 건물의 총 높이를 구할 수 있어. 포격이 임박했으니 어서 계산해서 높이값을 입력해 줘!' }
+            ];
+            
+            startDialogueSequence(phase2Dialogues, () => {
+                // 대화 끝나면 입력 키패드 등장
+                inputUI.style.visibility = 'visible';
+                inputUI.style.opacity = '1';
+                inputUI.style.transform = 'translate(-50%, -50%)';
+                // 캐릭터 원래 밝기로 복구
+                charMinwoo.style.filter = 'brightness(1)';
+                charSeoyeon.style.filter = 'brightness(1)';
+            });
+
         }, 1500);
+    });
+
+    /* --- Phase 2: 키패드 입력 컨트롤 --- */
+    function inputNum(char) {
+        if (char === '.' && currentInput.includes('.')) return;
+        if (currentInput.length >= 8) return; 
+        currentInput += char;
+        updateDisplay();
     }
 
-    // 방어막 타격 스파크 효과 무작위 재생
-    function createSparkEffects() {
-        const sparks = document.querySelectorAll('.spark');
-        sparks.forEach((spark, idx) => {
-            setInterval(() => {
-                spark.style.opacity = '1';
-                spark.style.transform = `scale(${1 + Math.random()})`;
+    function deleteNum() {
+        currentInput = currentInput.slice(0, -1);
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        answerDisplay.innerText = currentInput;
+    }
+
+    /* --- Phase 3: 정답 확인 및 전송 --- */
+    function submitAnswer() {
+        if (currentInput === "") return;
+
+        // 정답 (10 * 1 + 1.5 = 11.5)
+        if (currentInput === "11.5") {
+            // 성공 로직
+            currentPhase = 3;
+            
+            screenFlash.className = 'flash-gold';
+            screenFlash.style.opacity = '1';
+            setTimeout(() => screenFlash.style.opacity = '0', 400);
+
+            // 입력창과 기록 패널 숨기기
+            inputUI.style.opacity = '0';
+            setTimeout(() => inputUI.style.visibility = 'hidden', 500);
+            arPanel.style.opacity = '0';
+
+            // 성공 대화 시퀀스 시작
+            const successDialogues = [
+                { speaker: '서연', text: '탄젠트 45도는 1이니까... 10 곱하기 1 더하기 1.5! 정답은 11.5m야! 방어막 가동!' }
+            ];
+            
+            startDialogueSequence(successDialogues, () => {
+                // 대화 끝나면 다음 스테이지 버튼 표시, 인물 밝기 원상복구
+                btnNext.style.display = 'block';
+                charMinwoo.style.filter = 'brightness(1)';
+                charSeoyeon.style.filter = 'brightness(1)';
+            });
+
+        } else {
+            // 오답 로직
+            screenFlash.className = 'flash-red';
+            screenFlash.style.opacity = '1';
+            setTimeout(() => screenFlash.style.opacity = '0', 400);
+
+            currentInput = "";
+            updateDisplay();
+            
+            // 에러 대화 표시
+            const errorDialogues = [
+                { speaker: '시스템', text: '오류: 계산값이 일치하지 않습니다. 다시 계산해 주세요.', isError: true }
+            ];
+            startDialogueSequence(errorDialogues, () => {
+                // 가장 앞에 5초 동안 힌트 노출
+                hintOverlay.style.visibility = 'visible';
+                hintOverlay.style.opacity = '1';
+                
                 setTimeout(() => {
-                    spark.style.opacity = '0';
-                }, 300);
-            }, 1500 + (idx * 900) + Math.random() * 500);
-        });
+                    hintOverlay.style.opacity = '0';
+                    setTimeout(() => hintOverlay.style.visibility = 'hidden', 300);
+                    
+                    // 힌트 종료 후 격려 대사
+                    if (currentPhase === 2) {
+                        const cheerDialogues = [
+                            { speaker: '민우', text: '다시 침착하게 계산해 봐! 공식을 떠올려!' }
+                        ];
+                        startDialogueSequence(cheerDialogues, () => {
+                            charMinwoo.style.filter = 'brightness(1)';
+                            charSeoyeon.style.filter = 'brightness(1)';
+                        });
+                    }
+                }, 5000); // 5초 대기
+            });
+        }
     }
 </script>
 

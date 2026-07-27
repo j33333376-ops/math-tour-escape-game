@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천도호부청사·인천향교 MATHTOUR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* Reset & Base */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        /* Game Container */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f5f0e6;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        /* Background Image */
+        .bg-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* Character Wrapper */
+        .char-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            overflow: visible;
+            z-index: 3;
+            transition: filter 0.2s ease-in-out;
+        }
+        .char-wrapper iframe {
+            border: 0;
+            width: 260px;
+            height: 320px;
+            pointer-events: none;
+        }
+        .inactive {
+            filter: brightness(0.55);
+        }
+
+        /* Teleport Animation */
+        @keyframes teleport {
+            0% { transform: scale(1) translateY(0); opacity: 1; filter: brightness(1) drop-shadow(0 0 0px #fff); }
+            50% { transform: scale(1.1) translateY(-20px); opacity: 0.7; filter: brightness(1.5) drop-shadow(0 0 15px #d4af37); }
+            100% { transform: scale(0) translateY(-60px); opacity: 0; filter: brightness(2) drop-shadow(0 0 30px #d4af37); display: none; }
+        }
+        .teleport-out {
+            animation: teleport 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* Dialogue Box (Type 2) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            padding: 24px;
+            color: #ffffff;
+            z-index: 10;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #d4af37;
+        }
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            min-height: 3.2em;
+        }
+        .click-indicator {
+            align-self: flex-end;
+            font-size: 0.9rem;
+            color: #aaaaaa;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Common Buttons */
+        .btn-nav {
+            position: absolute;
+            background-color: #8c3030;
+            color: white;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 20;
+            transition: background-color 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+        #btn-prev { left: 20px; bottom: 20px; display: none; }
+        #btn-skip { right: 20px; bottom: 20px; }
+        #btn-end  { right: 20px; bottom: 20px; display: none; background-color: #2d3748; }
+        #btn-end:hover { background-color: #1a202c; }
+
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 배경 이미지 -->
+        <img src="옥사내부.PNG" class="bg-image" alt="옥사 내부 배경">
+
+        <!-- 등장 인물 (배치 수정: 서연을 왼쪽으로 더 이동하고 노인과 확실히 분리) -->
+        <!-- 민우 (서연이 왼쪽으로 오면서 공간을 만들기 위해 약간 좌측 이동) -->
+        <div class="char-wrapper" id="char-민우" style="left: 80px; bottom: 120px;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="transform: scale(1); transform-origin: bottom left;"></iframe>
+        </div>
+
+        <!-- 서연 (노인과 겹치지 않도록 왼쪽으로 대폭 이동) -->
+        <div class="char-wrapper" id="char-서연" style="left: 310px; bottom: 120px;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="transform: scale(1); transform-origin: bottom left;"></iframe>
+        </div>
+
+        <!-- 노인 (오른쪽 공간 확보, 좌우 반전 유지) -->
+        <div class="char-wrapper" id="char-노인" style="left: 740px; bottom: 120px;">
+            <iframe src="등장인물_노인.html" scrolling="no" style="transform: scale(1) scaleX(-1); transform-origin: bottom left;"></iframe>
+        </div>
+
+        <!-- 대화창 UI -->
+        <div id="dialogue-box" onclick="advanceDialogue()">
+            <div id="speaker-name">이름</div>
+            <div id="dialogue-text">대사 내용이 들어갑니다.</div>
+            <div class="click-indicator">▼ 클릭하여 진행</div>
+        </div>
+
+        <!-- 네비게이션 버튼 -->
+        <button class="btn-nav" id="btn-prev" onclick="window.location.href='B03.html'">이전</button>
+        <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
+        <button class="btn-nav" id="btn-end" onclick="alert('엔딩입니다. 수고하셨습니다!');">End</button>
+    </div>
+
+    <script>
+        // 스토리 및 대사 데이터
+        const dialogues = [
+            { speaker: '민우', text: '열렸어! 서연아, 우리가 성공했어! 정말 열렸어!', target: 'char-민우' },
+            { speaker: '서연', text: '세상에... 믿을 수가 없어. 우리가 이 복잡한 행렬 문제를 풀다니! 정말 탈출에 성공했어!', target: 'char-서연' },
+            { speaker: '노인', text: '훌륭하군, 지혜로운 자들이여. 지혜로운 자만이 이 복잡한 문을 열 수 있지. 자네들의 지혜가 복잡한 행렬을 풀었네. 부디 평안히 가게나.', target: 'char-노인' },
+            { speaker: '민우', text: '감사합니다!', target: 'char-민우' },
+            { speaker: '서연', text: '감사합니다!', target: 'char-서연' }
+        ];
+
+        let currentIndex = 0;
+
+        function updateDialogue() {
+            if (currentIndex >= dialogues.length) {
+                endScene();
+                return;
+            }
+
+            const line = dialogues[currentIndex];
+            document.getElementById('speaker-name').innerText = line.speaker;
+            document.getElementById('dialogue-text').innerText = line.text;
+
+            // 화자 하이라이트 (말하는 사람만 밝게, 나머지는 어둡게)
+            document.querySelectorAll('.char-wrapper').forEach(el => {
+                if (el.id === line.target) {
+                    el.classList.remove('inactive');
+                } else {
+                    el.classList.add('inactive');
+                }
+            });
+        }
+
+        function advanceDialogue() {
+            currentIndex++;
+            updateDialogue();
+        }
+
+        function skipDialogue() {
+            currentIndex = dialogues.length;
+            endScene();
+        }
+
+        function endScene() {
+            // 대화창 및 건너뛰기 버튼 숨김
+            document.getElementById('dialogue-box').style.display = 'none';
+            document.getElementById('btn-skip').style.display = 'none';
+            
+            // 모든 캐릭터 원래 밝기로 복구
+            document.querySelectorAll('.char-wrapper').forEach(el => {
+                el.classList.remove('inactive');
+            });
+
+            // 연출: 민우와 서연 순간이동(뿅) 사라짐
+            const charMinwoo = document.getElementById('char-민우');
+            const charSeoyeon = document.getElementById('char-서연');
+            charMinwoo.classList.add('teleport-out');
+            charSeoyeon.classList.add('teleport-out');
+
+            // 애니메이션 종료 후 네비게이션 버튼 표시
+            setTimeout(() => {
+                document.getElementById('btn-prev').style.display = 'block';
+                // 다음 장면 URL이 없으므로 End 버튼 표시
+                document.getElementById('btn-end').style.display = 'block';
+            }, 650);
+        }
+
+        // 초기화: 첫 번째 대사 출력
+        window.onload = () => {
+            updateDialogue();
+        };
+    </script>
+</body>
+</html>
