@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!-- 원본 크기: 1000x300 -->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    html,body{margin:0;width:1000px;height:300px;background:transparent;overflow:hidden}
+    svg{display:block;width:1000px;height:300px}
+  </style>
+</head>
+<body>
+<svg viewBox="0 0 1000 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="소래염전 역사 타임라인">
+  <defs>
+    <linearGradient id="paper" x2="0" y2="1"><stop stop-color="#fff9e9"/><stop offset="1" stop-color="#e5d6b5"/></linearGradient>
+    <linearGradient id="salt" x2="0" y2="1"><stop stop-color="#dfeefa"/><stop offset="1" stop-color="#96becb"/></linearGradient>
+    <linearGradient id="wetland" x2="0" y2="1"><stop stop-color="#a9c99b"/><stop offset="1" stop-color="#477b67"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="7" stdDeviation="6" flood-opacity=".35"/></filter>
+  </defs>
+  <rect x="8" y="8" width="984" height="278" rx="14" fill="url(#paper)" stroke="#d4af37" stroke-width="3" filter="url(#shadow)"/>
+  <path d="M95 235H905" stroke="#8c3030" stroke-width="5"/>
+  <path d="m905 235-18-11v22z" fill="#8c3030"/>
+
+  <g transform="translate(38 25)">
+    <rect width="220" height="205" rx="10" fill="#eed8ad" stroke="#8c6a34" stroke-width="2"/>
+    <path d="M17 155 75 92l48 63zM103 155l55-78 45 78z" fill="#8ba0a0" opacity=".7"/>
+    <path d="M23 169h174M36 142h147M52 117h116" stroke="#7a563a" stroke-width="4"/>
+    <path d="M27 169v-46M73 169v-68M123 169V86M174 169v-63" stroke="#7a563a" stroke-width="3"/>
+    <circle cx="110" cy="191" r="14" fill="#8c3030" stroke="#f4d97e" stroke-width="4"/>
+    <text x="110" y="45" text-anchor="middle" fill="#6b342d" font-size="23" font-weight="700" font-family="sans-serif">염전 조성</text>
+  </g>
+
+  <g transform="translate(273 25)">
+    <rect width="220" height="205" rx="10" fill="#e8eadf" stroke="#708a87" stroke-width="2"/>
+    <rect x="22" y="80" width="176" height="92" rx="4" fill="url(#salt)"/>
+    <path d="M22 111h176M22 142h176M65 80v92M110 80v92M155 80v92" stroke="#fff" stroke-width="4" opacity=".8"/>
+    <path d="m86 159 24-45 24 45z" fill="#fff" opacity=".94"/>
+    <circle cx="110" cy="191" r="14" fill="#8c3030" stroke="#f4d97e" stroke-width="4"/>
+    <text x="110" y="45" text-anchor="middle" fill="#345662" font-size="23" font-weight="700" font-family="sans-serif">천일염 생산</text>
+  </g>
+
+  <g transform="translate(508 25)">
+    <rect width="220" height="205" rx="10" fill="#e5d3bc" stroke="#7d5a3e" stroke-width="2"/>
+    <path d="M22 161h177M22 173h177" stroke="#403a36" stroke-width="5"/>
+    <path d="M33 154v28M68 154v28M103 154v28M138 154v28M173 154v28" stroke="#6f513a" stroke-width="4"/>
+    <path d="M61 113h97l-13 45H72z" fill="#8a5d39" stroke="#483427" stroke-width="3"/>
+    <circle cx="82" cy="164" r="13" fill="#3f3c38"/><circle cx="142" cy="164" r="13" fill="#3f3c38"/>
+    <path d="m83 112 27-39 27 39z" fill="#faf7e8"/>
+    <circle cx="110" cy="191" r="14" fill="#8c3030" stroke="#f4d97e" stroke-width="4"/>
+    <text x="110" y="45" text-anchor="middle" fill="#6b402e" font-size="23" font-weight="700" font-family="sans-serif">저장과 운반</text>
+  </g>
+
+  <g transform="translate(743 25)">
+    <rect width="220" height="205" rx="10" fill="#dbe7d5" stroke="#51765e" stroke-width="2"/>
+    <path d="M17 157q42-41 91 0t95 0v24H17z" fill="#4d8890"/>
+    <path d="M36 163q11-63 17 0M55 163q12-86 20 0M154 163q8-80 17 0M178 163q7-57 13 0" fill="none" stroke="url(#wetland)" stroke-width="8"/>
+    <path d="M68 92q18-14 36 0M139 74q16-13 32 0" fill="none" stroke="#4f5960" stroke-width="4"/>
+    <circle cx="110" cy="191" r="14" fill="#8c3030" stroke="#f4d97e" stroke-width="4"/>
+    <text x="110" y="45" text-anchor="middle" fill="#355e4b" font-size="23" font-weight="700" font-family="sans-serif">생태공원</text>
+  </g>
+
+  <text x="80" y="273" fill="#6f533b" font-size="15" font-family="monospace">과거</text>
+  <text x="890" y="273" fill="#355e4b" font-size="15" font-family="monospace">현재</text>
+</svg>
+</body>
+</html>

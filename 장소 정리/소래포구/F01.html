@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>F01 소염교와의 첫 만남</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding:wght@400;700&family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&display=swap');
+    :root { --red:#8c3030; --gold:#d4af37; --ink:#2d3748; --paper:#f5f0e6; }
+    * { box-sizing:border-box; }
+    html, body { width:100%; height:100%; margin:0; }
+    body {
+      display:grid; place-items:center; overflow:hidden; background:#201b18;
+      font-family:'Noto Sans KR',sans-serif; color:var(--ink);
+    }
+    button { font:inherit; }
+    #game-container {
+      position:relative; width:min(100vw,1066px); aspect-ratio:16/9;
+      overflow:hidden; background:var(--paper); box-shadow:0 16px 60px #0009;
+    }
+    #background {
+      position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+      object-position:center; z-index:0; filter:saturate(.9) sepia(.08);
+    }
+    #game-container::after {
+      content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+      background:linear-gradient(#29170b42 0%, transparent 24%, transparent 58%, #180d087a 100%);
+    }
+    .top-bar {
+      position:absolute; left:50%; top:16px; z-index:12; transform:translateX(-50%);
+      min-width:370px; padding:9px 34px; border:1px solid var(--gold);
+      border-radius:4px; background:#281d19d9; color:white; text-align:center;
+      box-shadow:0 4px 16px #0005;
+    }
+    .top-bar h1 {
+      margin:0; font:700 25px/1.25 'Nanum Myeongjo',serif; letter-spacing:.04em;
+    }
+    #progress {
+      position:absolute; right:20px; top:20px; z-index:13; padding:8px 15px;
+      border:1px solid var(--gold); border-radius:4px; background:#281d19d9;
+      color:#fff; font:700 15px 'Nanum Gothic Coding',monospace;
+    }
+    #bridge-wrap {
+      position:absolute; left:50%; bottom:97px; z-index:2; width:360px; height:180px;
+      transform:translateX(-50%); overflow:hidden; cursor:pointer; border:0;
+      background:transparent; padding:0; filter:drop-shadow(0 10px 11px #0007);
+      transition:filter .2s, transform .2s;
+    }
+    #bridge-wrap:hover, #bridge-wrap:focus-visible {
+      transform:translateX(-50%) scale(1.045); filter:brightness(1.17) drop-shadow(0 10px 14px #0008);
+      outline:2px solid var(--gold); outline-offset:4px;
+    }
+    #bridge-wrap iframe {
+      width:1000px; height:500px; border:0; pointer-events:none;
+      transform:scale(.36); transform-origin:top left;
+    }
+    .char-wrapper {
+      position:absolute; bottom:64px; z-index:3; width:208px; height:256px;
+      overflow:visible; transition:filter .25s, transform .25s;
+    }
+    .char-wrapper iframe {
+      width:260px; height:320px; border:0; pointer-events:none;
+      transform:scale(.8); transform-origin:bottom left;
+    }
+    #char-민우 { left:20px; }
+    #char-서연 { right:20px; }
+    #char-서연 iframe { transform:scale(.8) scaleX(-1); transform-origin:bottom center; }
+    .char-wrapper.inactive { filter:brightness(.48) saturate(.7); transform:scale(.97); }
+    .char-wrapper.active { filter:brightness(1.08); transform:translateY(-4px); }
+    #inspect-button {
+      position:absolute; left:50%; bottom:194px; z-index:14; transform:translateX(-50%);
+      display:none; padding:10px 19px; border:1px solid var(--gold); border-radius:4px;
+      background:var(--red); color:white; font-weight:700; cursor:pointer;
+      box-shadow:0 5px 16px #0007; animation:pulse 1.7s infinite;
+    }
+    @keyframes pulse { 50% { box-shadow:0 0 0 7px #d4af3738,0 5px 16px #0007; } }
+    #dialogue-box {
+      position:absolute; left:50%; bottom:18px; z-index:15; width:66%; min-height:112px;
+      transform:translateX(-50%); padding:14px 70px 14px 20px;
+      border:1px solid var(--gold); border-radius:4px; background:#090807dc; color:#fff;
+      box-shadow:0 7px 20px #0008; cursor:pointer;
+    }
+    #speaker-name {
+      margin-bottom:6px; color:#f1cc5e; font:700 17px 'Nanum Gothic Coding',monospace;
+    }
+    #dialogue-text { margin:0; font-size:16px; line-height:1.6; letter-spacing:-.02em; }
+    #continue {
+      position:absolute; right:15px; bottom:12px; color:#f1cc5e; font-size:13px;
+    }
+    #info-modal {
+      position:absolute; inset:0; z-index:30; display:none; place-items:center;
+      padding:24px; background:#080604b8; backdrop-filter:blur(3px);
+    }
+    #info-modal.open { display:grid; }
+    .info-card {
+      width:min(620px,88%); padding:26px 30px; border:2px solid var(--gold);
+      border-radius:5px; background:var(--paper); box-shadow:0 15px 45px #000a;
+    }
+    .info-card h2 {
+      margin:0 0 15px; color:var(--red); font:700 27px 'Nanum Myeongjo',serif;
+      border-bottom:1px solid #c9aa60; padding-bottom:10px;
+    }
+    .info-card dl { margin:0; display:grid; grid-template-columns:112px 1fr; gap:10px 15px; }
+    .info-card dt { color:var(--red); font-weight:700; }
+    .info-card dd { margin:0; line-height:1.55; }
+    .info-card button { float:right; margin-top:20px; }
+    .btn-nav, .card-button {
+      padding:10px 24px; border:1px solid var(--gold); border-radius:4px;
+      background:var(--red); color:white; font-weight:700; cursor:pointer;
+      transition:background .2s, transform .2s;
+    }
+    .btn-nav:hover, .card-button:hover { background:#661f1f; transform:translateY(-2px); }
+    .btn-nav { position:absolute; bottom:20px; z-index:20; }
+    #btn-prev { left:20px; }
+    #btn-next { right:20px; }
+    #btn-next:disabled { cursor:not-allowed; opacity:.45; filter:grayscale(.5); transform:none; }
+    @media (max-width:760px) {
+      .top-bar { top:9px; min-width:280px; padding:7px 18px; }
+      .top-bar h1 { font-size:19px; }
+      #progress { top:11px; right:10px; font-size:12px; }
+      .char-wrapper { transform:scale(.75); transform-origin:bottom; }
+      #char-민우 { left:-35px; } #char-서연 { right:-35px; }
+      #dialogue-box { width:68%; min-height:96px; padding:10px 48px 10px 14px; }
+      #dialogue-text { font-size:13px; }
+      #bridge-wrap { width:300px; height:150px; bottom:78px; }
+      #bridge-wrap iframe { transform:scale(.3); }
+      .btn-nav { padding:7px 14px; bottom:9px; }
+      #btn-prev { left:9px; } #btn-next { right:9px; }
+    }
+  </style>
+</head>
+<body>
+  <main id="game-container" aria-label="소염교 매쓰투어 F01 장면">
+    <img id="background" src="소염교_배경.png" alt="소염교와 소래습지의 풍경">
+
+    <header class="top-bar"><h1>F01 소염교와의 첫 만남</h1></header>
+    <div id="progress" aria-label="전체 네 장면 중 첫 번째">1 / 4</div>
+
+    <button id="bridge-wrap" type="button" aria-label="소염교 조형물 살펴보기" onclick="openInfo()">
+      <iframe src="소염교.html" scrolling="no" title="소염교 조형물"></iframe>
+    </button>
+
+    <div class="char-wrapper inactive" id="char-민우">
+      <iframe src="등장인물_민우.html" scrolling="no" title="민우"></iframe>
+    </div>
+    <div class="char-wrapper inactive" id="char-서연">
+      <iframe src="등장인물_서연.html" scrolling="no" title="서연"></iframe>
+    </div>
+
+    <button id="inspect-button" type="button" onclick="openInfo()">소염교 살펴보기</button>
+
+    <section id="dialogue-box" role="button" tabindex="0" aria-label="대화 계속하기">
+      <div id="speaker-name">나레이션</div>
+      <p id="dialogue-text"></p>
+      <span id="continue">계속 ▶</span>
+    </section>
+
+    <section id="info-modal" role="dialog" aria-modal="true" aria-labelledby="info-title">
+      <article class="info-card">
+        <h2 id="info-title">소염교 기본 정보</h2>
+        <dl>
+          <dt>장소</dt><dd>인천 소래습지생태공원 입구</dd>
+          <dt>역할</dt><dd>소래포구와 소래습지를 연결하는 길목</dd>
+          <dt>이름의 의미</dt><dd>소래 지역의 염전과 소금의 역사</dd>
+          <dt>관찰 요소</dt><dd>목제 다리, 갯골, 갈대와 습지</dd>
+        </dl>
+        <button class="card-button" type="button" onclick="closeInfo()">확인했어요</button>
+      </article>
+    </section>
+
+    <button class="btn-nav" id="btn-prev" type="button" onclick="window.location.href='index(소염교).html'">이전</button>
+    <button class="btn-nav" id="btn-next" type="button" disabled onclick="window.location.href='F02.html'">다음</button>
+  </main>
+
+  <script>
+    const dialogues = [
+      { speaker:'나레이션', text:'소래포구의 활기찬 거리를 지나자, 소래습지로 이어지는 긴 목제 다리가 나타났습니다.', target:null },
+      { speaker:'민우', text:'서연아, 저 다리가 소래포구와 소래습지를 연결하는 소염교인가 봐.', target:'char-민우' },
+      { speaker:'서연', text:'다리 주변으로 갯골과 갈대가 함께 보이네. 포구와 습지를 이어 주는 길목인 것 같아.', target:'char-서연' },
+      { speaker:'민우', text:'그런데 왜 이름이 ‘소염교’일까?', target:'char-민우' },
+      { speaker:'서연', text:'이름에 들어 있는 ‘염’은 이곳의 염전과 소금에 관계가 있지 않을까?', target:'char-서연' },
+      { speaker:'나레이션', text:'소염교 조형물을 선택하여 다리의 위치와 이름에 담긴 의미를 확인해 보세요.', target:null },
+      { speaker:'민우', text:'소염교는 단순한 다리가 아니라 소래포구와 습지를 이어 주는 중요한 통로였구나.', target:'char-민우' },
+      { speaker:'서연', text:'이 지역의 소금과 염전 이야기도 간직하고 있어. 다음 장소에서 소염교의 역사를 더 알아보자.', target:'char-서연' },
+      { speaker:'나레이션', text:'소염교의 기본 정보를 확인했습니다. 다음 장면에서 소금이 지나던 길과 소래염전의 역사를 살펴보세요.', target:null }
+    ];
+
+    let currentIndex = 0;
+    let waitingForInfo = false;
+    let infoSeen = false;
+    const dialogueBox = document.getElementById('dialogue-box');
+    const inspectButton = document.getElementById('inspect-button');
+
+    function renderDialogue() {
+      const item = dialogues[currentIndex];
+      document.getElementById('speaker-name').textContent = item.speaker;
+      document.getElementById('dialogue-text').textContent = item.text;
+      document.querySelectorAll('.char-wrapper').forEach(el => {
+        el.classList.toggle('active', el.id === item.target);
+        el.classList.toggle('inactive', el.id !== item.target);
+      });
+    }
+
+    function advanceDialogue() {
+      if (waitingForInfo) return;
+      if (currentIndex === 5 && !infoSeen) {
+        waitingForInfo = true;
+        inspectButton.style.display = 'block';
+        document.getElementById('continue').textContent = '조형물을 선택하세요';
+        return;
+      }
+      if (currentIndex < dialogues.length - 1) {
+        currentIndex += 1;
+        renderDialogue();
+      } else {
+        dialogueBox.style.display = 'none';
+        document.querySelectorAll('.char-wrapper').forEach(el => el.classList.remove('inactive', 'active'));
+        document.getElementById('btn-next').disabled = false;
+      }
+    }
+
+    function openInfo() {
+      if (currentIndex < 5) return;
+      document.getElementById('info-modal').classList.add('open');
+    }
+
+    function closeInfo() {
+      document.getElementById('info-modal').classList.remove('open');
+      infoSeen = true;
+      waitingForInfo = false;
+      inspectButton.style.display = 'none';
+      if (currentIndex === 5) {
+        currentIndex = 6;
+        document.getElementById('continue').textContent = '계속 ▶';
+        renderDialogue();
+      }
+    }
+
+    dialogueBox.addEventListener('click', advanceDialogue);
+    dialogueBox.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        advanceDialogue();
+      }
+    });
+    renderDialogue();
+  </script>
+</body>
+</html>

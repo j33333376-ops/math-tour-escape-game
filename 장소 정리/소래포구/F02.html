@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>F02 소금이 지나던 길</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding:wght@400;700&family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+    :root { --red:#8c3030; --gold:#d4af37; --paper:#f5f0e6; --ink:#2d3748; }
+    * { box-sizing:border-box; }
+    html,body { width:100%; height:100%; margin:0; }
+    body { display:grid; place-items:center; overflow:hidden; background:#1b1714; font-family:'Noto Sans KR',sans-serif; color:var(--ink); }
+    button { font:inherit; }
+    #game-container {
+      position:relative; width:min(100vw,1066px); aspect-ratio:16/9;
+      overflow:hidden; background:#927c5f; box-shadow:0 18px 60px #0009;
+    }
+    #background { position:absolute; inset:0; z-index:0; width:100%; height:100%; object-fit:cover; }
+    #game-container::after {
+      content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+      background:linear-gradient(#21150f47 0%,transparent 30%,transparent 58%,#160d08a6 100%);
+    }
+    .top-bar {
+      position:absolute; left:50%; top:16px; z-index:20; min-width:365px;
+      transform:translateX(-50%); padding:9px 32px; border:1px solid var(--gold);
+      border-radius:4px; background:#281d19df; color:#fff; text-align:center;
+    }
+    .top-bar h1 { margin:0; font:700 25px/1.25 'Nanum Myeongjo',serif; letter-spacing:.04em; }
+    #progress {
+      position:absolute; right:20px; top:20px; z-index:21; padding:8px 15px;
+      border:1px solid var(--gold); border-radius:4px; background:#281d19df;
+      color:#fff; font:700 15px 'Nanum Gothic Coding',monospace;
+    }
+    .char-wrapper {
+      position:absolute; bottom:64px; z-index:3; width:195px; height:240px;
+      overflow:visible; transition:filter .25s,transform .25s;
+    }
+    .char-wrapper iframe {
+      width:260px; height:320px; border:0; pointer-events:none;
+      transform:scale(.75); transform-origin:bottom left;
+    }
+    #char-민우 { left:8px; }
+    #char-서연 { right:8px; }
+    #char-서연 iframe { transform:scale(.75) scaleX(-1); transform-origin:bottom center; }
+    .char-wrapper.inactive { filter:brightness(.47) saturate(.75); transform:scale(.97); }
+    .char-wrapper.active { filter:brightness(1.08); transform:translateY(-4px); }
+    #timeline-zone {
+      position:absolute; left:50%; top:120px; z-index:4; width:700px; height:210px;
+      transform:translateX(-50%); display:none; filter:drop-shadow(0 10px 16px #0008);
+    }
+    #timeline-zone.visible { display:block; animation:rise .45s ease-out; }
+    @keyframes rise { from { opacity:0; transform:translate(-50%,18px); } }
+    #timeline-frame { width:1000px; height:300px; border:0; pointer-events:none; transform:scale(.7); transform-origin:top left; }
+    .era-button {
+      position:absolute; top:19px; z-index:5; width:158px; height:169px;
+      border:2px solid transparent; border-radius:8px; background:transparent;
+      cursor:pointer; color:transparent; transition:border-color .2s,background .2s,transform .2s;
+    }
+    .era-button:nth-of-type(1) { left:17px; }
+    .era-button:nth-of-type(2) { left:186px; }
+    .era-button:nth-of-type(3) { left:355px; }
+    .era-button:nth-of-type(4) { left:524px; }
+    .era-button:hover,.era-button:focus-visible { border-color:#ffe38c; background:#ffe38c24; transform:translateY(-3px); outline:none; }
+    .era-button.visited { border-color:#7fd3a3; background:#4bc78025; }
+    #timeline-guide {
+      position:absolute; left:50%; top:85px; z-index:12; display:none; transform:translateX(-50%);
+      padding:9px 19px; border:1px solid var(--gold); border-radius:4px;
+      background:#271c18e6; color:#fff; font-weight:700;
+    }
+    #era-modal {
+      position:absolute; inset:0; z-index:35; display:none; place-items:center;
+      padding:24px; background:#090604ba; backdrop-filter:blur(3px);
+    }
+    #era-modal.open { display:grid; }
+    .era-card {
+      width:min(590px,88%); padding:25px 29px; border:2px solid var(--gold);
+      border-radius:5px; background:var(--paper); box-shadow:0 16px 46px #000b;
+    }
+    .era-card .step { color:#977219; font:700 13px 'Nanum Gothic Coding',monospace; }
+    .era-card h2 { margin:5px 0 12px; color:var(--red); font:700 27px 'Nanum Myeongjo',serif; }
+    .era-card p { margin:0; line-height:1.75; }
+    .era-card button { float:right; margin-top:20px; }
+    #dialogue-box {
+      position:absolute; left:50%; bottom:18px; z-index:15; width:66%; min-height:112px;
+      transform:translateX(-50%); padding:14px 70px 14px 20px; border:1px solid var(--gold);
+      border-radius:4px; background:#090807e8; color:#fff; box-shadow:0 7px 20px #0008; cursor:pointer;
+    }
+    #speaker-name { margin-bottom:6px; color:#f1cc5e; font:700 17px 'Nanum Gothic Coding',monospace; }
+    #dialogue-text { margin:0; font-size:15px; line-height:1.6; letter-spacing:-.02em; }
+    #continue { position:absolute; right:15px; bottom:12px; color:#f1cc5e; font-size:13px; }
+    .btn-nav,.card-button {
+      padding:10px 24px; border:1px solid var(--gold); border-radius:4px;
+      background:var(--red); color:#fff; font-weight:700; cursor:pointer;
+      transition:background .2s,transform .2s;
+    }
+    .btn-nav:hover,.card-button:hover { background:#661f1f; transform:translateY(-2px); }
+    .btn-nav { position:absolute; bottom:20px; z-index:25; }
+    #btn-prev { left:20px; }
+    #btn-next,#btn-skip { right:20px; }
+    #btn-next { display:none; }
+    #btn-next:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+    #btn-skip { bottom:76px; padding:7px 15px; background:#3f3631d9; }
+    #visit-status {
+      position:absolute; right:20px; top:68px; z-index:21; display:none;
+      padding:7px 12px; border:1px solid #d9c98d; border-radius:4px;
+      background:#281d19dc; color:#fff; font-size:13px;
+    }
+    @media(max-width:760px) {
+      .top-bar { top:8px; min-width:270px; padding:7px 14px; }
+      .top-bar h1 { font-size:18px; }
+      #progress { top:10px; right:9px; font-size:11px; }
+      #timeline-zone { top:83px; transform:translateX(-50%) scale(.75); transform-origin:top center; }
+      .char-wrapper { transform:scale(.72); transform-origin:bottom; }
+      #char-민우 { left:-42px; } #char-서연 { right:-42px; }
+      #dialogue-box { width:67%; min-height:95px; padding:9px 48px 9px 13px; }
+      #dialogue-text { font-size:12px; line-height:1.45; }
+      .btn-nav { bottom:8px; padding:7px 14px; }
+      #btn-prev { left:8px; } #btn-next,#btn-skip { right:8px; }
+      #btn-skip { bottom:50px; }
+    }
+  </style>
+</head>
+<body>
+  <main id="game-container" aria-label="소래염전 역사 탐구 F02 장면">
+    <img id="background" src="소래염전_과거와현재.png" alt="과거 소래염전과 현재 소래습지생태공원이 이어지는 풍경">
+    <header class="top-bar"><h1>F02 소금이 지나던 길</h1></header>
+    <div id="progress" aria-label="전체 네 장면 중 두 번째">2 / 4</div>
+    <div id="visit-status">역사 확인 <strong id="visit-count">0</strong> / 4</div>
+    <div id="timeline-guide">네 장면을 차례로 선택해 역사를 확인하세요.</div>
+
+    <div id="timeline-zone" aria-label="소래염전 역사 타임라인">
+      <iframe id="timeline-frame" src="소래염전_역사타임라인.html" scrolling="no" title="소래염전 역사 타임라인"></iframe>
+      <button class="era-button" type="button" aria-label="첫 번째 시기 염전 조성" onclick="openEra(0)">염전 조성</button>
+      <button class="era-button" type="button" aria-label="두 번째 시기 천일염 생산" onclick="openEra(1)">천일염 생산</button>
+      <button class="era-button" type="button" aria-label="세 번째 시기 소금 운반" onclick="openEra(2)">소금 운반</button>
+      <button class="era-button" type="button" aria-label="네 번째 시기 생태공원" onclick="openEra(3)">생태공원</button>
+    </div>
+
+    <div class="char-wrapper inactive" id="char-민우">
+      <iframe src="등장인물_민우.html" scrolling="no" title="민우"></iframe>
+    </div>
+    <div class="char-wrapper inactive" id="char-서연">
+      <iframe src="등장인물_서연.html" scrolling="no" title="서연"></iframe>
+    </div>
+
+    <section id="dialogue-box" role="button" tabindex="0" aria-label="대화 계속하기">
+      <div id="speaker-name">나레이션</div>
+      <p id="dialogue-text"></p>
+      <span id="continue">계속 ▶</span>
+    </section>
+
+    <section id="era-modal" role="dialog" aria-modal="true" aria-labelledby="era-title">
+      <article class="era-card">
+        <div class="step" id="era-step"></div>
+        <h2 id="era-title"></h2>
+        <p id="era-text"></p>
+        <button class="card-button" type="button" onclick="closeEra()">확인했어요</button>
+      </article>
+    </section>
+
+    <button class="btn-nav" id="btn-prev" type="button" onclick="window.location.href='F01.html'">이전</button>
+    <button class="btn-nav" id="btn-skip" type="button" onclick="finishDialogue()">대화 건너뛰기</button>
+    <button class="btn-nav" id="btn-next" type="button" disabled onclick="window.location.href='F03.html'">다음</button>
+  </main>
+
+  <script>
+    const dialogues = [
+      {speaker:'나레이션',text:'소염교를 건너자 넓은 갈대밭 사이로 반듯하게 나뉜 옛 염전의 흔적이 나타났습니다.',target:null},
+      {speaker:'민우',text:'지금은 습지와 갈대가 가득한데, 과거에는 이곳 전체가 염전이었던 걸까?',target:'char-민우'},
+      {speaker:'서연',text:'응. 바닷물을 염전으로 끌어들여 햇빛과 바람으로 물을 증발시키고 소금을 만들었대.',target:'char-서연'},
+      {speaker:'민우',text:'바닷물이 바로 소금이 되는 건 아니겠지?',target:'char-민우'},
+      {speaker:'서연',text:'저수지에서 증발지와 결정지로 옮겨 가며 물의 양을 줄이고, 마지막에 소금 결정을 얻는 과정이 필요했어.',target:'char-서연'},
+      {speaker:'나레이션',text:'소래염전은 일제강점기에 조성되었습니다. 이곳의 역사는 소금 생산뿐 아니라 자원 수탈과 염전 노동자의 삶도 함께 기억하게 합니다.',target:null},
+      {speaker:'민우',text:'염전에서 일했던 사람들은 햇빛 아래에서 소금을 모으고 운반해야 했겠구나.',target:'char-민우'},
+      {speaker:'서연',text:'생산된 소금은 창고에 보관되었다가 궤도와 배 같은 운반 수단을 통해 다른 지역으로 이동했어.',target:'char-서연'},
+      {speaker:'민우',text:'그런데 염전은 왜 사라진 거야?',target:'char-민우'},
+      {speaker:'서연',text:'소금 생산은 1996년에 중단되었고, 이후 폐염전과 갯벌은 생물이 살아가는 습지생태공원으로 복원되었어.',target:'char-서연'},
+      {speaker:'민우',text:'소금을 생산하던 산업 공간이 철새와 염생식물이 살아가는 생태 공간으로 바뀐 거구나.',target:'char-민우'},
+      {speaker:'서연',text:'과거의 흔적을 없앤 것이 아니라, 염전의 역사와 습지의 생태를 함께 배울 수 있는 장소로 변화한 거야.',target:'char-서연'},
+      {speaker:'나레이션',text:'역사 타임라인을 선택하여 소래염전이 어떻게 변화했는지 시간 순서대로 확인해 보세요.',target:null}
+    ];
+    const eras = [
+      {title:'염전 조성',text:'1930년대 중반, 소래의 완만한 갯벌에 바닷물을 끌어들이는 염전이 조성되었습니다. 이 과정은 일제강점기의 소금 증산과 자원 수탈이라는 역사적 배경과 함께 살펴보아야 합니다.'},
+      {title:'천일염 생산',text:'바닷물은 저수지에서 증발지를 거쳐 결정지로 이동했습니다. 햇빛과 바람으로 수분을 줄인 뒤 생긴 소금 결정을 노동자들이 모았습니다.'},
+      {title:'저장과 운반',text:'생산된 소금은 소금창고에 보관되고, 좁은 궤도와 운반 수레, 배 등의 수단을 통해 다른 지역으로 이동했습니다. 소염교 일대에도 이러한 운반의 기억이 남아 있습니다.'},
+      {title:'습지생태공원',text:'1996년 소금 생산이 중단된 뒤, 폐염전과 갯벌은 생물의 서식지와 자연학습장으로 복원되었습니다. 오늘날에는 염전의 역사와 습지 생태를 함께 관찰할 수 있습니다.'}
+    ];
+    let currentIndex=0;
+    let dialogueFinished=false;
+    const visited=new Set();
+    const dialogueBox=document.getElementById('dialogue-box');
+
+    function renderDialogue(){
+      const item=dialogues[currentIndex];
+      document.getElementById('speaker-name').textContent=item.speaker;
+      document.getElementById('dialogue-text').textContent=item.text;
+      document.querySelectorAll('.char-wrapper').forEach(el=>{
+        el.classList.toggle('active',el.id===item.target);
+        el.classList.toggle('inactive',el.id!==item.target);
+      });
+    }
+    function advanceDialogue(){
+      if(currentIndex<dialogues.length-1){currentIndex++;renderDialogue();}
+      else{finishDialogue();}
+    }
+    function finishDialogue(){
+      if(dialogueFinished)return;
+      dialogueFinished=true;
+      dialogueBox.style.display='none';
+      document.getElementById('btn-skip').style.display='none';
+      document.querySelectorAll('.char-wrapper').forEach(el=>el.classList.remove('active','inactive'));
+      document.getElementById('timeline-zone').classList.add('visible');
+      document.getElementById('timeline-guide').style.display='block';
+      document.getElementById('visit-status').style.display='block';
+    }
+    function openEra(index){
+      const era=eras[index];
+      visited.add(index);
+      document.querySelectorAll('.era-button')[index].classList.add('visited');
+      document.getElementById('era-step').textContent=`역사 타임라인 ${index+1} / 4`;
+      document.getElementById('era-title').textContent=era.title;
+      document.getElementById('era-text').textContent=era.text;
+      document.getElementById('era-modal').classList.add('open');
+      document.getElementById('visit-count').textContent=visited.size;
+      if(visited.size===4){
+        document.getElementById('btn-next').style.display='block';
+        document.getElementById('btn-next').disabled=false;
+        document.getElementById('timeline-guide').textContent='역사 확인 완료! 다음 장면으로 이동할 수 있습니다.';
+      }
+    }
+    function closeEra(){document.getElementById('era-modal').classList.remove('open');}
+    dialogueBox.addEventListener('click',advanceDialogue);
+    dialogueBox.addEventListener('keydown',event=>{
+      if(event.key==='Enter'||event.key===' '){event.preventDefault();advanceDialogue();}
+    });
+    renderDialogue();
+  </script>
+</body>
+</html>

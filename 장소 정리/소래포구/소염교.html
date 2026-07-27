@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<!-- 원본 크기: 1000x500 -->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소염교 조형물</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      overflow: hidden;
+    }
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+<svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg"
+     role="img" aria-labelledby="title desc">
+  <title id="title">소염교를 상징하는 공공 조형물</title>
+  <desc id="desc">목재 아치교, 갯골의 물결, 소금 결정, 갈대와 철새, 소금 운반 선로를 하나로 결합한 조형물</desc>
+
+  <defs>
+    <linearGradient id="stoneTop" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d5d0c5"/>
+      <stop offset="0.45" stop-color="#aaa59b"/>
+      <stop offset="1" stop-color="#78766f"/>
+    </linearGradient>
+    <linearGradient id="stoneFace" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8f8c84"/>
+      <stop offset="0.5" stop-color="#716f69"/>
+      <stop offset="1" stop-color="#4f504d"/>
+    </linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#c68a4f"/>
+      <stop offset="0.35" stop-color="#9b6338"/>
+      <stop offset="0.72" stop-color="#6d432c"/>
+      <stop offset="1" stop-color="#42291f"/>
+    </linearGradient>
+    <linearGradient id="woodHighlight" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ead0a1" stop-opacity=".78"/>
+      <stop offset=".45" stop-color="#c48a50" stop-opacity=".34"/>
+      <stop offset="1" stop-color="#5a3727" stop-opacity=".1"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0" stop-color="#789b9a"/>
+      <stop offset=".3" stop-color="#426d70"/>
+      <stop offset=".7" stop-color="#284e53"/>
+      <stop offset="1" stop-color="#18373c"/>
+    </linearGradient>
+    <linearGradient id="rail" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b9c0bd"/>
+      <stop offset=".25" stop-color="#6f7776"/>
+      <stop offset="1" stop-color="#303838"/>
+    </linearGradient>
+    <linearGradient id="salt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".96"/>
+      <stop offset=".4" stop-color="#e5f7f7" stop-opacity=".74"/>
+      <stop offset=".75" stop-color="#b9d9dc" stop-opacity=".56"/>
+      <stop offset="1" stop-color="#7ba9ad" stop-opacity=".7"/>
+    </linearGradient>
+    <linearGradient id="reed" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a58f55"/>
+      <stop offset=".55" stop-color="#6e743f"/>
+      <stop offset="1" stop-color="#3f5336"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#172325" flood-opacity=".28"/>
+    </filter>
+    <filter id="crystalGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="baseClip">
+      <path d="M52 408 L931 408 L978 445 L947 489 L48 489 L20 450 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- 석재 받침대 -->
+  <g filter="url(#shadow)">
+    <path d="M52 408 L931 408 L978 445 L947 489 L48 489 L20 450 Z"
+          fill="url(#stoneFace)" stroke="#41423f" stroke-width="4"/>
+    <path d="M52 408 L931 408 L978 445 L72 445 L20 450 Z"
+          fill="url(#stoneTop)" stroke="#66645f" stroke-width="3"/>
+    <path d="M72 445 H978 L947 489 H48 Z" fill="#676761" opacity=".42"/>
+    <g clip-path="url(#baseClip)" opacity=".25" stroke="#ddd8ce" stroke-width="2">
+      <path d="M78 466 l190 -18 M310 480 l260 -28 M610 475 l260 -27"/>
+      <path d="M160 420 l-20 68 M520 412 l-12 77 M845 414 l-14 74"/>
+    </g>
+  </g>
+
+  <!-- 과거 소금 운반 협궤를 상징하는 두 줄 선로 -->
+  <g>
+    <path d="M138 434 C340 424 663 424 865 434"
+          fill="none" stroke="#252d2d" stroke-width="13" opacity=".4"/>
+    <path d="M138 428 C340 418 663 418 865 428"
+          fill="none" stroke="url(#rail)" stroke-width="7"/>
+    <path d="M138 450 C340 440 663 440 865 450"
+          fill="none" stroke="url(#rail)" stroke-width="7"/>
+    <g stroke="#3d4543" stroke-width="7" stroke-linecap="round">
+      <path d="M183 426 L181 450"/><path d="M245 423 L244 447"/>
+      <path d="M309 420 L309 445"/><path d="M376 418 L376 442"/>
+      <path d="M445 417 L445 441"/><path d="M516 417 L516 441"/>
+      <path d="M587 418 L587 442"/><path d="M657 419 L657 444"/>
+      <path d="M725 422 L724 446"/><path d="M790 424 L789 449"/>
+      <path d="M846 427 L844 451"/>
+    </g>
+    <g stroke="#d2d5cf" stroke-width="2" opacity=".5">
+      <path d="M138 426 C340 416 663 416 865 426"/>
+      <path d="M138 448 C340 438 663 438 865 448"/>
+    </g>
+  </g>
+
+  <!-- 소래 갯골의 물결과 습지 -->
+  <g fill="none" stroke-linecap="round">
+    <path d="M152 369 C251 319 330 401 421 355 S591 310 682 359 S822 395 899 342"
+          stroke="#173e45" stroke-width="29" opacity=".22"/>
+    <path d="M145 360 C245 310 326 392 418 346 S590 301 682 350 S820 385 901 332"
+          stroke="url(#metal)" stroke-width="20"/>
+    <path d="M150 356 C246 315 326 384 418 342 S590 307 681 346 S819 378 894 329"
+          stroke="#91b9b4" stroke-width="4" opacity=".72"/>
+    <path d="M216 390 C284 357 343 407 408 381 S534 346 610 381 S737 403 799 374"
+          stroke="#527f7e" stroke-width="10"/>
+    <path d="M220 386 C285 362 345 400 409 376 S532 353 608 377 S734 397 795 370"
+          stroke="#b0cfca" stroke-width="3" opacity=".65"/>
+  </g>
+
+  <!-- 목재 아치형 소염교 -->
+  <g filter="url(#shadow)">
+    <path d="M118 332 C276 120 698 91 884 318"
+          fill="none" stroke="#36241d" stroke-width="62" stroke-linecap="round"/>
+    <path d="M118 322 C279 111 696 84 884 307"
+          fill="none" stroke="url(#wood)" stroke-width="50" stroke-linecap="round"/>
+    <path d="M125 312 C286 119 693 94 877 300"
+          fill="none" stroke="url(#woodHighlight)" stroke-width="9" stroke-linecap="round"/>
+
+    <!-- 목재 이음과 결 -->
+    <g fill="none" stroke="#4b3024" stroke-width="5" opacity=".78">
+      <path d="M205 224 l35 34"/><path d="M300 159 l22 43"/>
+      <path d="M408 117 l11 47"/><path d="M525 102 l-2 48"/>
+      <path d="M643 118 l-15 46"/><path d="M754 168 l-27 41"/>
+      <path d="M836 246 l-37 30"/>
+    </g>
+    <g fill="none" stroke="#d6a36a" stroke-width="2.5" opacity=".5">
+      <path d="M169 271 C338 94 677 83 840 246"/>
+      <path d="M194 274 C345 128 661 111 814 258"/>
+    </g>
+
+    <!-- 교량을 지지하는 금속 기둥 -->
+    <g stroke="url(#metal)" stroke-width="13" stroke-linecap="round">
+      <path d="M191 241 L184 361"/>
+      <path d="M315 155 L311 354"/>
+      <path d="M450 111 L449 349"/>
+      <path d="M590 108 L591 346"/>
+      <path d="M724 155 L730 351"/>
+      <path d="M831 244 L842 348"/>
+    </g>
+    <g stroke="#95b1ad" stroke-width="3" opacity=".55">
+      <path d="M187 247 L180 358"/><path d="M311 160 L307 351"/>
+      <path d="M446 118 L445 346"/><path d="M586 115 L587 343"/>
+      <path d="M720 161 L726 348"/><path d="M827 249 L838 345"/>
+    </g>
+  </g>
+
+  <!-- 소금 결정 군집 -->
+  <g filter="url(#crystalGlow)" stroke="#dff6f5" stroke-width="3">
+    <path d="M73 382 L108 260 L151 322 L176 211 L215 316 L252 276 L271 389 Z"
+          fill="url(#salt)"/>
+    <path d="M91 382 L111 301 L137 344 L151 285 L176 351 L204 302 L229 384 Z"
+          fill="#f5ffff" opacity=".58"/>
+    <path d="M108 260 L151 322 L176 211 L179 348 L215 316"
+          fill="none" stroke="#fff" stroke-width="4" opacity=".72"/>
+    <path d="M73 382 L151 322 L271 389 M108 260 L176 351 L252 276"
+          fill="none" stroke="#8db8bd" stroke-width="2" opacity=".56"/>
+  </g>
+
+  <!-- 갈대 군락 -->
+  <g fill="none" stroke="url(#reed)" stroke-linecap="round">
+    <path d="M782 385 C772 322 776 270 757 207" stroke-width="8"/>
+    <path d="M813 389 C805 326 818 256 807 183" stroke-width="7"/>
+    <path d="M847 390 C840 323 859 283 861 222" stroke-width="8"/>
+    <path d="M879 388 C884 329 901 292 913 241" stroke-width="7"/>
+    <path d="M759 307 C735 286 728 267 716 245" stroke-width="5"/>
+    <path d="M808 293 C833 268 836 244 838 220" stroke-width="5"/>
+    <path d="M861 315 C886 297 897 278 905 258" stroke-width="5"/>
+    <path d="M879 335 C852 318 843 299 836 282" stroke-width="5"/>
+  </g>
+  <g fill="#8f7842" stroke="#5b5b34" stroke-width="2">
+    <path d="M743 209 C742 185 758 168 770 181 C778 193 768 211 757 219 Z"/>
+    <path d="M795 186 C794 158 811 140 824 156 C831 172 819 189 807 199 Z"/>
+    <path d="M849 225 C850 198 869 182 880 199 C885 215 873 230 861 239 Z"/>
+    <path d="M901 244 C905 216 923 204 933 222 C936 238 925 251 913 258 Z"/>
+  </g>
+  <g fill="#74814a" opacity=".9">
+    <path d="M731 282 Q749 277 758 298 Q738 299 731 282"/>
+    <path d="M817 272 Q797 269 791 291 Q811 290 817 272"/>
+    <path d="M869 299 Q891 294 898 315 Q878 316 869 299"/>
+  </g>
+
+  <!-- 철새의 추상 형상 -->
+  <g fill="none" stroke="#294f53" stroke-width="8" stroke-linecap="round">
+    <path d="M775 142 Q798 119 822 142 Q845 117 869 139"/>
+    <path d="M850 99 Q867 82 885 100 Q903 82 920 98"/>
+  </g>
+  <g fill="none" stroke="#9bb7b2" stroke-width="2.5" opacity=".7">
+    <path d="M777 138 Q798 122 821 138 Q844 122 866 136"/>
+    <path d="M852 96 Q868 86 884 97 Q901 87 917 95"/>
+  </g>
+
+  <!-- 재료와 형태를 결속하는 작은 금속 매듭 -->
+  <g fill="#b18b58" stroke="#604a36" stroke-width="3">
+    <circle cx="185" cy="360" r="10"/><circle cx="311" cy="354" r="10"/>
+    <circle cx="449" cy="349" r="10"/><circle cx="591" cy="346" r="10"/>
+    <circle cx="730" cy="351" r="10"/><circle cx="842" cy="348" r="10"/>
+  </g>
+</svg>
+</body>
+</html>

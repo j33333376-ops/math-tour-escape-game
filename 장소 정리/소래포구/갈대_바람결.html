@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<!-- 원본 크기: 420x500 -->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    html,body{margin:0;width:420px;height:500px;background:transparent;overflow:hidden}
+    svg{width:420px;height:500px;display:block}
+    .reed{transform-origin:bottom center;animation:sway 3.4s ease-in-out infinite alternate}
+    .reed:nth-child(2n){animation-duration:4.2s;animation-delay:-1.8s}
+    @keyframes sway{from{transform:rotate(-4deg) translateX(-4px)}to{transform:rotate(7deg) translateX(9px)}}
+    @media(prefers-reduced-motion:reduce){.reed{animation:none}}
+  </style>
+</head>
+<body>
+<svg viewBox="0 0 420 500" xmlns="http://www.w3.org/2000/svg" aria-label="바람에 크게 흔들리는 갈대">
+  <g fill="none" stroke-linecap="round">
+    <g class="reed"><path d="M45 500Q48 246 74 98" stroke="#607642" stroke-width="10"/><ellipse cx="77" cy="76" rx="17" ry="48" fill="#b28b4f" transform="rotate(12 77 76)"/><path d="M51 333q-40-31-43-70M55 290q45-40 55-76" stroke="#718d4f" stroke-width="13"/></g>
+    <g class="reed"><path d="M123 500Q111 270 137 138" stroke="#536b3d" stroke-width="9"/><ellipse cx="141" cy="116" rx="16" ry="44" fill="#c19a5b" transform="rotate(8 141 116)"/><path d="M119 360q-39-39-48-81M122 319q39-25 55-64" stroke="#728b4f" stroke-width="12"/></g>
+    <g class="reed"><path d="M205 500Q224 244 216 76" stroke="#5f743f" stroke-width="10"/><ellipse cx="215" cy="52" rx="17" ry="48" fill="#aa8147" transform="rotate(-4 215 52)"/><path d="M214 344q-48-30-58-70M217 278q46-28 60-72" stroke="#7c9254" stroke-width="13"/></g>
+    <g class="reed"><path d="M292 500Q273 291 304 149" stroke="#50683a" stroke-width="10"/><ellipse cx="309" cy="125" rx="17" ry="47" fill="#be9454" transform="rotate(14 309 125)"/><path d="M282 364q-41-28-53-68M289 306q43-32 64-77" stroke="#6f874b" stroke-width="12"/></g>
+    <g class="reed"><path d="M375 500Q368 256 351 101" stroke="#617642" stroke-width="9"/><ellipse cx="348" cy="78" rx="16" ry="45" fill="#ac8248" transform="rotate(-10 348 78)"/><path d="M369 352q-41-35-51-79M364 285q36-37 48-77" stroke="#758d50" stroke-width="12"/></g>
+  </g>
+</svg>
+</body>
+</html>

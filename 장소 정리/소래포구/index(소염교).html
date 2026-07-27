@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소염교 MATHTOUR</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+    :root {
+      --gold: #e2bd57;
+      --deep-red: #7c2728;
+      --cream: #fff9e9;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; }
+    body {
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: #172c2d;
+      font-family: "Noto Sans KR", sans-serif;
+    }
+    #intro {
+      position: relative;
+      width: min(100vw, 1066px);
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      isolation: isolate;
+      background: #7e9d91;
+      box-shadow: 0 24px 70px rgba(0,0,0,.55);
+    }
+    .background {
+      position: absolute;
+      inset: 0;
+      z-index: -4;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transform: scale(1.03);
+      animation: slowZoom 14s ease-in-out infinite alternate;
+    }
+    #intro::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -3;
+      background:
+        linear-gradient(90deg, rgba(8,24,25,.82) 0%, rgba(8,24,25,.51) 43%, rgba(8,24,25,.08) 76%),
+        linear-gradient(0deg, rgba(7,18,19,.72), transparent 43%),
+        radial-gradient(circle at 76% 38%, transparent 0 23%, rgba(7,22,22,.2) 63%);
+    }
+    #intro::after {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      z-index: 8;
+      border: 1px solid rgba(226,189,87,.58);
+      pointer-events: none;
+    }
+    @keyframes slowZoom {
+      from { transform: scale(1.03); }
+      to { transform: scale(1.09); }
+    }
+    .course-label {
+      position: absolute;
+      top: 42px;
+      left: 58px;
+      margin: 0;
+      color: var(--gold);
+      font-size: clamp(.72rem, 1.4vw, .95rem);
+      font-weight: 700;
+      letter-spacing: .32em;
+    }
+    .hero {
+      position: absolute;
+      top: 50%;
+      left: 58px;
+      z-index: 2;
+      width: min(54%, 560px);
+      transform: translateY(-48%);
+      color: white;
+    }
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 10px;
+      color: #f4dda1;
+      font: 700 clamp(.76rem, 1.5vw, 1rem) "Noto Sans KR", sans-serif;
+      letter-spacing: .16em;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 38px;
+      height: 1px;
+      background: var(--gold);
+    }
+    h1 {
+      margin: 0;
+      color: var(--cream);
+      font: 800 clamp(3.1rem, 8vw, 6rem)/1 "Nanum Myeongjo", serif;
+      letter-spacing: -.04em;
+      text-shadow: 0 5px 22px rgba(0,0,0,.55);
+    }
+    .subtitle {
+      margin: 13px 0 0;
+      color: #fff4d5;
+      font: 700 clamp(1rem, 2.5vw, 1.55rem) "Nanum Myeongjo", serif;
+      letter-spacing: .05em;
+    }
+    .question {
+      max-width: 470px;
+      margin: 28px 0 32px;
+      padding: 15px 18px;
+      border-left: 3px solid var(--gold);
+      background: rgba(18,27,26,.42);
+      color: rgba(255,255,255,.93);
+      font-size: clamp(.82rem, 1.65vw, 1.05rem);
+      line-height: 1.75;
+      backdrop-filter: blur(3px);
+    }
+    .question strong { color: #ffe096; }
+    .start-button {
+      position: relative;
+      min-width: 220px;
+      padding: 15px 44px;
+      border: 1px solid var(--gold);
+      border-radius: 4px;
+      background: linear-gradient(135deg, #8c3030, #691e20);
+      color: white;
+      box-shadow: 0 12px 28px rgba(0,0,0,.38), inset 0 1px rgba(255,255,255,.18);
+      font-size: clamp(1.05rem, 2vw, 1.3rem);
+      font-weight: 700;
+      letter-spacing: .16em;
+      cursor: pointer;
+      transition: transform .2s, filter .2s, box-shadow .2s;
+    }
+    .start-button::after {
+      content: "→";
+      display: inline-block;
+      margin-left: 18px;
+      transition: transform .2s;
+    }
+    .start-button:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.1);
+      box-shadow: 0 17px 34px rgba(0,0,0,.5), 0 0 0 4px rgba(226,189,87,.16);
+    }
+    .start-button:hover::after { transform: translateX(5px); }
+    .start-button:focus-visible { outline: 3px solid white; outline-offset: 4px; }
+    .clue {
+      position: absolute;
+      right: 45px;
+      bottom: 37px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: rgba(255,255,255,.88);
+      font-size: clamp(.7rem, 1.35vw, .9rem);
+      text-shadow: 0 2px 8px #000;
+    }
+    .clue-icon {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      color: var(--gold);
+      font-family: "Nanum Myeongjo", serif;
+      font-size: 19px;
+      animation: glow 2s ease-in-out infinite;
+    }
+    @keyframes glow {
+      50% { box-shadow: 0 0 0 7px rgba(226,189,87,.12); }
+    }
+    @media (max-width: 650px) {
+      .course-label { top: 25px; left: 30px; }
+      .hero { left: 30px; width: 68%; }
+      .question { margin: 16px 0 18px; padding: 9px 12px; line-height: 1.5; }
+      .start-button { min-width: 170px; padding: 10px 24px; }
+      .clue { right: 25px; bottom: 24px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .background, .clue-icon { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <main id="intro">
+    <img class="background" src="소염교_배경.png" alt="소염교와 소래습지의 갯골 및 갈대 풍경">
+
+    <p class="course-label">SORAEPOGU MATHTOUR · F COURSE</p>
+
+    <section class="hero" aria-labelledby="title">
+      <p class="eyebrow">자연·역사·수학을 잇는 다리</p>
+      <h1 id="title">소염교</h1>
+      <p class="subtitle">다리 이름에 숨은 소금의 기억</p>
+      <p class="question">
+        소래포구와 습지를 잇는 이 다리는 왜 <strong>‘소염교’</strong>라고 불릴까요?<br>
+        사람들의 움직임과 오래된 염전의 흔적에서 수학적 단서를 찾아보세요.
+      </p>
+      <button class="start-button" type="button" onclick="window.location.href='F01.html'">
+        탐험 시작
+      </button>
+    </section>
+
+    <div class="clue" aria-hidden="true">
+      <span class="clue-icon">?</span>
+      <span>소금이 지나던 길을 따라가 보세요</span>
+    </div>
+  </main>
+</body>
+</html>
