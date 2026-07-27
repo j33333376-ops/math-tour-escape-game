@@ -1,0 +1,4981 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="소래포구의 네온 밤바다를 배경으로 등차수열의 일반항과 합의 원리를 게임으로 학습하는 인터랙티브 수학 미션" />
+  <title>매쓰투어 미션 | 누렁이를 찾아라!</title>
+
+  <style>
+    :root {
+      --navy-950: #102a43;
+      --navy-900: #173f5f;
+      --blue-600: #2878d0;
+      --blue-100: #eaf5ff;
+      --teal-700: #168b88;
+      --teal-500: #36b9b3;
+      --teal-100: #e7fbf8;
+      --coral-700: #d85249;
+      --coral-500: #ff7468;
+      --coral-100: #fff0ed;
+      --yellow-500: #ffd261;
+      --yellow-100: #fff8dc;
+      --red-700: #c73e3a;
+      --red-100: #fff0ef;
+      --green-700: #187a57;
+      --green-100: #eafaf2;
+      --white: #ffffff;
+      --gray-900: #25364b;
+      --gray-700: #52657c;
+      --gray-500: #7b8ba0;
+      --gray-300: #d6e0e9;
+      --gray-200: #e8eef3;
+      --gray-100: #f5f8fb;
+      --shadow-soft: 0 14px 40px rgba(20, 55, 83, 0.11);
+      --shadow-card: 0 22px 60px rgba(20, 55, 83, 0.15);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--gray-900);
+      font-family:
+        "Pretendard",
+        "Noto Sans KR",
+        "Apple SD Gothic Neo",
+        "Malgun Gothic",
+        system-ui,
+        sans-serif;
+      background:
+        radial-gradient(circle at 8% 4%, rgba(255, 210, 97, 0.38), transparent 23rem),
+        radial-gradient(circle at 93% 12%, rgba(54, 185, 179, 0.24), transparent 26rem),
+        linear-gradient(145deg, #f7fcff 0%, #eef9ff 48%, #fff8ef 100%);
+    }
+
+    body::before {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      content: "";
+      opacity: 0.45;
+      background-image:
+        linear-gradient(rgba(23, 63, 95, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 63, 95, 0.035) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, black 0%, transparent 92%);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+    }
+
+    button,
+    input[type="range"] {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    .app {
+      width: min(1180px, calc(100% - 30px));
+      margin: 0 auto;
+      padding: 30px 0 56px;
+      transition: opacity 0.65s ease, transform 0.65s ease, filter 0.65s ease;
+    }
+
+    .app.is-leaving {
+      opacity: 0;
+      filter: blur(9px);
+      transform: translateY(-24px) scale(0.985);
+      pointer-events: none;
+    }
+
+    .hero {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 8px 14px;
+      border: 1px solid rgba(40, 120, 208, 0.15);
+      border-radius: 999px;
+      color: var(--blue-600);
+      font-size: 0.86rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: 0 8px 20px rgba(40, 120, 208, 0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 840px;
+      margin-bottom: 10px;
+      color: var(--navy-950);
+      font-size: clamp(2rem, 5vw, 3.55rem);
+      line-height: 1.14;
+      letter-spacing: -0.045em;
+      word-break: keep-all;
+    }
+
+    .title-accent {
+      position: relative;
+      display: inline-block;
+      color: var(--coral-700);
+    }
+
+    .title-accent::after {
+      position: absolute;
+      right: 0;
+      bottom: 2px;
+      left: 0;
+      z-index: -1;
+      height: 13px;
+      border-radius: 999px;
+      content: "";
+      opacity: 0.62;
+      background: var(--yellow-500);
+      transform: rotate(-1.3deg);
+    }
+
+    .hero-description {
+      max-width: 780px;
+      margin-bottom: 0;
+      color: var(--gray-700);
+      font-size: clamp(1rem, 2vw, 1.08rem);
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+
+    .hero-emblem {
+      flex: 0 0 auto;
+      display: grid;
+      width: 118px;
+      height: 118px;
+      place-items: center;
+      border: 7px solid rgba(255, 255, 255, 0.92);
+      border-radius: 34px;
+      color: var(--white);
+      background: linear-gradient(145deg, var(--coral-500), #ff9a6f);
+      box-shadow: 0 19px 38px rgba(255, 116, 104, 0.3);
+      transform: rotate(4deg);
+    }
+
+    .hero-emblem span {
+      display: block;
+      text-align: center;
+    }
+
+    .emblem-icon {
+      font-size: 2.35rem;
+      line-height: 1;
+    }
+
+    .emblem-label {
+      margin-top: 7px;
+      font-size: 0.78rem;
+      font-weight: 1000;
+      letter-spacing: 0.08em;
+    }
+
+    .story-banner {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 17px;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 20px 22px;
+      border: 1px solid rgba(23, 63, 95, 0.1);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(12px);
+    }
+
+    .story-icon {
+      display: grid;
+      width: 60px;
+      height: 60px;
+      place-items: center;
+      border-radius: 19px;
+      font-size: 2rem;
+      background: linear-gradient(145deg, var(--yellow-100), #ffe7a0);
+    }
+
+    .story-copy strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--navy-950);
+      font-size: 1.04rem;
+      line-height: 1.5;
+    }
+
+    .story-copy p {
+      margin-bottom: 0;
+      color: var(--gray-700);
+      font-size: 0.94rem;
+      line-height: 1.62;
+      word-break: keep-all;
+    }
+
+    .goal-chip {
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--coral-700);
+      font-size: 0.88rem;
+      font-weight: 1000;
+      white-space: nowrap;
+      background: var(--coral-100);
+    }
+
+    .stepper-wrap {
+      margin-bottom: 20px;
+      padding: 16px;
+      border: 1px solid rgba(23, 63, 95, 0.1);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .stepper {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .step-item {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 8px 12px;
+      color: var(--gray-500);
+      text-align: center;
+    }
+
+    .step-item:not(:last-child)::after {
+      position: absolute;
+      top: 50%;
+      right: -14px;
+      width: 28px;
+      height: 2px;
+      content: "";
+      background: var(--gray-300);
+      transform: translateY(-50%);
+      transition: background 0.3s ease;
+    }
+
+    .step-number {
+      position: relative;
+      z-index: 1;
+      flex: 0 0 auto;
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border: 2px solid var(--gray-300);
+      border-radius: 50%;
+      color: var(--gray-500);
+      font-size: 0.88rem;
+      font-weight: 1000;
+      background: var(--white);
+      transition: color 0.28s ease, border-color 0.28s ease, background 0.28s ease, transform 0.28s ease;
+    }
+
+    .step-text {
+      min-width: 0;
+      font-size: 0.91rem;
+      font-weight: 900;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+
+    .step-item.is-active {
+      color: var(--blue-600);
+    }
+
+    .step-item.is-active .step-number {
+      color: var(--white);
+      border-color: var(--blue-600);
+      background: var(--blue-600);
+      box-shadow: 0 7px 17px rgba(40, 120, 208, 0.27);
+      transform: scale(1.08);
+    }
+
+    .step-item.is-complete {
+      color: var(--teal-700);
+    }
+
+    .step-item.is-complete .step-number {
+      color: var(--white);
+      border-color: var(--teal-500);
+      background: var(--teal-500);
+    }
+
+    .step-item.is-complete:not(:last-child)::after {
+      background: var(--teal-500);
+    }
+
+    .stage-shell {
+      min-height: 640px;
+      border: 1px solid rgba(23, 63, 95, 0.11);
+      border-radius: var(--radius-xl);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: var(--shadow-card);
+      backdrop-filter: blur(15px);
+    }
+
+    .stage {
+      padding: clamp(22px, 4vw, 42px);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.34s ease, transform 0.34s ease;
+    }
+
+    .stage.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .stage-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 26px;
+    }
+
+    .stage-heading-copy {
+      max-width: 850px;
+    }
+
+    .stage-kicker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      color: var(--coral-700);
+      font-size: 0.84rem;
+      font-weight: 1000;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .stage-kicker::before {
+      width: 26px;
+      height: 4px;
+      border-radius: 999px;
+      content: "";
+      background: currentColor;
+    }
+
+    .stage h2 {
+      margin-bottom: 10px;
+      color: var(--navy-950);
+      font-size: clamp(1.55rem, 4vw, 2.25rem);
+      line-height: 1.26;
+      letter-spacing: -0.035em;
+      word-break: keep-all;
+    }
+
+    .stage-heading p {
+      margin-bottom: 0;
+      color: var(--gray-700);
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+
+    .stage-badge {
+      flex: 0 0 auto;
+      display: grid;
+      width: 64px;
+      height: 64px;
+      place-items: center;
+      border-radius: 20px;
+      font-size: 2rem;
+      background: linear-gradient(145deg, var(--blue-100), var(--teal-100));
+    }
+
+    .panel {
+      border: 1px solid rgba(23, 63, 95, 0.09);
+      border-radius: var(--radius-lg);
+      background: var(--white);
+      box-shadow: 0 10px 28px rgba(20, 55, 83, 0.07);
+    }
+
+    .info-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .info-tile {
+      padding: 17px;
+      border: 1px solid rgba(23, 63, 95, 0.08);
+      border-radius: var(--radius-md);
+      background: var(--gray-100);
+    }
+
+    .info-tile:nth-child(2) {
+      background: var(--yellow-100);
+    }
+
+    .info-tile:nth-child(3) {
+      background: var(--teal-100);
+    }
+
+    .info-tile span {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--gray-500);
+      font-size: 0.8rem;
+      font-weight: 900;
+    }
+
+    .info-tile strong {
+      color: var(--navy-950);
+      font-size: 1.18rem;
+      line-height: 1.4;
+    }
+
+    .stage-one-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .observation-panel,
+    .sequence-panel,
+    .formula-input-panel,
+    .final-question-panel {
+      padding: 23px;
+    }
+
+    .observation-panel {
+      background:
+        radial-gradient(circle at 90% 8%, rgba(54, 185, 179, 0.13), transparent 8rem),
+        linear-gradient(145deg, #fbfeff, #f3fbff);
+    }
+
+    .sequence-panel,
+    .final-question-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 8px;
+      color: var(--navy-950);
+      font-size: 1.04rem;
+      font-weight: 1000;
+    }
+
+    .panel-description {
+      margin-bottom: 19px;
+      color: var(--gray-700);
+      font-size: 0.91rem;
+      line-height: 1.6;
+      word-break: keep-all;
+    }
+
+    .privacy-note {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 22px;
+      padding: 11px 13px;
+      border-radius: var(--radius-sm);
+      color: var(--teal-700);
+      font-size: 0.82rem;
+      font-weight: 900;
+      line-height: 1.5;
+      background: var(--teal-100);
+    }
+
+    .term-display {
+      display: grid;
+      min-height: 180px;
+      margin-bottom: 22px;
+      padding: 22px;
+      place-items: center;
+      border: 2px dashed rgba(40, 120, 208, 0.24);
+      border-radius: 22px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    .term-minute {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--gray-700);
+      font-weight: 900;
+    }
+
+    .term-value {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 7px;
+      color: var(--coral-700);
+    }
+
+    .term-value strong {
+      font-size: clamp(3rem, 8vw, 4.5rem);
+      line-height: 1;
+      letter-spacing: -0.06em;
+    }
+
+    .term-value span {
+      font-size: 1.05rem;
+      font-weight: 1000;
+    }
+
+    .term-caption {
+      margin-top: 10px;
+      color: var(--gray-500);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .slider-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 11px;
+      color: var(--navy-900);
+      font-size: 0.9rem;
+      font-weight: 900;
+    }
+
+    .term-slider {
+      width: 100%;
+      height: 12px;
+      margin: 3px 0 8px;
+      border-radius: 999px;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      background:
+        linear-gradient(
+          to right,
+          var(--coral-500) 0%,
+          var(--coral-500) var(--slider-fill, 0%),
+          var(--gray-200) var(--slider-fill, 0%),
+          var(--gray-200) 100%
+        );
+    }
+
+    .term-slider::-webkit-slider-thumb {
+      width: 31px;
+      height: 31px;
+      border: 5px solid var(--white);
+      border-radius: 50%;
+      appearance: none;
+      -webkit-appearance: none;
+      background: var(--coral-500);
+      box-shadow: 0 6px 14px rgba(216, 82, 73, 0.3), 0 0 0 2px rgba(255, 116, 104, 0.15);
+    }
+
+    .term-slider::-moz-range-thumb {
+      width: 21px;
+      height: 21px;
+      border: 5px solid var(--white);
+      border-radius: 50%;
+      background: var(--coral-500);
+      box-shadow: 0 6px 14px rgba(216, 82, 73, 0.3), 0 0 0 2px rgba(255, 116, 104, 0.15);
+    }
+
+    .term-slider:focus-visible {
+      box-shadow: 0 0 0 5px rgba(40, 120, 208, 0.16);
+    }
+
+    .slider-marks {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 5px;
+      color: var(--gray-500);
+      font-size: 0.75rem;
+      font-weight: 900;
+    }
+
+    .sequence-cards {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .sequence-card {
+      position: relative;
+      padding: 15px 9px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      text-align: center;
+      background: var(--gray-100);
+      transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    }
+
+    .sequence-card:not(:last-child)::after {
+      position: absolute;
+      top: 50%;
+      right: -11px;
+      z-index: 2;
+      color: var(--coral-500);
+      font-size: 0.9rem;
+      font-weight: 1000;
+      content: "−10";
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .sequence-card label,
+    .fixed-label {
+      display: block;
+      margin-bottom: 9px;
+      color: var(--gray-700);
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .sequence-fixed {
+      display: grid;
+      width: 100%;
+      height: 48px;
+      place-items: center;
+      color: var(--navy-950);
+      font-size: 1.4rem;
+      font-weight: 1000;
+    }
+
+    .sequence-input,
+    .formula-field input,
+    .answer-input,
+    .coefficient-input {
+      width: 100%;
+      border: 2px solid var(--gray-300);
+      border-radius: 12px;
+      outline: none;
+      color: var(--navy-950);
+      font-weight: 1000;
+      background: var(--white);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .sequence-input {
+      height: 48px;
+      font-size: 1.15rem;
+      text-align: center;
+    }
+
+    .sequence-input:focus,
+    .formula-field input:focus,
+    .answer-input:focus,
+    .coefficient-input:focus {
+      border-color: var(--blue-600);
+      box-shadow: 0 0 0 4px rgba(40, 120, 208, 0.12);
+    }
+
+    .sequence-card.is-error,
+    .formula-field.is-error {
+      border-color: rgba(199, 62, 58, 0.55);
+      background: var(--red-100);
+      animation: shake 0.38s ease;
+    }
+
+    .sequence-card.is-error input,
+    .formula-field.is-error input {
+      border-color: var(--red-700);
+    }
+
+    .sequence-card.is-correct,
+    .formula-field.is-correct {
+      border-color: rgba(24, 122, 87, 0.35);
+      background: var(--green-100);
+    }
+
+    .sequence-card.is-correct input,
+    .formula-field.is-correct input {
+      border-color: var(--green-700);
+    }
+
+    .field-hint {
+      min-height: 37px;
+      margin: 0 0 16px;
+      padding: 10px 12px;
+      border-radius: 11px;
+      color: var(--gray-700);
+      font-size: 0.84rem;
+      font-weight: 800;
+      line-height: 1.5;
+      background: var(--gray-100);
+    }
+
+    .field-hint.is-error {
+      color: var(--red-700);
+      background: var(--red-100);
+    }
+
+    /* 1단계 추가 활동: 일반항 전개 */
+    .general-term-lab {
+      margin-top: 18px;
+      padding: 20px;
+      border: 2px solid rgba(40, 120, 208, 0.14);
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at 90% 12%, rgba(255, 210, 97, 0.22), transparent 8rem),
+        linear-gradient(145deg, #f8fcff, var(--blue-100));
+      animation: revealUp 0.38s ease both;
+    }
+
+    .general-term-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      margin-bottom: 15px;
+    }
+
+    .general-term-icon {
+      flex: 0 0 auto;
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 13px;
+      font-size: 1.35rem;
+      background: var(--yellow-100);
+    }
+
+    .general-term-heading h3 {
+      margin-bottom: 5px;
+      color: var(--navy-950);
+      font-size: 1.02rem;
+      line-height: 1.45;
+    }
+
+    .general-term-heading p {
+      margin-bottom: 0;
+      color: var(--gray-700);
+      font-size: 0.84rem;
+      font-weight: 800;
+      line-height: 1.55;
+      word-break: keep-all;
+    }
+
+    .coefficient-concept {
+      margin-bottom: 14px;
+      padding: 11px 13px;
+      border-radius: 13px;
+      color: var(--teal-700);
+      font-size: 0.84rem;
+      font-weight: 900;
+      line-height: 1.55;
+      background: var(--teal-100);
+    }
+
+    .derivation-box {
+      display: grid;
+      gap: 9px;
+      padding: 15px;
+      border: 1px solid rgba(23, 63, 95, 0.09);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.82);
+    }
+
+    .derivation-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 46px;
+      padding: 9px 12px;
+      border-radius: 12px;
+      color: var(--navy-950);
+      font-size: clamp(1rem, 2.7vw, 1.22rem);
+      font-weight: 1000;
+      line-height: 1.55;
+      text-align: center;
+      background: var(--gray-100);
+    }
+
+    .derivation-line.question-line {
+      border: 2px dashed rgba(216, 82, 73, 0.25);
+      background: var(--yellow-100);
+    }
+
+    .inline-coefficient {
+      display: inline-flex;
+      width: 82px;
+      align-items: center;
+    }
+
+    .coefficient-input {
+      height: 44px;
+      padding: 0 7px;
+      font-size: 1.08rem;
+      text-align: center;
+    }
+
+    .coefficient-input.is-error {
+      border-color: var(--red-700);
+      background: var(--red-100);
+      animation: shake 0.38s ease;
+    }
+
+    .coefficient-input.is-correct {
+      border-color: var(--green-700);
+      background: var(--green-100);
+    }
+
+    .coefficient-caption {
+      margin: 11px 0 0;
+      color: var(--gray-700);
+      font-size: 0.82rem;
+      font-weight: 800;
+      line-height: 1.55;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .general-term-result {
+      margin-top: 14px;
+      padding: 15px;
+      border: 1px solid rgba(24, 122, 87, 0.18);
+      border-radius: 14px;
+      color: var(--green-700);
+      font-size: 0.87rem;
+      font-weight: 900;
+      line-height: 1.65;
+      background: var(--green-100);
+      animation: revealUp 0.35s ease both;
+    }
+
+    .general-term-result strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--navy-950);
+      font-size: clamp(1.02rem, 2.6vw, 1.22rem);
+      text-align: center;
+    }
+
+    .general-term-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 11px;
+      margin-top: 18px;
+    }
+
+    .primary-button,
+    .secondary-button,
+    .mini-button {
+      font-weight: 1000;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease, border-color 0.18s ease;
+    }
+
+    .primary-button,
+    .secondary-button {
+      min-height: 52px;
+      padding: 0 21px;
+      border-radius: 15px;
+    }
+
+    .primary-button {
+      color: var(--white);
+      background: linear-gradient(135deg, var(--navy-900), var(--blue-600));
+      box-shadow: 0 12px 24px rgba(40, 120, 208, 0.24);
+    }
+
+    .primary-button:hover:not(:disabled) {
+      box-shadow: 0 15px 28px rgba(40, 120, 208, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .secondary-button {
+      color: var(--navy-900);
+      border: 2px solid var(--gray-300);
+      background: var(--white);
+    }
+
+    .secondary-button:hover:not(:disabled) {
+      border-color: var(--blue-600);
+      transform: translateY(-2px);
+    }
+
+    .primary-button:focus-visible,
+    .secondary-button:focus-visible,
+    .mini-button:focus-visible,
+    .drag-card:focus-visible,
+    .drop-zone:focus-visible {
+      outline: 4px solid rgba(40, 120, 208, 0.2);
+      outline-offset: 3px;
+    }
+
+    .primary-button:disabled,
+    .secondary-button:disabled,
+    .mini-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .feedback {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-height: 59px;
+      margin-top: 15px;
+      padding: 14px 15px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      color: var(--gray-700);
+      font-size: 0.91rem;
+      font-weight: 850;
+      line-height: 1.58;
+      background: var(--gray-100);
+    }
+
+    .feedback-icon {
+      flex: 0 0 auto;
+      font-size: 1.15rem;
+      line-height: 1.45;
+    }
+
+    .feedback.is-error {
+      color: var(--red-700);
+      border-color: rgba(199, 62, 58, 0.18);
+      background: var(--red-100);
+      animation: shake 0.38s ease;
+    }
+
+    .feedback.is-success {
+      color: var(--blue-600);
+      border-color: rgba(40, 120, 208, 0.18);
+      background: var(--blue-100);
+    }
+
+    /* 2단계 드래그 앤 드롭 */
+    .pair-game {
+      padding: clamp(18px, 4vw, 28px);
+      border-radius: var(--radius-lg);
+      background:
+        radial-gradient(circle at 8% 8%, rgba(255, 210, 97, 0.22), transparent 12rem),
+        radial-gradient(circle at 92% 15%, rgba(54, 185, 179, 0.16), transparent 12rem),
+        linear-gradient(145deg, #fbfeff, #f5fbff);
+    }
+
+    .game-hud {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .game-rule {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      max-width: 735px;
+      padding: 13px 15px;
+      border-radius: 15px;
+      color: var(--navy-900);
+      font-size: 0.91rem;
+      font-weight: 850;
+      line-height: 1.6;
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: 0 8px 20px rgba(20, 55, 83, 0.06);
+    }
+
+    .game-rule-icon {
+      flex: 0 0 auto;
+      display: grid;
+      width: 35px;
+      height: 35px;
+      place-items: center;
+      border-radius: 11px;
+      background: var(--yellow-100);
+    }
+
+    .game-progress {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--teal-700);
+      font-size: 0.86rem;
+      font-weight: 1000;
+      background: var(--teal-100);
+    }
+
+    .game-progress-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--teal-500);
+      box-shadow: 0 0 0 5px rgba(54, 185, 179, 0.13);
+    }
+
+    .pair-board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .pair-lane {
+      min-width: 0;
+      padding: 15px 12px;
+      border: 2px solid rgba(40, 120, 208, 0.12);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 10px 25px rgba(20, 55, 83, 0.07);
+      transition: border-color 0.25s ease, transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .pair-lane.is-wrong {
+      border-color: rgba(199, 62, 58, 0.55);
+      background: var(--red-100);
+      animation: shake 0.38s ease;
+    }
+
+    .pair-lane.is-solved {
+      border-color: rgba(22, 139, 136, 0.46);
+      background: var(--teal-100);
+      box-shadow: 0 15px 30px rgba(22, 139, 136, 0.13);
+      transform: translateY(-3px);
+    }
+
+    .lane-number {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--gray-500);
+      font-size: 0.74rem;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .fixed-pair-card {
+      display: grid;
+      min-height: 72px;
+      place-items: center;
+      border: 2px solid rgba(40, 120, 208, 0.16);
+      border-radius: 17px;
+      color: var(--navy-950);
+      background: linear-gradient(145deg, var(--blue-100), #f4faff);
+    }
+
+    .fixed-pair-card strong {
+      display: block;
+      font-size: clamp(1.55rem, 4vw, 2rem);
+      line-height: 1;
+    }
+
+    .fixed-pair-card small {
+      display: block;
+      margin-top: 5px;
+      color: var(--gray-500);
+      font-size: 0.7rem;
+      font-weight: 900;
+    }
+
+    .pair-operator {
+      display: grid;
+      height: 42px;
+      place-items: center;
+      color: var(--teal-700);
+      font-size: 1.45rem;
+      font-weight: 1000;
+    }
+
+    .drop-zone {
+      display: grid;
+      min-height: 88px;
+      place-items: center;
+      padding: 7px;
+      border: 3px dashed var(--gray-300);
+      border-radius: 18px;
+      outline: none;
+      cursor: pointer;
+      background:
+        repeating-linear-gradient(-45deg, rgba(40, 120, 208, 0.025) 0, rgba(40, 120, 208, 0.025) 9px, transparent 9px, transparent 18px),
+        rgba(255, 255, 255, 0.78);
+      transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .drop-zone.is-keyboard-target {
+      border-color: rgba(40, 120, 208, 0.55);
+      background-color: var(--blue-100);
+    }
+
+    .drop-zone.is-over {
+      border-style: solid;
+      border-color: var(--coral-500);
+      background: var(--coral-100);
+      box-shadow: 0 0 0 6px rgba(255, 116, 104, 0.13);
+      transform: scale(1.045);
+    }
+
+    .drop-zone.is-filled {
+      border-style: solid;
+      border-color: rgba(54, 185, 179, 0.4);
+      background: rgba(231, 251, 248, 0.66);
+    }
+
+    .drop-placeholder {
+      display: grid;
+      gap: 5px;
+      place-items: center;
+      color: var(--gray-500);
+      font-size: 0.77rem;
+      font-weight: 900;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .drop-placeholder::before {
+      content: "↓";
+      color: var(--blue-600);
+      font-size: 1.4rem;
+      line-height: 1;
+      animation: dropArrow 1.4s ease-in-out infinite;
+    }
+
+    .drop-zone.is-filled .drop-placeholder {
+      display: none;
+    }
+
+    .sum-chip {
+      min-height: 38px;
+      margin-top: 10px;
+      padding: 8px 5px;
+      border-radius: 11px;
+      color: var(--gray-500);
+      font-size: 0.77rem;
+      font-weight: 1000;
+      line-height: 1.4;
+      text-align: center;
+      background: var(--gray-100);
+    }
+
+    .sum-chip.has-value {
+      color: var(--navy-900);
+      background: var(--yellow-100);
+    }
+
+    .pair-lane.is-solved .sum-chip {
+      color: var(--white);
+      background: var(--teal-500);
+    }
+
+    .card-tray-panel {
+      margin-top: 18px;
+      padding: 18px;
+      border: 2px solid rgba(23, 63, 95, 0.09);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.88);
+      transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card-tray-panel.is-over {
+      border-color: var(--blue-600);
+      background: var(--blue-100);
+      box-shadow: 0 0 0 6px rgba(40, 120, 208, 0.12);
+    }
+
+    .tray-heading {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 9px;
+      margin-bottom: 13px;
+    }
+
+    .tray-heading h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 0;
+      color: var(--navy-950);
+      font-size: 1rem;
+    }
+
+    .tray-heading p {
+      margin-bottom: 0;
+      color: var(--gray-500);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .card-tray {
+      display: flex;
+      min-height: 104px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 15px;
+      background: var(--gray-100);
+    }
+
+    .card-tray:empty::after {
+      content: "모든 카드가 위에 배치되었습니다.";
+      color: var(--gray-500);
+      font-size: 0.82rem;
+      font-weight: 900;
+    }
+
+    .drag-card {
+      position: relative;
+      display: grid;
+      width: 108px;
+      min-height: 76px;
+      padding: 10px 12px;
+      place-items: center;
+      border: 3px solid rgba(255, 116, 104, 0.32);
+      border-radius: 17px;
+      outline: none;
+      color: var(--navy-950);
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      background:
+        radial-gradient(circle at 22% 20%, rgba(255, 255, 255, 0.92), transparent 16px),
+        linear-gradient(145deg, #fff9ed, #ffe6d5);
+      box-shadow: 0 9px 20px rgba(216, 82, 73, 0.14), inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease, border-color 0.18s ease;
+    }
+
+    .drag-card::before {
+      position: absolute;
+      top: 8px;
+      left: 9px;
+      color: rgba(216, 82, 73, 0.38);
+      font-size: 0.7rem;
+      content: "⠿";
+    }
+
+    .drag-card:hover:not(:disabled) {
+      box-shadow: 0 14px 27px rgba(216, 82, 73, 0.21);
+      transform: translateY(-4px) rotate(-1deg);
+    }
+
+    .drag-card strong {
+      display: block;
+      font-size: 1.65rem;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .drag-card small {
+      display: block;
+      margin-top: 5px;
+      color: var(--coral-700);
+      font-size: 0.68rem;
+      font-weight: 1000;
+      pointer-events: none;
+    }
+
+    .drag-card.is-selected {
+      border-color: var(--blue-600);
+      box-shadow: 0 0 0 6px rgba(40, 120, 208, 0.15), 0 14px 27px rgba(40, 120, 208, 0.18);
+      transform: translateY(-5px);
+    }
+
+    .drag-card.is-dragging {
+      opacity: 0.25;
+    }
+
+    .drag-card.just-dropped {
+      animation: cardLand 0.42s ease;
+    }
+
+    .drop-zone .drag-card {
+      width: 100%;
+      min-height: 68px;
+    }
+
+    .drag-ghost {
+      position: fixed !important;
+      z-index: 3000 !important;
+      margin: 0 !important;
+      opacity: 0.94 !important;
+      pointer-events: none !important;
+      box-shadow: 0 24px 50px rgba(16, 42, 67, 0.28) !important;
+      transform: rotate(4deg) scale(1.06) !important;
+      transition: none !important;
+    }
+
+    body.is-card-dragging {
+      cursor: grabbing;
+      user-select: none;
+    }
+
+    .game-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 11px;
+      margin-top: 16px;
+    }
+
+    .game-controls-left,
+    .game-controls-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .mini-button {
+      min-height: 44px;
+      padding: 0 15px;
+      border: 2px solid var(--gray-300);
+      border-radius: 13px;
+      color: var(--navy-900);
+      font-size: 0.82rem;
+      background: var(--white);
+    }
+
+    .mini-button:hover:not(:disabled) {
+      border-color: var(--blue-600);
+      transform: translateY(-2px);
+    }
+
+    .equation-discovery {
+      margin-top: 22px;
+      padding: clamp(18px, 4vw, 26px);
+      border: 1px solid rgba(40, 120, 208, 0.12);
+      border-radius: var(--radius-lg);
+      background:
+        radial-gradient(circle at 88% 14%, rgba(255, 210, 97, 0.2), transparent 9rem),
+        var(--blue-100);
+      animation: revealUp 0.4s ease both;
+    }
+
+    .equation-discovery h3 {
+      margin-bottom: 15px;
+      color: var(--navy-950);
+      font-size: 1.08rem;
+      line-height: 1.55;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .equation-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .equation-line {
+      padding: 12px 14px;
+      border-radius: 12px;
+      opacity: 0;
+      color: var(--navy-950);
+      font-size: clamp(0.96rem, 2.5vw, 1.18rem);
+      font-weight: 1000;
+      line-height: 1.55;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.76);
+      transform: translateY(9px);
+      transition: opacity 0.38s ease, transform 0.38s ease;
+    }
+
+    .equation-line.is-shown {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .equation-line.final {
+      color: var(--coral-700);
+      background: var(--yellow-100);
+    }
+
+    .equation-explanation {
+      margin: 15px 0 0;
+      color: var(--gray-700);
+      font-size: 0.9rem;
+      font-weight: 800;
+      line-height: 1.65;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    /* 3단계 */
+    .formula-lesson {
+      display: grid;
+      gap: 20px;
+    }
+
+    .formula-definition {
+      padding: 22px;
+      border: 1px solid rgba(40, 120, 208, 0.13);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      background:
+        radial-gradient(circle at 12% 15%, rgba(54, 185, 179, 0.16), transparent 9rem),
+        linear-gradient(145deg, var(--blue-100), #f7fcff);
+    }
+
+    .formula-definition > span {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--gray-700);
+      font-size: 0.86rem;
+      font-weight: 900;
+    }
+
+    .formula-definition strong {
+      display: block;
+      color: var(--navy-950);
+      font-size: clamp(1.55rem, 5vw, 2.35rem);
+      line-height: 1.45;
+      letter-spacing: -0.03em;
+    }
+
+    .formula-definition p {
+      margin: 12px 0 0;
+      color: var(--gray-700);
+      font-size: 0.9rem;
+      font-weight: 800;
+      line-height: 1.6;
+    }
+
+    .formula-input-panel h3 {
+      margin-bottom: 7px;
+      color: var(--navy-950);
+      font-size: 1.08rem;
+    }
+
+    .formula-input-panel > p {
+      margin-bottom: 20px;
+      color: var(--gray-700);
+      font-size: 0.91rem;
+      line-height: 1.6;
+    }
+
+    .formula-field-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 21px;
+    }
+
+    .formula-field {
+      padding: 15px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      background: var(--gray-100);
+    }
+
+    .formula-field label {
+      display: block;
+      min-height: 38px;
+      margin-bottom: 8px;
+      color: var(--gray-700);
+      font-size: 0.78rem;
+      font-weight: 900;
+      line-height: 1.4;
+    }
+
+    .formula-field input {
+      height: 50px;
+      font-size: 1.15rem;
+      text-align: center;
+    }
+
+    .assembled-formula {
+      display: flex;
+      min-height: 77px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 17px;
+      border-radius: var(--radius-md);
+      color: var(--navy-950);
+      font-size: clamp(1rem, 3vw, 1.32rem);
+      font-weight: 1000;
+      line-height: 1.6;
+      background: var(--yellow-100);
+    }
+
+    .formula-slot {
+      display: inline-grid;
+      min-width: 52px;
+      min-height: 38px;
+      padding: 4px 9px;
+      place-items: center;
+      border: 2px dashed rgba(216, 82, 73, 0.35);
+      border-radius: 10px;
+      color: var(--coral-700);
+      background: var(--white);
+    }
+
+    .formula-error-list {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .formula-error-list li + li {
+      margin-top: 4px;
+    }
+
+    /* 4단계 */
+    .final-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.84fr) minmax(330px, 1.16fr);
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .math-evidence {
+      margin-bottom: 20px;
+      padding: 17px;
+      border-radius: var(--radius-md);
+      color: var(--navy-950);
+      font-size: clamp(1rem, 2.6vw, 1.2rem);
+      font-weight: 1000;
+      line-height: 1.65;
+      text-align: center;
+      background: var(--yellow-100);
+    }
+
+    .final-question {
+      margin-bottom: 19px;
+      color: var(--navy-950);
+      font-size: clamp(1.18rem, 3vw, 1.48rem);
+      font-weight: 1000;
+      line-height: 1.55;
+      word-break: keep-all;
+    }
+
+    .answer-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 11px;
+    }
+
+    .answer-wrap {
+      position: relative;
+    }
+
+    .answer-input {
+      height: 58px;
+      padding: 0 55px 0 17px;
+      font-size: 1.1rem;
+    }
+
+    .answer-unit {
+      position: absolute;
+      top: 50%;
+      right: 17px;
+      color: var(--gray-500);
+      font-weight: 1000;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .locked-visual {
+      display: grid;
+      min-height: 425px;
+      padding: 28px;
+      place-items: center;
+      border: 2px dashed rgba(23, 63, 95, 0.16);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 15%, rgba(54, 185, 179, 0.15), transparent 11rem),
+        linear-gradient(145deg, #f8fcff, #f4f8fb);
+    }
+
+    .lock-icon {
+      display: grid;
+      width: 85px;
+      height: 85px;
+      margin: 0 auto 18px;
+      place-items: center;
+      border-radius: 27px;
+      font-size: 2.8rem;
+      background: var(--blue-100);
+    }
+
+    .locked-visual h3 {
+      margin-bottom: 9px;
+      color: var(--navy-950);
+      font-size: 1.18rem;
+    }
+
+    .locked-visual p {
+      max-width: 390px;
+      margin: 0 auto;
+      color: var(--gray-700);
+      font-size: 0.92rem;
+      line-height: 1.65;
+      word-break: keep-all;
+    }
+
+    .verification-panel {
+      position: relative;
+      overflow: hidden;
+      min-height: 550px;
+      padding: 23px;
+      border-radius: var(--radius-lg);
+      color: var(--white);
+      background:
+        radial-gradient(circle at 50% 8%, rgba(255, 255, 255, 0.14), transparent 12rem),
+        linear-gradient(165deg, #173f5f 0%, #176078 52%, #168b88 100%);
+      box-shadow: 0 20px 42px rgba(20, 55, 83, 0.24);
+      animation: revealUp 0.45s ease both;
+    }
+
+    .verification-heading {
+      position: relative;
+      z-index: 2;
+      margin-bottom: 17px;
+    }
+
+    .verification-heading span {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--yellow-500);
+      font-size: 0.8rem;
+      font-weight: 1000;
+      letter-spacing: 0.06em;
+    }
+
+    .verification-heading h3 {
+      margin-bottom: 5px;
+      color: var(--white);
+      font-size: 1.3rem;
+    }
+
+    .verification-heading p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.84rem;
+      line-height: 1.55;
+    }
+
+    .verification-content {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 180px;
+      gap: 18px;
+    }
+
+    .live-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 13px;
+    }
+
+    .live-stat {
+      padding: 12px 9px;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 13px;
+      text-align: center;
+      background: rgba(6, 36, 55, 0.26);
+    }
+
+    .live-stat span {
+      display: block;
+      min-height: 31px;
+      margin-bottom: 5px;
+      color: rgba(255, 255, 255, 0.63);
+      font-size: 0.69rem;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .live-stat strong {
+      color: var(--yellow-500);
+      font-size: 1.13rem;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      gap: 9px;
+      align-items: center;
+      min-height: 53px;
+      padding: 9px 11px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 13px;
+      opacity: 0.34;
+      background: rgba(255, 255, 255, 0.06);
+      transform: translateX(-5px);
+      transition: opacity 0.35s ease, transform 0.35s ease, background 0.35s ease;
+    }
+
+    .timeline-item.is-revealed {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .timeline-item.is-current {
+      border-color: rgba(255, 210, 97, 0.58);
+      background: rgba(255, 210, 97, 0.14);
+    }
+
+    .timeline-minute {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 12px;
+      color: var(--navy-950);
+      font-size: 0.78rem;
+      font-weight: 1000;
+      background: var(--yellow-500);
+    }
+
+    .timeline-term {
+      color: var(--white);
+      font-size: 0.82rem;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+
+    .timeline-term small {
+      display: block;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+
+    .timeline-total {
+      color: var(--yellow-500);
+      font-size: 0.82rem;
+      font-weight: 1000;
+      white-space: nowrap;
+    }
+
+    .tower-scene {
+      position: relative;
+      display: flex;
+      min-height: 402px;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 35px 12px 10px;
+    }
+
+    .tower-track {
+      position: relative;
+      width: 108px;
+      height: 340px;
+      border: 5px solid rgba(255, 255, 255, 0.74);
+      border-bottom: 0;
+      border-radius: 55px 55px 12px 12px;
+      background:
+        repeating-linear-gradient(to bottom, transparent 0, transparent 27px, rgba(255, 255, 255, 0.13) 28px, rgba(255, 255, 255, 0.13) 30px),
+        rgba(255, 255, 255, 0.08);
+      box-shadow: 0 18px 28px rgba(0, 0, 0, 0.18);
+    }
+
+    .tower-top {
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      z-index: 5;
+      width: 132px;
+      height: 55px;
+      border: 4px solid rgba(255, 255, 255, 0.8);
+      border-radius: 44px 44px 14px 14px;
+      background: linear-gradient(180deg, #ff9d78, var(--coral-500));
+      transform: translateX(-50%);
+    }
+
+    .tower-top::before {
+      position: absolute;
+      top: -45px;
+      left: 50%;
+      width: 7px;
+      height: 48px;
+      border-radius: 999px;
+      content: "";
+      background: rgba(255, 255, 255, 0.86);
+      transform: translateX(-50%);
+    }
+
+    .tower-top::after {
+      position: absolute;
+      top: -43px;
+      left: calc(50% + 2px);
+      width: 34px;
+      height: 20px;
+      border-radius: 3px 12px 12px 3px;
+      content: "";
+      background: var(--yellow-500);
+      clip-path: polygon(0 0, 100% 20%, 78% 100%, 0 100%);
+    }
+
+    .tower-top-label {
+      position: absolute;
+      top: 17px;
+      left: 50%;
+      width: max-content;
+      color: var(--white);
+      font-size: 0.68rem;
+      font-weight: 1000;
+      transform: translateX(-50%);
+    }
+
+    .tower-fill {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 0%;
+      overflow: hidden;
+      border-radius: 0 0 7px 7px;
+      background: linear-gradient(180deg, rgba(255, 210, 97, 0.96), rgba(54, 185, 179, 0.9) 52%, rgba(40, 120, 208, 0.88));
+      transition: height 0.78s cubic-bezier(0.22, 0.8, 0.25, 1);
+    }
+
+    .dog-runner {
+      position: absolute;
+      right: -34px;
+      bottom: 0;
+      z-index: 8;
+      display: grid;
+      width: 45px;
+      height: 45px;
+      place-items: center;
+      border: 4px solid rgba(255, 255, 255, 0.94);
+      border-radius: 50%;
+      font-size: 1.45rem;
+      background: #fff5ce;
+      box-shadow: 0 8px 17px rgba(0, 0, 0, 0.23);
+      transition: bottom 0.78s cubic-bezier(0.22, 0.8, 0.25, 1);
+      animation: dogBounce 1.5s ease-in-out infinite;
+    }
+
+    .tower-base {
+      position: absolute;
+      right: -18px;
+      bottom: -11px;
+      left: -18px;
+      height: 19px;
+      border-radius: 50%;
+      background: rgba(4, 25, 40, 0.4);
+    }
+
+    .verification-status {
+      position: relative;
+      z-index: 2;
+      min-height: 50px;
+      margin-top: 14px;
+      padding: 13px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 14px;
+      color: rgba(255, 255, 255, 0.83);
+      font-size: 0.87rem;
+      font-weight: 900;
+      line-height: 1.55;
+      text-align: center;
+      background: rgba(5, 34, 51, 0.25);
+    }
+
+    .verification-status.is-complete {
+      color: var(--yellow-500);
+      background: rgba(255, 210, 97, 0.12);
+    }
+
+    .success-stamp {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      z-index: 4001;
+      display: grid;
+      width: min(270px, 70vw);
+      aspect-ratio: 1;
+      place-items: center;
+      border: 12px double var(--blue-600);
+      border-radius: 50%;
+      opacity: 0;
+      color: var(--blue-600);
+      font-size: clamp(1.9rem, 7vw, 3.55rem);
+      font-weight: 1000;
+      line-height: 1;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.87);
+      box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.4), 0 24px 70px rgba(16, 42, 67, 0.3);
+      backdrop-filter: blur(5px);
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(2.6) rotate(-17deg);
+    }
+
+    .success-stamp.is-visible {
+      animation: stampIn 1.65s cubic-bezier(0.2, 1.18, 0.32, 1) forwards;
+    }
+
+    .success-stamp small {
+      display: block;
+      margin-top: 9px;
+      font-size: 0.31em;
+      letter-spacing: 0.14em;
+    }
+
+    .confetti-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 4000;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      top: -24px;
+      width: 11px;
+      height: 18px;
+      border-radius: 3px;
+      animation: confettiFall var(--duration, 2.4s) linear forwards;
+    }
+
+    .next-mission {
+      display: grid;
+      min-height: 100vh;
+      padding: 24px;
+      place-items: center;
+      opacity: 0;
+      background:
+        radial-gradient(circle at 18% 15%, rgba(255, 210, 97, 0.43), transparent 23rem),
+        radial-gradient(circle at 85% 18%, rgba(54, 185, 179, 0.28), transparent 25rem),
+        linear-gradient(145deg, #f7fcff, #eaf7ff 52%, #fff7ed);
+      transform: scale(0.98);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .next-mission.is-visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .next-card {
+      width: min(760px, 100%);
+      padding: clamp(34px, 7vw, 66px) 24px;
+      border: 1px solid rgba(23, 63, 95, 0.11);
+      border-radius: 36px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: var(--shadow-card);
+    }
+
+    .next-dog {
+      display: grid;
+      width: 130px;
+      height: 130px;
+      margin: 0 auto 23px;
+      place-items: center;
+      border: 8px solid rgba(255, 255, 255, 0.94);
+      border-radius: 42px;
+      font-size: 4.4rem;
+      background: linear-gradient(145deg, #fff2be, #ffe19b);
+      box-shadow: 0 20px 45px rgba(20, 55, 83, 0.18);
+      animation: dogBounce 1.6s ease-in-out infinite;
+    }
+
+    .complete-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 14px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      color: var(--teal-700);
+      font-size: 0.88rem;
+      font-weight: 1000;
+      background: var(--teal-100);
+    }
+
+    .next-card h2 {
+      margin-bottom: 12px;
+      color: var(--navy-950);
+      font-size: clamp(2rem, 6vw, 3.35rem);
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+    }
+
+    .next-card p {
+      margin-bottom: 25px;
+      color: var(--gray-700);
+      font-size: 1.03rem;
+      font-weight: 800;
+      line-height: 1.7;
+    }
+
+    .moving-message {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 19px;
+      border-radius: 16px;
+      color: var(--blue-600);
+      font-weight: 1000;
+      background: var(--blue-100);
+    }
+
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 3px solid rgba(40, 120, 208, 0.2);
+      border-top-color: var(--blue-600);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes revealUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-3px); }
+    }
+
+    @keyframes dropArrow {
+      0%, 100% { transform: translateY(-2px); }
+      50% { transform: translateY(5px); }
+    }
+
+    @keyframes cardLand {
+      0% { transform: scale(1.15) rotate(3deg); }
+      65% { transform: scale(0.95) rotate(-1deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+
+    @keyframes dogBounce {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-7px) rotate(3deg); }
+    }
+
+    @keyframes stampIn {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(2.6) rotate(-17deg); }
+      38% { opacity: 1; transform: translate(-50%, -50%) scale(0.88) rotate(-8deg); }
+      53% { transform: translate(-50%, -50%) scale(1.05) rotate(-8deg); }
+      74% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(-8deg); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.05) rotate(-8deg); }
+    }
+
+    @keyframes confettiFall {
+      0% { opacity: 1; transform: translate3d(0, -20px, 0) rotate(0deg); }
+      100% { opacity: 0.95; transform: translate3d(var(--drift, 0), 110vh, 0) rotate(var(--rotation, 720deg)); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 920px) {
+      .stage-one-grid,
+      .final-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .locked-visual {
+        min-height: 300px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .hero-emblem {
+        width: 86px;
+        height: 86px;
+        border-width: 5px;
+        border-radius: 26px;
+      }
+
+      .emblem-icon {
+        font-size: 1.7rem;
+      }
+
+      .emblem-label {
+        font-size: 0.6rem;
+      }
+
+      .story-banner {
+        grid-template-columns: auto 1fr;
+      }
+
+      .goal-chip {
+        grid-column: 1 / -1;
+        justify-self: start;
+        margin-left: 77px;
+      }
+
+      .step-item {
+        flex-direction: column;
+        gap: 6px;
+        padding: 6px 2px;
+      }
+
+      .step-item:not(:last-child)::after {
+        top: 24px;
+      }
+
+      .step-text {
+        font-size: 0.75rem;
+        white-space: normal;
+      }
+
+      .info-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .sequence-cards,
+      .formula-field-grid,
+      .pair-board {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .sequence-card:nth-child(2)::after {
+        display: none;
+      }
+
+      .verification-content {
+        grid-template-columns: 1fr;
+      }
+
+      .tower-scene {
+        min-height: 425px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .app {
+        width: min(100% - 18px, 1180px);
+        padding-top: 18px;
+      }
+
+      .hero-emblem {
+        display: none;
+      }
+
+      h1 {
+        font-size: 2.05rem;
+      }
+
+      .story-banner {
+        grid-template-columns: 1fr;
+        padding: 18px;
+      }
+
+      .goal-chip {
+        grid-column: auto;
+        margin-left: 0;
+      }
+
+      .stepper-wrap {
+        padding: 11px 7px;
+      }
+
+      .step-number {
+        width: 30px;
+        height: 30px;
+      }
+
+      .step-item:not(:last-child)::after {
+        top: 21px;
+        right: -10px;
+        width: 20px;
+      }
+
+      .stage {
+        padding: 21px 15px 25px;
+      }
+
+      .stage-heading {
+        gap: 9px;
+      }
+
+      .stage-badge {
+        width: 51px;
+        height: 51px;
+        border-radius: 16px;
+        font-size: 1.6rem;
+      }
+
+      .sequence-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .sequence-card:not(:last-child)::after {
+        top: auto;
+        right: 50%;
+        bottom: -14px;
+        transform: translateX(50%);
+      }
+
+      .sequence-card:nth-child(2)::after {
+        display: block;
+      }
+
+      .formula-field-grid,
+      .pair-board {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .pair-game {
+        padding: 15px 10px;
+      }
+
+      .pair-lane {
+        padding: 12px 8px;
+      }
+
+      .drag-card {
+        width: 94px;
+      }
+
+      .game-controls,
+      .game-controls-left,
+      .game-controls-right {
+        width: 100%;
+      }
+
+      .game-controls .mini-button,
+      .game-controls .primary-button {
+        flex: 1 1 auto;
+      }
+
+      .answer-row {
+        grid-template-columns: 1fr;
+      }
+
+      .answer-row .primary-button {
+        width: 100%;
+      }
+
+      .live-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .live-stat span {
+        min-height: auto;
+      }
+
+      .timeline-item {
+        grid-template-columns: 40px 1fr;
+      }
+
+      .timeline-total {
+        grid-column: 2;
+      }
+
+      .derivation-line {
+        padding-inline: 7px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+
+    /* =========================================================
+       Soraepko Neon Night Theme · Obsidian Glassmorphism
+       ========================================================= */
+    :root {
+      --night-void: #01030a;
+      --night-deep: #030714;
+      --night-blue: #071226;
+      --night-panel: rgba(5, 10, 23, 0.78);
+      --night-panel-strong: rgba(4, 8, 19, 0.9);
+      --night-panel-soft: rgba(11, 19, 39, 0.67);
+      --night-line: rgba(143, 179, 226, 0.18);
+      --night-text: #f3f7ff;
+      --night-muted: #a9b9d2;
+      --neon-coral: #ff5c7a;
+      --neon-coral-soft: rgba(255, 92, 122, 0.2);
+      --neon-gold: #ffd56d;
+      --neon-gold-soft: rgba(255, 213, 109, 0.2);
+      --neon-cyan: #42e9e2;
+      --neon-cyan-soft: rgba(66, 233, 226, 0.18);
+      --neon-blue: #5b8cff;
+      --obsidian-shadow: 0 28px 80px rgba(0, 0, 0, 0.58);
+      --obsidian-inset: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+    }
+
+    html {
+      color-scheme: dark;
+    }
+
+    body {
+      position: relative;
+      isolation: isolate;
+      color: var(--night-text);
+      background:
+        radial-gradient(circle at 72% 7%, rgba(56, 83, 147, 0.2), transparent 26rem),
+        radial-gradient(circle at 15% 22%, rgba(255, 92, 122, 0.08), transparent 24rem),
+        linear-gradient(180deg, #010209 0%, #030817 50%, #02050d 100%);
+    }
+
+    body::before {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      opacity: 1;
+      mask-image: none;
+      content: "";
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at center, transparent 34%, rgba(0, 0, 0, 0.3) 78%, rgba(0, 0, 0, 0.78) 100%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0.2));
+    }
+
+    body::after {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      opacity: 0.12;
+      content: "";
+      pointer-events: none;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.025) 0,
+        rgba(255, 255, 255, 0.025) 1px,
+        transparent 1px,
+        transparent 5px
+      );
+      mix-blend-mode: screen;
+    }
+
+    .night-ambience {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .night-stars {
+      position: absolute;
+      inset: 0 0 34%;
+      background-repeat: repeat;
+      animation: starDrift 28s linear infinite;
+    }
+
+    .stars-far {
+      opacity: 0.38;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.88) 0 1px, transparent 1.4px),
+        radial-gradient(circle, rgba(127, 183, 255, 0.65) 0 1px, transparent 1.5px);
+      background-position: 0 0, 41px 27px;
+      background-size: 93px 83px, 137px 119px;
+    }
+
+    .stars-near {
+      opacity: 0.62;
+      background-image:
+        radial-gradient(circle, rgba(255, 216, 120, 0.95) 0 1.3px, transparent 1.8px),
+        radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 1.2px, transparent 1.8px),
+        radial-gradient(circle, rgba(255, 103, 134, 0.75) 0 1px, transparent 1.6px);
+      background-position: 17px 11px, 63px 79px, 101px 31px;
+      background-size: 181px 157px, 227px 191px, 251px 213px;
+      animation-duration: 42s;
+      animation-direction: reverse;
+    }
+
+    .moon-halo {
+      position: absolute;
+      top: 5vh;
+      right: 14vw;
+      width: clamp(150px, 19vw, 270px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      opacity: 0.48;
+      background:
+        radial-gradient(circle, rgba(255, 236, 181, 0.55) 0 6%, rgba(255, 213, 109, 0.13) 32%, transparent 69%);
+      filter: blur(1px);
+      animation: moonBreathe 7s ease-in-out infinite;
+    }
+
+    .distant-neon-tower {
+      position: absolute;
+      right: clamp(20px, 7vw, 110px);
+      bottom: 27vh;
+      width: clamp(68px, 8vw, 102px);
+      height: clamp(230px, 31vh, 350px);
+      border: 1px solid rgba(151, 194, 255, 0.23);
+      border-bottom: 0;
+      border-radius: 52px 52px 10px 10px;
+      opacity: 0.54;
+      background:
+        repeating-linear-gradient(to bottom, transparent 0 29px, rgba(87, 146, 231, 0.13) 30px 31px),
+        linear-gradient(90deg, rgba(22, 45, 83, 0.2), rgba(9, 20, 43, 0.9), rgba(28, 57, 99, 0.24));
+      box-shadow:
+        0 0 18px rgba(67, 146, 255, 0.17),
+        inset 0 0 28px rgba(50, 113, 215, 0.13);
+      animation: towerNightSway 8s ease-in-out infinite;
+    }
+
+    .distant-neon-tower::before {
+      position: absolute;
+      right: -18px;
+      bottom: -6px;
+      left: -18px;
+      height: 17px;
+      border-radius: 50%;
+      content: "";
+      background: rgba(0, 0, 0, 0.74);
+      filter: blur(3px);
+    }
+
+    .ambient-antenna {
+      position: absolute;
+      top: -71px;
+      left: 50%;
+      width: 4px;
+      height: 72px;
+      border-radius: 999px;
+      background: linear-gradient(to top, var(--neon-coral), var(--neon-gold));
+      box-shadow: 0 0 9px var(--neon-coral), 0 0 19px rgba(255, 213, 109, 0.7);
+      transform: translateX(-50%);
+    }
+
+    .ambient-crown {
+      position: absolute;
+      top: -23px;
+      left: 50%;
+      width: 128%;
+      height: 50px;
+      border: 2px solid rgba(255, 213, 109, 0.58);
+      border-radius: 50% 50% 12px 12px;
+      background: linear-gradient(180deg, rgba(255, 84, 116, 0.52), rgba(255, 84, 116, 0.13));
+      box-shadow:
+        0 0 10px var(--neon-coral),
+        0 0 30px rgba(255, 92, 122, 0.56),
+        inset 0 0 15px rgba(255, 213, 109, 0.2);
+      transform: translateX(-50%);
+    }
+
+    .ambient-window {
+      position: absolute;
+      left: 50%;
+      width: 58%;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--neon-cyan);
+      box-shadow: 0 0 6px var(--neon-cyan), 0 0 16px rgba(66, 233, 226, 0.55);
+      transform: translateX(-50%);
+    }
+
+    .window-one { top: 22%; }
+    .window-two { top: 43%; background: var(--neon-gold); box-shadow: 0 0 6px var(--neon-gold), 0 0 16px rgba(255, 213, 109, 0.5); }
+    .window-three { top: 65%; }
+    .window-four { top: 82%; background: var(--neon-coral); box-shadow: 0 0 6px var(--neon-coral), 0 0 16px rgba(255, 92, 122, 0.55); }
+
+    .harbor-silhouette {
+      position: absolute;
+      right: 0;
+      bottom: 27vh;
+      left: 0;
+      height: 68px;
+      opacity: 0.78;
+      background:
+        linear-gradient(90deg,
+          #01030a 0 7%, transparent 7% 10%,
+          #01030a 10% 19%, transparent 19% 22%,
+          #01030a 22% 34%, transparent 34% 37%,
+          #01030a 37% 52%, transparent 52% 57%,
+          #01030a 57% 69%, transparent 69% 72%,
+          #01030a 72% 84%, transparent 84% 87%,
+          #01030a 87% 100%);
+      clip-path: polygon(0 67%, 4% 57%, 8% 66%, 12% 35%, 16% 61%, 21% 47%, 26% 69%, 31% 29%, 36% 60%, 42% 39%, 48% 68%, 54% 44%, 60% 59%, 66% 25%, 72% 64%, 78% 49%, 84% 66%, 91% 31%, 96% 58%, 100% 52%, 100% 100%, 0 100%);
+    }
+
+    .night-water {
+      position: absolute;
+      right: -4%;
+      bottom: -2%;
+      left: -4%;
+      height: 32vh;
+      min-height: 210px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(9, 28, 56, 0.88), rgba(1, 5, 15, 0.98)),
+        repeating-linear-gradient(172deg, rgba(123, 170, 226, 0.08) 0 1px, transparent 1px 12px);
+      clip-path: polygon(0 9%, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .night-water::before {
+      position: absolute;
+      top: 6%;
+      right: 0;
+      left: 0;
+      height: 2px;
+      content: "";
+      opacity: 0.62;
+      background: linear-gradient(90deg, transparent, rgba(94, 161, 236, 0.7), rgba(255, 92, 122, 0.6), transparent);
+      box-shadow: 0 0 14px rgba(84, 159, 255, 0.5);
+    }
+
+    .night-water::after {
+      position: absolute;
+      inset: 0;
+      content: "";
+      opacity: 0.42;
+      background-image:
+        repeating-linear-gradient(174deg, transparent 0 13px, rgba(107, 165, 227, 0.12) 14px, transparent 15px 26px),
+        repeating-linear-gradient(7deg, transparent 0 18px, rgba(255, 255, 255, 0.045) 19px, transparent 20px 34px);
+      animation: waterCurrent 9s linear infinite;
+    }
+
+    .water-reflection {
+      position: absolute;
+      top: 2%;
+      height: 110%;
+      opacity: 0.48;
+      filter: blur(7px);
+      transform-origin: top;
+      animation: neonReflection 4.6s ease-in-out infinite;
+    }
+
+    .reflection-coral {
+      right: 8%;
+      width: 90px;
+      background: linear-gradient(180deg, rgba(255, 92, 122, 0.68), rgba(255, 92, 122, 0.02));
+      clip-path: polygon(41% 0, 60% 0, 82% 100%, 12% 100%);
+    }
+
+    .reflection-gold {
+      right: 17%;
+      width: 58px;
+      opacity: 0.36;
+      background: linear-gradient(180deg, rgba(255, 213, 109, 0.72), rgba(255, 213, 109, 0.02));
+      clip-path: polygon(43% 0, 57% 0, 92% 100%, 6% 100%);
+      animation-delay: -1.8s;
+    }
+
+    .reflection-cyan {
+      left: 15%;
+      width: 76px;
+      opacity: 0.2;
+      background: linear-gradient(180deg, rgba(66, 233, 226, 0.56), transparent);
+      clip-path: polygon(45% 0, 55% 0, 88% 100%, 11% 100%);
+      animation-delay: -3s;
+    }
+
+    .app,
+    .next-mission {
+      position: relative;
+      z-index: 2;
+    }
+
+    .app {
+      padding-top: 38px;
+    }
+
+    h1 {
+      color: var(--night-text);
+      text-shadow: 0 0 24px rgba(94, 141, 255, 0.24), 0 8px 32px rgba(0, 0, 0, 0.72);
+    }
+
+    .title-accent {
+      color: transparent;
+      background: linear-gradient(90deg, #ff6a83 0%, #ffd978 52%, #ff7390 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      filter: drop-shadow(0 0 9px rgba(255, 92, 122, 0.52));
+    }
+
+    .title-accent::after {
+      bottom: -1px;
+      height: 3px;
+      opacity: 1;
+      background: linear-gradient(90deg, transparent, var(--neon-coral), var(--neon-gold), transparent);
+      box-shadow: 0 0 10px var(--neon-coral), 0 0 22px rgba(255, 213, 109, 0.45);
+    }
+
+    .hero-description,
+    .story-copy p,
+    .stage-heading p,
+    .panel-description,
+    .general-term-heading p,
+    .coefficient-caption,
+    .equation-explanation,
+    .formula-definition p,
+    .formula-input-panel > p,
+    .locked-visual p,
+    .next-card p {
+      color: var(--night-muted);
+    }
+
+    .eyebrow {
+      color: var(--neon-gold);
+      border-color: rgba(255, 213, 109, 0.26);
+      background: rgba(4, 8, 18, 0.66);
+      box-shadow:
+        var(--obsidian-inset),
+        0 0 18px rgba(255, 213, 109, 0.09),
+        0 14px 36px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 0 8px rgba(255, 213, 109, 0.34);
+    }
+
+    .hero-emblem {
+      border-color: rgba(255, 220, 128, 0.7);
+      background:
+        radial-gradient(circle at 38% 28%, rgba(255, 255, 255, 0.26), transparent 18%),
+        linear-gradient(145deg, rgba(255, 88, 122, 0.9), rgba(63, 29, 74, 0.95));
+      box-shadow:
+        0 0 12px var(--neon-coral),
+        0 0 36px rgba(255, 92, 122, 0.45),
+        0 20px 55px rgba(0, 0, 0, 0.58),
+        inset 0 0 22px rgba(255, 213, 109, 0.18);
+      animation: emblemFloat 4.8s ease-in-out infinite;
+    }
+
+    .emblem-label {
+      color: var(--neon-gold);
+      text-shadow: 0 0 8px rgba(255, 213, 109, 0.56);
+    }
+
+    .story-banner,
+    .stepper-wrap,
+    .stage-shell,
+    .panel,
+    .pair-game,
+    .formula-definition,
+    .locked-visual,
+    .next-card {
+      border-color: rgba(149, 180, 226, 0.18);
+      background:
+        linear-gradient(145deg, rgba(11, 18, 36, 0.82), rgba(3, 7, 17, 0.72));
+      box-shadow:
+        var(--obsidian-inset),
+        var(--obsidian-shadow),
+        0 0 35px rgba(255, 92, 122, 0.045);
+      backdrop-filter: blur(22px) saturate(135%);
+      -webkit-backdrop-filter: blur(22px) saturate(135%);
+    }
+
+    .story-banner {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .story-banner::before {
+      position: absolute;
+      top: 0;
+      right: 8%;
+      left: 8%;
+      height: 1px;
+      content: "";
+      background: linear-gradient(90deg, transparent, rgba(255, 213, 109, 0.8), rgba(255, 92, 122, 0.75), transparent);
+      box-shadow: 0 0 14px rgba(255, 92, 122, 0.48);
+    }
+
+    .story-icon {
+      color: var(--night-text);
+      border: 1px solid rgba(255, 92, 122, 0.44);
+      background: rgba(255, 92, 122, 0.1);
+      box-shadow:
+        0 0 13px rgba(255, 92, 122, 0.4),
+        inset 0 0 18px rgba(255, 213, 109, 0.08);
+      animation: heartbeatPulse 2.45s ease-in-out infinite;
+    }
+
+    .story-copy strong {
+      color: var(--night-text);
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.07);
+    }
+
+    .goal-chip {
+      color: var(--neon-gold);
+      border: 1px solid rgba(255, 213, 109, 0.48);
+      background: rgba(52, 31, 17, 0.66);
+      box-shadow:
+        0 0 11px rgba(255, 213, 109, 0.3),
+        inset 0 0 14px rgba(255, 92, 122, 0.08);
+      text-shadow: 0 0 8px rgba(255, 213, 109, 0.46);
+      animation: heartbeatPulse 1.85s ease-in-out infinite;
+    }
+
+    .step-item {
+      color: #72839d;
+    }
+
+    .step-item:not(:last-child)::after {
+      background: rgba(124, 149, 188, 0.2);
+    }
+
+    .step-number {
+      color: #8393ab;
+      border-color: rgba(131, 157, 198, 0.28);
+      background: rgba(3, 8, 18, 0.88);
+      box-shadow: inset 0 0 12px rgba(107, 145, 204, 0.08);
+    }
+
+    .step-item.is-active {
+      color: var(--neon-coral);
+      text-shadow: 0 0 8px rgba(255, 92, 122, 0.32);
+    }
+
+    .step-item.is-active .step-number {
+      color: #fff;
+      border-color: var(--neon-coral);
+      background: linear-gradient(145deg, #ff6380, #a92354);
+      box-shadow: 0 0 12px var(--neon-coral), 0 0 27px rgba(255, 92, 122, 0.45);
+    }
+
+    .step-item.is-complete {
+      color: var(--neon-cyan);
+    }
+
+    .step-item.is-complete .step-number {
+      border-color: var(--neon-cyan);
+      background: linear-gradient(145deg, #32d9d2, #117b82);
+      box-shadow: 0 0 12px rgba(66, 233, 226, 0.48);
+    }
+
+    .step-item.is-complete:not(:last-child)::after {
+      background: linear-gradient(90deg, var(--neon-cyan), rgba(66, 233, 226, 0.18));
+      box-shadow: 0 0 8px rgba(66, 233, 226, 0.28);
+    }
+
+    .stage-shell {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stage-shell::before {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      border-radius: inherit;
+      content: "";
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(66, 233, 226, 0.06), transparent 24rem),
+        radial-gradient(circle at 93% 2%, rgba(255, 92, 122, 0.08), transparent 23rem);
+    }
+
+    .stage {
+      position: relative;
+      z-index: 1;
+    }
+
+    .stage h2,
+    .panel-title,
+    .general-term-heading h3,
+    .equation-discovery h3,
+    .formula-input-panel h3,
+    .final-question,
+    .locked-visual h3,
+    .next-card h2 {
+      color: var(--night-text);
+    }
+
+    .stage-kicker {
+      color: var(--neon-coral);
+      text-shadow: 0 0 9px rgba(255, 92, 122, 0.37);
+    }
+
+    .stage-kicker::before {
+      background: linear-gradient(90deg, var(--neon-coral), var(--neon-gold));
+      box-shadow: 0 0 10px var(--neon-coral);
+    }
+
+    .stage-badge {
+      border: 1px solid rgba(255, 213, 109, 0.22);
+      background: rgba(9, 16, 33, 0.78);
+      box-shadow:
+        0 0 14px rgba(255, 92, 122, 0.18),
+        inset 0 0 18px rgba(66, 233, 226, 0.08);
+      animation: signalPulse 3.1s ease-in-out infinite;
+    }
+
+    .info-tile {
+      border-color: rgba(132, 163, 208, 0.16);
+      background: rgba(8, 15, 31, 0.72);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .info-tile:nth-child(2) {
+      border-color: rgba(255, 213, 109, 0.21);
+      background: rgba(41, 31, 14, 0.5);
+    }
+
+    .info-tile:nth-child(3) {
+      border-color: rgba(66, 233, 226, 0.2);
+      background: rgba(7, 38, 44, 0.5);
+    }
+
+    .info-tile span,
+    .sequence-card label,
+    .fixed-label,
+    .term-minute,
+    .slider-marks,
+    .lane-number,
+    .tray-heading p,
+    .timeline-term small {
+      color: #91a3be;
+    }
+
+    .info-tile strong,
+    .sequence-fixed,
+    .derivation-line,
+    .fixed-pair-card,
+    .formula-definition strong,
+    .assembled-formula,
+    .math-evidence {
+      color: var(--night-text);
+    }
+
+    .observation-panel {
+      background:
+        radial-gradient(circle at 85% 8%, rgba(66, 233, 226, 0.08), transparent 11rem),
+        linear-gradient(145deg, rgba(8, 18, 36, 0.86), rgba(3, 8, 18, 0.78));
+    }
+
+    .privacy-note {
+      color: var(--neon-coral);
+      border: 1px solid rgba(255, 92, 122, 0.25);
+      background: rgba(64, 14, 31, 0.38);
+      box-shadow: 0 0 14px rgba(255, 92, 122, 0.09);
+      animation: alertPulse 2.25s ease-in-out infinite;
+    }
+
+    .term-display {
+      border-color: rgba(66, 233, 226, 0.36);
+      background:
+        radial-gradient(circle at 50% 50%, rgba(66, 233, 226, 0.08), transparent 70%),
+        rgba(1, 6, 16, 0.62);
+      box-shadow:
+        inset 0 0 30px rgba(66, 233, 226, 0.045),
+        0 0 18px rgba(66, 233, 226, 0.06);
+    }
+
+    .term-value {
+      color: var(--neon-coral);
+      text-shadow:
+        0 0 9px rgba(255, 92, 122, 0.8),
+        0 0 25px rgba(255, 92, 122, 0.35);
+    }
+
+    .term-caption {
+      color: #8092ae;
+    }
+
+    .slider-label-row {
+      color: var(--night-text);
+    }
+
+    .term-slider {
+      background:
+        linear-gradient(
+          to right,
+          var(--neon-coral) 0%,
+          var(--neon-gold) var(--slider-fill, 0%),
+          rgba(95, 116, 153, 0.22) var(--slider-fill, 0%),
+          rgba(95, 116, 153, 0.22) 100%
+        );
+      box-shadow: 0 0 13px rgba(255, 92, 122, 0.13), inset 0 0 7px rgba(0, 0, 0, 0.65);
+    }
+
+    .term-slider::-webkit-slider-thumb {
+      border-color: #08101f;
+      background: var(--neon-gold);
+      box-shadow: 0 0 9px var(--neon-gold), 0 0 21px rgba(255, 92, 122, 0.52);
+    }
+
+    .term-slider::-moz-range-thumb {
+      border-color: #08101f;
+      background: var(--neon-gold);
+      box-shadow: 0 0 9px var(--neon-gold), 0 0 21px rgba(255, 92, 122, 0.52);
+    }
+
+    .term-slider:focus-visible {
+      box-shadow: 0 0 0 4px rgba(66, 233, 226, 0.15), 0 0 18px rgba(66, 233, 226, 0.25);
+    }
+
+    .sequence-card,
+    .formula-field {
+      border-color: rgba(133, 163, 208, 0.18);
+      background: rgba(7, 14, 29, 0.76);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+    }
+
+    .sequence-card:not(:last-child)::after {
+      color: var(--neon-coral);
+      text-shadow: 0 0 8px rgba(255, 92, 122, 0.5);
+    }
+
+    .sequence-input,
+    .formula-field input,
+    .answer-input,
+    .coefficient-input {
+      color: var(--night-text);
+      caret-color: var(--neon-gold);
+      border-color: rgba(128, 163, 216, 0.3);
+      background: rgba(0, 4, 13, 0.74);
+      box-shadow: inset 0 0 16px rgba(43, 79, 132, 0.08);
+    }
+
+    .sequence-input::placeholder,
+    .formula-field input::placeholder,
+    .answer-input::placeholder,
+    .coefficient-input::placeholder {
+      color: #667892;
+    }
+
+    .sequence-input:focus,
+    .formula-field input:focus,
+    .answer-input:focus,
+    .coefficient-input:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 0 4px rgba(66, 233, 226, 0.11), 0 0 17px rgba(66, 233, 226, 0.16);
+    }
+
+    .sequence-card.is-correct,
+    .formula-field.is-correct {
+      border-color: rgba(66, 233, 226, 0.46);
+      background: rgba(7, 45, 48, 0.55);
+      box-shadow: 0 0 15px rgba(66, 233, 226, 0.08);
+    }
+
+    .sequence-card.is-correct input,
+    .formula-field.is-correct input,
+    .coefficient-input.is-correct {
+      border-color: var(--neon-cyan);
+      background: rgba(5, 31, 35, 0.8);
+    }
+
+    .sequence-card.is-error,
+    .formula-field.is-error {
+      border-color: rgba(255, 92, 122, 0.58);
+      background: rgba(63, 11, 29, 0.62);
+    }
+
+    .sequence-card.is-error input,
+    .formula-field.is-error input,
+    .coefficient-input.is-error {
+      border-color: var(--neon-coral);
+      background: rgba(45, 5, 19, 0.78);
+    }
+
+    .field-hint,
+    .feedback {
+      color: var(--night-muted);
+      border: 1px solid rgba(131, 164, 214, 0.14);
+      background: rgba(5, 12, 25, 0.68);
+    }
+
+    .field-hint.is-error,
+    .feedback.is-error {
+      color: #ff9daf;
+      border-color: rgba(255, 92, 122, 0.35);
+      background: rgba(60, 10, 27, 0.65);
+      box-shadow: 0 0 15px rgba(255, 92, 122, 0.08);
+    }
+
+    .feedback.is-success {
+      color: #8df8f1;
+      border-color: rgba(66, 233, 226, 0.32);
+      background: rgba(4, 43, 47, 0.62);
+      box-shadow: 0 0 15px rgba(66, 233, 226, 0.08);
+    }
+
+    .general-term-lab {
+      border-color: rgba(255, 213, 109, 0.23);
+      background:
+        radial-gradient(circle at 91% 10%, rgba(255, 213, 109, 0.09), transparent 11rem),
+        linear-gradient(145deg, rgba(10, 18, 36, 0.9), rgba(4, 8, 19, 0.82));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 24px rgba(255, 213, 109, 0.04);
+    }
+
+    .general-term-icon {
+      border: 1px solid rgba(255, 213, 109, 0.25);
+      background: rgba(57, 40, 13, 0.55);
+      box-shadow: 0 0 12px rgba(255, 213, 109, 0.14);
+    }
+
+    .coefficient-concept {
+      color: var(--neon-cyan);
+      border: 1px solid rgba(66, 233, 226, 0.22);
+      background: rgba(4, 43, 47, 0.48);
+    }
+
+    .derivation-box {
+      border-color: rgba(130, 163, 214, 0.16);
+      background: rgba(0, 5, 15, 0.58);
+    }
+
+    .derivation-line {
+      background: rgba(12, 21, 40, 0.76);
+    }
+
+    .derivation-line.question-line {
+      border-color: rgba(255, 213, 109, 0.4);
+      background: rgba(47, 34, 12, 0.58);
+      box-shadow: 0 0 15px rgba(255, 213, 109, 0.07);
+    }
+
+    .general-term-result {
+      color: #92f7f1;
+      border-color: rgba(66, 233, 226, 0.28);
+      background: rgba(4, 44, 47, 0.58);
+    }
+
+    .general-term-result strong {
+      color: var(--neon-gold);
+      text-shadow: 0 0 9px rgba(255, 213, 109, 0.24);
+    }
+
+    .primary-button {
+      color: #fff;
+      border: 1px solid rgba(255, 191, 145, 0.36);
+      background: linear-gradient(135deg, #ff4f73 0%, #f06a69 52%, #b63a67 100%);
+      box-shadow:
+        0 0 12px rgba(255, 92, 122, 0.35),
+        0 14px 32px rgba(0, 0, 0, 0.38),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+    }
+
+    .primary-button:hover:not(:disabled) {
+      box-shadow:
+        0 0 15px rgba(255, 92, 122, 0.62),
+        0 0 33px rgba(255, 92, 122, 0.25),
+        0 17px 37px rgba(0, 0, 0, 0.46);
+    }
+
+    .secondary-button,
+    .mini-button {
+      color: var(--neon-gold);
+      border-color: rgba(255, 213, 109, 0.28);
+      background: rgba(6, 12, 25, 0.82);
+      box-shadow: inset 0 0 12px rgba(255, 213, 109, 0.035);
+    }
+
+    .secondary-button:hover:not(:disabled),
+    .mini-button:hover:not(:disabled) {
+      border-color: var(--neon-gold);
+      box-shadow: 0 0 13px rgba(255, 213, 109, 0.2);
+    }
+
+    .primary-button:focus-visible,
+    .secondary-button:focus-visible,
+    .mini-button:focus-visible,
+    .drag-card:focus-visible,
+    .drop-zone:focus-visible {
+      outline-color: rgba(66, 233, 226, 0.56);
+    }
+
+    .game-rule,
+    .card-tray-panel,
+    .card-tray,
+    .pair-lane,
+    .equation-discovery,
+    .equation-line,
+    .assembled-formula,
+    .math-evidence {
+      border-color: rgba(128, 161, 211, 0.16);
+      background: rgba(5, 12, 25, 0.72);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+    }
+
+    .game-rule {
+      color: var(--night-text);
+    }
+
+    .game-rule-icon {
+      border: 1px solid rgba(255, 213, 109, 0.24);
+      background: rgba(54, 39, 13, 0.58);
+    }
+
+    .game-progress {
+      color: var(--neon-cyan);
+      border: 1px solid rgba(66, 233, 226, 0.24);
+      background: rgba(5, 44, 48, 0.53);
+      box-shadow: 0 0 12px rgba(66, 233, 226, 0.08);
+    }
+
+    .game-progress-dot {
+      background: var(--neon-coral);
+      box-shadow: 0 0 0 5px rgba(255, 92, 122, 0.13), 0 0 12px var(--neon-coral);
+      animation: heartbeatPulse 1.5s ease-in-out infinite;
+    }
+
+    .pair-lane {
+      background: rgba(6, 13, 28, 0.78);
+    }
+
+    .pair-lane.is-wrong {
+      border-color: rgba(255, 92, 122, 0.6);
+      background: rgba(62, 10, 28, 0.64);
+    }
+
+    .pair-lane.is-solved {
+      border-color: rgba(66, 233, 226, 0.5);
+      background: rgba(4, 43, 48, 0.6);
+      box-shadow: 0 0 20px rgba(66, 233, 226, 0.12);
+    }
+
+    .fixed-pair-card {
+      border-color: rgba(91, 140, 255, 0.32);
+      background: linear-gradient(145deg, rgba(23, 43, 78, 0.86), rgba(8, 17, 36, 0.88));
+      box-shadow: inset 0 0 18px rgba(91, 140, 255, 0.08), 0 0 12px rgba(91, 140, 255, 0.07);
+    }
+
+    .pair-operator {
+      color: var(--neon-gold);
+      text-shadow: 0 0 9px rgba(255, 213, 109, 0.5);
+    }
+
+    .pair-operator::before,
+    .pair-operator::after {
+      background: rgba(255, 213, 109, 0.25);
+    }
+
+    .drop-zone {
+      border-color: rgba(119, 154, 211, 0.32);
+      background:
+        repeating-linear-gradient(-45deg, rgba(91, 140, 255, 0.035) 0 9px, transparent 9px 18px),
+        rgba(0, 5, 16, 0.66);
+    }
+
+    .drop-zone.is-over {
+      border-color: var(--neon-coral);
+      background: rgba(60, 11, 29, 0.72);
+      box-shadow: 0 0 0 5px rgba(255, 92, 122, 0.11), 0 0 20px rgba(255, 92, 122, 0.22);
+    }
+
+    .drop-zone.is-filled {
+      border-color: rgba(66, 233, 226, 0.34);
+      background: rgba(4, 35, 41, 0.58);
+    }
+
+    .drop-placeholder {
+      color: #7f90aa;
+    }
+
+    .drop-placeholder::before {
+      color: var(--neon-coral);
+      text-shadow: 0 0 8px rgba(255, 92, 122, 0.52);
+    }
+
+    .drag-card {
+      color: var(--night-text);
+      border-color: rgba(255, 213, 109, 0.42);
+      background:
+        radial-gradient(circle at 22% 20%, rgba(255, 255, 255, 0.11), transparent 17px),
+        linear-gradient(145deg, rgba(89, 48, 31, 0.92), rgba(48, 18, 38, 0.96));
+      box-shadow:
+        0 0 11px rgba(255, 92, 122, 0.15),
+        0 12px 27px rgba(0, 0, 0, 0.36),
+        inset 0 0 17px rgba(255, 213, 109, 0.055);
+    }
+
+    .drag-card::before,
+    .drag-card small {
+      color: var(--neon-gold);
+    }
+
+    .drag-card:hover:not(:disabled),
+    .drag-card.is-selected {
+      border-color: var(--neon-coral);
+      box-shadow: 0 0 13px var(--neon-coral), 0 0 29px rgba(255, 92, 122, 0.25), 0 15px 32px rgba(0, 0, 0, 0.42);
+    }
+
+    .sum-chip {
+      color: #7f90aa;
+      background: rgba(2, 7, 17, 0.68);
+    }
+
+    .sum-chip.has-value {
+      color: var(--neon-gold);
+      background: rgba(49, 35, 12, 0.62);
+    }
+
+    .pair-lane.is-solved .sum-chip {
+      color: #041113;
+      background: var(--neon-cyan);
+      box-shadow: 0 0 13px rgba(66, 233, 226, 0.46);
+    }
+
+    .equation-discovery {
+      border-color: rgba(255, 213, 109, 0.22);
+      background:
+        radial-gradient(circle at 88% 12%, rgba(255, 213, 109, 0.08), transparent 10rem),
+        rgba(7, 13, 27, 0.82);
+    }
+
+    .equation-line {
+      color: var(--night-text);
+      background: rgba(1, 6, 16, 0.62);
+    }
+
+    .equation-line.final {
+      color: var(--neon-gold);
+      border: 1px solid rgba(255, 213, 109, 0.26);
+      background: rgba(49, 34, 10, 0.58);
+      box-shadow: 0 0 16px rgba(255, 213, 109, 0.08);
+    }
+
+    .formula-definition {
+      border-color: rgba(66, 233, 226, 0.2);
+      background:
+        radial-gradient(circle at 12% 15%, rgba(66, 233, 226, 0.08), transparent 11rem),
+        linear-gradient(145deg, rgba(7, 17, 34, 0.88), rgba(3, 8, 18, 0.78));
+    }
+
+    .formula-definition > span,
+    .formula-field label {
+      color: #91a3be;
+    }
+
+    .formula-definition strong {
+      color: var(--neon-gold);
+      text-shadow: 0 0 11px rgba(255, 213, 109, 0.22);
+    }
+
+    .assembled-formula,
+    .math-evidence {
+      border: 1px solid rgba(255, 213, 109, 0.25);
+      color: var(--neon-gold);
+      background: rgba(47, 33, 10, 0.58);
+      box-shadow: 0 0 16px rgba(255, 213, 109, 0.07);
+    }
+
+    .math-evidence {
+      animation: targetPulse 2.5s ease-in-out infinite;
+    }
+
+    .formula-slot {
+      color: var(--neon-coral);
+      border-color: rgba(255, 92, 122, 0.4);
+      background: rgba(3, 7, 16, 0.84);
+      box-shadow: inset 0 0 12px rgba(255, 92, 122, 0.05);
+    }
+
+    .answer-unit {
+      color: var(--neon-gold);
+    }
+
+    .locked-visual {
+      border-color: rgba(255, 92, 122, 0.24);
+      background:
+        radial-gradient(circle at 50% 16%, rgba(255, 92, 122, 0.08), transparent 12rem),
+        linear-gradient(145deg, rgba(7, 13, 27, 0.82), rgba(2, 6, 15, 0.82));
+    }
+
+    .lock-icon {
+      border: 1px solid rgba(255, 92, 122, 0.26);
+      background: rgba(57, 12, 29, 0.55);
+      box-shadow: 0 0 16px rgba(255, 92, 122, 0.13);
+      animation: alertPulse 2.3s ease-in-out infinite;
+    }
+
+    .verification-panel {
+      border: 1px solid rgba(66, 233, 226, 0.2);
+      background:
+        radial-gradient(circle at 50% 8%, rgba(66, 233, 226, 0.1), transparent 13rem),
+        linear-gradient(165deg, rgba(4, 12, 28, 0.96), rgba(4, 37, 47, 0.93));
+      box-shadow: var(--obsidian-shadow), 0 0 28px rgba(66, 233, 226, 0.09);
+    }
+
+    .verification-heading span,
+    .live-stat strong,
+    .timeline-total {
+      color: var(--neon-gold);
+      text-shadow: 0 0 7px rgba(255, 213, 109, 0.3);
+    }
+
+    .verification-heading h3,
+    .verification-heading p,
+    .timeline-term {
+      color: var(--night-text);
+    }
+
+    .live-stat,
+    .timeline-item,
+    .verification-status {
+      border-color: rgba(137, 178, 226, 0.16);
+      background: rgba(0, 5, 16, 0.52);
+    }
+
+    .timeline-item.is-current {
+      border-color: rgba(255, 213, 109, 0.52);
+      background: rgba(56, 40, 12, 0.45);
+      box-shadow: 0 0 14px rgba(255, 213, 109, 0.08);
+    }
+
+    .timeline-minute {
+      color: #1c1202;
+      background: var(--neon-gold);
+      box-shadow: 0 0 9px rgba(255, 213, 109, 0.48);
+    }
+
+    .tower-track {
+      border-color: rgba(66, 233, 226, 0.58);
+      background:
+        repeating-linear-gradient(to bottom, transparent 0 27px, rgba(66, 233, 226, 0.13) 28px 30px),
+        rgba(1, 8, 18, 0.48);
+      box-shadow: 0 0 14px rgba(66, 233, 226, 0.26), inset 0 0 22px rgba(66, 233, 226, 0.07);
+    }
+
+    .tower-top {
+      border-color: rgba(255, 213, 109, 0.72);
+      background: linear-gradient(180deg, rgba(255, 92, 122, 0.96), rgba(110, 24, 68, 0.94));
+      box-shadow: 0 0 12px var(--neon-coral), 0 0 29px rgba(255, 92, 122, 0.42);
+    }
+
+    .tower-fill {
+      background: linear-gradient(180deg, rgba(255, 213, 109, 0.98), rgba(255, 92, 122, 0.9) 44%, rgba(66, 233, 226, 0.86));
+      box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.16), 0 0 17px rgba(255, 92, 122, 0.18);
+    }
+
+    .dog-runner {
+      border-color: var(--neon-gold);
+      background: #fff0b8;
+      box-shadow: 0 0 10px var(--neon-gold), 0 0 21px rgba(255, 92, 122, 0.35), 0 8px 17px rgba(0, 0, 0, 0.44);
+    }
+
+    .verification-status.is-complete {
+      color: var(--neon-gold);
+      border-color: rgba(255, 213, 109, 0.26);
+      background: rgba(50, 35, 10, 0.5);
+      box-shadow: 0 0 17px rgba(255, 213, 109, 0.09);
+    }
+
+    .success-stamp {
+      color: var(--neon-gold);
+      border-color: var(--neon-coral);
+      text-shadow: 0 0 12px rgba(255, 213, 109, 0.64);
+      background: rgba(3, 8, 18, 0.88);
+      box-shadow:
+        0 0 0 8px rgba(255, 92, 122, 0.12),
+        0 0 25px var(--neon-coral),
+        0 0 65px rgba(255, 213, 109, 0.35),
+        0 24px 70px rgba(0, 0, 0, 0.66);
+    }
+
+    .next-mission {
+      color: var(--night-text);
+      background: transparent;
+    }
+
+    .next-dog {
+      border-color: rgba(255, 213, 109, 0.7);
+      background: linear-gradient(145deg, rgba(255, 213, 109, 0.92), rgba(255, 92, 122, 0.72));
+      box-shadow: 0 0 18px rgba(255, 213, 109, 0.35), 0 0 42px rgba(255, 92, 122, 0.25), 0 20px 45px rgba(0, 0, 0, 0.5);
+    }
+
+    .complete-chip,
+    .moving-message {
+      color: var(--neon-cyan);
+      border: 1px solid rgba(66, 233, 226, 0.24);
+      background: rgba(5, 43, 48, 0.56);
+      box-shadow: 0 0 14px rgba(66, 233, 226, 0.08);
+    }
+
+    .spinner {
+      border-color: rgba(66, 233, 226, 0.2);
+      border-top-color: var(--neon-cyan);
+      box-shadow: 0 0 8px rgba(66, 233, 226, 0.22);
+    }
+
+    @keyframes heartbeatPulse {
+      0%, 100% { transform: scale(1); }
+      12% { transform: scale(1.055); }
+      24% { transform: scale(1); }
+      36% { transform: scale(1.03); }
+      52% { transform: scale(1); }
+    }
+
+    @keyframes alertPulse {
+      0%, 100% { box-shadow: 0 0 0 rgba(255, 92, 122, 0); }
+      50% { box-shadow: 0 0 18px rgba(255, 92, 122, 0.15), inset 0 0 15px rgba(255, 92, 122, 0.04); }
+    }
+
+    @keyframes targetPulse {
+      0%, 100% { box-shadow: 0 0 10px rgba(255, 213, 109, 0.05); }
+      50% { box-shadow: 0 0 23px rgba(255, 213, 109, 0.18); }
+    }
+
+    @keyframes signalPulse {
+      0%, 100% { transform: translateY(0); box-shadow: 0 0 9px rgba(66, 233, 226, 0.07); }
+      50% { transform: translateY(-3px); box-shadow: 0 0 18px rgba(255, 92, 122, 0.14); }
+    }
+
+    @keyframes emblemFloat {
+      0%, 100% { transform: rotate(4deg) translateY(0); }
+      50% { transform: rotate(2deg) translateY(-7px); }
+    }
+
+    @keyframes starDrift {
+      from { transform: translate3d(0, 0, 0); }
+      to { transform: translate3d(-35px, 18px, 0); }
+    }
+
+    @keyframes moonBreathe {
+      0%, 100% { opacity: 0.38; transform: scale(0.96); }
+      50% { opacity: 0.58; transform: scale(1.04); }
+    }
+
+    @keyframes towerNightSway {
+      0%, 100% { transform: translateX(0); filter: brightness(0.9); }
+      50% { transform: translateX(-3px); filter: brightness(1.12); }
+    }
+
+    @keyframes waterCurrent {
+      from { transform: translateX(-2%) translateY(0); }
+      to { transform: translateX(2%) translateY(5px); }
+    }
+
+    @keyframes neonReflection {
+      0%, 100% { transform: scaleX(0.72) skewX(-2deg); opacity: 0.28; }
+      50% { transform: scaleX(1.18) skewX(3deg); opacity: 0.56; }
+    }
+
+    @media (max-width: 760px) {
+      .distant-neon-tower {
+        right: -8px;
+        bottom: 25vh;
+        opacity: 0.34;
+        transform: scale(0.82);
+        transform-origin: bottom right;
+      }
+
+      .moon-halo {
+        right: -35px;
+        opacity: 0.34;
+      }
+
+      .night-water {
+        height: 26vh;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .story-banner,
+      .stepper-wrap,
+      .stage-shell {
+        backdrop-filter: blur(16px) saturate(125%);
+        -webkit-backdrop-filter: blur(16px) saturate(125%);
+      }
+
+      .goal-chip {
+        margin-left: 0;
+      }
+
+      .distant-neon-tower {
+        display: none;
+      }
+    }
+
+
+    /* Scene navigation */
+    .btn-nav {
+      position: fixed;
+      z-index: 5000;
+      bottom: 20px;
+      min-width: 112px;
+      min-height: 50px;
+      padding: 0 20px;
+      border: 1px solid rgba(255, 213, 109, 0.55);
+      border-radius: 14px;
+      color: #fff7dc;
+      font-weight: 1000;
+      cursor: pointer;
+      background: linear-gradient(145deg, rgba(184, 115, 51, 0.96), rgba(92, 48, 29, 0.98));
+      box-shadow: 0 0 14px rgba(255, 213, 109, 0.24), 0 12px 28px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.2);
+    }
+    .btn-nav::before, .btn-nav::after {
+      position: absolute; top: 7px; width: 6px; height: 6px; border-radius: 50%; content: "";
+      background: #4a3b32; box-shadow: inset 0 1px 1px rgba(255,255,255,.22);
+    }
+    .btn-nav::before { left: 7px; }
+    .btn-nav::after { right: 7px; }
+    .btn-nav:hover { transform: translateY(-2px); box-shadow: 0 0 18px rgba(255, 213, 109, .38), 0 15px 32px rgba(0,0,0,.55); }
+    #btn-prev { left: 20px; }
+    #btn-next { right: 20px; display: none; }
+    #nextMission .next-actions { display:flex; justify-content:center; margin-top:22px; }
+    #nextMission .next-actions .btn-nav { position:relative; right:auto; bottom:auto; display:inline-flex; align-items:center; justify-content:center; }
+  </style>
+</head>
+
+<body>
+
+  <div class="night-ambience" aria-hidden="true">
+    <div class="night-stars stars-far"></div>
+    <div class="night-stars stars-near"></div>
+    <div class="moon-halo"></div>
+    <div class="distant-neon-tower">
+      <span class="ambient-antenna"></span>
+      <span class="ambient-crown"></span>
+      <span class="ambient-window window-one"></span>
+      <span class="ambient-window window-two"></span>
+      <span class="ambient-window window-three"></span>
+      <span class="ambient-window window-four"></span>
+    </div>
+    <div class="harbor-silhouette"></div>
+    <div class="night-water">
+      <span class="water-reflection reflection-coral"></span>
+      <span class="water-reflection reflection-gold"></span>
+      <span class="water-reflection reflection-cyan"></span>
+    </div>
+  </div>
+
+  <button id="btn-prev" class="btn-nav" type="button" aria-label="이전 장면 D03으로 이동" onclick="window.location.href='./D03.html'">← 이전</button>
+  <button id="btn-next" class="btn-nav" type="button" aria-label="다음 장면 D05로 이동" onclick="window.location.href='./D05.html'">다음 →</button>
+
+  <main id="missionApp" class="app">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">🌙 SORAEPOGU NIGHT MISSION · 대수 추적</div>
+        <h1>
+          미션!
+          <span class="title-accent">누렁이를 찾아라!</span>
+        </h1>
+        <p class="hero-description">
+          칠흑 같은 소래포구 밤바다. 물결 위로 흔들리는 새우타워의 네온을 따라, 사라져가는 발자국의 수학적 규칙을 해독하세요.
+        </p>
+      </div>
+
+      <div class="hero-emblem" aria-hidden="true">
+        <span>
+          <span class="emblem-icon">🦐</span>
+          <span class="emblem-label">새우타워</span>
+        </span>
+      </div>
+    </header>
+
+    <section class="story-banner" aria-label="미션 이야기">
+      <div class="story-icon" aria-hidden="true">🐶</div>
+      <div class="story-copy">
+        <strong>칠흑 같은 어둠 속, 저 멀리 새우타워의 불빛 사이로 강아지의 그림자가 사라졌습니다.</strong>
+        <p>
+          애타는 부름에 희미한 숨소리만 돌아옵니다. 강아지는 첫 1분에 50계단을 뛰어오른 뒤,
+          지쳐서 매분 10계단씩 덜 오르고 있습니다. 발자국의 규칙을 밝혀 140번째 계단까지 따라가세요.
+        </p>
+      </div>
+      <div class="goal-chip">긴급 목표 · 140번째 계단</div>
+    </section>
+
+    <nav class="stepper-wrap" aria-label="미션 진행 단계">
+      <ol class="stepper">
+        <li class="step-item is-active" data-step-item="1" aria-current="step">
+          <span class="step-number">1</span>
+          <span class="step-text">규칙·일반항</span>
+        </li>
+        <li class="step-item" data-step-item="2">
+          <span class="step-number">2</span>
+          <span class="step-text">합의 원리</span>
+        </li>
+        <li class="step-item" data-step-item="3">
+          <span class="step-number">3</span>
+          <span class="step-text">공식 완성</span>
+        </li>
+        <li class="step-item" data-step-item="4">
+          <span class="step-number">4</span>
+          <span class="step-text">미션 해결</span>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="stage-shell">
+      <section id="stage1" class="stage is-visible" data-stage="1" role="region" aria-labelledby="stage1Title">
+        <div class="stage-heading">
+          <div class="stage-heading-copy">
+            <div class="stage-kicker">Step 1 · Sequence & General Term</div>
+            <h2 id="stage1Title" tabindex="-1">희미해지는 발자국에서 수열의 규칙을 찾아라</h2>
+            <p>
+              계단에 남은 발자국의 간격을 복원한 뒤, 공차 −10이 일반항의 n 앞에서 어떤 신호가 되는지 밝혀냅니다.
+            </p>
+          </div>
+          <div class="stage-badge" aria-hidden="true">🔎</div>
+        </div>
+
+        <div class="info-strip">
+          <div class="info-tile">
+            <span>첫째항 a₁</span>
+            <strong>50계단</strong>
+          </div>
+          <div class="info-tile">
+            <span>공차 d</span>
+            <strong>−10계단</strong>
+          </div>
+          <div class="info-tile">
+            <span>중요한 연결</span>
+            <strong>공차 → n의 계수</strong>
+          </div>
+        </div>
+
+        <div class="stage-one-grid">
+          <section class="panel observation-panel" aria-labelledby="observationTitle">
+            <h3 id="observationTitle" class="panel-title">
+              <span aria-hidden="true">🎛️</span>
+              네온 계단 신호 추적하기
+            </h3>
+            <p class="panel-description">
+              시간 신호를 움직여 그 순간 강아지가 오른 계단 수를 추적하세요. 아직 전체 위치는 어둠 속에 가려져 있습니다.
+            </p>
+
+            <div class="privacy-note">
+              <span aria-hidden="true">🔒</span>
+              주의: 누적 위치 신호는 잠겨 있습니다. 항과 일반항을 해독해야 추적 화면이 열립니다.
+            </div>
+
+            <output class="term-display" for="termSlider" aria-live="polite" aria-atomic="true">
+              <span id="termMinute" class="term-minute">1분째에 오르는 계단</span>
+              <span class="term-value">
+                <strong id="termValue">50</strong>
+                <span>계단</span>
+              </span>
+              <span class="term-caption">이 값은 누적합이 아닌 하나의 항입니다.</span>
+            </output>
+
+            <div class="slider-label-row">
+              <label for="termSlider">관찰할 시간</label>
+              <span id="sliderMinuteLabel">1분</span>
+            </div>
+
+            <input
+              id="termSlider"
+              class="term-slider"
+              type="range"
+              min="1"
+              max="5"
+              step="1"
+              value="1"
+              aria-label="관찰할 시간 선택"
+            />
+
+            <div class="slider-marks" aria-hidden="true">
+              <span>1분</span>
+              <span>2분</span>
+              <span>3분</span>
+              <span>4분</span>
+              <span>5분</span>
+            </div>
+          </section>
+
+          <section class="panel sequence-panel" aria-labelledby="sequenceInputTitle">
+            <h3 id="sequenceInputTitle" class="panel-title">
+              <span aria-hidden="true">✍️</span>
+              활동 1 · 흩어진 발자국 수열 복원하기
+            </h3>
+            <p class="panel-description">
+              첫 발자국 50에서 시작해 매분 10씩 줄어드는 흔적을 복원하세요.
+            </p>
+
+            <div class="sequence-cards">
+              <div class="sequence-card is-correct">
+                <span class="fixed-label">1분째</span>
+                <div class="sequence-fixed">50</div>
+              </div>
+
+              <div id="sequenceCard2" class="sequence-card">
+                <label for="sequenceInput2">2분째</label>
+                <input id="sequenceInput2" class="sequence-input" type="number" inputmode="numeric" autocomplete="off" />
+              </div>
+
+              <div id="sequenceCard3" class="sequence-card">
+                <label for="sequenceInput3">3분째</label>
+                <input id="sequenceInput3" class="sequence-input" type="number" inputmode="numeric" autocomplete="off" />
+              </div>
+
+              <div id="sequenceCard4" class="sequence-card">
+                <label for="sequenceInput4">4분째</label>
+                <input id="sequenceInput4" class="sequence-input" type="number" inputmode="numeric" autocomplete="off" />
+              </div>
+            </div>
+
+            <p id="sequenceHint" class="field-hint" aria-live="polite">
+              50에서 시작하여 오른쪽으로 갈 때마다 10을 빼보세요.
+            </p>
+
+            <div class="action-row">
+              <button id="checkSequenceButton" class="primary-button" type="button">수열 확인</button>
+            </div>
+
+            <section id="generalTermLab" class="general-term-lab" aria-labelledby="generalTermTitle" hidden>
+              <div class="general-term-heading">
+                <span class="general-term-icon" aria-hidden="true">🧠</span>
+                <div>
+                  <h3 id="generalTermTitle">활동 2 · 모든 순간의 신호를 일반항으로 해독하기</h3>
+                  <p>매 순간의 계단 수를 한 번에 찾을 수 있도록, 발자국의 규칙을 식으로 바꿔봅시다.</p>
+                </div>
+              </div>
+
+              <div class="coefficient-concept">
+                핵심 신호: a<sub>n</sub> = a₁ + (n−1)d를 전개하면, 매분 변하는 양인 공차 d가 n의 계수가 됩니다.
+              </div>
+
+              <div class="derivation-box">
+                <div class="derivation-line">
+                  a<sub>n</sub> = 50 + (n−1)(−10)
+                </div>
+                <div class="derivation-line">
+                  (n−1)(−10) = (공차 × n) + 10
+                </div>
+                <div class="derivation-line question-line">
+                  a<sub>n</sub> =
+                  <label class="inline-coefficient" for="coefficientInput">
+                    <span class="sr-only">일반항에서 n의 계수</span>
+                    <input
+                      id="coefficientInput"
+                      class="coefficient-input"
+                      type="number"
+                      step="1"
+                      inputmode="decimal"
+                      autocomplete="off"
+                      placeholder="?"
+                      aria-describedby="coefficientCaption"
+                    />
+                  </label>
+                  n + 60
+                </div>
+              </div>
+
+              <p id="coefficientCaption" class="coefficient-caption">
+                공차가 −10일 때, n 앞에 들어갈 계수를 부호까지 정확히 입력하세요.
+              </p>
+
+              <div id="generalTermResult" class="general-term-result" hidden>
+                <strong>
+                  a<sub>n</sub> = 50 + (n−1)(−10) = 50 − 10n + 10 = −10n + 60
+                </strong>
+                공차 d = −10이 일반항에서 n의 계수가 됩니다. 즉, 등차수열의 일반항에서
+                n의 계수는 수열이 한 번 진행할 때마다 변하는 양을 나타냅니다.
+              </div>
+
+              <div class="general-term-actions">
+                <button id="checkGeneralTermButton" class="primary-button" type="button">일반항 확인</button>
+                <button id="toStage2Button" class="secondary-button" type="button" hidden>2단계로 이동 →</button>
+              </div>
+            </section>
+
+            <div id="stage1Feedback" class="feedback" role="status" aria-live="assertive">
+              <span class="feedback-icon" aria-hidden="true">💡</span>
+              <span>먼저 수열의 빈칸을 모두 채워보세요.</span>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="stage2" class="stage" data-stage="2" role="region" aria-labelledby="stage2Title" hidden>
+        <div class="stage-heading">
+          <div class="stage-heading-copy">
+            <div class="stage-kicker">Step 2 · Drag & Pair</div>
+            <h2 id="stage2Title" tabindex="-1">흩어진 네온 카드를 끌어 같은 합의 신호를 완성하세요</h2>
+            <p>
+              밤바람에 흩어진 수열 카드를 끌어다 놓아 네 열의 합을 같은 빛으로 맞추세요. 배치한 카드도 다시 옮기거나 교환할 수 있습니다.
+            </p>
+          </div>
+          <div class="stage-badge" aria-hidden="true">🎮</div>
+        </div>
+
+        <section class="pair-game panel" aria-labelledby="pairGameTitle">
+          <div class="game-hud">
+            <div id="pairGameTitle" class="game-rule">
+              <span class="game-rule-icon" aria-hidden="true">🧩</span>
+              <span>
+                <strong>게임 규칙:</strong>
+                20, 30, 40, 50 카드를 배치하여 네 열의 합이 모두 같아지게 만드세요.
+                마우스나 손가락으로 끌 수 있고, 카드를 선택한 뒤 빈칸을 눌러도 됩니다.
+              </span>
+            </div>
+
+            <div class="game-progress" aria-live="polite">
+              <span class="game-progress-dot" aria-hidden="true"></span>
+              <span id="placedCounter">카드 배치 0 / 4</span>
+            </div>
+          </div>
+
+          <div class="pair-board">
+            <article class="pair-lane">
+              <span class="lane-number">첫 번째 열</span>
+              <div class="fixed-pair-card"><span><strong>50</strong><small>정방향 수열</small></span></div>
+              <div class="pair-operator" aria-hidden="true">+</div>
+              <div class="drop-zone" data-top-value="50" role="button" tabindex="0" aria-label="50 아래에 카드를 놓을 빈칸">
+                <span class="drop-placeholder">카드 놓기</span>
+              </div>
+              <div class="sum-chip" data-sum-display>합을 확인해보세요</div>
+            </article>
+
+            <article class="pair-lane">
+              <span class="lane-number">두 번째 열</span>
+              <div class="fixed-pair-card"><span><strong>40</strong><small>정방향 수열</small></span></div>
+              <div class="pair-operator" aria-hidden="true">+</div>
+              <div class="drop-zone" data-top-value="40" role="button" tabindex="0" aria-label="40 아래에 카드를 놓을 빈칸">
+                <span class="drop-placeholder">카드 놓기</span>
+              </div>
+              <div class="sum-chip" data-sum-display>합을 확인해보세요</div>
+            </article>
+
+            <article class="pair-lane">
+              <span class="lane-number">세 번째 열</span>
+              <div class="fixed-pair-card"><span><strong>30</strong><small>정방향 수열</small></span></div>
+              <div class="pair-operator" aria-hidden="true">+</div>
+              <div class="drop-zone" data-top-value="30" role="button" tabindex="0" aria-label="30 아래에 카드를 놓을 빈칸">
+                <span class="drop-placeholder">카드 놓기</span>
+              </div>
+              <div class="sum-chip" data-sum-display>합을 확인해보세요</div>
+            </article>
+
+            <article class="pair-lane">
+              <span class="lane-number">네 번째 열</span>
+              <div class="fixed-pair-card"><span><strong>20</strong><small>정방향 수열</small></span></div>
+              <div class="pair-operator" aria-hidden="true">+</div>
+              <div class="drop-zone" data-top-value="20" role="button" tabindex="0" aria-label="20 아래에 카드를 놓을 빈칸">
+                <span class="drop-placeholder">카드 놓기</span>
+              </div>
+              <div class="sum-chip" data-sum-display>합을 확인해보세요</div>
+            </article>
+          </div>
+
+          <div id="cardTrayPanel" class="card-tray-panel">
+            <div class="tray-heading">
+              <h3><span aria-hidden="true">🃏</span> 카드 보관함</h3>
+              <p>카드를 끌거나 선택해서 위 빈칸에 배치하세요.</p>
+            </div>
+            <div id="cardTray" class="card-tray" role="group" aria-label="이동할 수 있는 수열 카드"></div>
+          </div>
+
+          <div class="game-controls">
+            <div class="game-controls-left">
+              <button id="shuffleCardsButton" class="mini-button" type="button">🔀 카드 다시 섞기</button>
+              <button id="returnSelectedButton" class="mini-button" type="button" disabled>↩ 선택 카드 보관함으로</button>
+            </div>
+            <div class="game-controls-right">
+              <button id="checkPairingButton" class="primary-button" type="button" disabled>네 합이 같은지 확인</button>
+            </div>
+          </div>
+
+          <div id="stage2Feedback" class="feedback" role="status" aria-live="assertive" aria-atomic="true">
+            <span class="feedback-icon" aria-hidden="true">🎯</span>
+            <span>먼저 카드 네 장을 빈칸에 배치하세요. 카드 아래에 각 열의 합이 표시됩니다.</span>
+          </div>
+
+          <div id="equationDiscovery" class="equation-discovery" aria-live="polite" hidden>
+            <h3>카드를 역순으로 배치하니 같은 열의 두 항을 더한 값이 모두 70이 되었어요!</h3>
+            <div class="equation-list">
+              <div class="equation-line">S<sub>4</sub> = 50 + 40 + 30 + 20</div>
+              <div class="equation-line">S<sub>4</sub> = 20 + 30 + 40 + 50</div>
+              <div class="equation-line">2S<sub>4</sub> = 70 + 70 + 70 + 70</div>
+              <div class="equation-line">2S<sub>4</sub> = 4 × 70</div>
+              <div class="equation-line final">S<sub>4</sub> = 4 × 70 ÷ 2 = 140</div>
+            </div>
+            <p class="equation-explanation">
+              첫째항과 마지막 항을 짝지으면 각 쌍의 합이 같아집니다.
+              수열을 두 번 더했으므로 마지막에 2로 나누어요.
+            </p>
+          </div>
+
+          <div class="action-row">
+            <button id="toStage3Button" class="primary-button" type="button" hidden>공식 완성하러 가기 →</button>
+          </div>
+        </section>
+      </section>
+
+      <section id="stage3" class="stage" data-stage="3" role="region" aria-labelledby="stage3Title" hidden>
+        <div class="stage-heading">
+          <div class="stage-heading-copy">
+            <div class="stage-kicker">Step 3 · Build the Formula</div>
+            <h2 id="stage3Title" tabindex="-1">찾아낸 빛의 규칙을 등차수열의 합 공식으로 완성하세요</h2>
+            <p>같은 합으로 빛난 카드의 원리를 이용해 항의 개수, 첫째항, 마지막 항, 계산 결과를 직접 입력하세요.</p>
+          </div>
+          <div class="stage-badge" aria-hidden="true">🧮</div>
+        </div>
+
+        <div class="formula-lesson">
+          <section class="formula-definition" aria-label="등차수열의 합 공식">
+            <span>등차수열의 첫째항부터 제n항까지의 합</span>
+            <strong>S<sub>n</sub> = n(a₁ + a<sub>n</sub>) ÷ 2</strong>
+            <p>항의 개수 × (첫째항 + 마지막 항) ÷ 2</p>
+          </section>
+
+          <section class="panel formula-input-panel" aria-labelledby="formulaInputTitle">
+            <h3 id="formulaInputTitle">우리 수열의 값을 공식에 넣어보세요</h3>
+            <p>1분째부터 4분째까지의 수열 50, 40, 30, 20을 이용합니다.</p>
+
+            <div class="formula-field-grid">
+              <div id="formulaFieldCount" class="formula-field">
+                <label for="formulaCount">항의 개수 n</label>
+                <input id="formulaCount" type="number" inputmode="numeric" autocomplete="off" />
+              </div>
+              <div id="formulaFieldFirst" class="formula-field">
+                <label for="formulaFirst">첫째항 a₁</label>
+                <input id="formulaFirst" type="number" inputmode="numeric" autocomplete="off" />
+              </div>
+              <div id="formulaFieldLast" class="formula-field">
+                <label for="formulaLast">마지막 항 a₄</label>
+                <input id="formulaLast" type="number" inputmode="numeric" autocomplete="off" />
+              </div>
+              <div id="formulaFieldResult" class="formula-field">
+                <label for="formulaResult">계산 결과 S₄</label>
+                <input id="formulaResult" type="number" inputmode="numeric" autocomplete="off" />
+              </div>
+            </div>
+
+            <div class="assembled-formula" aria-live="polite">
+              S<sub>4</sub> =
+              <span id="countSlot" class="formula-slot">?</span>
+              × (
+              <span id="firstSlot" class="formula-slot">?</span>
+              +
+              <span id="lastSlot" class="formula-slot">?</span>
+              ) ÷ 2 =
+              <span id="resultSlot" class="formula-slot">?</span>
+            </div>
+
+            <div class="action-row">
+              <button id="checkFormulaButton" class="primary-button" type="button">공식 확인</button>
+              <button id="toStage4Button" class="secondary-button" type="button" hidden>최종 미션으로 이동 →</button>
+            </div>
+
+            <div id="stage3Feedback" class="feedback" role="status" aria-live="assertive">
+              <span class="feedback-icon" aria-hidden="true">💡</span>
+              <span>네 개의 값을 모두 입력한 뒤 공식을 확인하세요.</span>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="stage4" class="stage" data-stage="4" role="region" aria-labelledby="stage4Title" hidden>
+        <div class="stage-heading">
+          <div class="stage-heading-copy">
+            <div class="stage-kicker">Step 4 · Solve the Mission</div>
+            <h2 id="stage4Title" tabindex="-1">마지막 계산으로 새우타워 꼭대기에 도달하세요</h2>
+            <p>네 항의 합이 목표 140과 맞닿는 순간을 찾아, 어둠 속 강아지의 위치 신호를 잠금 해제하세요.</p>
+          </div>
+          <div class="stage-badge" aria-hidden="true">🏁</div>
+        </div>
+
+        <div class="final-layout">
+          <section class="panel final-question-panel" aria-labelledby="finalQuestionTitle">
+            <div class="math-evidence">S<sub>4</sub> = 4(50 + 20) ÷ 2 = 140</div>
+            <h3 id="finalQuestionTitle" class="final-question">
+              강아지가 140번째 계단에 도착하는 것은 출발한 지 몇 분 뒤일까요?
+            </h3>
+
+            <div class="answer-row">
+              <div class="answer-wrap">
+                <label for="finalAnswer" class="sr-only">강아지가 꼭대기에 도착하는 시간</label>
+                <input id="finalAnswer" class="answer-input" type="number" min="1" step="1" inputmode="numeric" autocomplete="off" placeholder="시간을 입력하세요" />
+                <span class="answer-unit">분</span>
+              </div>
+              <button id="checkFinalButton" class="primary-button" type="button">정답 확인</button>
+            </div>
+
+            <div id="stage4Feedback" class="feedback" role="status" aria-live="assertive">
+              <span class="feedback-icon" aria-hidden="true">🐾</span>
+              <span>공식에서 사용한 항의 개수와 시간을 연결해보세요.</span>
+            </div>
+          </section>
+
+          <section id="lockedVisual" class="locked-visual" aria-labelledby="lockedVisualTitle">
+            <div>
+              <div class="lock-icon" aria-hidden="true">🔒</div>
+              <h3 id="lockedVisualTitle">강아지 위치 신호 잠김</h3>
+              <p>누적 계단 수와 강아지의 위치는 마지막 답을 맞혀야 네온 추적 화면에 나타납니다.</p>
+            </div>
+          </section>
+
+          <section id="verificationPanel" class="verification-panel" aria-labelledby="verificationTitle" hidden>
+            <div class="verification-heading">
+              <span>ANSWER VERIFICATION</span>
+              <h3 id="verificationTitle">네온 추적 신호를 재생합니다</h3>
+              <p>애타는 부름에 강아지의 숨소리가 가까워집니다. 각 분의 항을 더하며 꼭대기까지 추적하세요.</p>
+            </div>
+
+            <div class="verification-content">
+              <div>
+                <div class="live-stats" aria-live="polite">
+                  <div class="live-stat"><span>현재 시간</span><strong id="verifyMinute">준비</strong></div>
+                  <div class="live-stat"><span>이번 분의 항</span><strong id="verifyTerm">―</strong></div>
+                  <div class="live-stat"><span>누적 계단</span><strong id="verifyTotal">―</strong></div>
+                </div>
+
+                <ol class="timeline">
+                  <li class="timeline-item"><span class="timeline-minute">1분</span><span class="timeline-term">50계단 이동<small>첫째항 a₁</small></span><span class="timeline-total">누적 50</span></li>
+                  <li class="timeline-item"><span class="timeline-minute">2분</span><span class="timeline-term">40계단 이동<small>앞의 항에서 10 감소</small></span><span class="timeline-total">누적 90</span></li>
+                  <li class="timeline-item"><span class="timeline-minute">3분</span><span class="timeline-term">30계단 이동<small>앞의 항에서 10 감소</small></span><span class="timeline-total">누적 120</span></li>
+                  <li class="timeline-item"><span class="timeline-minute">4분</span><span class="timeline-term">20계단 이동<small>마지막 항 a₄</small></span><span class="timeline-total">누적 140</span></li>
+                </ol>
+              </div>
+
+              <div class="tower-scene" aria-hidden="true">
+                <div id="towerTrack" class="tower-track">
+                  <div class="tower-top"><span class="tower-top-label">전망대 · 140</span></div>
+                  <div id="towerFill" class="tower-fill"></div>
+                  <div id="dogRunner" class="dog-runner">🐶</div>
+                  <div class="tower-base"></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="verificationStatus" class="verification-status" role="status" aria-live="polite">
+              네온 추적 신호를 켭니다. 첫째항부터 계단 흔적을 차례로 복원합니다.
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <section id="nextMission" class="next-mission" aria-labelledby="nextMissionTitle" hidden>
+    <div class="next-card">
+      <div class="next-dog" aria-hidden="true">🐶</div>
+      <div class="complete-chip">✓ 미션 통과</div>
+      <h2 id="nextMissionTitle">네온 불빛 끝에서 강아지를 무사히 찾았습니다!</h2>
+      <p>
+        새우타워의 네온이 물결 위로 환하게 번지는 순간,<br />
+        칠흑 같은 밤바다를 뚫고 일반항과 합의 단서를 연결해, 새우타워 꼭대기의 강아지를 정확히 찾아냈습니다.
+      </p>
+      <div class="moving-message" role="status" aria-live="polite">
+        <span>다음 장면으로 이동할 준비가 완료되었습니다.</span>
+      </div>
+      <div class="next-actions">
+        <button id="nextMissionButton" onclick="window.location.href='./D05.html'" class="btn-nav" type="button">D05로 이동 →</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="successStamp" class="success-stamp" aria-hidden="true">
+    미션 통과!
+    <small>MISSION CLEAR</small>
+  </div>
+  <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
+
+  <script>
+    "use strict";
+
+    const FIRST_TERM = 50;
+    const COMMON_DIFFERENCE = -10;
+    const TARGET_STAIRS = 140;
+    const CORRECT_TIME = 4;
+    const PREVIOUS_SCENE_URL = "D03.html";
+    const NEXT_SCENE_URL = "D05.html";
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const state = {
+      currentStage: 1,
+      completedStages: new Set(),
+      sequenceSolved: false,
+      generalTermSolved: false,
+      pairSolved: false,
+      pairAttempts: 0,
+      selectedCard: null,
+      finalSubmitted: false,
+      towerProgress: 0
+    };
+
+    const missionApp = document.getElementById("missionApp");
+    const nextMission = document.getElementById("nextMission");
+    const prevButton = document.getElementById("btn-prev");
+    const nextButton = document.getElementById("btn-next");
+    const nextMissionButton = document.getElementById("nextMissionButton");
+    const successStamp = document.getElementById("successStamp");
+    const confettiLayer = document.getElementById("confettiLayer");
+    const stepItems = Array.from(document.querySelectorAll(".step-item"));
+
+    const termSlider = document.getElementById("termSlider");
+    const termMinute = document.getElementById("termMinute");
+    const termValue = document.getElementById("termValue");
+    const sliderMinuteLabel = document.getElementById("sliderMinuteLabel");
+
+    const sequenceInput2 = document.getElementById("sequenceInput2");
+    const sequenceInput3 = document.getElementById("sequenceInput3");
+    const sequenceInput4 = document.getElementById("sequenceInput4");
+    const checkSequenceButton = document.getElementById("checkSequenceButton");
+    const sequenceHint = document.getElementById("sequenceHint");
+    const generalTermLab = document.getElementById("generalTermLab");
+    const coefficientInput = document.getElementById("coefficientInput");
+    const checkGeneralTermButton = document.getElementById("checkGeneralTermButton");
+    const generalTermResult = document.getElementById("generalTermResult");
+    const toStage2Button = document.getElementById("toStage2Button");
+    const stage1Feedback = document.getElementById("stage1Feedback");
+
+    const pairLanes = Array.from(document.querySelectorAll(".pair-lane"));
+    const dropZones = Array.from(document.querySelectorAll(".drop-zone"));
+    const cardTrayPanel = document.getElementById("cardTrayPanel");
+    const cardTray = document.getElementById("cardTray");
+    const placedCounter = document.getElementById("placedCounter");
+    const shuffleCardsButton = document.getElementById("shuffleCardsButton");
+    const returnSelectedButton = document.getElementById("returnSelectedButton");
+    const checkPairingButton = document.getElementById("checkPairingButton");
+    const stage2Feedback = document.getElementById("stage2Feedback");
+    const equationDiscovery = document.getElementById("equationDiscovery");
+    const equationLines = Array.from(equationDiscovery.querySelectorAll(".equation-line"));
+    const toStage3Button = document.getElementById("toStage3Button");
+
+    const formulaCount = document.getElementById("formulaCount");
+    const formulaFirst = document.getElementById("formulaFirst");
+    const formulaLast = document.getElementById("formulaLast");
+    const formulaResult = document.getElementById("formulaResult");
+    const countSlot = document.getElementById("countSlot");
+    const firstSlot = document.getElementById("firstSlot");
+    const lastSlot = document.getElementById("lastSlot");
+    const resultSlot = document.getElementById("resultSlot");
+    const checkFormulaButton = document.getElementById("checkFormulaButton");
+    const toStage4Button = document.getElementById("toStage4Button");
+    const stage3Feedback = document.getElementById("stage3Feedback");
+
+    const finalAnswer = document.getElementById("finalAnswer");
+    const checkFinalButton = document.getElementById("checkFinalButton");
+    const stage4Feedback = document.getElementById("stage4Feedback");
+    const lockedVisual = document.getElementById("lockedVisual");
+    const verificationPanel = document.getElementById("verificationPanel");
+    const verifyMinute = document.getElementById("verifyMinute");
+    const verifyTerm = document.getElementById("verifyTerm");
+    const verifyTotal = document.getElementById("verifyTotal");
+    const timelineItems = Array.from(document.querySelectorAll(".timeline-item"));
+    const verificationStatus = document.getElementById("verificationStatus");
+    const towerTrack = document.getElementById("towerTrack");
+    const towerFill = document.getElementById("towerFill");
+    const dogRunner = document.getElementById("dogRunner");
+
+    let dragState = null;
+    let suppressClickUntil = 0;
+
+    function wait(milliseconds) {
+      return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+    }
+
+    function getTerm(n) {
+      return FIRST_TERM + (n - 1) * COMMON_DIFFERENCE;
+    }
+
+    function shuffle(array) {
+      const copied = [...array];
+      for (let index = copied.length - 1; index > 0; index -= 1) {
+        const randomIndex = Math.floor(Math.random() * (index + 1));
+        [copied[index], copied[randomIndex]] = [copied[randomIndex], copied[index]];
+      }
+      return copied;
+    }
+
+    function setFeedback(element, type, icon, content, allowHtml = false) {
+      element.classList.remove("is-error", "is-success");
+      if (type === "error") element.classList.add("is-error");
+      if (type === "success") element.classList.add("is-success");
+
+      element.querySelector(".feedback-icon").textContent = icon;
+      const textElement = element.querySelector("span:last-child");
+      if (allowHtml) textElement.innerHTML = content;
+      else textElement.textContent = content;
+    }
+
+    function updateStepper() {
+      stepItems.forEach((item, index) => {
+        const stepNumber = index + 1;
+        const isComplete = state.completedStages.has(stepNumber);
+        const isActive = state.currentStage === stepNumber;
+        item.classList.toggle("is-complete", isComplete);
+        item.classList.toggle("is-active", isActive);
+        item.querySelector(".step-number").textContent = isComplete ? "✓" : String(stepNumber);
+        if (isActive) item.setAttribute("aria-current", "step");
+        else item.removeAttribute("aria-current");
+      });
+    }
+
+    function completeStage(stageNumber) {
+      state.completedStages.add(stageNumber);
+      updateStepper();
+    }
+
+    async function goToStage(stageNumber) {
+      if (stageNumber === state.currentStage) return;
+
+      const currentStageElement = document.querySelector(`[data-stage="${state.currentStage}"]`);
+      const nextStageElement = document.querySelector(`[data-stage="${stageNumber}"]`);
+
+      currentStageElement.classList.remove("is-visible");
+      await wait(reducedMotion ? 10 : 220);
+      currentStageElement.hidden = true;
+      nextStageElement.hidden = false;
+      state.currentStage = stageNumber;
+      updateStepper();
+
+      requestAnimationFrame(() => nextStageElement.classList.add("is-visible"));
+      await wait(reducedMotion ? 10 : 150);
+      nextStageElement.querySelector("h2").focus({ preventScroll: true });
+      nextStageElement.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
+    }
+
+    function updateTermObservation() {
+      const minute = Number(termSlider.value);
+      termMinute.textContent = `${minute}분째에 오르는 계단`;
+      termValue.textContent = String(getTerm(minute));
+      sliderMinuteLabel.textContent = `${minute}분`;
+      termSlider.style.setProperty("--slider-fill", `${((minute - 1) / 4) * 100}%`);
+    }
+
+    function checkSequence() {
+      if (state.sequenceSolved) return;
+
+      const answers = [
+        { minute: 2, input: sequenceInput2, expected: 40 },
+        { minute: 3, input: sequenceInput3, expected: 30 },
+        { minute: 4, input: sequenceInput4, expected: 20 }
+      ];
+
+      let allCorrect = true;
+      let firstWrongInput = null;
+
+      answers.forEach(({ minute, input, expected }) => {
+        const card = document.getElementById(`sequenceCard${minute}`);
+        const rawValue = input.value.trim();
+        const value = Number(rawValue);
+        const isCorrect = rawValue !== "" && Number.isFinite(value) && value === expected;
+
+        card.classList.remove("is-error", "is-correct");
+        input.removeAttribute("aria-invalid");
+
+        if (isCorrect) {
+          card.classList.add("is-correct");
+        } else {
+          allCorrect = false;
+          card.classList.add("is-error");
+          input.setAttribute("aria-invalid", "true");
+          if (!firstWrongInput) firstWrongInput = input;
+        }
+      });
+
+      if (!allCorrect) {
+        sequenceHint.classList.add("is-error");
+        sequenceHint.textContent = "앞의 항에서 10을 빼보세요.";
+        setFeedback(stage1Feedback, "error", "❌", "아직 맞지 않는 항이 있습니다. 앞의 항에서 10을 빼보세요.");
+        firstWrongInput?.focus();
+        return;
+      }
+
+      state.sequenceSolved = true;
+      sequenceHint.classList.remove("is-error");
+      sequenceHint.textContent = "50, 40, 30, 20은 공차가 −10인 등차수열입니다.";
+      checkSequenceButton.disabled = true;
+      checkSequenceButton.textContent = "수열 완성 ✓";
+      [sequenceInput2, sequenceInput3, sequenceInput4].forEach((input) => input.disabled = true);
+      generalTermLab.hidden = false;
+
+      setFeedback(
+        stage1Feedback,
+        "success",
+        "✅",
+        "수열을 완성했습니다. 이제 일반항을 전개하여 공차 −10이 n의 계수가 되는지 확인하세요."
+      );
+
+      window.setTimeout(() => {
+        coefficientInput.focus({ preventScroll: true });
+        generalTermLab.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "nearest" });
+      }, reducedMotion ? 10 : 250);
+    }
+
+    function checkGeneralTerm() {
+      if (!state.sequenceSolved || state.generalTermSolved) return;
+
+      const rawValue = coefficientInput.value.trim();
+      const value = Number(rawValue);
+
+      coefficientInput.classList.remove("is-error", "is-correct");
+      coefficientInput.removeAttribute("aria-invalid");
+
+      if (rawValue === "" || !Number.isFinite(value) || value !== COMMON_DIFFERENCE) {
+        coefficientInput.classList.add("is-error");
+        coefficientInput.setAttribute("aria-invalid", "true");
+
+        const message = value === 10
+          ? "크기는 맞지만 부호가 다릅니다. 공차가 −10이므로 n의 계수도 음수입니다."
+          : "공차 d = −10을 확인하세요. (n−1)(−10)을 전개하면 n에 곱해지는 수는 무엇일까요?";
+
+        setFeedback(stage1Feedback, "error", "❌", message);
+        coefficientInput.focus();
+        coefficientInput.select();
+        return;
+      }
+
+      state.generalTermSolved = true;
+      coefficientInput.classList.add("is-correct");
+      coefficientInput.disabled = true;
+      checkGeneralTermButton.disabled = true;
+      checkGeneralTermButton.textContent = "일반항 완성 ✓";
+      generalTermResult.hidden = false;
+      toStage2Button.hidden = false;
+      completeStage(1);
+
+      setFeedback(
+        stage1Feedback,
+        "success",
+        "🎉",
+        "정답입니다! aₙ = −10n + 60이며, 공차 −10이 일반항에서 n의 계수가 됩니다."
+      );
+    }
+
+    function createDragCard(value) {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "drag-card";
+      card.dataset.value = String(value);
+      card.setAttribute("aria-pressed", "false");
+      card.setAttribute("aria-label", `${value}계단 카드. 끌어서 놓거나 선택한 뒤 빈칸을 누르세요.`);
+      card.innerHTML = `<span><strong>${value}</strong><small>계단 카드</small></span>`;
+      card.addEventListener("pointerdown", startPotentialDrag);
+      card.addEventListener("click", (event) => {
+        event.stopPropagation();
+        if (performance.now() < suppressClickUntil) return;
+        activateCard(card);
+      });
+      return card;
+    }
+
+    function initializePairCards() {
+      shuffle([20, 30, 40, 50]).forEach((value) => cardTray.appendChild(createDragCard(value)));
+      updatePairBoard();
+    }
+
+    function startPotentialDrag(event) {
+      if (state.pairSolved || event.button !== 0 || event.currentTarget.disabled) return;
+
+      const card = event.currentTarget;
+      const rect = card.getBoundingClientRect();
+      dragState = {
+        card,
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        offsetX: event.clientX - rect.left,
+        offsetY: event.clientY - rect.top,
+        active: false,
+        ghost: null,
+        target: null
+      };
+      card.setPointerCapture(event.pointerId);
+    }
+
+    function activatePointerDrag(event) {
+      if (!dragState || dragState.active) return;
+      const rect = dragState.card.getBoundingClientRect();
+      const ghost = dragState.card.cloneNode(true);
+      ghost.classList.add("drag-ghost");
+      ghost.classList.remove("is-selected", "is-dragging");
+      ghost.disabled = true;
+      ghost.style.width = `${rect.width}px`;
+      ghost.style.height = `${rect.height}px`;
+      document.body.appendChild(ghost);
+      dragState.ghost = ghost;
+      dragState.active = true;
+      dragState.card.classList.add("is-dragging");
+      document.body.classList.add("is-card-dragging");
+      positionDragGhost(event.clientX, event.clientY);
+    }
+
+    function positionDragGhost(clientX, clientY) {
+      if (!dragState?.ghost) return;
+      dragState.ghost.style.left = `${clientX - dragState.offsetX}px`;
+      dragState.ghost.style.top = `${clientY - dragState.offsetY}px`;
+    }
+
+    function findDropTarget(clientX, clientY) {
+      const elements = document.elementsFromPoint(clientX, clientY);
+      const zone = elements.find((element) => element.classList?.contains("drop-zone"));
+      if (zone) return { type: "zone", element: zone };
+
+      const trayElement = elements.find((element) =>
+        element === cardTray || element === cardTrayPanel || element.closest?.("#cardTray") || element.closest?.("#cardTrayPanel")
+      );
+      if (trayElement) return { type: "tray", element: cardTray };
+      return null;
+    }
+
+    function highlightDropTarget(target) {
+      dropZones.forEach((zone) => zone.classList.toggle("is-over", target?.type === "zone" && target.element === zone));
+      cardTrayPanel.classList.toggle("is-over", target?.type === "tray");
+    }
+
+    function handlePointerMove(event) {
+      if (!dragState || event.pointerId !== dragState.pointerId) return;
+      const movedDistance = Math.hypot(event.clientX - dragState.startX, event.clientY - dragState.startY);
+      if (!dragState.active && movedDistance > 7) activatePointerDrag(event);
+      if (!dragState.active) return;
+
+      event.preventDefault();
+      positionDragGhost(event.clientX, event.clientY);
+      dragState.target = findDropTarget(event.clientX, event.clientY);
+      highlightDropTarget(dragState.target);
+    }
+
+    function handlePointerUp(event) {
+      if (!dragState || event.pointerId !== dragState.pointerId) return;
+      const currentDrag = dragState;
+
+      if (currentDrag.active) {
+        const finalTarget = findDropTarget(event.clientX, event.clientY);
+        suppressClickUntil = performance.now() + 300;
+        if (finalTarget?.type === "zone") moveCardToZone(currentDrag.card, finalTarget.element);
+        else if (finalTarget?.type === "tray") moveCardToTray(currentDrag.card);
+      }
+      cleanupPointerDrag();
+    }
+
+    function cleanupPointerDrag() {
+      if (!dragState) return;
+      try {
+        if (dragState.card.hasPointerCapture(dragState.pointerId)) {
+          dragState.card.releasePointerCapture(dragState.pointerId);
+        }
+      } catch (error) {
+        /* 포인터 캡처가 이미 해제된 경우 */
+      }
+      dragState.card.classList.remove("is-dragging");
+      dragState.ghost?.remove();
+      highlightDropTarget(null);
+      document.body.classList.remove("is-card-dragging");
+      dragState = null;
+    }
+
+    function clearCardSelection() {
+      if (state.selectedCard) {
+        state.selectedCard.classList.remove("is-selected");
+        state.selectedCard.setAttribute("aria-pressed", "false");
+      }
+      state.selectedCard = null;
+      returnSelectedButton.disabled = true;
+      dropZones.forEach((zone) => zone.classList.remove("is-keyboard-target"));
+    }
+
+    function selectCard(card) {
+      clearCardSelection();
+      state.selectedCard = card;
+      card.classList.add("is-selected");
+      card.setAttribute("aria-pressed", "true");
+      returnSelectedButton.disabled = false;
+      dropZones.forEach((zone) => {
+        if (zone !== card.parentElement) zone.classList.add("is-keyboard-target");
+      });
+      setFeedback(stage2Feedback, null, "☝️", `${card.dataset.value} 카드를 선택했습니다. 놓을 빈칸을 누르거나 다른 카드를 선택해 자리를 바꾸세요.`);
+    }
+
+    function swapCards(firstCard, secondCard) {
+      const firstMarker = document.createComment("first-card");
+      const secondMarker = document.createComment("second-card");
+      firstCard.parentNode.insertBefore(firstMarker, firstCard);
+      secondCard.parentNode.insertBefore(secondMarker, secondCard);
+      firstCard.remove();
+      secondCard.remove();
+      firstMarker.parentNode.replaceChild(secondCard, firstMarker);
+      secondMarker.parentNode.replaceChild(firstCard, secondMarker);
+      clearCardSelection();
+      animateCardLanding(firstCard);
+      animateCardLanding(secondCard);
+      updatePairBoard();
+    }
+
+    function activateCard(card) {
+      if (state.pairSolved) return;
+      if (!state.selectedCard) {
+        selectCard(card);
+        return;
+      }
+      if (state.selectedCard === card) {
+        clearCardSelection();
+        setFeedback(stage2Feedback, null, "🎯", "카드 선택을 해제했습니다.");
+        return;
+      }
+      swapCards(state.selectedCard, card);
+    }
+
+    function moveCardToZone(card, zone) {
+      if (state.pairSolved || card.parentElement === zone) {
+        clearCardSelection();
+        return;
+      }
+
+      const sourceParent = card.parentElement;
+      const existingCard = zone.querySelector(".drag-card");
+      if (existingCard) {
+        if (sourceParent.classList.contains("drop-zone")) sourceParent.appendChild(existingCard);
+        else cardTray.appendChild(existingCard);
+        animateCardLanding(existingCard);
+      }
+      zone.appendChild(card);
+      clearCardSelection();
+      animateCardLanding(card);
+      updatePairBoard();
+    }
+
+    function moveCardToTray(card) {
+      if (state.pairSolved) return;
+      if (card.parentElement !== cardTray) {
+        cardTray.appendChild(card);
+        animateCardLanding(card);
+      }
+      clearCardSelection();
+      updatePairBoard();
+    }
+
+    function animateCardLanding(card) {
+      card.classList.remove("just-dropped");
+      void card.offsetWidth;
+      card.classList.add("just-dropped");
+      window.setTimeout(() => card.classList.remove("just-dropped"), 450);
+    }
+
+    function updatePairBoard() {
+      pairLanes.forEach((lane) => lane.classList.remove("is-wrong"));
+      let placedCount = 0;
+
+      dropZones.forEach((zone) => {
+        const topValue = Number(zone.dataset.topValue);
+        const card = zone.querySelector(".drag-card");
+        const lane = zone.closest(".pair-lane");
+        const sumDisplay = lane.querySelector("[data-sum-display]");
+
+        if (card) {
+          const bottomValue = Number(card.dataset.value);
+          placedCount += 1;
+          zone.classList.add("is-filled");
+          zone.tabIndex = -1;
+          zone.removeAttribute("role");
+          zone.setAttribute("aria-label", `${topValue} 아래에 ${bottomValue} 카드가 배치됨`);
+          sumDisplay.textContent = `${topValue} + ${bottomValue} = ${topValue + bottomValue}`;
+          sumDisplay.classList.add("has-value");
+        } else {
+          zone.classList.remove("is-filled");
+          zone.tabIndex = 0;
+          zone.setAttribute("role", "button");
+          zone.setAttribute("aria-label", `${topValue} 아래에 카드를 놓을 빈칸`);
+          sumDisplay.textContent = "합을 확인해보세요";
+          sumDisplay.classList.remove("has-value");
+        }
+      });
+
+      placedCounter.textContent = `카드 배치 ${placedCount} / 4`;
+      checkPairingButton.disabled = placedCount !== 4 || state.pairSolved;
+
+      if (!state.pairSolved) {
+        if (placedCount === 4) setFeedback(stage2Feedback, null, "🔍", "카드 네 장을 모두 배치했습니다. 네 열의 합이 모두 같은지 비교해보세요.");
+        else if (placedCount > 0) setFeedback(stage2Feedback, null, "🧩", `현재 ${placedCount}장의 카드를 배치했습니다. 각 카드 아래의 합을 비교해보세요.`);
+      }
+    }
+
+    function resetPairGame() {
+      if (state.pairSolved) return;
+      clearCardSelection();
+      state.pairAttempts = 0;
+      shuffle(Array.from(document.querySelectorAll(".drag-card"))).forEach((card) => cardTray.appendChild(card));
+      pairLanes.forEach((lane) => lane.classList.remove("is-wrong", "is-solved"));
+      equationDiscovery.hidden = true;
+      equationLines.forEach((line) => line.classList.remove("is-shown"));
+      toStage3Button.hidden = true;
+      setFeedback(stage2Feedback, null, "🔀", "카드를 다시 섞었습니다. 모든 세로쌍의 합이 같아지도록 배치하세요.");
+      updatePairBoard();
+    }
+
+    function checkPairing() {
+      if (state.pairSolved) return;
+      const cards = dropZones.map((zone) => zone.querySelector(".drag-card"));
+      if (cards.some((card) => !card)) {
+        setFeedback(stage2Feedback, "error", "❌", "먼저 카드 네 장을 모두 빈칸에 배치하세요.");
+        return;
+      }
+
+      const sums = dropZones.map((zone) => Number(zone.dataset.topValue) + Number(zone.querySelector(".drag-card").dataset.value));
+      const allEqual = sums.every((sum) => sum === sums[0]);
+
+      if (!allEqual) {
+        state.pairAttempts += 1;
+        pairLanes.forEach((lane) => lane.classList.add("is-wrong"));
+        let hint = `현재 네 합은 ${sums.join(", ")}입니다. 모든 열의 합이 같아지도록 카드를 바꿔보세요.`;
+        hint += state.pairAttempts === 1
+          ? " 가장 큰 항과 가장 작은 항을 먼저 짝지어보세요."
+          : " 50과 20을 짝지으면 어떤 합이 되는지 확인해보세요.";
+        setFeedback(stage2Feedback, "error", "❌", hint);
+        return;
+      }
+
+      solvePairGame(sums[0]);
+    }
+
+    async function solvePairGame(commonSum) {
+      state.pairSolved = true;
+      clearCardSelection();
+      pairLanes.forEach((lane) => {
+        lane.classList.remove("is-wrong");
+        lane.classList.add("is-solved");
+      });
+      document.querySelectorAll(".drag-card").forEach((card) => {
+        card.disabled = true;
+        card.style.cursor = "default";
+      });
+      checkPairingButton.disabled = true;
+      checkPairingButton.textContent = "짝짓기 성공 ✓";
+      shuffleCardsButton.disabled = true;
+      returnSelectedButton.disabled = true;
+      completeStage(2);
+      setFeedback(stage2Feedback, "success", "🎉", `성공! 네 열의 합이 모두 ${commonSum}입니다. 아래에서 이 규칙이 합 공식으로 바뀌는 과정을 확인하세요.`);
+
+      equationDiscovery.hidden = false;
+      await wait(reducedMotion ? 20 : 250);
+      for (const line of equationLines) {
+        line.classList.add("is-shown");
+        await wait(reducedMotion ? 20 : 420);
+      }
+      toStage3Button.hidden = false;
+      toStage3Button.focus({ preventScroll: true });
+    }
+
+    function updateFormulaPreview() {
+      countSlot.textContent = formulaCount.value.trim() || "?";
+      firstSlot.textContent = formulaFirst.value.trim() || "?";
+      lastSlot.textContent = formulaLast.value.trim() || "?";
+      resultSlot.textContent = formulaResult.value.trim() || "?";
+    }
+
+    function checkFormula() {
+      const entries = [
+        { field: document.getElementById("formulaFieldCount"), input: formulaCount, expected: 4, message: "항의 개수는 1분째부터 4분째까지 몇 개인지 세어보세요." },
+        { field: document.getElementById("formulaFieldFirst"), input: formulaFirst, expected: 50, message: "첫째항은 1분째에 오르는 계단 수입니다." },
+        { field: document.getElementById("formulaFieldLast"), input: formulaLast, expected: 20, message: "마지막 항은 4분째에 오르는 계단 수입니다." },
+        { field: document.getElementById("formulaFieldResult"), input: formulaResult, expected: 140, message: "첫째항과 마지막 항의 합에 항의 개수를 곱한 뒤 2로 나눠보세요." }
+      ];
+
+      const errors = [];
+      let firstWrongInput = null;
+
+      entries.forEach((entry) => {
+        const rawValue = entry.input.value.trim();
+        const value = Number(rawValue);
+        const isCorrect = rawValue !== "" && Number.isFinite(value) && value === entry.expected;
+        entry.field.classList.remove("is-error", "is-correct");
+        entry.input.removeAttribute("aria-invalid");
+        if (isCorrect) entry.field.classList.add("is-correct");
+        else {
+          entry.field.classList.add("is-error");
+          entry.input.setAttribute("aria-invalid", "true");
+          errors.push(entry.message);
+          if (!firstWrongInput) firstWrongInput = entry.input;
+        }
+      });
+
+      if (errors.length > 0) {
+        setFeedback(stage3Feedback, "error", "❌", `<ul class="formula-error-list">${errors.map((message) => `<li>${message}</li>`).join("")}</ul>`, true);
+        firstWrongInput?.focus();
+        return;
+      }
+
+      checkFormulaButton.disabled = true;
+      checkFormulaButton.textContent = "공식 완성 ✓";
+      toStage4Button.hidden = false;
+      [formulaCount, formulaFirst, formulaLast, formulaResult].forEach((input) => input.disabled = true);
+      completeStage(3);
+      setFeedback(stage3Feedback, "success", "✅", "정확합니다! S₄ = 4 × (50 + 20) ÷ 2 = 140입니다.");
+    }
+
+    function updateDogPosition(progress) {
+      state.towerProgress = progress;
+      const maximumTravel = Math.max(0, towerTrack.clientHeight - dogRunner.offsetHeight);
+      dogRunner.style.bottom = `${maximumTravel * (progress / 100)}px`;
+      towerFill.style.height = `${progress}%`;
+    }
+
+    async function runVerificationAnimation() {
+      const terms = [50, 40, 30, 20];
+      const totals = [50, 90, 120, 140];
+      lockedVisual.hidden = true;
+      verificationPanel.hidden = false;
+      timelineItems.forEach((item) => item.classList.remove("is-revealed", "is-current"));
+      verifyMinute.textContent = "준비";
+      verifyTerm.textContent = "―";
+      verifyTotal.textContent = "―";
+      updateDogPosition(0);
+
+      verificationPanel.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
+      await wait(reducedMotion ? 30 : 450);
+
+      for (let index = 0; index < terms.length; index += 1) {
+        timelineItems.forEach((item) => item.classList.remove("is-current"));
+        const minute = index + 1;
+        const term = terms[index];
+        const total = totals[index];
+        verifyMinute.textContent = `${minute}분`;
+        verifyTerm.textContent = `${term}계단`;
+        verifyTotal.textContent = `${total}계단`;
+        timelineItems[index].classList.add("is-revealed", "is-current");
+        updateDogPosition(Math.min((total / TARGET_STAIRS) * 100, 100));
+        verificationStatus.classList.remove("is-complete");
+        verificationStatus.textContent = `${minute}분째 신호: ${term}계단을 더해 누적 ${total}계단. 숨소리가 조금 더 가까워집니다.`;
+        await wait(reducedMotion ? 150 : 900);
+      }
+
+      verificationStatus.classList.add("is-complete");
+      verificationStatus.textContent = "🎯 50 + 40 + 30 + 20 = 140! 네온 꼭대기에서 강아지의 위치 신호를 찾았습니다.";
+      timelineItems.forEach((item) => item.classList.remove("is-current"));
+      timelineItems[3].classList.add("is-current");
+      celebrateSuccess();
+      await wait(2000);
+      showNextMission();
+    }
+
+    function createConfetti() {
+      if (reducedMotion) return;
+      const colors = ["#ff7468", "#ffd261", "#36b9b3", "#2878d0", "#ffffff", "#ff9a6f"];
+      for (let index = 0; index < 95; index += 1) {
+        const piece = document.createElement("span");
+        const size = 7 + Math.random() * 8;
+        const duration = 1.8 + Math.random() * 1.2;
+        const delay = Math.random() * 0.32;
+        piece.className = "confetti-piece";
+        piece.style.left = `${Math.random() * 100}vw`;
+        piece.style.width = `${size}px`;
+        piece.style.height = `${size * (0.7 + Math.random())}px`;
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.setProperty("--duration", `${duration}s`);
+        piece.style.setProperty("--drift", `${-150 + Math.random() * 300}px`);
+        piece.style.setProperty("--rotation", `${480 + Math.random() * 720}deg`);
+        piece.style.animationDelay = `${delay}s`;
+        if (Math.random() > 0.55) piece.style.borderRadius = "50%";
+        confettiLayer.appendChild(piece);
+        window.setTimeout(() => piece.remove(), (duration + delay + 0.3) * 1000);
+      }
+    }
+
+    function celebrateSuccess() {
+      successStamp.classList.remove("is-visible");
+      void successStamp.offsetWidth;
+      successStamp.classList.add("is-visible");
+      createConfetti();
+      window.setTimeout(() => successStamp.classList.remove("is-visible"), 1750);
+    }
+
+    function navigateTo(url) {
+      window.location.href = url;
+    }
+
+    async function showNextMission() {
+      missionApp.classList.add("is-leaving");
+      nextMission.hidden = false;
+      requestAnimationFrame(() => nextMission.classList.add("is-visible"));
+      await wait(reducedMotion ? 20 : 650);
+      missionApp.hidden = true;
+      prevButton.style.display = "none";
+      nextButton.style.display = "block";
+      nextMission.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
+    }
+
+    function checkFinalAnswer() {
+      if (state.finalSubmitted) return;
+      const rawValue = finalAnswer.value.trim();
+      const value = Number(rawValue);
+
+      if (rawValue === "" || !Number.isFinite(value) || value !== CORRECT_TIME) {
+        finalAnswer.setAttribute("aria-invalid", "true");
+        setFeedback(stage4Feedback, "error", "❌", "틀렸습니다. 누적합을 슬라이더로 찾지 말고, Sₙ = n(a₁ + aₙ) ÷ 2에 값을 넣어보세요!");
+        finalAnswer.focus();
+        finalAnswer.select();
+        return;
+      }
+
+      state.finalSubmitted = true;
+      finalAnswer.removeAttribute("aria-invalid");
+      finalAnswer.disabled = true;
+      checkFinalButton.disabled = true;
+      checkFinalButton.textContent = "정답 ✓";
+      completeStage(4);
+      setFeedback(stage4Feedback, "success", "🎉", "정답입니다! S₄ = 4(50 + 20) ÷ 2 = 140. 새우타워의 네온 경로가 열리고, 강아지는 4분 만에 꼭대기에 도착한 것으로 확인됩니다!");
+      runVerificationAnimation();
+    }
+
+    prevButton.addEventListener("click", () => navigateTo(PREVIOUS_SCENE_URL));
+    nextButton.addEventListener("click", () => navigateTo(NEXT_SCENE_URL));
+    nextMissionButton.addEventListener("click", () => navigateTo(NEXT_SCENE_URL));
+
+    termSlider.addEventListener("input", updateTermObservation);
+    checkSequenceButton.addEventListener("click", checkSequence);
+    checkGeneralTermButton.addEventListener("click", checkGeneralTerm);
+    toStage2Button.addEventListener("click", () => goToStage(2));
+
+    [sequenceInput2, sequenceInput3, sequenceInput4].forEach((input) => {
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          checkSequence();
+        }
+      });
+      input.addEventListener("input", () => {
+        input.closest(".sequence-card").classList.remove("is-error");
+        input.removeAttribute("aria-invalid");
+      });
+    });
+
+    coefficientInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        checkGeneralTerm();
+      }
+    });
+
+    coefficientInput.addEventListener("input", () => {
+      coefficientInput.classList.remove("is-error");
+      coefficientInput.removeAttribute("aria-invalid");
+    });
+
+    document.addEventListener("pointermove", handlePointerMove, { passive: false });
+    document.addEventListener("pointerup", handlePointerUp);
+    document.addEventListener("pointercancel", cleanupPointerDrag);
+
+    dropZones.forEach((zone) => {
+      zone.addEventListener("click", () => {
+        if (state.selectedCard && !state.pairSolved) moveCardToZone(state.selectedCard, zone);
+        else if (!zone.querySelector(".drag-card")) setFeedback(stage2Feedback, null, "☝️", "먼저 카드 보관함에서 카드를 선택하거나 끌어오세요.");
+      });
+
+      zone.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          if (state.selectedCard && !state.pairSolved) moveCardToZone(state.selectedCard, zone);
+          else setFeedback(stage2Feedback, null, "☝️", "먼저 이동할 카드를 선택하세요.");
+        }
+      });
+    });
+
+    shuffleCardsButton.addEventListener("click", resetPairGame);
+    returnSelectedButton.addEventListener("click", () => {
+      if (state.selectedCard) moveCardToTray(state.selectedCard);
+    });
+    checkPairingButton.addEventListener("click", checkPairing);
+    toStage3Button.addEventListener("click", () => goToStage(3));
+
+    [formulaCount, formulaFirst, formulaLast, formulaResult].forEach((input) => {
+      input.addEventListener("input", () => {
+        updateFormulaPreview();
+        input.closest(".formula-field").classList.remove("is-error");
+        input.removeAttribute("aria-invalid");
+      });
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          checkFormula();
+        }
+      });
+    });
+
+    checkFormulaButton.addEventListener("click", checkFormula);
+    toStage4Button.addEventListener("click", () => goToStage(4));
+    checkFinalButton.addEventListener("click", checkFinalAnswer);
+
+    finalAnswer.addEventListener("input", () => finalAnswer.removeAttribute("aria-invalid"));
+    finalAnswer.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        checkFinalAnswer();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (!verificationPanel.hidden) updateDogPosition(state.towerProgress);
+    });
+
+    updateTermObservation();
+    updateFormulaPreview();
+    updateStepper();
+    initializePairCards();
+  </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>초특급 귀요미 누렁이 (투명 배경)</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: transparent; /* 배경을 투명하게 설정 */
+      margin: 0;
+    }
+
+    .dog-container {
+      width: 400px;
+      height: 400px;
+    }
+
+    /* 걷기 애니메이션: 몸통이 리드미컬하게 통통 튐 */
+    .bounce-group {
+      animation: body-bounce 0.6s linear infinite;
+    }
+
+    @keyframes body-bounce {
+      0%, 50%, 100% { transform: translateY(0); }
+      25%, 75% { transform: translateY(-4px); }
+    }
+
+    /* 발걸음 애니메이션 A (오른쪽 앞발, 왼쪽 뒷발) */
+    .leg-fr, .leg-bl {
+      animation: walk-a 0.6s ease-in-out infinite;
+    }
+
+    /* 발걸음 애니메이션 B (왼쪽 앞발, 오른쪽 뒷발) */
+    .leg-fl, .leg-br {
+      animation: walk-b 0.6s ease-in-out infinite;
+    }
+
+    @keyframes walk-a {
+      0% { transform: rotate(25deg) translateY(0); }
+      50% { transform: rotate(-25deg) translateY(0); }
+      75% { transform: rotate(0deg) translateY(-6px); } /* 공중으로 다리를 들어올림 */
+      100% { transform: rotate(25deg) translateY(0); }
+    }
+
+    @keyframes walk-b {
+      0% { transform: rotate(-25deg) translateY(0); }
+      25% { transform: rotate(0deg) translateY(-6px); } /* 공중으로 다리를 들어올림 */
+      50% { transform: rotate(25deg) translateY(0); }
+      100% { transform: rotate(-25deg) translateY(0); }
+    }
+
+    /* 그림자 애니메이션 (몸이 뜰 때 작아짐) */
+    .shadow {
+      animation: shadow-scale 0.6s linear infinite;
+      transform-origin: 100px 134px;
+    }
+
+    @keyframes shadow-scale {
+      0%, 50%, 100% { transform: scale(1); opacity: 0.8; }
+      25%, 75% { transform: scale(0.85); opacity: 0.4; }
+    }
+
+    /* 머리 까닥까닥 */
+    .head {
+      animation: head-bob 1.2s ease-in-out infinite;
+      transform-origin: 130px 90px;
+    }
+
+    @keyframes head-bob {
+      0%, 50%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(2deg); }
+      75% { transform: rotate(-2deg); }
+    }
+
+    /* 꼬리 프로펠러처럼 살랑살랑 */
+    .tail {
+      animation: tail-wag 0.15s ease-in-out infinite alternate;
+      transform-origin: 65px 95px;
+    }
+
+    @keyframes tail-wag {
+      0% { transform: rotate(-15deg); }
+      100% { transform: rotate(20deg); }
+    }
+
+    /* 눈 깜빡임 */
+    .eyes {
+      animation: blink 4.2s infinite;
+      transform-origin: 130px 76px;
+    }
+
+    @keyframes blink {
+      0%, 95%, 100% { transform: scaleY(1); }
+      97% { transform: scaleY(0.1); }
+    }
+
+    /* 반짝이는 배경 효과 */
+    .sparkle {
+      animation: twinkle 1.5s infinite alternate;
+    }
+    .sparkle-2 { animation-delay: 0.5s; }
+    .sparkle-3 { animation-delay: 1s; }
+
+    @keyframes twinkle {
+      0% { opacity: 0.2; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dog-container">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      
+      <!-- 클리핑 마스크 정의 (하얀 배를 자연스럽게 그리기 위함) -->
+      <defs>
+        <clipPath id="body-clip">
+          <rect x="60" y="85" width="75" height="40" rx="20" />
+        </clipPath>
+      </defs>
+
+      <!-- 반짝이 배경 효과 -->
+      <g fill="#FFD700" opacity="0.8">
+        <path class="sparkle sparkle-1" d="M 30 40 Q 30 35 25 35 Q 30 35 30 30 Q 30 35 35 35 Q 30 35 30 40 Z" />
+        <path class="sparkle sparkle-2" d="M 170 30 Q 170 25 165 25 Q 170 25 170 20 Q 170 25 175 25 Q 170 25 170 30 Z" />
+        <path class="sparkle sparkle-3" d="M 160 120 Q 160 115 155 115 Q 160 115 160 110 Q 160 115 165 115 Q 160 115 160 120 Z" />
+      </g>
+
+      <!-- 전체 강아지 그룹 위치 조정 -->
+      <g transform="translate(0, 30)">
+        
+        <!-- 바닥 그림자 -->
+        <ellipse class="shadow" cx="100" cy="134" rx="45" ry="5" fill="#E6DFD3" />
+
+        <!-- 통통 튀는 강아지 본체 -->
+        <g class="bounce-group">
+          
+          <!-- 1. 꼬리 -->
+          <path class="tail" d="M 65 95 Q 35 85 40 70 Q 55 75 70 90 Z" fill="#F4A236" />
+
+          <!-- 2. 몸통 뒤쪽(먼 쪽) 다리들 -->
+          <!-- 먼 뒷다리 -->
+          <g class="leg-bl" style="transform-origin: 81px 115px;">
+            <rect x="75" y="110" width="12" height="22" rx="6" fill="#D98822" />
+            <rect x="75" y="120" width="12" height="12" rx="6" fill="#E2D3C1" />
+          </g>
+          <!-- 먼 앞다리 -->
+          <g class="leg-fl" style="transform-origin: 121px 115px;">
+            <rect x="115" y="110" width="12" height="22" rx="6" fill="#D98822" />
+            <rect x="115" y="120" width="12" height="12" rx="6" fill="#E2D3C1" />
+          </g>
+
+          <!-- 3. 통통한 몸통 (알약 형태) -->
+          <g class="body-core">
+            <rect x="60" y="85" width="75" height="40" rx="20" fill="#F4A236" />
+            <!-- 하얀색 빵빵한 배 -->
+            <g clip-path="url(#body-clip)">
+              <ellipse cx="97" cy="125" rx="50" ry="20" fill="#FFFFFF" />
+            </g>
+          </g>
+
+          <!-- 4. 몸통 앞쪽(가까운 쪽) 다리들 -->
+          <!-- 가까운 뒷다리 -->
+          <g class="leg-br" style="transform-origin: 70px 115px;">
+            <rect x="63" y="110" width="14" height="24" rx="7" fill="#F4A236" />
+            <rect x="63" y="120" width="14" height="14" rx="7" fill="#FFFFFF" />
+          </g>
+          <!-- 가까운 앞다리 -->
+          <g class="leg-fr" style="transform-origin: 110px 115px;">
+            <rect x="103" y="110" width="14" height="24" rx="7" fill="#F4A236" />
+            <rect x="103" y="120" width="14" height="14" rx="7" fill="#FFFFFF" />
+          </g>
+
+          <!-- 5. 귀여운 빨간 목줄과 방울 -->
+          <g class="collar">
+            <path d="M 110 98 Q 125 106 140 98" stroke="#FF4B4B" stroke-width="5" stroke-linecap="round" fill="none" />
+            <!-- 금방울 -->
+            <circle cx="125" cy="104" r="5.5" fill="#FFD700" />
+            <circle cx="125" cy="106" r="1" fill="#D98822" />
+            <line x1="125" y1="107" x2="125" y2="109.5" stroke="#D98822" stroke-width="1.5" stroke-linecap="round" />
+          </g>
+
+          <!-- 6. 대두(Big Head) 얼굴 그룹 -->
+          <g class="head">
+            <!-- 쫑긋한 두 귀 -->
+            <path d="M 105 52 L 100 25 Q 115 25 122 45 Z" fill="#F4A236" />
+            <path d="M 108 50 Q 105 32 116 38 L 120 48 Z" fill="#F9D4A9" />
+            
+            <path d="M 155 52 L 160 25 Q 145 25 138 45 Z" fill="#F4A236" />
+            <path d="M 152 50 Q 155 32 144 38 L 140 48 Z" fill="#F9D4A9" />
+
+            <!-- 얼굴 바탕 -->
+            <circle cx="130" cy="72" r="30" fill="#F4A236" />
+            
+            <!-- 귀여운 눈썹 (시바견 특유의 마크) -->
+            <circle cx="115" cy="58" r="3.5" fill="#FFFFFF" />
+            <circle cx="145" cy="58" r="3.5" fill="#FFFFFF" />
+
+            <!-- 하얀 뺨과 주둥이 -->
+            <ellipse cx="130" cy="85" rx="25" ry="16" fill="#FFFFFF" />
+
+            <!-- 눈동자와 초롱초롱한 빛 -->
+            <g class="eyes">
+              <!-- 왼쪽 눈 -->
+              <circle cx="116" cy="74" r="4.5" fill="#3D2616" />
+              <circle cx="114.5" cy="72.5" r="1.8" fill="#FFFFFF" />
+              <circle cx="117.5" cy="75.5" r="0.7" fill="#FFFFFF" />
+              
+              <!-- 오른쪽 눈 -->
+              <circle cx="144" cy="74" r="4.5" fill="#3D2616" />
+              <circle cx="142.5" cy="72.5" r="1.8" fill="#FFFFFF" />
+              <circle cx="145.5" cy="75.5" r="0.7" fill="#FFFFFF" />
+            </g>
+
+            <!-- 동그란 까만 코 -->
+            <ellipse cx="130" cy="83" rx="4" ry="2.5" fill="#3D2616" />
+            
+            <!-- 방긋 웃는 입과 혀 -->
+            <path d="M 125 87 Q 130 91 130 87 Q 130 91 135 87" stroke="#3D2616" stroke-width="1.5" fill="none" stroke-linecap="round" />
+            <path d="M 128 88 Q 130 95 132 88 Z" fill="#FF8484" />
+
+            <!-- 발그레한 볼터치 -->
+            <ellipse cx="108" cy="79" rx="5" ry="3" fill="#FF8484" opacity="0.4" />
+            <ellipse cx="152" cy="79" rx="5" ry="3" fill="#FF8484" opacity="0.4" />
+          </g>
+
+        </g>
+      </g>
+
+    </svg>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소래포구 MATHTOUR - D01</title>
+    <style>
+        /* 폰트 및 공통 스타일 적용 */
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a110c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Gowun Dodum', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 16:9 비율 고정 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #2c2019;
+            border: 4px solid #4a3b32;
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.9);
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        /* 배경 이미지 규칙 적용 */
+        .bg-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 스테이지 상단 표시바 (톱니바퀴 스타일 명패) */
+        .stage-header {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: linear-gradient(135deg, #4a3b32, #2c2019);
+            border: 2px solid #b87333;
+            padding: 6px 18px;
+            border-radius: 4px;
+            z-index: 10;
+            font-family: 'Gowun Dodum', sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+            color: #b87333;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .stage-header::before {
+            content: '⚙';
+            display: inline-block;
+            animation: gear-spin 5s linear infinite;
+        }
+        @keyframes gear-spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* [수정] 상황 설명 박스 위치를 화면 중앙(top: 45%)으로 조정 */
+        .situation-box {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 520px;
+            height: 175px;
+            background: linear-gradient(135deg, rgba(44, 32, 25, 0.95), rgba(26, 17, 12, 0.95));
+            border: 3px solid #b87333;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.9), 0 12px 28px rgba(0,0,0,0.8);
+            border-radius: 6px;
+            padding: 20px;
+            z-index: 10;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        /* 스크롤바 커스텀 */
+        .situation-box::-webkit-scrollbar {
+            width: 6px;
+        }
+        .situation-box::-webkit-scrollbar-track {
+            background: #2c2019;
+        }
+        .situation-box::-webkit-scrollbar-thumb {
+            background: #b87333;
+            border-radius: 3px;
+        }
+
+        .situation-title {
+            font-family: 'Gowun Dodum', sans-serif;
+            color: #b87333;
+            font-size: 15px;
+            font-weight: bold;
+            border-bottom: 1px dashed #4a3b32;
+            padding-bottom: 6px;
+            margin-bottom: 12px;
+        }
+
+        .situation-content {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 13.5px;
+            line-height: 1.7;
+            color: #f4ecd8;
+        }
+
+        .narration-text {
+            color: #a3937c;
+            font-style: italic;
+            margin: 6px 0;
+            display: block;
+        }
+
+        .main-situation {
+            margin: 6px 0;
+            display: block;
+            color: #f4ecd8;
+        }
+
+        /* 등장인물 배치 스타일 */
+        .char-wrapper {
+            z-index: 3;
+            position: absolute;
+            overflow: visible;
+        }
+
+        /* 황동 금속판 내비게이션 버튼 스타일 */
+        .btn-nav {
+            position: absolute;
+            bottom: 20px;
+            background: #b87333;
+            border: 2px solid #4a3b32;
+            color: #2c2019;
+            font-family: 'Gowun Dodum', sans-serif;
+            font-weight: bold;
+            font-size: 15px;
+            padding: 8px 26px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #4a3b32, inset 1px 1px 2px rgba(255,255,255,0.4);
+            border-radius: 4px;
+            z-index: 15;
+            transition: all 0.1s;
+        }
+        .btn-nav:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #4a3b32, 0 3px 5px rgba(0,0,0,0.5);
+        }
+
+        #btn-prev {
+            left: 20px;
+            display: none;
+        }
+
+        #btn-next {
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 배경 이미지 -->
+        <img src="소래포구_새우타워(밤).png" class="bg-image" alt="소래포구 새우타워 밤">
+
+        <!-- 상단 헤더 바 -->
+        <div class="stage-header">소래포구 MATHTOUR — ⚙ Stage 1</div>
+
+        <!-- 유형 1: 상황 연출 설명 박스 -->
+        <div class="situation-box">
+            <!-- [수정] 오프닝 스토리 문구 제거 -->
+            <div class="situation-title">🎬 소래포구 새우타워와 사라진 누렁이</div>
+            <div class="situation-content">
+                <span class="narration-text">맑은 주말 오후, 갈매기 소리와 파도 소리가 들리는 소래포구 새우타워 앞 광장</span>
+                <span class="main-situation">[상황] 시원한 바닷바람이 부는 소래포구. 민우와 서연이는 민우의 아끼는 반려견 '누렁이'와 함께 산책을 하던 중, 거대하고 독특한 모양의 건축물 앞에 도착합니다.</span>
+            </div>
+        </div>
+
+        <!-- 등장 인물 에셋 배치 -->
+        <!-- 서연: 좌측 최외곽 배치 -->
+        <div class="char-wrapper" id="char-서연" style="left: 25px; bottom: 20px; width: 234px; height: 288px;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 누렁이: 바닥 정렬 배치 -->
+        <div class="char-wrapper" id="char-누렁이" style="left: 620px; bottom: 20px; width: 234px; height: 288px;">
+            <iframe src="등장인물_누렁이.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 민우: 우측 최외곽 배치 -->
+        <div class="char-wrapper" id="char-민우" style="left: 790px; bottom: 20px; width: 234px; height: 288px;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 공통 네비게이션 버튼 -->
+        <button id="btn-prev" class="btn-nav">이전</button>
+        <button id="btn-next" class="btn-nav" onclick="window.location.href='D02.html'">다음</button>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소래포구 MATHTOUR - D01</title>
+    <style>
+        /* 폰트 및 공통 스타일 적용 */
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a110c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Gowun Dodum', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 16:9 비율 고정 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #2c2019;
+            border: 4px solid #4a3b32;
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.9);
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        /* 배경 이미지 규칙 적용 */
+        .bg-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 스테이지 상단 표시바 (톱니바퀴 스타일 명패) */
+        .stage-header {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: linear-gradient(135deg, #4a3b32, #2c2019);
+            border: 2px solid #b87333;
+            padding: 6px 18px;
+            border-radius: 4px;
+            z-index: 10;
+            font-family: 'Gowun Dodum', sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+            color: #b87333;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .stage-header::before {
+            content: '⚙';
+            display: inline-block;
+            animation: gear-spin 5s linear infinite;
+        }
+        @keyframes gear-spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 대화창 UI - 캐릭터 프레임보다 위에 오도록 z-index 조절 */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 520px;
+            height: 165px;
+            background: linear-gradient(135deg, rgba(0, 59, 70, 0.95), rgba(44, 32, 25, 0.95));
+            border: 4px solid #4a3b32;
+            outline: 2px solid #b87333;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 25px rgba(0,0,0,0.7);
+            border-radius: 8px;
+            padding: 18px 24px;
+            box-sizing: border-box;
+            z-index: 20;
+            cursor: pointer;
+        }
+
+        #speaker-name {
+            font-family: 'Gowun Dodum', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #b87333;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Serif KR', serif;
+            font-size: 14px;
+            color: #f4ecd8;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        /* 등장인물 배치 및 비활성화(어둡게) 필터 스타일 */
+        .char-wrapper {
+            z-index: 3;
+            position: absolute;
+            overflow: visible;
+            filter: brightness(1);
+            transition: filter 0.25s ease;
+            pointer-events: none;
+        }
+        
+        .char-wrapper.inactive {
+            filter: brightness(0.55);
+        }
+
+        /* 황동 금속판 내비게이션 버튼 스타일 */
+        .btn-nav {
+            position: absolute;
+            bottom: 20px;
+            background: #b87333;
+            border: 2px solid #4a3b32;
+            color: #2c2019;
+            font-family: 'Gowun Dodum', sans-serif;
+            font-weight: bold;
+            font-size: 15px;
+            padding: 8px 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #4a3b32, inset 1px 1px 2px rgba(255,255,255,0.4);
+            border-radius: 4px;
+            z-index: 25;
+            transition: all 0.1s;
+        }
+        .btn-nav:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #4a3b32, 0 3px 5px rgba(0,0,0,0.5);
+        }
+
+        #btn-prev {
+            left: 20px;
+            display: none;
+        }
+
+        #btn-skip, #btn-next {
+            right: 20px;
+        }
+
+        #btn-next {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 배경 이미지 -->
+        <img src="소래포구_새우타워(밤).png" class="bg-image" alt="소래포구 새우타워 밤">
+
+        <!-- 상단 헤더 바 -->
+        <div class="stage-header">소래포구 MATHTOUR — ⚙ Stage 1</div>
+
+        <!-- 등장 인물 에셋 배치 (지면 정렬) -->
+        <!-- 서연: 좌측 사이드 외곽 배치 -->
+        <div class="char-wrapper" id="char-서연" style="left: 25px; bottom: 20px; width: 234px; height: 288px;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9); transform-origin:bottom left;"></iframe>
+        </div>
+
+        <!-- 누렁이: 바닥 정렬 배치 -->
+        <div class="char-wrapper" id="char-누렁이" style="left: 600px; bottom: 20px; width: 234px; height: 288px;">
+            <iframe src="등장인물_누렁이.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9); transform-origin:bottom left;"></iframe>
+        </div>
+
+        <!-- 민우: 우측 사이드 최외곽 배치 -->
+        <div class="char-wrapper" id="char-민우" style="left: 790px; bottom: 20px; width: 234px; height: 288px;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9); transform-origin:bottom left;"></iframe>
+        </div>
+
+        <!-- 유형 2: 클릭 진행형 대화 상자 -->
+        <div id="dialogue-box" onclick="advanceDialogue()">
+            <div id="speaker-name">화자 이름</div>
+            <div id="dialogue-text">대사 내용이 들어갑니다.</div>
+        </div>
+
+        <!-- 공통 네비게이션 버튼 -->
+        <button id="btn-prev" class="btn-nav">이전</button>
+        <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+        <button id="btn-next" class="btn-nav" onclick="window.location.href='D03.html'">다음</button>
+    </div>
+
+    <script>
+        // 나레이션(상황 설명) 파트를 완전히 제외하고 캐릭터 대사로 즉시 시작되도록 최적화
+        const dialogues = [
+            { speaker: "민우", text: "서연아, 저기 봐! 저게 바로 소래포구의 새로운 랜드마크인 '새우타워'야.", target: "char-민우" },
+            { speaker: "서연", text: "우와, 진짜 크다! 모양이 완전 새우인데? 수염까지 휘어져 있는 게 엄청 디테일해.", target: "char-서연" },
+            { speaker: "민우", text: "그치? 원래 방치되어 있던 옛 5부두였는데, 2020년에 이렇게 멋진 전망대로 재탄생했대. 높이가 무려 21m나 되는 규모야.", target: "char-민우" },
+            { speaker: "서연", text: "진짜 신기하다! 여기서 누렁이랑 같이 사진 한 장 먼저 찍고 위로 올라가 보자. 자, 누렁아 여기 봐! 하나, 둘...", target: "char-서연" },
+            { speaker: "누렁이", text: "멍멍! 왈왈!\n(갑자기 새우타워 향해 귀를 쫑긋 세운다)", target: "char-누렁이" },
+            { speaker: "민우", text: "어? 누렁아, 왜 그래? 사진 찍어야지, 가만히 좀... 앗?!", target: "char-민우" },
+            { speaker: "민우", text: "누렁아!! 안 돼, 멈춰! 거기 들어가면 길 잃어버린단 말이야!", target: "char-민우" },
+            { speaker: "서연", text: "헐! 어떡해, 민우야! 누렁이가 꼬리를 흔들면서 새우타워 입구 안으로 쏙 들어가 버렸어!", target: "char-서연" },
+            { speaker: "민우", text: "하아... 내가 목줄을 꽉 잡고 있었어야 했는데... 타워가 21m나 되고 꼭대기까지 140계단이나 되는데 어쩌지?", target: "char-민우" },
+            { speaker: "서연", text: "여기서 멍하니 서 있을 때가 아니야! 누렁이가 더 멀리 가기 전에 우리가 직접 새우타워 안으로 들어가서 찾아야 해. 어서 가자!", target: "char-서연" },
+            { speaker: "시스템 메시지", text: "민우와 서연이가 누렁이를 찾기 위해 새우타워의 아찔한 계단으로 진입했습니다. 하지만 누렁이의 이동 속도가 심상치 않습니다! 수학적 지식을 발휘해 누렁이의 위치를 파악하세요!\n\n👉 [미션 1: 지쳐가는 강아지를 잡아라!] 가 시작됩니다.", target: null }
+        ];
+
+        let currentIndex = 0;
+
+        function updateDialogue() {
+            if (currentIndex >= dialogues.length) {
+                endDialogue();
+                return;
+            }
+
+            const current = dialogues[currentIndex];
+            
+            document.getElementById("speaker-name").innerText = `⚙ [${current.speaker}]`;
+            document.getElementById("dialogue-text").innerText = current.text;
+
+            if (current.speaker === "시스템 메시지") {
+                document.getElementById("dialogue-text").style.fontFamily = "'Nanum Gothic Coding', monospace";
+                document.getElementById("dialogue-text").style.color = "#b87333";
+            } else {
+                document.getElementById("dialogue-text").style.fontFamily = "'Noto Serif KR', serif";
+                document.getElementById("dialogue-text").style.color = "#f4ecd8";
+            }
+
+            const characterIds = ["char-민우", "char-서연", "char-누렁이"];
+            characterIds.forEach(id => {
+                const charEl = document.getElementById(id);
+                if (!charEl) return;
+
+                if (current.target === null) {
+                    charEl.classList.add("inactive");
+                } else if (id === current.target) {
+                    charEl.classList.remove("inactive");
+                } else {
+                    charEl.classList.add("inactive");
+                }
+            });
+        }
+
+        function advanceDialogue() {
+            currentIndex++;
+            updateDialogue();
+        }
+
+        function skipDialogue() {
+            endDialogue();
+        }
+
+        function endDialogue() {
+            document.getElementById("dialogue-box").style.display = "none";
+            document.getElementById("btn-skip").style.display = "none";
+
+            const characterIds = ["char-민우", "char-서연", "char-누렁이"];
+            characterIds.forEach(id => {
+                const charEl = document.getElementById(id);
+                if (charEl) charEl.classList.remove("inactive");
+            });
+
+            document.getElementById("btn-next").style.display = "block";
+        }
+
+        window.onload = function() {
+            updateDialogue();
+        };
+    </script>
+</body>
+</html>
