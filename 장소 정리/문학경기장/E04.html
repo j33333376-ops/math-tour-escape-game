@@ -4,19 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>문학경기장 MATHTOUR - E04</title>
-  
-  <!-- 폰트 설정: Pretendard, Roboto Mono -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap">
-
   <style>
-    /* Reset & Base */
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
       user-select: none;
     }
+
     body {
       background-color: #0f172a;
       display: flex;
@@ -24,23 +22,23 @@
       align-items: center;
       min-height: 100vh;
       font-family: 'Pretendard', sans-serif;
-      overflow: hidden;
+      color: #1e293b;
     }
 
-    /* 16:9 메인 스테이지 컨테이너 */
+    /* 게임 컨테이너 (16:9 비율) */
     #game-container {
       position: relative;
       width: 100%;
       max-width: 1066px;
       aspect-ratio: 16 / 9;
-      background-color: #f8fafc;
       overflow: hidden;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+      background-color: #f8fafc;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
       border-radius: 12px;
     }
 
     /* 배경 이미지 */
-    .bg-image {
+    #bg-img {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -49,15 +47,15 @@
       z-index: 0;
     }
 
-    /* 상단 진행률 헤더 바 */
-    .top-header {
+    /* 상단 진행바 카드 */
+    #top-bar {
       position: absolute;
       top: 16px;
       left: 20px;
       right: 20px;
       height: 48px;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(8px);
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(4px);
       border-radius: 12px;
       display: flex;
       align-items: center;
@@ -66,56 +64,48 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
       z-index: 10;
     }
-    .top-title {
-      font-size: 16px;
+
+    .stage-title {
       font-weight: 700;
+      font-size: 16px;
       color: #1e293b;
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .top-title .badge {
-      background: #2563eb;
+
+    .stage-badge {
+      background-color: #2563eb;
       color: #ffffff;
       font-size: 12px;
-      padding: 2px 8px;
+      padding: 3px 8px;
       border-radius: 6px;
       font-family: 'Roboto Mono', monospace;
-    }
-    .progress-bar-bg {
-      width: 120px;
-      height: 8px;
-      background: #e2e8f0;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .progress-bar-fill {
-      width: 100%;
-      height: 100%;
-      background: #10b981;
-      border-radius: 4px;
+      font-weight: 700;
     }
 
-    /* 등장인물 Wrapper & iframe 규칙 */
+    .progress-status {
+      font-size: 14px;
+      font-weight: 600;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 캐릭터 래퍼 및 환호 애니메이션 */
     .char-wrapper {
       position: absolute;
+      bottom: 60px;
       width: 260px;
       height: 320px;
       overflow: visible;
       z-index: 3;
-      transition: filter 0.3s ease;
-    }
-    .char-wrapper iframe {
-      border: 0;
-      width: 260px;
-      height: 320px;
-      transform: scale(1);
-      transform-origin: bottom left;
-      pointer-events: none;
+      transition: transform 0.2s ease-out;
     }
 
-    /* 환호하는 방방 뛰는 애니메이션 */
-    @keyframes bounce {
+    /* 환호(방방 뛰는) 키프레임 애니메이션 */
+    @keyframes cheerJump {
       0%, 100% {
         transform: translateY(0);
       }
@@ -123,287 +113,356 @@
         transform: translateY(-28px);
       }
     }
-    .jumping {
-      animation: bounce 0.6s infinite ease-in-out;
+
+    .cheering {
+      animation: cheerJump 0.6s ease-in-out infinite;
     }
 
-    /* 공통 말풍선 기본 스타일 */
+    #char-민우 {
+      left: 260px;
+    }
+
+    #char-서연 {
+      left: 546px;
+    }
+
+    /* 말풍선 공통 스타일 */
     .speech-bubble {
       position: absolute;
-      background: #ffffff;
-      color: #1e293b;
-      padding: 14px 18px;
+      bottom: 335px;
+      width: 280px;
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(4px);
       border-radius: 16px;
-      font-size: 15px;
-      font-weight: 600;
-      line-height: 1.5;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.3s ease, transform 0.3s ease;
+      padding: 16px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      border: 2px solid #2563eb;
       z-index: 5;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
     }
+
+    .speech-bubble.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
     .speech-bubble::after {
       content: '';
       position: absolute;
-      bottom: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-width: 8px 8px 0;
+      bottom: -10px;
       border-style: solid;
-      border-color: #ffffff transparent;
+      border-width: 10px 10px 0;
       display: block;
       width: 0;
+      z-index: 1;
     }
 
-    /* 민우 머리 위 말풍선 (left 120px 인물 기준) */
     #bubble-민우 {
-      left: 250px; /* 120px + (260px / 2) */
-      bottom: 370px;
-      transform: translateX(-50%);
-    }
-    #bubble-민우.active {
-      opacity: 1;
-      transform: translateX(-50%) translateY(-5px);
+      left: 250px;
     }
 
-    /* 서연 머리 위 말풍선 (right 120px, 너비 260px의 중앙인 right 250px 지점에 배치) */
+    #bubble-민우::after {
+      left: 40px;
+      border-color: #2563eb transparent;
+    }
+
     #bubble-서연 {
-      right: 250px; /* 120px + (260px / 2) */
-      bottom: 370px;
-      transform: translateX(50%);
-    }
-    #bubble-서연.active {
-      opacity: 1;
-      transform: translateX(50%) translateY(-5px);
+      left: 536px;
     }
 
-    /* 대화 진행 전체 클릭 영역 */
-    #click-area {
-      position: absolute;
-      inset: 0;
-      z-index: 6;
-      cursor: pointer;
+    #bubble-서연::after {
+      right: 40px;
+      border-color: #2563eb transparent;
     }
 
-    /* 대화 완료 후 미션 성공 카드 */
-    #success-card {
+    .bubble-speaker {
+      font-size: 14px;
+      font-weight: 700;
+      color: #2563eb;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .bubble-text {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #1e293b;
+      letter-spacing: -0.02em;
+      word-break: keep-all;
+    }
+
+    /* 미션 성공 최종 오버레이 카운트다운/문구 */
+    #success-banner {
       position: absolute;
-      top: 45%;
+      top: 38%;
       left: 50%;
       transform: translate(-50%, -50%) scale(0.9);
       background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
-      border: 2px solid #10b981;
+      padding: 24px 40px;
       border-radius: 20px;
-      padding: 32px 48px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border: 3px solid #10b981;
       text-align: center;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 8;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    #success-card.show {
+
+    #success-banner.show {
       opacity: 1;
-      pointer-events: auto;
+      visibility: visible;
       transform: translate(-50%, -50%) scale(1);
     }
-    #success-card h2 {
+
+    .banner-title {
       font-size: 26px;
       font-weight: 800;
       color: #10b981;
       margin-bottom: 8px;
-    }
-    #success-card p {
-      font-size: 16px;
-      color: #475569;
-      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
-    /* 공통 하단 이동 버튼 */
+    .banner-subtitle {
+      font-size: 18px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    /* 하단 이동 버튼 */
     .btn-nav {
       position: absolute;
+      bottom: 20px;
       height: 44px;
       padding: 0 24px;
-      background: #2563eb;
+      background-color: #2563eb;
       color: #ffffff;
       border: none;
       border-radius: 8px;
       font-size: 15px;
       font-weight: 600;
-      font-family: 'Pretendard', sans-serif;
       cursor: pointer;
-      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       transition: background-color 0.2s, transform 0.1s;
       z-index: 10;
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 6px;
     }
+
     .btn-nav:hover {
-      background: #1d4ed8;
+      background-color: #1d4ed8;
     }
+
     .btn-nav:active {
       transform: scale(0.98);
     }
 
     #btn-prev {
       left: 20px;
-      bottom: 20px;
-    }
-    #btn-next {
-      right: 20px;
-      bottom: 20px;
     }
 
-    /* 대화 안내 오버레이 */
-    .tap-hint {
-      position: absolute;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.75);
-      color: #ffffff;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 13px;
-      pointer-events: none;
-      z-index: 7;
-      animation: pulse 1.5s infinite;
+    #btn-next, #btn-skip {
+      right: 20px;
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 0.6; }
-      50% { opacity: 1; }
+
+    #btn-skip {
+      background-color: #64748b;
+    }
+
+    #btn-skip:hover {
+      background-color: #475569;
+    }
+
+    /* 다음/종료 버튼 스타일 강조 */
+    .btn-end {
+      background-color: #10b981 !important;
+    }
+    .btn-end:hover {
+      background-color: #059669 !important;
     }
   </style>
 </head>
 <body>
 
   <div id="game-container">
-    <!-- 1. 배경 이미지 -->
-    <img src="박태환수영장외부.png" alt="박태환수영장 외부" class="bg-image">
+    <!-- 배경 이미지 -->
+    <img id="bg-img" src="박태환수영장외부.png" alt="박태환 수영장 외부">
 
-    <!-- 2. 상단 헤더 바 -->
-    <div class="top-header">
-      <div class="top-title">
-        <span class="badge">E04</span>
-        <span>문학경기장 MATHTOUR - 최종 성공</span>
+    <!-- 상단 상태바 -->
+    <div id="top-bar">
+      <div class="stage-title">
+        <span class="stage-badge">STAGE E04</span>
+        <span>박태환 수영장 - 미션 완료</span>
       </div>
-      <div class="progress-bar-bg">
-        <div class="progress-bar-fill"></div>
+      <div class="progress-status">
+        <span>✓ 최종 승리</span>
       </div>
     </div>
 
-    <!-- 3. 대화 터치 영역 -->
-    <div id="click-area" onclick="nextDialogue()"></div>
-
-    <!-- 4. 등장인물 1: 민우 -->
-    <div class="char-wrapper jumping" id="char-민우" style="left: 120px; bottom: 40px;">
-      <iframe src="등장인물_민우.html" scrolling="no"></iframe>
+    <!-- 민우 말풍선 -->
+    <div id="bubble-민우" class="speech-bubble">
+      <div class="bubble-speaker">민우</div>
+      <div id="text-민우" class="bubble-text"></div>
     </div>
 
-    <!-- 5. 등장인물 2: 서연 -->
-    <div class="char-wrapper jumping" id="char-서연" style="right: 120px; bottom: 40px; animation-delay: 0.15s;">
-      <iframe src="등장인물_서연.html" scrolling="no" style="transform: scale(1) scaleX(-1);"></iframe>
+    <!-- 서연 말풍선 -->
+    <div id="bubble-서연" class="speech-bubble">
+      <div class="bubble-speaker">서연</div>
+      <div id="text-서연" class="bubble-text"></div>
     </div>
 
-    <!-- 6. 캐릭터 머리 위 독립 말풍선 -->
-    <div class="speech-bubble" id="bubble-민우"></div>
-    <div class="speech-bubble" id="bubble-서연"></div>
-
-    <!-- 7. 화면 클릭 안내 힌트 -->
-    <div class="tap-hint" id="tap-hint">화면을 클릭하여 대화를 진행하세요 💬</div>
-
-    <!-- 8. 최종 미션 성공 카드 -->
-    <div id="success-card">
-      <h2>🎉 미션 성공!</h2>
-      <p>다른 미션도 시도해볼까요?</p>
+    <!-- 민우 캐릭터 -->
+    <div class="char-wrapper cheering" id="char-민우">
+      <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; pointer-events:none;"></iframe>
     </div>
 
-    <!-- 9. 이동 버튼 -->
-    <button class="btn-nav" id="btn-prev" onclick="goPrev()">이전</button>
-    <button class="btn-nav" id="btn-next" onclick="goNext()">End</button>
+    <!-- 서연 캐릭터 -->
+    <div class="char-wrapper cheering" id="char-서연">
+      <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 미션 성공 안내 문구 배너 -->
+    <div id="success-banner">
+      <div class="banner-title">🎉 미션 성공! 🎉</div>
+      <div class="banner-subtitle">다른 미션도 시도해볼까요?</div>
+    </div>
+
+    <!-- 하단 컨트롤 버튼 -->
+    <button id="btn-prev" class="btn-nav" onclick="goPrev()">◀ 이전</button>
+    <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기 ⏭</button>
+    <button id="btn-next" class="btn-nav btn-end" onclick="goNext()" style="display: none;">End 🏁</button>
   </div>
 
   <script>
-    // 대화 스크립트 데이터
+    // 대사 시나리오 데이터
     const dialogues = [
-      { speaker: "민우", text: "와! 드디어 결승점이다! 해냈어!" },
-      { speaker: "서연", text: "축하해, 민우! 장애물을 하나도 놓치지 않고 정말 멋지게 통과했어!" },
-      { speaker: "민우", text: "중간에 조금 힘들었는데 끝까지 포기하지 않아서 더 뿌듯해!\n진짜 박태환 선수가 된 기분이야!" },
-      { speaker: "서연", text: "나도 정말 신났어! 장애물을 피하면서 헤엄치니까\n실제 수영 대회에 참가한 것처럼 긴장감도 있었어." },
-      { speaker: "민우", text: "맞아! 순간 너무 짜릿했어!\n다음에는 더 빠르게 도전해서 내 기록도 깨보고 싶다!" },
-      { speaker: "서연", text: "좋아! 우리 계속 연습해서 더 멋진 '박태환'이 되어 보자!" }
+      {
+        speaker: "민우",
+        text: "와! 드디어 결승점이다! 해냈어!"
+      },
+      {
+        speaker: "서연",
+        text: "축하해, 민우! 장애물을 하나도 놓치지 않고 정말 멋지게 통과했어!"
+      },
+      {
+        speaker: "민우",
+        text: "중간에 조금 힘들었는데 끝까지 포기하지 않아서 더 뿌듯해! 진짜 박태환 선수가 된 기분이야!"
+      },
+      {
+        speaker: "서연",
+        text: "나도 정말 신났어! 장애물을 피하면서 헤엄치니까 실제 수영 대회에 참가한 것처럼 긴장감도 있었어."
+      },
+      {
+        speaker: "민우",
+        text: "맞아! 순간 너무 짜릿했어! 다음에는 더 빠르게 도전해서 내 기록도 깨보고 싶다!"
+      },
+      {
+        speaker: "서연",
+        text: "좋아! 우리 계속 연습해서 더 멋진 '박태환'이 되어 보자!"
+      }
     ];
 
     let currentIndex = 0;
 
-    const bubbleMinwoo = document.getElementById('bubble-민우');
-    const bubbleSeoyeon = document.getElementById('bubble-서연');
-    const wrapperMinwoo = document.getElementById('char-민우');
-    const wrapperSeoyeon = document.getElementById('char-서연');
-    const tapHint = document.getElementById('tap-hint');
-    const clickArea = document.getElementById('click-area');
-    const successCard = document.getElementById('success-card');
+    const charMinwoo = document.getElementById("char-민우");
+    const charSeoyeon = document.getElementById("char-서연");
+    const bubbleMinwoo = document.getElementById("bubble-민우");
+    const bubbleSeoyeon = document.getElementById("bubble-서연");
+    const textMinwoo = document.getElementById("text-민우");
+    const textSeoyeon = document.getElementById("text-서연");
+    const successBanner = document.getElementById("success-banner");
+    const btnSkip = document.getElementById("btn-skip");
+    const btnNext = document.getElementById("btn-next");
 
-    // 화면 초기화 및 대화 출력
-    function renderDialogue() {
+    // 화면 또는 대화창 클릭 시 다음 대사 진행
+    document.getElementById("game-container").addEventListener("click", function(e) {
+      // 버튼 클릭 시 대사 진행 이벤트 방지
+      if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+      advanceDialogue();
+    });
+
+    function updateDialogue() {
       if (currentIndex < dialogues.length) {
         const current = dialogues[currentIndex];
-        const formattedText = current.text.replace(/\n/g, '<br>');
 
         if (current.speaker === "민우") {
-          bubbleMinwoo.innerHTML = formattedText;
-          bubbleMinwoo.classList.add('active');
-          bubbleSeoyeon.classList.remove('active');
+          // 민우 활성화
+          charMinwoo.style.filter = "brightness(1)";
+          charSeoyeon.style.filter = "brightness(0.55)";
 
-          wrapperMinwoo.style.filter = "brightness(1)";
-          wrapperSeoyeon.style.filter = "brightness(0.65)";
+          textMinwoo.innerText = current.text;
+          bubbleMinwoo.classList.add("active");
+          bubbleSeoyeon.classList.remove("active");
         } else if (current.speaker === "서연") {
-          bubbleSeoyeon.innerHTML = formattedText;
-          bubbleSeoyeon.classList.add('active');
-          bubbleMinwoo.classList.remove('active');
+          // 서연 활성화
+          charSeoyeon.style.filter = "brightness(1)";
+          charMinwoo.style.filter = "brightness(0.55)";
 
-          wrapperSeoyeon.style.filter = "brightness(1)";
-          wrapperMinwoo.style.filter = "brightness(0.65)";
+          textSeoyeon.innerText = current.text;
+          bubbleSeoyeon.classList.add("active");
+          bubbleMinwoo.classList.remove("active");
         }
       } else {
-        // 모든 대화 종료 후
-        bubbleMinwoo.classList.remove('active');
-        bubbleSeoyeon.classList.remove('active');
-        wrapperMinwoo.style.filter = "brightness(1)";
-        wrapperSeoyeon.style.filter = "brightness(1)";
-        
-        clickArea.style.display = 'none';
-        tapHint.style.display = 'none';
-
-        // 성공 카드 노출
-        successCard.classList.add('show');
+        // 모든 대화 종료 처리
+        finishDialogue();
       }
     }
 
-    // 다음 대화 진행
-    function nextDialogue() {
-      currentIndex++;
-      renderDialogue();
+    function advanceDialogue() {
+      if (currentIndex < dialogues.length) {
+        currentIndex++;
+        updateDialogue();
+      } else {
+        finishDialogue();
+      }
     }
 
-    // 이전 장면 이동
+    function skipDialogue() {
+      currentIndex = dialogues.length;
+      finishDialogue();
+    }
+
+    function finishDialogue() {
+      // 말풍선 숨기기
+      bubbleMinwoo.classList.remove("active");
+      bubbleSeoyeon.classList.remove("active");
+
+      // 캐릭터 밝기 복구
+      charMinwoo.style.filter = "brightness(1)";
+      charSeoyeon.style.filter = "brightness(1)";
+
+      // 최종 문구 표시
+      successBanner.classList.add("show");
+
+      // 건너뛰기 버튼 숨기고 종료(End) 버튼 활성화
+      btnSkip.style.display = "none";
+      btnNext.style.display = "flex";
+    }
+
+    // 네비게이션 함수
     function goPrev() {
       window.location.href = "E03.html";
     }
 
-    // 다음 장면 (End/메인) 이동
     function goNext() {
+      // 다음 URL이 없으므로 엔딩 또는 메인으로 이동 처리
+      alert("문학경기장 MATHTOUR를 성공적으로 마쳤습니다!");
       window.location.href = "index.html";
     }
 
-    // 로드 시 실행
-    window.addEventListener('DOMContentLoaded', () => {
-      renderDialogue();
-    });
+    // 초기 실행
+    updateDialogue();
   </script>
 </body>
 </html>

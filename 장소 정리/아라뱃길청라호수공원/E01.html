@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>아라뱃길·청라호수공원 MATHTOUR - E01</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+    @import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #1a365d;
+      overflow: hidden;
+    }
+
+    /* 게임 컨테이너 (16:9) */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(180deg, #e0f7fa 0%, #b2ebf2 100%);
+      overflow: hidden;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+      border-radius: 8px;
+    }
+
+    /* 상단 상태 바 */
+    #top-bar {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      right: 20px;
+      height: 48px;
+      background: rgba(0, 119, 190, 0.2);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(64, 224, 208, 0.4);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 10;
+    }
+
+    #stage-title {
+      font-family: 'NanumSquareRound', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #0077be;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #stage-title::before {
+      content: '⚓';
+      font-size: 16px;
+    }
+
+    #location-tag {
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a365d;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 4px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(64, 224, 208, 0.5);
+    }
+
+    /* 무대 및 에셋/인물 배치 영역 */
+    #stage {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    /* 배경 건물/조형물 z-index: 1 */
+    .asset-bg {
+      position: absolute;
+      z-index: 1;
+    }
+
+    /* 캐릭터 z-index: 3 */
+    .char-wrapper {
+      position: absolute;
+      z-index: 3;
+    }
+
+    /* 상황 설명 박스 (유형 1) */
+    .situation-box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 580px;
+      max-width: 85%;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid #81d4fa;
+      border-radius: 20px;
+      padding: 28px 32px;
+      box-shadow: 0 8px 32px rgba(0, 119, 190, 0.15);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      text-align: center;
+      z-index: 10;
+    }
+
+    .situation-title {
+      font-family: 'NanumSquareRound', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #0077be;
+      margin-bottom: 14px;
+      display: inline-block;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #40e0d0;
+    }
+
+    .situation-text {
+      font-size: 16px;
+      line-height: 1.65;
+      color: #1a365d;
+      word-break: keep-all;
+      letter-spacing: -0.02em;
+    }
+
+    /* 이동 버튼 */
+    .btn-nav {
+      position: absolute;
+      bottom: 20px;
+      padding: 12px 28px;
+      background: #0077be;
+      color: #ffffff;
+      border: 1px solid #40e0d0;
+      border-radius: 50px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 119, 190, 0.3);
+      transition: all 0.25s ease;
+      z-index: 10;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-nav:hover {
+      background: #40e0d0;
+      color: #1a365d;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(64, 224, 208, 0.4);
+    }
+
+    #btn-prev {
+      left: 20px;
+    }
+
+    #btn-next {
+      right: 20px;
+    }
+
+    .btn-disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+      filter: grayscale(1);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 상단 프로그레스/상태 바 -->
+    <div id="top-bar">
+      <div id="stage-title">아라뱃길·청라호수공원 MATHTOUR</div>
+      <div id="location-tag">청라호수공원 횡단교량</div>
+    </div>
+
+    <!-- 무대 연출 레이어 -->
+    <div id="stage">
+      <!-- 배경 에셋: 청라호수공원_횡단교량 (중앙 배경 배치, 원본 1000x500 가정 / s=0.75 적용) -->
+      <div class="asset-bg" style="position:absolute; left:143px; bottom:110px; width:750px; height:375px; overflow:hidden;">
+        <iframe src="청라호수공원_횡단교량.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(0.75); transform-origin:top left; pointer-events:none;"></iframe>
+      </div>
+
+      <!-- 좌측 인물: 민우 (s=1) -->
+      <div class="char-wrapper" id="char-민우" style="position:absolute; left:30px; bottom:20px; width:260px; height:320px; overflow:visible;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+      </div>
+
+      <!-- 우측 인물: 서연 (s=1, 좌우 반전으로 중앙 응시) -->
+      <div class="char-wrapper" id="char-서연" style="position:absolute; right:30px; bottom:20px; width:260px; height:320px; overflow:visible;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+      </div>
+
+      <!-- 중앙 활동 내용/상황 설명 박스 -->
+      <div class="situation-box">
+        <div class="situation-title">청라호수공원 탐방 시작</div>
+        <div class="situation-text">
+          민우와 서연이가 아름다운 청라호수공원 횡단교량에 도착했습니다.<br>
+          호수를 둘러싸고 있는 여러 수학적 구조물과 건축물의 비밀을 함께 탐구해 봅시다!
+        </div>
+      </div>
+    </div>
+
+    <!-- 네비게이션 버튼 -->
+    <!-- 이전 버튼: 없음 (비활성화 처리) -->
+    <button class="btn-nav btn-disabled" id="btn-prev" disabled>◀ 이전</button>
+
+    <!-- 다음 버튼: E02.html로 이동 -->
+    <button class="btn-nav" id="btn-next" onclick="goToNext()">다음 ▶</button>
+  </div>
+
+  <script>
+    function goToNext() {
+      window.location.href = "E02.html";
+    }
+  </script>
+</body>
+</html>

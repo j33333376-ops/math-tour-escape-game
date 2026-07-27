@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>송도센트럴파크 MATHTOUR - D02</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #1b261b;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #3e4a3d;
+    }
+
+    /* 화면 비율: 16:9, 가로 최대 1066px */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #f2f7f2;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+    }
+
+    /* 배경 이미지 */
+    .bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    /* 상단 나무 팻말 표시바 */
+    .stage-signpost {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      background-color: #6d4c41;
+      color: #fdfbf7;
+      padding: 8px 24px;
+      border-radius: 12px;
+      border: 3px solid #2d5a27;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      font-family: 'Gowun Batang', serif;
+      font-size: 1.25rem;
+      font-weight: bold;
+      text-align: center;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    /* 등장인물 래퍼 */
+    .char-wrapper {
+      position: absolute;
+      z-index: 3;
+      overflow: visible;
+      transition: filter 0.2s ease;
+    }
+
+    .char-wrapper.inactive {
+      filter: brightness(0.55);
+    }
+
+    /* 대화창 UI (유형 2) */
+    #dialogue-box {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 85%;
+      height: 130px;
+      background: rgba(45, 90, 39, 0.88);
+      border: 2px solid #6d4c41;
+      border-radius: 12px;
+      padding: 16px 22px;
+      z-index: 10;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(4px);
+      user-select: none;
+    }
+
+    #speaker-name {
+      font-family: 'Gowun Batang', serif;
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: #f4a261;
+      margin-bottom: 6px;
+    }
+
+    #dialogue-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 1.05rem;
+      color: #fdfbf7;
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+      word-break: keep-all;
+    }
+
+    .click-indicator {
+      position: absolute;
+      right: 18px;
+      bottom: 12px;
+      font-size: 0.85rem;
+      color: #f4a261;
+      animation: bounce 1s infinite alternate;
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-4px); }
+    }
+
+    /* 용어 및 수학 강조 스타일 */
+    .term-highlight {
+      font-family: 'Nanum Gothic Coding', monospace;
+      color: #f4a261;
+      font-weight: bold;
+    }
+
+    /* 공통 네비게이션 버튼 */
+    .btn-nav {
+      position: absolute;
+      z-index: 10;
+      background-color: #2d5a27;
+      color: #ffffff;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 24px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(45, 90, 39, 0.2);
+      transition: background-color 0.2s, transform 0.1s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-nav:hover {
+      background-color: #6d4c41;
+    }
+
+    .btn-nav:active {
+      transform: scale(0.96);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+      display: none;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+      display: none;
+    }
+
+    #btn-skip {
+      right: 20px;
+      bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 배경 이미지 -->
+    <img src="수상택시 배경.png" alt="수상택시 배경" class="bg-img">
+
+    <!-- 상단 나무 팻말 -->
+    <div class="stage-signpost">
+      송도센트럴파크 MATHTOUR
+    </div>
+
+    <!-- 등장인물: 민우 (왼쪽 배치) -->
+    <div class="char-wrapper" id="char-민우" style="left: 100px; bottom: 20px; width: 260px; height: 320px;">
+      <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 서연 (오른쪽 배치, 민우 쪽을 바라보도록 좌우 반전) -->
+    <div class="char-wrapper" id="char-서연" style="right: 100px; bottom: 20px; width: 260px; height: 320px;">
+      <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+      <div id="speaker-name">민우</div>
+      <div id="dialogue-text">대화를 시작합니다.</div>
+      <div class="click-indicator">▼ 클릭하여 계속</div>
+    </div>
+
+    <!-- 네비게이션 버튼 -->
+    <button id="btn-prev" class="btn-nav" onclick="goPrev()">이전</button>
+    <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+    <button id="btn-next" class="btn-nav" onclick="goNext()">다음</button>
+  </div>
+
+  <script>
+    // 대화 스크립트 데이터
+    const dialogues = [
+      {
+        speaker: "민우",
+        text: "서연아, 저기 봐! 저 높게 솟아있는 건물이 바로 G타워야. 독특한 구조와 우뚝 솟은 모습이 정말 멋지지 않니?",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "와, 정말 우뚝 서 있어서 한눈에 보이네! 배가 물길을 따라 부드럽게 움직이고 있으니까, 지금 여기부터 바로 높이 측정을 시작해 보자!",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "좋아! 수상택시가 수로를 따라 똑바로 이동하니까, 우리가 측정을 시작하는 이 지점부터 곧게 뻗은 직선거리가 형성되는 셈이지.",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "맞아. 우선 스마트폰의 <span class='term-highlight'>GPS 앱</span>을 켜서 수상택시가 이동하는 직선 이동거리를 정확하게 측정하고,",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "그리고 <span class='term-highlight'>클리노미터(각도 측정 앱)</span>를 사용해서 G타워 꼭대기를 바라보는 올려다본 각도, 즉 시야각(앙각)을 측정해 놓자!",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "완벽해! 자, 이제 방금 측정한 수치들을 가지고 삼각비를 활용해서 G타워의 실제 높이를 계산하러 가보자!",
+        target: "char-서연"
+      }
+    ];
+
+    let currentIndex = 0;
+
+    function updateDialogue() {
+      const current = dialogues[currentIndex];
+      
+      // 화자 이름 및 대사 갱신
+      document.getElementById("speaker-name").innerText = current.speaker;
+      document.getElementById("dialogue-text").innerHTML = current.text;
+
+      // 인물 하이라이트 처리 (.inactive 토글)
+      const minoo = document.getElementById("char-민우");
+      const seoyeon = document.getElementById("char-서연");
+
+      if (current.target === "char-민우") {
+        minoo.classList.remove("inactive");
+        seoyeon.classList.add("inactive");
+      } else if (current.target === "char-서연") {
+        seoyeon.classList.remove("inactive");
+        minoo.classList.add("inactive");
+      } else {
+        minoo.classList.remove("inactive");
+        seoyeon.classList.remove("inactive");
+      }
+    }
+
+    function advanceDialogue() {
+      currentIndex++;
+      if (currentIndex < dialogues.length) {
+        updateDialogue();
+      } else {
+        endDialogue();
+      }
+    }
+
+    function skipDialogue() {
+      endDialogue();
+    }
+
+    function endDialogue() {
+      // 대화창 및 건너뛰기 버튼 숨김
+      document.getElementById("dialogue-box").style.display = "none";
+      document.getElementById("btn-skip").style.display = "none";
+
+      // 캐릭터 어두움 해제
+      document.getElementById("char-민우").classList.remove("inactive");
+      document.getElementById("char-서연").classList.remove("inactive");
+
+      // 이전/다음 네비게이션 버튼 표시
+      document.getElementById("btn-prev").style.display = "inline-flex";
+      document.getElementById("btn-next").style.display = "inline-flex";
+    }
+
+    function goPrev() {
+      window.location.href = "D01.html";
+    }
+
+    function goNext() {
+      window.location.href = "D03.html";
+    }
+
+    // 최초 실행
+    window.onload = function() {
+      updateDialogue();
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>소래포구 MATHTOUR - E03</title>
+    <style>
+        /* 공통 폰트 임포트 */
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Serif+KR:wght@400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* 스팀펑크 기계도시 공통 UI/UX */
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: #1a1a1a;
+            display: flex; justify-content: center; align-items: center;
+        }
+        
+        #game-container {
+            position: relative;
+            width: 100%; max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background-color: #2c2019; /* 다크 브라운 */
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+        
+        .bg-image {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: 0;
+        }
+
+        /* 캐릭터 래퍼 (z-index 3) */
+        .char-wrapper {
+            position: absolute; overflow: visible; z-index: 3;
+        }
+
+        /* 공통 네비게이션 버튼 (황동 금속판 느낌) */
+        .btn-nav {
+            position: absolute; z-index: 20;
+            background-color: #b87333; /* 브라스 골드 */
+            color: #f4ecd8; /* 빛바랜 양피지색 */
+            border: 3px solid #4a3b32;
+            padding: 10px 25px;
+            font-family: 'Gowun Dodum', sans-serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: inset 2px 2px 0px rgba(255,255,255,0.3), inset -2px -2px 0px rgba(0,0,0,0.5), 3px 3px 5px rgba(0,0,0,0.6);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            transition: filter 0.2s;
+        }
+        .btn-nav:hover { filter: brightness(1.2); }
+        #btn-prev { left: 20px; bottom: 20px; }
+        #btn-next { right: 20px; bottom: 20px; display: none; } /* 정답 전까지 숨김 */
+
+        /* 수학 퀴즈 컨테이너 (금고 다이얼/기계 장치 제어반 디자인) */
+        .quiz-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%; height: 85%; /* 화면 비율에 맞게 크기 조정 */
+            background-color: #2c2019;
+            border: 6px solid #b87333;
+            border-radius: 12px;
+            box-shadow: inset 4px 4px 10px rgba(0,0,0,0.7), 0 0 20px rgba(0,0,0,0.8);
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* =======================================================
+           여기서부터 퍼즐 원본 CSS (충돌 방지를 위해 선택자 수정) 
+           ======================================================= */
+        #quiz-inner {
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1e130c 0%, #9a8478 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #333; overflow-x: hidden; touch-action: manipulation;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+        
+        #quiz-inner * { box-sizing: border-box; }
+
+        #puzzle-container {
+            position: relative;
+            width: 100%; max-width: 600px; /* 내부 가로 크기 제한 */
+            height: 95%; /* 꽉 차게 */
+            background-color: #2c2019;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border-radius: 12px; overflow: hidden;
+            border: 4px solid #4e342e;
+            display: flex; flex-direction: column;
+        }
+
+        #puzzle-container header {
+            background: #4e342e; color: #fff;
+            text-align: center; padding: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        #puzzle-container header h1 { margin: 0 0 5px 0; font-size: 1.2rem; color: #ffb74d; font-family: 'Gowun Dodum', sans-serif;}
+        #puzzle-container header p { margin: 0; font-size: 0.85rem; color: #d7ccc8; }
+
+        #door-frame {
+            position: relative;
+            width: 100%; flex: 1; /* 남은 높이 차지 */
+            background-color: #000;
+            overflow: hidden;
+            display: flex;
+        }
+        .door {
+            width: 50%; height: 100%;
+            background: repeating-linear-gradient(90deg, #5d4037, #5d4037 48px, #3e2723 50px);
+            border: 2px solid #3e2723;
+            transition: transform 1.5s cubic-bezier(0.64, 0.04, 0.35, 1);
+            position: relative;
+            z-index: 2;
+        }
+        .door-left.open { transform: translateX(-100%); }
+        .door-right.open { transform: translateX(100%); }
+
+        #lock-icon {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem; z-index: 5;
+            transition: all 0.5s ease;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));
+        }
+
+        #puzzle-board {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%; max-width: 450px;
+            background: rgba(255, 248, 220, 0.95);
+            border: 3px solid #8d6e63; border-radius: 8px;
+            padding: 15px; z-index: 10;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+            transition: opacity 0.5s ease;
+            text-align: center;
+        }
+        
+        .math-step {
+            font-size: 1.1rem;
+            font-family: 'Georgia', serif; font-weight: bold;
+            margin: 10px 0; color: #3e2723;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            flex-wrap: wrap;
+        }
+        .conclusion { margin-top: 20px; color: #1565c0; font-size: 1.2rem; }
+
+        .dropzone {
+            display: inline-flex; justify-content: center; align-items: center;
+            width: 40px; height: 30px;
+            border: 2px dashed #795548; background-color: #efebe9;
+            border-radius: 4px; color: transparent;
+            transition: all 0.3s;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3); /* 음각 느낌 */
+        }
+        .dropzone.filled {
+            border: 2px solid #2e7d32; background-color: #c8e6c9;
+            color: #1b5e20; font-weight: 900;
+        }
+
+        #interaction-area {
+            background: #d7ccc8; padding: 15px;
+            border-top: 4px solid #4e342e; z-index: 10;
+        }
+        
+        #blocks-container {
+            display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
+            margin-bottom: 10px; min-height: 45px;
+        }
+
+        .block {
+            padding: 8px 15px; background-color: #f5f5f5;
+            border: 2px solid #5d4037; border-radius: 6px;
+            font-size: 1.1rem; font-weight: bold; color: #3e2723; cursor: grab;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2); touch-action: none;
+            transition: box-shadow 0.2s, transform 0.2s; z-index: 100;
+        }
+        .block:active { cursor: grabbing; box-shadow: 0 2px 4px rgba(0,0,0,0.3); transform: scale(0.95); }
+
+        #feedback-panel {
+            text-align: center; min-height: 50px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .feedback-msg { margin: 0; font-size: 0.9rem; font-weight: bold; color: #4e342e; }
+        .error-msg { color: #d32f2f; margin-bottom: 5px; }
+        .hint-msg { background: #ffe0b2; padding: 6px; border-radius: 6px; border-left: 4px solid #ff9800; font-size: 0.85rem; color: #e65100; }
+
+        #inside-room {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); text-align: center;
+            z-index: 1; color: #fff; width: 100%;
+        }
+        #inside-room h2 { font-size: 1.5rem; color: #81c784; text-shadow: 0 2px 10px rgba(0,0,0,0.8); margin-bottom: 15px;}
+        
+        /* 퀴즈 자체의 next-btn은 숨기고, 메인 공통 버튼으로 대체 */
+        #puzzle-next-btn { display: none !important; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+        .shake { animation: shake 0.4s; }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- 배경 이미지 -->
+        <img src="이차함수 문제.png" class="bg-image" alt="배경 이미지">
+        
+        <!-- 등장 인물 (z-index 3) -->
+        <div class="char-wrapper" id="char-민우" style="left: 30px; bottom: 0px; width: 260px; height: 320px;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+        <div class="char-wrapper" id="char-서연" style="right: 30px; bottom: 0px; width: 260px; height: 320px;">
+            <!-- 서연이 민우를 바라보도록 좌우 반전 -->
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 수학 퀴즈 컨테이너 (유형 3) -->
+        <div class="quiz-container">
+            <div id="quiz-inner">
+                <div id="puzzle-container">
+                    <header>
+                        <h1>숨겨진 대칭축을 찾아라!</h1>
+                        <p>주어진 숫자 블록을 알맞은 빈칸에 드래그하여 풍차 문의 자물쇠를 푸세요!</p>
+                    </header>
+
+                    <div id="door-frame">
+                        <div class="door door-left" id="door-l"></div>
+                        <div class="door door-right" id="door-r"></div>
+                        
+                        <div id="inside-room">
+                            <h2>문이 열렸습니다! 🎉</h2>
+                            <button id="puzzle-next-btn">다음 화면으로 ➡</button>
+                        </div>
+
+                        <div id="lock-icon">🔒</div>
+
+                        <div id="puzzle-board">
+                            <div class="math-step">1단계: y = -5(x² - 6x) - 25</div>
+                            <div class="math-step">2단계: y = -5(x² - 6x + <span class="dropzone" data-answer="9"></span>) - 25 + <span class="dropzone" data-answer="45"></span></div>
+                            <div class="math-step">3단계: y = -5(x - <span class="dropzone" data-answer="3"></span>)² + <span class="dropzone" data-answer="20"></span></div>
+                            <div class="math-step conclusion">축의 방정식 x = <span class="dropzone" data-answer="3"></span></div>
+                        </div>
+                    </div>
+
+                    <div id="interaction-area">
+                        <div id="blocks-container">
+                            <div class="block" data-value="9">9</div>
+                            <div class="block" data-value="-3">-3</div>
+                            <div class="block" data-value="20">20</div>
+                            <div class="block" data-value="3">3</div>
+                            <div class="block" data-value="45">45</div>
+                            <div class="block" data-value="30">30</div>
+                            <div class="block" data-value="3">3</div>
+                        </div>
+                        
+                        <div id="feedback-panel">
+                            <p class="feedback-msg" id="feedback-text">블록을 끌어다 빈칸에 맞춰보세요.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 네비게이션 버튼 -->
+        <button class="btn-nav" id="btn-prev" onclick="window.location.href='E02.html'">이전</button>
+        <button class="btn-nav" id="btn-next" onclick="window.location.href='E04.html'">다음</button>
+    </div>
+
+    <!-- 퍼즐 동작 스크립트 -->
+    <script>
+        let draggedEl = null;
+        let startX = 0, startY = 0;
+        const totalBlanks = 5;
+        let filledCount = 0;
+        
+        const feedbackPanel = document.getElementById('feedback-panel');
+        const blocks = document.querySelectorAll('.block');
+
+        blocks.forEach(block => {
+            block.addEventListener('pointerdown', startDrag);
+        });
+
+        function startDrag(e) {
+            draggedEl = e.target;
+            draggedEl.setPointerCapture(e.pointerId);
+            
+            startX = e.clientX;
+            startY = e.clientY;
+            
+            draggedEl.style.transition = 'none';
+            draggedEl.style.zIndex = '1000';
+            
+            draggedEl.addEventListener('pointermove', onDrag);
+            draggedEl.addEventListener('pointerup', endDrag);
+        }
+
+        function onDrag(e) {
+            if (!draggedEl) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            draggedEl.style.transform = `translate(${dx}px, ${dy}px) scale(1.1)`;
+        }
+
+        function endDrag(e) {
+            draggedEl.removeEventListener('pointermove', onDrag);
+            draggedEl.removeEventListener('pointerup', endDrag);
+            draggedEl.releasePointerCapture(e.pointerId);
+            
+            draggedEl.style.display = 'none';
+            const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+            draggedEl.style.display = '';
+            
+            const dropzone = elemBelow ? elemBelow.closest('.dropzone') : null;
+            
+            if (dropzone && !dropzone.classList.contains('filled')) {
+                // 정답 체크
+                if (dropzone.dataset.answer === draggedEl.dataset.value) {
+                    dropzone.textContent = draggedEl.dataset.value;
+                    dropzone.classList.add('filled');
+                    draggedEl.remove();
+                    
+                    feedbackPanel.innerHTML = `<p class="feedback-msg" style="color: #2e7d32;">정확합니다!</p>`;
+                    filledCount++;
+                    
+                    if (filledCount === totalBlanks) {
+                        triggerWinSequence();
+                    }
+                } else {
+                    // 실패 (오답)
+                    showErrorFeedback(dropzone);
+                    resetDrag(draggedEl);
+                }
+            } else {
+                resetDrag(draggedEl);
+            }
+            
+            draggedEl = null;
+        }
+
+        function resetDrag(el) {
+            el.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            el.style.transform = 'translate(0, 0) scale(1)';
+            el.style.zIndex = '100';
+            setTimeout(() => {
+                if(el) el.style.transition = 'none';
+            }, 300);
+        }
+
+        function showErrorFeedback(dropzone) {
+            dropzone.classList.remove('shake');
+            void dropzone.offsetWidth; 
+            dropzone.classList.add('shake');
+            
+            feedbackPanel.innerHTML = `
+                <p class="feedback-msg error-msg">완전제곱식이 되기 위한 숫자가 아니에요!</p>
+                <p class="hint-msg">💡 <b>Hint:</b> x² - 6x가 완전제곱식이 되려면 x의 계수인 -6의 절반의 제곱이 필요해요. (-3)²은 얼마일까요?</p>
+            `;
+        }
+
+        function triggerWinSequence() {
+            feedbackPanel.innerHTML = `<p class="feedback-msg" style="color: #1565c0;">수식을 모두 완벽하게 변형했어요!</p>`;
+            
+            const board = document.getElementById('puzzle-board');
+            const lock = document.getElementById('lock-icon');
+            const doorL = document.getElementById('door-l');
+            const doorR = document.getElementById('door-r');
+            
+            // 1. 퍼즐 보드 페이드 아웃
+            setTimeout(() => {
+                board.style.opacity = '0';
+                board.style.pointerEvents = 'none';
+            }, 500);
+
+            // 2. 자물쇠 열림 연출 (🔓)
+            setTimeout(() => {
+                lock.textContent = '🔓';
+                lock.style.transform = 'translate(-50%, -50%) scale(1.3)';
+            }, 1200);
+
+            // 3. 자물쇠 사라지고 문이 양옆으로 열림
+            setTimeout(() => {
+                lock.style.opacity = '0';
+                doorL.classList.add('open');
+                doorR.classList.add('open');
+            }, 2200);
+
+            // 4. 공통 '다음' 버튼 활성화
+            setTimeout(() => {
+                document.getElementById('btn-next').style.display = 'block';
+                feedbackPanel.innerHTML = `<p class="feedback-msg" style="color: #2e7d32;">자물쇠가 해제되었습니다! '다음' 버튼을 눌러 진입하세요.</p>`;
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

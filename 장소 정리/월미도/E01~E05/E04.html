@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>신포국제시장 - E04</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * { box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      background: #f5f0e6;
+      overflow: hidden;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #2d3748;
+    }
+
+    #game-container {
+      position: relative;
+      width: min(100vw, 1066px, calc(100vh * 16 / 9));
+      width: min(100vw, 1066px, calc(100dvh * 16 / 9));
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #2d1d19;
+      box-shadow: 0 12px 34px rgba(0,0,0,.3);
+      isolation: isolate;
+    }
+
+    #bg-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at center, transparent 42%, rgba(22,10,6,.35) 100%),
+        linear-gradient(to bottom, rgba(0,0,0,.18), transparent 35%, rgba(0,0,0,.25));
+    }
+
+    #stage-bar {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      min-width: 360px;
+      padding: 9px 24px;
+      text-align: center;
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #f7df89;
+      background: rgba(20,12,9,.72);
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      box-shadow: 0 4px 14px rgba(0,0,0,.28);
+      letter-spacing: .06em;
+    }
+
+    .char-wrapper {
+      position: absolute;
+      z-index: 3;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      transition: filter .2s, transform .25s;
+      filter: brightness(1);
+    }
+    .char-wrapper.inactive { filter: brightness(.55); }
+    .char-wrapper iframe {
+      border: 0;
+      width: 260px;
+      height: 320px;
+      pointer-events: none;
+      display: block;
+    }
+
+    #char-민우 { left: 150px; bottom: 82px; }
+    #char-서연 { right: 145px; bottom: 82px; }
+    #char-서연 iframe {
+      transform: scaleX(-1);
+      transform-origin: bottom center;
+    }
+
+    #dialogue-box {
+      position: absolute;
+      left: 44px;
+      right: 44px;
+      bottom: 22px;
+      z-index: 30;
+      min-height: 145px;
+      padding: 20px 28px 18px;
+      color: #fff;
+      background: rgba(0,0,0,.76);
+      border: 2px solid #d4af37;
+      border-radius: 6px;
+      box-shadow: 0 10px 26px rgba(0,0,0,.42);
+      cursor: pointer;
+      user-select: none;
+    }
+    #speaker-name {
+      margin-bottom: 10px;
+      color: #f5cf60;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    #dialogue-text {
+      padding-right: 115px;
+      min-height: 56px;
+      font-size: 18px;
+      line-height: 1.65;
+      letter-spacing: -.02em;
+      white-space: pre-line;
+    }
+    .dialogue-hint {
+      position: absolute;
+      right: 20px;
+      bottom: 14px;
+      color: rgba(255,255,255,.68);
+      font-size: 12px;
+    }
+
+    .btn-nav {
+      position: absolute;
+      z-index: 50;
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      padding: 10px 24px;
+      color: #fff;
+      background: #8c3030;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,.25);
+      transition: background .2s, transform .2s;
+    }
+    .btn-nav:hover { background: #661f1f; transform: translateY(-1px); }
+    #btn-prev { left: 20px; bottom: 20px; display: none; }
+    #btn-next { right: 20px; bottom: 20px; display: none; }
+    #btn-skip { right: 20px; bottom: 184px; }
+
+    #quiz-screen {
+      position: absolute;
+      inset: 0;
+      z-index: 15;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 70px 56px 58px;
+      background: rgba(24,15,11,.46);
+      backdrop-filter: blur(1.5px);
+      container-type: size;
+    }
+
+    .quiz-container {
+      position: relative;
+      width: min(900px, 100%);
+      width: min(900px, 100cqw, calc(100cqh * 16 / 9));
+      max-height: 100%;
+      aspect-ratio: 16 / 9;
+      padding: 8px;
+      background: rgba(245,240,230,.96);
+      border: 3px double #8c3030;
+      outline: 1px solid #d4af37;
+      border-radius: 7px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.42);
+    }
+    .quiz-title {
+      display: none;
+    }
+    .quiz-desc {
+      display: none;
+    }
+    .quiz-frame-wrap {
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+      border: 1px solid #d4af37;
+      background: #fff;
+    }
+    #quiz-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: white;
+    }
+
+    #answer-panel {
+      position: absolute;
+      inset: 0;
+      z-index: 60;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,.68);
+    }
+    .answer-card {
+      width: 560px;
+      max-width: 84%;
+      padding: 28px 30px;
+      text-align: center;
+      background: #f5f0e6;
+      border: 2px solid #d4af37;
+      border-radius: 6px;
+      box-shadow: 0 16px 34px rgba(0,0,0,.4);
+    }
+    .answer-card h2 {
+      margin: 0 0 12px;
+      color: #8c3030;
+      font-family: 'Nanum Myeongjo', serif;
+    }
+    .formula {
+      margin: 14px 0 20px;
+      padding: 14px;
+      color: #2d3748;
+      background: #fffaf0;
+      border: 1px solid #c8a53a;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 23px;
+      font-weight: 700;
+    }
+    #btn-close-result {
+      position: static;
+      display: inline-block;
+    }
+
+    @media (max-width: 760px) {
+      #stage-bar { top: 8px; min-width: 280px; font-size: 14px; padding: 7px 14px; }
+      #char-민우 { left: 8%; transform: scale(.72); transform-origin: bottom left; }
+      #char-서연 { right: 8%; transform: scale(.72); transform-origin: bottom right; }
+      #dialogue-box { left: 16px; right: 16px; bottom: 14px; min-height: 118px; padding: 14px 18px; }
+      #speaker-name { font-size: 17px; margin-bottom: 6px; }
+      #dialogue-text { font-size: 14px; padding-right: 70px; }
+      #btn-skip { bottom: 148px; }
+      #quiz-screen { padding: 48px 18px 50px; }
+      .quiz-container {
+        width: min(94cqw, calc(100cqh * 16 / 9));
+        height: auto;
+        padding: 6px;
+      }
+      .quiz-frame-wrap { height: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main id="game-container" aria-label="신포국제시장 수학 퀴즈 장면">
+    <img id="bg-image" src="E04.png" alt="신포국제시장 배경" />
+    <div class="vignette"></div>
+
+    <div id="stage-bar">신포국제시장 · 바이킹의 움직임을 사인함수로 모델링하기</div>
+
+    <div class="char-wrapper" id="char-민우">
+      <iframe src="등장인물_민우.html" scrolling="no" title="민우"></iframe>
+    </div>
+
+    <div class="char-wrapper inactive" id="char-서연">
+      <iframe src="등장인물_서연.html" scrolling="no" title="서연"></iframe>
+    </div>
+
+    <section id="dialogue-box" onclick="advanceDialogue()" role="button" tabindex="0" aria-label="대화 진행">
+      <div id="speaker-name"></div>
+      <div id="dialogue-text"></div>
+      <div class="dialogue-hint">클릭하여 계속 ▶</div>
+    </section>
+
+    <button class="btn-nav" id="btn-skip" type="button" onclick="skipDialogue(event)">건너뛰기</button>
+
+    <section id="quiz-screen" aria-label="수학 퀴즈">
+      <div class="quiz-container">
+        <h1 class="quiz-title">사인함수 모델링 퀴즈</h1>
+        <p class="quiz-desc">아래 활동에서 진폭, 주기 상수, 중심 높이를 조절해 알맞은 식을 찾아보세요.</p>
+        <div class="quiz-frame-wrap">
+          <iframe id="quiz-frame" src="04.html" scrolling="yes" title="04번 수학 퀴즈"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section id="answer-panel" aria-live="polite">
+      <div class="answer-card">
+        <h2>정답 확인</h2>
+        <p>바이킹의 높이 변화를 나타내는 식은 다음과 같습니다.</p>
+        <div class="formula">y = 83 sin(0.050x) + 146</div>
+        <button class="btn-nav" id="btn-close-result" type="button" onclick="completeQuiz()">확인</button>
+      </div>
+    </section>
+
+    <button class="btn-nav" id="btn-prev" type="button" onclick="window.location.href='E03.html'">이전</button>
+    <button class="btn-nav" id="btn-next" type="button" onclick="window.location.href='E05.html'">다음</button>
+  </main>
+
+  <script>
+    const dialogues = [
+      {
+        speaker: '민우',
+        text: '오, 사인함수 그래프와 아주 비슷해.',
+        target: 'char-민우'
+      },
+      {
+        speaker: '서연',
+        text: '그러게. 사인함수로 모델링할 수 있을 것 같은데?\n식으로 나타내 볼까?',
+        target: 'char-서연'
+      },
+      {
+        speaker: '민우',
+        text: '우리 사인함수 배울 때, 진폭, 주기 상수, 중심 높이를 다르게 하면 그래프가 다르게 나온다는 걸 배웠잖아.\n그걸 직접 조절해 보며 찾아보자.',
+        target: 'char-민우'
+      }
+    ];
+
+    let currentIndex = 0;
+    let quizCompleted = false;
+
+    const dialogueBox = document.getElementById('dialogue-box');
+    const speakerName = document.getElementById('speaker-name');
+    const dialogueText = document.getElementById('dialogue-text');
+    const btnSkip = document.getElementById('btn-skip');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    const quizScreen = document.getElementById('quiz-screen');
+    const answerPanel = document.getElementById('answer-panel');
+    const characters = document.querySelectorAll('.char-wrapper');
+
+    function renderDialogue() {
+      const line = dialogues[currentIndex];
+      speakerName.textContent = line.speaker;
+      dialogueText.textContent = line.text;
+
+      characters.forEach(character => {
+        character.classList.toggle('inactive', character.id !== line.target);
+      });
+    }
+
+    function advanceDialogue() {
+      if (currentIndex < dialogues.length - 1) {
+        currentIndex += 1;
+        renderDialogue();
+      } else {
+        finishDialogue();
+      }
+    }
+
+    function skipDialogue(event) {
+      event.stopPropagation();
+      finishDialogue();
+    }
+
+    function finishDialogue() {
+      dialogueBox.style.display = 'none';
+      btnSkip.style.display = 'none';
+      characters.forEach(character => character.classList.remove('inactive'));
+      quizScreen.style.display = 'flex';
+      btnPrev.style.display = 'block';
+    }
+
+    /*
+      04.html 내부 퀴즈와 연동하는 방법:
+      정답 처리 시 부모 창으로 아래 메시지를 보내면 결과 창이 자동 표시됩니다.
+      window.parent.postMessage({ type: 'QUIZ_CORRECT' }, '*');
+
+      별도 연동이 없더라도 교사가 정답 확인을 위해 Shift + Enter를 누르면 결과를 표시할 수 있습니다.
+    */
+    window.addEventListener('message', event => {
+      const data = event.data;
+      if (data === 'QUIZ_CORRECT' || (data && data.type === 'QUIZ_CORRECT')) {
+        showCorrectResult();
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Enter' && event.shiftKey && quizScreen.style.display === 'flex') {
+        showCorrectResult();
+      }
+      if ((event.key === 'Enter' || event.key === ' ') && dialogueBox.style.display !== 'none') {
+        event.preventDefault();
+        advanceDialogue();
+      }
+    });
+
+    function showCorrectResult() {
+      if (quizCompleted) return;
+      answerPanel.style.display = 'flex';
+    }
+
+    function completeQuiz() {
+      quizCompleted = true;
+      answerPanel.style.display = 'none';
+      btnNext.style.display = 'block';
+    }
+
+    renderDialogue();
+  </script>
+</body>
+</html>

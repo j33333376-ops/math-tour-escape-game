@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천차이나타운 MATHTOUR - 공화춘의 비밀</title>
+    <style>
+        /* 폰트 임포트 */
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* 공통 변수 (근대 개항기 스타일 팔레트) */
+        :root {
+            --main-dark-red: #8c3030;
+            --main-dark-red-hover: #661f1f;
+            --sub-antique-gold: #d4af37;
+            --bg-beige: #f5f0e6;
+            --text-dark: #2d3748;
+            --text-light: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a; /* 게임 밖 여백 배경 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 16:9 게임 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: var(--bg-beige);
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            
+            /* 건물 진입 애니메이션을 위한 트랜지션 */
+            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.5s ease-in-out;
+            transform-origin: 60% 50%; /* 문이 있는 방향을 향해 줌인되도록 초점 설정 */
+        }
+
+        /* 줌인(건물 진입) 효과용 클래스 */
+        #game-container.enter-building {
+            transform: scale(3.5);
+            opacity: 0;
+        }
+
+        /* 전체 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 스테이지 상단 표시바 */
+        .top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.75);
+            border-bottom: 2px solid var(--sub-antique-gold);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            font-family: 'Nanum Myeongjo', serif;
+            font-weight: 700;
+            color: var(--sub-antique-gold);
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* 상황 설명 박스 (유형 1) */
+        .situation-box {
+            position: absolute;
+            z-index: 10;
+            top: 55px; /* 상단바 바로 아래에 적절히 배치 */
+            left: 40px;
+            width: 45%;
+            max-width: 450px;
+            background: linear-gradient(135deg, #f5f0e6 0%, #e3d5ba 100%);
+            border: 2px solid var(--sub-antique-gold);
+            border-radius: 4px;
+            padding: 20px 24px;
+            box-shadow: 4px 6px 15px rgba(0,0,0,0.6);
+            font-family: 'Noto Sans KR', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            font-size: 1.05rem;
+            word-break: keep-all;
+        }
+
+        /* 등장인물 래퍼 */
+        .char-wrapper {
+            position: absolute;
+            z-index: 3;
+            width: 260px;
+            height: 320px;
+            overflow: visible;
+        }
+        
+        .char-wrapper iframe {
+            border: 0;
+            width: 260px;
+            height: 320px;
+            pointer-events: none;
+        }
+
+        /* 공통 네비게이션 버튼 */
+        .btn-nav {
+            position: absolute;
+            z-index: 20;
+            background-color: var(--main-dark-red);
+            color: var(--text-light);
+            border: 1px solid var(--sub-antique-gold);
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.5s;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .btn-nav:hover {
+            background-color: var(--main-dark-red-hover);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next {
+            right: 20px;
+            bottom: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 1. 배경 이미지 -->
+        <img src="인천차이나타운_짜장면 박물관.PNG" class="bg-img" alt="짜장면 박물관 전경">
+
+        <!-- 2. 상단 표시바 -->
+        <div class="top-bar" id="ui-top-bar">제 1장 - 공화춘의 비밀</div>
+
+        <!-- 3. 상황 설명 박스 -->
+        <div class="situation-box" id="ui-situation-box">
+            100년 전, 한국 최초의 짜장면 집으로 문을 연 공화춘.<br><br>
+            이곳 짜장면 박물관에는 오랜 역사와 함께 아직 풀리지 않은 미스터리가 숨겨져 있다는데...?
+        </div>
+
+        <!-- 4. 등장인물: 민우 (왼쪽 하단 배치, 글상자와 겹치지 않도록 스케일 조정 및 여백 확보) -->
+        <div class="char-wrapper" id="char-민우" style="left: 60px; bottom: 0;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="transform: scale(0.9); transform-origin: bottom left;"></iframe>
+        </div>
+
+        <!-- 5. 등장인물: 서연 (오른쪽 하단 배치, 민우와 마주보도록 반전) -->
+        <div class="char-wrapper" id="char-서연" style="right: 60px; bottom: 0;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="transform: scale(0.9) scaleX(-1); transform-origin: bottom center;"></iframe>
+        </div>
+
+        <!-- 6. 이동 버튼 -->
+        <button class="btn-nav" id="btn-prev" onclick="location.href='index.html'">이전</button>
+        <button class="btn-nav" id="btn-next" onclick="enterBuilding()">다음</button>
+    </div>
+
+    <script>
+        // 다음 버튼 클릭 시 건물 안으로 들어가는(줌인) 애니메이션 효과 실행
+        function enterBuilding() {
+            const container = document.getElementById('game-container');
+            const uiElements = [
+                document.getElementById('btn-prev'),
+                document.getElementById('btn-next'),
+                document.getElementById('ui-top-bar'),
+                document.getElementById('ui-situation-box'),
+                document.getElementById('char-민우'),
+                document.getElementById('char-서연')
+            ];
+
+            // 1) 몰입감을 위해 텍스트 박스, 캐릭터, 버튼 등 UI 요소를 먼저 투명하게 숨김 처리
+            uiElements.forEach(el => {
+                if(el) {
+                    el.style.transition = 'opacity 0.4s ease';
+                    el.style.opacity = '0';
+                }
+            });
+
+            // 2) 아주 짧은 시간 뒤에 배경 줌인 애니메이션 실행
+            setTimeout(() => {
+                container.classList.add('enter-building');
+            }, 100);
+
+            // 3) 애니메이션 지속시간(1.5초)이 끝날 무렵 다음 씬으로 자연스럽게 전환
+            setTimeout(() => {
+                window.location.href = 'B02.html';
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

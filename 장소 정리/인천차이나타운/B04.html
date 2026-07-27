@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천차이나타운 MATHTOUR - B04</title>
+    <style>
+        /* [공통 UI/UX 및 폰트 규칙] */
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+        
+        body {
+            margin: 0; padding: 0; background-color: #1a1a1a;
+            display: flex; justify-content: center; align-items: center; height: 100vh;
+        }
+
+        #game-container {
+            width: 100%; max-width: 1066px; aspect-ratio: 16 / 9;
+            background-color: #f5f0e6; position: relative; overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            font-family: 'Noto Sans KR', sans-serif; color: #2d3748;
+            line-height: 1.6; letter-spacing: -0.02em;
+        }
+
+        .top-bar {
+            position: absolute; top: 0; left: 0; right: 0;
+            background-color: rgba(0, 0, 0, 0.7); border-bottom: 2px solid #d4af37;
+            color: #d4af37; padding: 10px 20px; font-family: 'Nanum Myeongjo', serif;
+            font-size: 1.2rem; font-weight: bold; z-index: 10;
+            display: flex; justify-content: space-between;
+        }
+
+        .btn-nav {
+            position: absolute; background-color: #8c3030; color: white;
+            border: 1px solid #d4af37; border-radius: 4px; padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif; font-weight: bold;
+            cursor: pointer; z-index: 100; transition: background-color 0.2s;
+        }
+        .btn-nav:hover { background-color: #661f1f; }
+        #btn-prev { left: 20px; bottom: 20px; }
+        #btn-next { right: 20px; bottom: 20px; display: none; }
+
+        .quiz-container {
+            position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+            width: 85%; max-width: 700px; height: calc(100% - 140px);
+            background: rgba(255, 255, 255, 0.95); border: 2px solid #d4af37;
+            border-radius: 10px; padding: 20px; box-sizing: border-box;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15); text-align: center;
+            z-index: 5; overflow-y: auto;
+        }
+        .quiz-container::-webkit-scrollbar { width: 6px; }
+        .quiz-container::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 3px; }
+
+        .quiz-container h2 { color: #8c3030; font-family: 'Nanum Myeongjo', serif; margin-top: 0; margin-bottom: 10px; }
+        .highlight { color: #8c3030; font-weight: bold; }
+        .hidden { display: none !important; }
+
+        .receipt-font { 
+            font-family: 'Nanum Gothic Coding', monospace; font-weight: bold; 
+            background: #fdfaf4; padding: 10px 15px; border: 1px solid #d4af37; 
+            display: inline-block; text-align: left; border-left: 5px solid #8c3030; margin-bottom: 15px;
+        }
+
+        .dnd-section {
+            background-color: #f5f0e6; padding: 20px; border-radius: 8px;
+            margin: 15px 0; border: 1px solid #e0d8c8;
+        }
+        
+        .source-area {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+            min-height: 60px; margin-bottom: 20px; padding: 10px;
+            background: rgba(0,0,0,0.05); border-radius: 8px;
+        }
+
+        .equation-row {
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+            margin-bottom: 10px; font-family: 'Nanum Gothic Coding', monospace; font-size: 22px; font-weight: bold;
+        }
+        .equation-label { font-size: 16px; color: #555; width: 60px; text-align: right; margin-right: 10px; }
+
+        .dropzone {
+            width: 70px; height: 50px; border: 2px dashed #d4af37; border-radius: 6px;
+            background-color: #fff; display: flex; align-items: center; justify-content: center;
+            transition: background-color 0.2s;
+        }
+        .dropzone.wide { width: 90px; }
+        .dropzone.drag-over { background-color: #fdfaf4; border-color: #8c3030; }
+
+        .drag-block {
+            width: 66px; height: 46px; background-color: #8c3030; color: white;
+            border: 2px solid #d4af37; border-radius: 4px; display: flex;
+            align-items: center; justify-content: center;
+            font-family: 'Nanum Gothic Coding', monospace; font-size: 18px; font-weight: bold;
+            cursor: pointer; user-select: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: transform 0.1s;
+        }
+        .drag-block.wide-block { width: 86px; }
+        .drag-block:active { transform: scale(0.95); }
+        .drag-block.dragging { opacity: 0.5; }
+
+        .action-btn { 
+            background-color: #8c3030; color: white; border: 1px solid #d4af37; 
+            padding: 10px 20px; font-size: 16px; font-weight: bold;
+            cursor: pointer; border-radius: 4px; margin-top: 15px; font-family: 'Noto Sans KR', sans-serif;
+        }
+        .action-btn:hover { background-color: #661f1f; }
+        #error-msg { color: #8c3030; font-weight: bold; margin-top: 10px; font-size: 14px; line-height: 1.4; }
+        
+        .success-box { 
+            background: rgba(212, 175, 55, 0.15); border: 2px solid #d4af37; 
+            padding: 20px; border-radius: 10px; margin-top: 20px;
+        }
+        .success-box h2 { color: #8c3030; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div class="top-bar">
+            <span>인천차이나타운 MATHTOUR</span>
+            <span>스테이지 B04 : 연립방정식 세우기</span>
+        </div>
+
+        <div class="quiz-container">
+            <h2>🍜 연립방정식 세우기 작전</h2>
+            <p class="receipt-font">
+                [1번 테이블] 짜장면 4 + 탕수육 1 = 42,000원<br>
+                [2번 테이블] 짜장면 2 + 탕수육 2 = 48,000원
+            </p>
+            <p>짜장면 1그릇 가격을 <span class="highlight">x</span>, 탕수육 1접시 가격을 <span class="highlight">y</span>라고 할 때,<br>
+            가감법을 사용하기 위해 <strong>두 테이블의 영수증을 각각 수식으로</strong> 표현해야 합니다.</p>
+            
+            <p style="font-size: 0.9em; color: #555;">(블록을 터치하거나 드래그하여 두 식을 완성해 주세요!)</p>
+
+            <div class="dnd-section">
+                <div id="source-area" class="source-area"></div>
+                <div class="equation-row">
+                    <div class="equation-label">[1번 식]</div>
+                    <div class="dropzone" id="z0"></div> <span>+</span> <div class="dropzone" id="z1"></div> <span>=</span> <div class="dropzone wide" id="z2"></div>
+                </div>
+                <div class="equation-row">
+                    <div class="equation-label">[2번 식]</div>
+                    <div class="dropzone" id="z3"></div> <span>+</span> <div class="dropzone" id="z4"></div> <span>=</span> <div class="dropzone wide" id="z5"></div>
+                </div>
+            </div>
+            
+            <button class="action-btn" onclick="checkAnswer()">방정식 세우기 완료!</button>
+            <p id="error-msg"></p>
+
+            <div id="success-section" class="hidden success-box">
+                <h2>🎉 연립방정식 완성! 🎉</h2>
+                <p>훌륭합니다! 이제 이 두 식을 더하거나 빼서(가감법)<br>짜장면과 탕수육의 가격을 완벽하게 알아낼 준비가 끝났습니다.</p>
+                <p style="margin-top: 15px; font-weight: bold; color: #8c3030;">
+                    (우측 하단의 '다음' 버튼을 눌러 이동하세요.)
+                </p>
+            </div>
+        </div>
+
+        <!-- URL 규칙에 따라 이전/다음 버튼 링크 업데이트 -->
+        <button id="btn-prev" class="btn-nav" onclick="window.location.href='B03.html'">이전</button>
+        <button id="btn-next" class="btn-nav" onclick="window.location.href='B05.html'">다음</button>
+    </div>
+
+    <script>
+        const blocksData = [
+            { id: 'b1', val: '4x', type: 'term' },
+            { id: 'b2', val: '2x', type: 'term' },
+            { id: 'b3', val: 'y', type: 'term' },
+            { id: 'b4', val: '2y', type: 'term' },
+            { id: 'b5', val: '42000', type: 'const' },
+            { id: 'b6', val: '48000', type: 'const' }
+        ];
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        const sourceArea = document.getElementById('source-area');
+        const dropzones = document.querySelectorAll('.dropzone');
+        
+        shuffle(blocksData);
+        
+        blocksData.forEach(data => {
+            const block = document.createElement('div');
+            block.className = 'drag-block';
+            if (data.type === 'const') block.classList.add('wide-block');
+            block.id = data.id;
+            block.setAttribute('draggable', 'true');
+            block.setAttribute('data-val', data.val);
+            block.innerText = data.val;
+            
+            block.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', e.target.id);
+                setTimeout(() => block.classList.add('dragging'), 0);
+            });
+            block.addEventListener('dragend', () => block.classList.remove('dragging'));
+
+            block.addEventListener('click', () => {
+                if (block.parentElement === sourceArea) {
+                    for (let zone of dropzones) {
+                        if (zone.children.length === 0) {
+                            zone.appendChild(block);
+                            break;
+                        }
+                    }
+                } else {
+                    sourceArea.appendChild(block);
+                }
+            });
+            sourceArea.appendChild(block);
+        });
+
+        dropzones.forEach(zone => {
+            zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+            zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+            zone.addEventListener('drop', e => {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+                const id = e.dataTransfer.getData('text/plain');
+                const block = document.getElementById(id);
+                if (block) {
+                    if (zone.children.length === 0) {
+                        zone.appendChild(block);
+                    } else {
+                        sourceArea.appendChild(zone.children[0]);
+                        zone.appendChild(block);
+                    }
+                }
+            });
+        });
+
+        function checkAnswer() {
+            const errorMsg = document.getElementById('error-msg');
+            const getVal = (id) => {
+                const z = document.getElementById(id);
+                return z.children.length > 0 ? z.children[0].getAttribute('data-val') : null;
+            };
+
+            const z0 = getVal('z0'); const z1 = getVal('z1'); const z2 = getVal('z2');
+            const z3 = getVal('z3'); const z4 = getVal('z4'); const z5 = getVal('z5');
+
+            // 0. 빈칸 확인
+            if (!z0 || !z1 || !z2 || !z3 || !z4 || !z5) {
+                errorMsg.innerHTML = "❌ 모든 빈칸에 블록을 채워주세요!";
+                return;
+            }
+
+            // 조건 확인을 위한 변수들
+            const isConstants = ['42000', '48000'];
+            
+            // 1번 식, 2번 식 정답 판별 (교환법칙 인정)
+            const isRow1Correct = ((z0 === '4x' && z1 === 'y') || (z0 === 'y' && z1 === '4x')) && z2 === '42000';
+            const isRow2Correct = ((z3 === '2x' && z4 === '2y') || (z3 === '2y' && z4 === '2x')) && z5 === '48000';
+            
+            // 역방향 판별 (위아래 바뀜)
+            const isRow1Flipped = ((z0 === '2x' && z1 === '2y') || (z0 === '2y' && z1 === '2x')) && z2 === '48000';
+            const isRow2Flipped = ((z3 === '4x' && z4 === 'y') || (z3 === 'y' && z4 === '4x')) && z5 === '42000';
+
+            // 좌변은 맞는데 가격(숫자)만 엇갈림
+            const isPriceMixed1 = ((z0 === '4x' && z1 === 'y') || (z0 === 'y' && z1 === '4x')) && z2 === '48000';
+            const isPriceMixed2 = ((z3 === '2x' && z4 === '2y') || (z3 === '2y' && z4 === '2x')) && z5 === '42000';
+
+            // 정답 처리
+            if (isRow1Correct && isRow2Correct) {
+                errorMsg.innerHTML = "";
+                document.getElementById('success-section').classList.remove('hidden');
+                document.getElementById('btn-next').style.display = 'block';
+                
+                document.querySelectorAll('.drag-block').forEach(b => {
+                    b.setAttribute('draggable', 'false');
+                    b.style.pointerEvents = 'none';
+                    b.style.cursor = 'default';
+                });
+                return;
+            }
+
+            // [상세 피드백 로직]
+            if (!isConstants.includes(z2) || !isConstants.includes(z5)) {
+                // 피드백 1: 우변에 숫자가 아닌 것이 들어감
+                errorMsg.innerHTML = "❌ 등호(=) 오른쪽 칸에는 총 가격(숫자)이 들어가야 합니다.";
+            } else if (isRow1Flipped && isRow2Flipped) {
+                // 피드백 2: 위아래 식이 통째로 바뀜
+                errorMsg.innerHTML = "❌ 1번 식과 2번 식의 위치가 바뀌었습니다. 위칸이 1번 테이블입니다!";
+            } else if (isPriceMixed1 || isPriceMixed2) {
+                // 피드백 3: 좌변은 맞으나 가격이 바뀜
+                errorMsg.innerHTML = "❌ 메뉴 구성은 맞지만 가격이 서로 엇갈렸습니다. 영수증을 다시 확인해 보세요!";
+            } else {
+                // 피드백 4: 그 외의 일반적인 오답
+                errorMsg.innerHTML = "❌ 수식이 틀렸습니다.<br>힌트: 1번 테이블은 짜장(x) 4개, 탕수(y) 1개입니다.";
+            }
+        }
+    </script>
+</body>
+</html>

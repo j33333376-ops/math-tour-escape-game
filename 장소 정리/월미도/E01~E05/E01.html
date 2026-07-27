@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>월미도 MATHTOUR - 바이킹으로</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #241b18;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    button {
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    #game-container {
+      position: relative;
+      width: min(100vw, 1066px);
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #f5f0e6;
+      box-shadow:
+        0 0 0 2px #d4af37,
+        0 18px 55px rgba(0, 0, 0, 0.6);
+      isolation: isolate;
+    }
+
+    /* 배경 이미지 */
+    #background-image {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* 근대 개항기 분위기의 색감 보정 */
+    #sepia-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(55, 28, 20, 0.15),
+          rgba(60, 25, 20, 0.03) 52%,
+          rgba(33, 17, 14, 0.35)
+        ),
+        radial-gradient(
+          circle at center,
+          transparent 48%,
+          rgba(35, 18, 14, 0.42) 100%
+        );
+      mix-blend-mode: multiply;
+    }
+
+    #antique-frame {
+      position: absolute;
+      inset: 9px;
+      z-index: 9;
+      border: 2px solid rgba(212, 175, 55, 0.8);
+      outline: 1px solid rgba(140, 48, 48, 0.7);
+      outline-offset: -7px;
+      pointer-events: none;
+      box-shadow: inset 0 0 30px rgba(45, 25, 20, 0.45);
+    }
+
+    /* 상단 스테이지 표시바 */
+    #stage-bar {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      z-index: 12;
+      min-width: 390px;
+      padding: 9px 28px;
+      transform: translateX(-50%);
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      background: rgba(35, 22, 20, 0.78);
+      color: #f6e8b1;
+      text-align: center;
+      font-family: 'Nanum Myeongjo', serif;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+    }
+
+    #stage-bar .game-title {
+      display: block;
+      margin-bottom: 1px;
+      color: #ffffff;
+      font-size: clamp(12px, 1.45vw, 16px);
+    }
+
+    #stage-bar .stage-title {
+      display: block;
+      color: #d4af37;
+      font-size: clamp(13px, 1.7vw, 19px);
+    }
+
+    /* 등장인물 공통 */
+    .char-wrapper {
+      position: absolute;
+      z-index: 3;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      filter:
+        drop-shadow(0 10px 8px rgba(0, 0, 0, 0.35))
+        brightness(1);
+      transition:
+        filter 0.25s ease,
+        opacity 0.4s ease;
+      will-change: transform, opacity;
+    }
+
+    .char-wrapper iframe {
+      display: block;
+      width: 260px;
+      height: 320px;
+      border: 0;
+      pointer-events: none;
+    }
+
+    #char-민우 {
+      left: 77px;
+      bottom: 78px;
+      transform-origin: bottom center;
+    }
+
+    #char-민우 iframe {
+      transform: scale(1);
+      transform-origin: bottom left;
+    }
+
+    #char-서연 {
+      right: 77px;
+      bottom: 78px;
+      transform-origin: bottom center;
+    }
+
+    #char-서연 iframe {
+      transform: scale(1) scaleX(-1);
+      transform-origin: bottom left;
+    }
+
+    .char-wrapper.speaking {
+      filter:
+        drop-shadow(0 10px 8px rgba(0, 0, 0, 0.4))
+        brightness(1.12);
+    }
+
+    .char-wrapper.listening {
+      filter:
+        drop-shadow(0 10px 8px rgba(0, 0, 0, 0.3))
+        brightness(0.68);
+    }
+
+    /* 바이킹 쪽으로 걸어가는 애니메이션 */
+    #char-민우.walk-away {
+      animation: minwooWalkAway 4.3s ease-in-out forwards;
+    }
+
+    #char-서연.walk-away {
+      animation: seoyeonWalkAway 4.3s ease-in-out forwards;
+    }
+
+    @keyframes minwooWalkAway {
+      0% {
+        left: 77px;
+        bottom: 78px;
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      18% {
+        bottom: 88px;
+      }
+
+      35% {
+        bottom: 73px;
+      }
+
+      52% {
+        bottom: 84px;
+      }
+
+      68% {
+        bottom: 70px;
+      }
+
+      100% {
+        left: 445px;
+        bottom: 258px;
+        transform: scale(0.22);
+        opacity: 0.82;
+      }
+    }
+
+    @keyframes seoyeonWalkAway {
+      0% {
+        right: 77px;
+        bottom: 78px;
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      18% {
+        bottom: 74px;
+      }
+
+      35% {
+        bottom: 88px;
+      }
+
+      52% {
+        bottom: 72px;
+      }
+
+      68% {
+        bottom: 85px;
+      }
+
+      100% {
+        right: 345px;
+        bottom: 258px;
+        transform: scale(0.22);
+        opacity: 0.82;
+      }
+    }
+
+    /* 상황 설명 및 대사 박스 */
+    #situation-box {
+      position: absolute;
+      left: 50%;
+      bottom: 91px;
+      z-index: 11;
+      width: min(52%, 555px);
+      min-height: 145px;
+      padding: 21px 27px 19px;
+      transform: translateX(-50%);
+      border: 2px solid #8c3030;
+      border-radius: 5px;
+      background:
+        linear-gradient(
+          rgba(247, 237, 207, 0.96),
+          rgba(226, 207, 161, 0.96)
+        );
+      color: #2d3748;
+      box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.4),
+        inset 0 0 0 4px rgba(212, 175, 55, 0.35),
+        inset 0 0 25px rgba(98, 63, 35, 0.18);
+      transition:
+        opacity 0.35s ease,
+        transform 0.35s ease;
+    }
+
+    #situation-box::before,
+    #situation-box::after {
+      position: absolute;
+      top: 13px;
+      color: #8c3030;
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 22px;
+      content: "◆";
+      opacity: 0.75;
+    }
+
+    #situation-box::before {
+      left: 13px;
+    }
+
+    #situation-box::after {
+      right: 13px;
+    }
+
+    #speaker-name {
+      display: inline-block;
+      margin: 0 0 9px;
+      padding: 3px 13px;
+      border: 1px solid #d4af37;
+      border-radius: 2px;
+      background: #8c3030;
+      color: #ffffff;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(14px, 1.7vw, 19px);
+      font-weight: 700;
+    }
+
+    #situation-text {
+      min-height: 53px;
+      margin: 0;
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 500;
+      line-height: 1.65;
+      letter-spacing: -0.02em;
+      word-break: keep-all;
+    }
+
+    #continue-hint {
+      margin-top: 10px;
+      color: #7a4c33;
+      text-align: right;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(10px, 1.1vw, 13px);
+      animation: hintBlink 1.2s ease-in-out infinite;
+    }
+
+    @keyframes hintBlink {
+      0%,
+      100% {
+        opacity: 0.35;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    #situation-box.walking-state {
+      bottom: 112px;
+      min-height: 105px;
+      opacity: 0.94;
+    }
+
+    #situation-box.hidden {
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(-50%) translateY(18px);
+    }
+
+    /* 공통 이동 버튼 */
+    .btn-nav {
+      position: absolute;
+      bottom: 20px;
+      z-index: 20;
+      padding: 10px 24px;
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      background: #8c3030;
+      color: #ffffff;
+      font-size: clamp(12px, 1.3vw, 15px);
+      font-weight: 700;
+      line-height: 1.4;
+      cursor: pointer;
+      box-shadow: 0 4px 11px rgba(0, 0, 0, 0.35);
+      transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        opacity 0.25s ease;
+    }
+
+    .btn-nav:hover {
+      background: #661f1f;
+      transform: translateY(-2px);
+    }
+
+    .btn-nav:active {
+      transform: translateY(0);
+    }
+
+    #btn-prev {
+      left: 20px;
+    }
+
+    #btn-next {
+      right: 20px;
+    }
+
+    /* 배경을 가리지 않는 대사 진행 버튼 */
+    #btn-dialogue {
+      position: absolute;
+      left: 50%;
+      bottom: 51px;
+      z-index: 19;
+      min-width: 138px;
+      padding: 8px 20px;
+      transform: translateX(-50%);
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      background: rgba(45, 32, 27, 0.88);
+      color: #ffffff;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+      transition:
+        background 0.2s ease,
+        opacity 0.3s ease;
+    }
+
+    #btn-dialogue:hover {
+      background: #8c3030;
+    }
+
+    #btn-dialogue.hidden {
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    /* 작은 화면 대응 */
+    @media (max-width: 720px) {
+      #stage-bar {
+        top: 10px;
+        min-width: 310px;
+        padding: 6px 18px;
+      }
+
+      #char-민우 {
+        left: 30px;
+        bottom: 55px;
+        transform: scale(0.78);
+      }
+
+      #char-서연 {
+        right: 30px;
+        bottom: 55px;
+        transform: scale(0.78);
+      }
+
+      #situation-box {
+        bottom: 72px;
+        width: 57%;
+        min-height: 120px;
+        padding: 16px 20px 14px;
+      }
+
+      .btn-nav {
+        bottom: 12px;
+        padding: 7px 15px;
+      }
+
+      #btn-prev {
+        left: 12px;
+      }
+
+      #btn-next {
+        right: 12px;
+      }
+
+      #btn-dialogue {
+        bottom: 40px;
+        padding: 6px 13px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+      }
+
+      #char-민우.walk-away,
+      #char-서연.walk-away {
+        animation-duration: 0.01ms;
+      }
+
+      #continue-hint {
+        animation: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main id="game-container" aria-label="월미도 MATHTOUR 상황 연출 장면">
+    <!-- 같은 폴더의 배경 이미지 -->
+    <img
+      id="background-image"
+      src="E01.png"
+      alt="월미도 바이킹 주변 풍경"
+      draggable="false"
+    />
+
+    <div id="sepia-overlay" aria-hidden="true"></div>
+    <div id="antique-frame" aria-hidden="true"></div>
+
+    <!-- 상단 스테이지 표시바 -->
+    <header id="stage-bar">
+      <span class="game-title">월미도 MATHTOUR</span>
+      <span class="stage-title">제1장 · 월미도 바이킹 앞</span>
+    </header>
+
+    <!-- 등장인물 민우 -->
+    <div
+      class="char-wrapper speaking"
+      id="char-민우"
+      aria-label="등장인물 민우"
+    >
+      <iframe
+        src="등장인물_민우.html"
+        scrolling="no"
+        title="민우"
+      ></iframe>
+    </div>
+
+    <!-- 등장인물 서연 -->
+    <div
+      class="char-wrapper listening"
+      id="char-서연"
+      aria-label="등장인물 서연"
+    >
+      <iframe
+        src="등장인물_서연.html"
+        scrolling="no"
+        title="서연"
+      ></iframe>
+    </div>
+
+    <!-- 유형 1 상황 설명 박스 -->
+    <section
+      id="situation-box"
+      role="status"
+      aria-live="polite"
+      onclick="advanceScene()"
+    >
+      <div id="speaker-name">민우</div>
+      <p id="situation-text">
+        와, 드디어 바이킹이다! 월미도 바이킹이 그렇게 무섭대!
+      </p>
+      <div id="continue-hint">화면을 눌러 계속하기 ▶</div>
+    </section>
+
+    <button
+      id="btn-dialogue"
+      type="button"
+      onclick="advanceScene()"
+    >
+      대화 계속
+    </button>
+
+    <!-- 공통 이동 버튼: 처음부터 표시 -->
+    <button
+      class="btn-nav"
+      id="btn-prev"
+      type="button"
+      onclick="moveTo('index.html')"
+    >
+      이전
+    </button>
+
+    <button
+      class="btn-nav"
+      id="btn-next"
+      type="button"
+      onclick="moveTo('E02.html')"
+    >
+      다음
+    </button>
+  </main>
+
+  <script>
+    'use strict';
+
+    const sceneSteps = [
+      {
+        speaker: '민우',
+        text: '와, 드디어 바이킹이다! 월미도 바이킹이 그렇게 무섭대!',
+        target: 'char-민우'
+      },
+      {
+        speaker: '서연',
+        text: '오, 나도 이야기 들어봤어. 사람들 줄이 벌써 저렇게 많잖아! 얼른 우리도 가서 타보자.',
+        target: 'char-서연'
+      }
+    ];
+
+    let currentStep = 0;
+    let isWalking = false;
+
+    const speakerName = document.getElementById('speaker-name');
+    const situationText = document.getElementById('situation-text');
+    const situationBox = document.getElementById('situation-box');
+    const continueHint = document.getElementById('continue-hint');
+    const dialogueButton = document.getElementById('btn-dialogue');
+
+    const minwoo = document.getElementById('char-민우');
+    const seoyeon = document.getElementById('char-서연');
+
+    function updateCharacters(activeCharacterId) {
+      const characters = [minwoo, seoyeon];
+
+      characters.forEach((character) => {
+        const isActive = character.id === activeCharacterId;
+
+        character.classList.toggle('speaking', isActive);
+        character.classList.toggle('listening', !isActive);
+      });
+    }
+
+    function renderStep() {
+      const step = sceneSteps[currentStep];
+
+      speakerName.textContent = step.speaker;
+      situationText.textContent = step.text;
+      updateCharacters(step.target);
+
+      if (currentStep === sceneSteps.length - 1) {
+        continueHint.textContent = '화면을 눌러 바이킹으로 이동하기 ▶';
+        dialogueButton.textContent = '바이킹으로 이동';
+      } else {
+        continueHint.textContent = '화면을 눌러 계속하기 ▶';
+        dialogueButton.textContent = '대화 계속';
+      }
+    }
+
+    function advanceScene() {
+      if (isWalking) {
+        return;
+      }
+
+      if (currentStep < sceneSteps.length - 1) {
+        currentStep += 1;
+        renderStep();
+        return;
+      }
+
+      startWalkingAnimation();
+    }
+
+    function startWalkingAnimation() {
+      isWalking = true;
+
+      minwoo.classList.remove('speaking', 'listening');
+      seoyeon.classList.remove('speaking', 'listening');
+
+      minwoo.classList.add('walk-away');
+      seoyeon.classList.add('walk-away');
+
+      speakerName.textContent = '상황';
+      situationText.textContent =
+        '민우와 서연은 기대에 찬 표정으로 바이킹을 향해 걸어간다. 멀어질수록 두 사람의 모습이 점점 작아진다.';
+
+      situationBox.classList.add('walking-state');
+      continueHint.textContent = '바이킹으로 이동 중…';
+      dialogueButton.classList.add('hidden');
+
+      window.setTimeout(() => {
+        situationBox.classList.add('hidden');
+      }, 3400);
+    }
+
+    function moveTo(url) {
+      if (!url) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      window.location.href = url;
+    }
+
+    /* 배경 이미지가 로드되지 않아도 장면을 사용할 수 있도록 처리 */
+    document
+      .getElementById('background-image')
+      .addEventListener('error', function () {
+        this.style.display = 'none';
+
+        document.getElementById('game-container').style.background =
+          'linear-gradient(to bottom, #c9aa7d 0%, #8e6950 48%, #4b342c 100%)';
+      });
+
+    renderStep();
+  </script>
+</body>
+</html>

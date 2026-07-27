@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>송도 센트럴파크 매쓰투어 - G타워 높이 측정 미션</title>
+    <!-- Three.js 라이브러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- OrbitControls 라이브러리 -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; background-color: #0f172a; color: #f8fafc; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+        header { background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid #334155; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; z-index: 10; backdrop-filter: blur(8px); }
+        .title-container h1 { font-size: 1.25rem; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+        .badge { background: #0284c7; color: white; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: 600; }
+        .curriculum-info { font-size: 0.85rem; color: #94a3b8; }
+        #main-container { display: flex; flex: 1; position: relative; overflow: hidden; }
+        #canvas-container { flex: 1; position: relative; background: #000; }
+        #ui-overlay { position: absolute; top: 16px; left: 16px; z-index: 5; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
+        .glass-panel { background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); border-radius: 12px; padding: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); pointer-events: auto; }
+        .hud-card { width: 310px; }
+        .hud-card h3 { font-size: 0.95rem; color: #38bdf8; margin-bottom: 10px; border-bottom: 1px solid #334155; padding-bottom: 6px; }
+        .data-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.88rem; }
+        .data-value { font-weight: 700; font-family: monospace; color: #f1f5f9; }
+        .highlight-a { color: #f43f5e; }
+        .highlight-b { color: #10b981; }
+        
+        #control-panel { width: 420px; border-left: 1px solid #334155; background: #1e293b; display: flex; flex-direction: column; padding: 20px; gap: 16px; overflow-y: auto; z-index: 5; }
+        .section-title { font-size: 0.95rem; font-weight: 600; color: #38bdf8; display: flex; align-items: center; gap: 6px; }
+        .control-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 0.85rem; color: #cbd5e1; display: flex; justify-content: space-between; }
+        input[type="range"] { width: 100%; height: 8px; background: #475569; border-radius: 4px; outline: none; accent-color: #38bdf8; cursor: pointer; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        button { background: #0284c7; color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        button:hover { background: #0369a1; transform: translateY(-1px); }
+        button:active { transform: translateY(0); }
+        button.btn-danger { background: #e11d48; }
+        button.btn-danger:hover { background: #be123c; }
+        button.btn-secondary { background: #475569; }
+        button.btn-secondary:hover { background: #334155; }
+        button.btn-copy { background: #059669; padding: 6px 10px; font-size: 0.78rem; }
+        button.btn-copy:hover { background: #047857; }
+        .input-box { background: #0f172a; border: 1px solid #475569; border-radius: 8px; padding: 10px 12px; color: white; font-size: 0.95rem; width: 100%; margin-top: 4px; }
+        .input-box:focus { outline: 2px solid #0284c7; border-color: transparent; }
+        
+        .formula-card { background: #0f172a; border-radius: 10px; padding: 16px; border: 1px dashed #38bdf8; font-size: 0.95rem; line-height: 1.6; color: #cbd5e1; }
+        .calc-card { background: #0f172a; border-radius: 10px; padding: 14px; border: 1px solid #334155; }
+
+        .interactive-formula-card { 
+            background: #0f172a; 
+            border-radius: 12px; 
+            padding: 16px; 
+            border: 2px solid #38bdf8; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+        }
+
+        .fraction-layout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Fira Code', monospace, sans-serif;
+            font-size: 1.1rem;
+            color: #f8fafc;
+            background: #1e293b;
+            padding: 14px 10px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+        }
+
+        .fraction-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .fraction-numerator {
+            padding-bottom: 4px;
+            border-bottom: 2px solid #38bdf8;
+            width: 100%;
+            text-align: center;
+        }
+
+        .fraction-denominator {
+            padding-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .slot-input {
+            width: 85px;
+            height: 34px;
+            background: #0f172a;
+            border: 2px solid #38bdf8;
+            border-radius: 6px;
+            color: #38bdf8;
+            font-weight: bold;
+            font-family: monospace;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .slot-input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+        }
+
+        .slot-input.highlight-x { border-color: #f43f5e; color: #f43f5e; }
+        .slot-input.highlight-y { border-color: #10b981; color: #10b981; }
+
+        #bottom-boat-bar {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 580px;
+            background: rgba(15, 23, 42, 0.92);
+            border: 2px solid #38bdf8;
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 16px 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            from { box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
+            to { box-shadow: 0 0 25px rgba(56, 189, 248, 0.7); }
+        }
+
+        .bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #38bdf8;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        #modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 100; }
+        .modal-content { background: #1e293b; border: 1px solid #38bdf8; width: 480px; border-radius: 16px; padding: 32px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); animation: modalUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes modalUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-icon { font-size: 3rem; margin-bottom: 12px; }
+        .modal-title { font-size: 1.5rem; font-weight: 700; color: #38bdf8; margin-bottom: 8px; }
+        .modal-desc { font-size: 0.95rem; color: #cbd5e1; margin-bottom: 24px; line-height: 1.6; }
+        .modal-stats { background: #0f172a; border-radius: 8px; padding: 16px; margin-bottom: 24px; text-align: left; font-size: 0.9rem; }
+        
+        .camera-controls { position: absolute; top: 16px; right: 16px; z-index: 5; display: flex; gap: 8px; }
+        .cam-btn { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
+        .cam-btn:hover { background: #0284c7; }
+        .guide-toast { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); background: rgba(14, 165, 233, 0.9); color: white; padding: 10px 20px; border-radius: 30px; font-size: 0.88rem; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.3); pointer-events: none; transition: opacity 0.3s; z-index: 5; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="title-container">
+            <h1>🚢 송도 센트럴파크 매쓰투어 <span class="badge">MISSION 01</span></h1>
+        </div>
+        <div class="curriculum-info">
+            [중3 수학] 삼각비의 활용 - 건물의 높이 구하기
+        </div>
+    </header>
+
+    <div id="main-container">
+        <!-- 3D Canvas 영역 -->
+        <div id="canvas-container">
+            <div id="ui-overlay">
+                <div class="glass-panel hud-card">
+                    <h3>📊 실시간 측정 데이터</h3>
+                    <div class="data-row">
+                        <span>A지점 - G타워 거리 (d<sub>A</sub>):</span>
+                        <span id="hud-dist-a" class="data-value highlight-a">미기록</span>
+                    </div>
+                    <div class="data-row">
+                        <span>A지점 시야각 (X):</span>
+                        <span id="hud-angle-a" class="data-value highlight-a">미기록</span>
+                    </div>
+                    <div style="height: 1px; background: #334155; margin: 6px 0;"></div>
+                    <div class="data-row">
+                        <span>B지점 - G타워 거리 (d<sub>B</sub>):</span>
+                        <span id="hud-dist-b" class="data-value highlight-b">미기록</span>
+                    </div>
+                    <div class="data-row">
+                        <span>B지점 시야각 (Y):</span>
+                        <span id="hud-angle-b" class="data-value highlight-b">미기록</span>
+                    </div>
+                    <div style="height: 1px; background: #334155; margin: 6px 0;"></div>
+                    <div class="data-row">
+                        <span>이동 거리 (D = d<sub>A</sub> - d<sub>B</sub>):</span>
+                        <span id="hud-dist-d" class="data-value" style="color:#f59e0b;">미기록</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="camera-controls">
+                <button class="cam-btn" onclick="setCameraView('side')">측면뷰 (2D)</button>
+                <button class="cam-btn" onclick="setCameraView('iso')">항공/조망뷰 (3D)</button>
+                <button class="cam-btn" onclick="setCameraView('boat')">수상택시 시점</button>
+            </div>
+
+            <div id="guide-toast" class="guide-toast">
+                👇 화면 아래쪽 슬라이더를 조작하여 수상택시를 이동시키세요!
+            </div>
+
+            <!-- 하단 배치 수상택시 제어 슬라이더 바 -->
+            <div id="bottom-boat-bar">
+                <div class="bar-header">
+                    <span>🎮 1단계: 수상택시 위치 조작 (화면 하단)</span>
+                    <span id="val-boat-dist" class="data-value" style="color:#38bdf8; font-size:1.05rem;">250.000 m</span>
+                </div>
+                <input type="range" id="slider-boat-pos" min="50" max="350" value="250" step="0.1">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                    <span style="font-size:0.82rem; color:#cbd5e1;">현재 관측 각도 (θ): <strong id="val-current-angle" style="color:#f1f5f9; font-family:monospace;">--°</strong></span>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-secondary" onclick="recordPoint('A')" style="padding:6px 12px; font-size:0.8rem;">📍 A지점 기록</button>
+                        <button class="btn-secondary" onclick="recordPoint('B')" style="padding:6px 12px; font-size:0.8rem;">📍 B지점 기록</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 우측 컨트롤 패널 -->
+        <div id="control-panel">
+            <!-- 2단계: tan 계산기 -->
+            <div class="section-title">
+                🧮 2단계: 삼각비(tan) 계산기
+            </div>
+            
+            <div class="calc-card">
+                <label style="font-size:0.85rem; color:#38bdf8; font-weight:600;">각도를 입력하여 tan 값 구하기</label>
+                <div style="display:flex; gap:8px; margin-top:8px; align-items:center;">
+                    <input type="number" id="tan-input" class="input-box" placeholder="각도(°)" step="0.001" style="margin:0; width:100px;">
+                    <button onclick="calcTanValue()" style="flex:1; padding:10px; background:#0284c7;">tan 값 산출</button>
+                </div>
+                <div style="margin-top:10px; font-size:0.92rem; font-weight:bold; color:#f1f5f9; background:#0f172a; padding:8px 12px; border-radius:6px; border:1px solid #334155; display:flex; justify-content:space-between; align-items:center;">
+                    <span>결과: <span id="tan-result" style="color:#10b981; font-family:monospace; font-size:1.05rem;">--</span></span>
+                    <span style="font-size:0.78rem; color:#94a3b8; font-weight:normal;">*소수점 셋째자리 정밀도</span>
+                </div>
+            </div>
+
+            <div style="height: 1px; background: #334155;"></div>
+
+            <!-- 3단계: 올바른 삼각비 공식 표시 -->
+            <div class="section-title">
+                📐 3단계: 삼각비 활용 공식 가이드
+            </div>
+
+            <div class="formula-card">
+                <strong style="font-size:1rem; color:#38bdf8; display:block; margin-bottom:6px;">
+                    💡 올바른 높이 산출 원리 및 공식
+                </strong>
+                <div style="background:#1e293b; padding:10px; border-radius:6px; text-align:center; margin:6px 0; font-family:monospace; color:#38bdf8; font-weight:bold; font-size:0.98rem; border:1px solid #334155;">
+                    h' = D ÷ ( (1 / tan X) - (1 / tan Y) )<br>
+                    <span style="color:#10b981; font-size:0.88rem; display:block; margin-top:4px;">최종 높이 h = h' + 1.6m (눈높이)</span>
+                </div>
+            </div>
+
+            <div style="height: 1px; background: #334155;"></div>
+
+            <!-- 4단계: 공식 빈칸 채우기 -->
+            <div class="section-title">
+                📝 4단계: 공식 빈칸에 값 대입하여 h' 구하기
+            </div>
+
+            <div class="interactive-formula-card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.82rem; color:#e2e8f0; font-weight:bold;">측정한 수치 간편 복사:</span>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn-copy" onclick="fillSlot('A')">tanX 복사</button>
+                        <button class="btn-copy" onclick="fillSlot('B')">tanY 복사</button>
+                        <button class="btn-copy" onclick="fillSlot('D')" style="background:#d97706;">D 복사</button>
+                    </div>
+                </div>
+
+                <!-- 올바른 순서의 빈칸 분수 수식 영역 -->
+                <div class="fraction-layout">
+                    <span style="font-weight:bold; color:#38bdf8;">h' = </span>
+                    <div class="fraction-body">
+                        <!-- 분자: D 빈칸 -->
+                        <div class="fraction-numerator">
+                            <input type="number" id="slot-d" class="slot-input" placeholder="D" step="0.001" oninput="calculateSlotFormula()" style="width:110px; border-color:#f59e0b; color:#f59e0b;">
+                        </div>
+                        <!-- 분모: (1 / tanX) - (1 / tanY) 빈칸 -->
+                        <div class="fraction-denominator">
+                            <span>(</span>
+                            <span>1 /</span>
+                            <input type="number" id="slot-tan-x" class="slot-input highlight-x" placeholder="tan X" step="0.001" oninput="calculateSlotFormula()">
+                            <span>)</span>
+                            <span style="margin:0 2px;">-</span>
+                            <span>(</span>
+                            <span>1 /</span>
+                            <input type="number" id="slot-tan-y" class="slot-input highlight-y" placeholder="tan Y" step="0.001" oninput="calculateSlotFormula()">
+                            <span>)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 실시간 상태 및 결과 디스플레이 -->
+                <div style="background:#0f172a; padding:10px 12px; border-radius:8px; border:1px solid #334155; font-size:0.85rem;">
+                    <div id="slot-status-msg" style="color:#94a3b8; font-size:0.82rem;">
+                        💡 위 공식 빈칸에 D, tanX, tanY 수치를 대입하세요.
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; border-top:1px dashed #334155; padding-top:6px;">
+                        <span>계산된 건물 높이 (h'):</span>
+                        <strong id="val-slot-hprime" style="color:#38bdf8; font-size:1.1rem; font-family:monospace;">-- m</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                        <span>눈높이 포함 최종 높이 (h = h'+1.6m):</span>
+                        <strong id="val-slot-hfinal" style="color:#10b981; font-size:1.1rem; font-family:monospace;">-- m</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div style="height: 1px; background: #334155;"></div>
+
+            <!-- 5단계: 최종 정답 제출 -->
+            <div class="section-title">
+                🎯 5단계: 최종 높이(h) 정답 제출
+            </div>
+
+            <div class="control-group">
+                <label for="input-answer">계산한 송도 G타워 전체 높이 h (m)</label>
+                <input type="number" id="input-answer" class="input-box" placeholder="예: 153.6" step="0.001" onkeyup="if(event.key==='Enter') submitAnswer();">
+            </div>
+
+            <button onclick="submitAnswer()" style="width: 100%; padding: 12px; font-size: 1rem; background: #10b981;">
+                🚀 정답 제출 및 검증
+            </button>
+            <button onclick="resetData()" class="btn-danger" style="width: 100%; font-size: 0.8rem;">
+                🔄 측정 데이터 초기화
+            </button>
+        </div>
+    </div>
+
+    <!-- 성공 모달 -->
+    <div id="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-icon">🏆</div>
+            <h2 class="modal-title">MISSION ACCOMPLISHED!</h2>
+            <p class="modal-desc">
+                축하합니다! 삼각비의 원리를 정확하게 활용하여<br>
+                <strong>송도 G타워의 높이</strong>를 성공적으로 측정했습니다!
+            </p>
+            <div class="modal-stats">
+                <div>• 입력한 계산 값: <span id="modal-user-ans" style="color:#38bdf8; font-weight:bold;"></span> m</div>
+                <div>• 실제 설정 높이: <span id="modal-real-ans" style="color:#10b981; font-weight:bold;"></span> m</div>
+                <div>• 허용 오차 범위: <span id="modal-error" style="color:#f59e0b; font-weight:bold;"></span> m</div>
+            </div>
+            <button onclick="nextStage()" style="width: 100%; padding: 14px; font-size: 1.1rem; background: #0284c7;">
+                다음 매쓰투어 코스로 이동 ➔
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. 상수 및 기본 설정 ---
+        const TOWER_ACTUAL_HEIGHT = 153.6; // G타워 실제 높이 (m)
+        const EYE_LEVEL = 1.6; // 관측자 눈높이 (m)
+        const TOWER_X_POS = 0; // G타워 X축 위치
+        const TOWER_Z_POS = 0; // 수로 직선거리 연장선(Z=0) 너머 배치
+        
+        let pointA = null;
+        let pointB = null;
+
+        // --- 2. Three.js 렌더러 및 포토콜라주 질감 스카이 박스 ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x7dd3fc); // 송도 맑은 하늘색
+        scene.fog = new THREE.FogExp2(0x93c5fd, 0.0008);
+
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1200);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+        // --- 조명 ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+        scene.add(ambientLight);
+
+        const sunLight = new THREE.DirectionalLight(0xfffaed, 1.1);
+        sunLight.position.set(-150, 300, 150);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.camera.near = 0.5;
+        sunLight.shadow.camera.far = 1000;
+        const d = 400;
+        sunLight.shadow.camera.left = -d;
+        sunLight.shadow.camera.right = d;
+        sunLight.shadow.camera.top = d;
+        sunLight.shadow.camera.bottom = -d;
+        scene.add(sunLight);
+
+        function createParkTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#4ade80';
+            ctx.fillRect(0, 0, 512, 512);
+
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillRect(0, 200, 512, 40);
+
+            for (let i = 0; i < 2000; i++) {
+                ctx.fillStyle = Math.random() > 0.5 ? '#22c55e' : '#16a34a';
+                ctx.fillRect(Math.random() * 512, Math.random() * 512, 4, 4);
+            }
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        const parkTexture = createParkTexture();
+        parkTexture.wrapS = THREE.RepeatWrapping;
+        parkTexture.wrapT = THREE.RepeatWrapping;
+        parkTexture.repeat.set(10, 10);
+
+        // --- 3. S자 수로 지형 및 넓은 송도 센트럴파크 공원 배치 ---
+        const canalWidth = 40;
+        const waterMat = new THREE.MeshStandardMaterial({ 
+            color: 0x0284c7, 
+            roughness: 0.08, 
+            metalness: 0.85,
+            transparent: true,
+            opacity: 0.88
+        });
+
+        // 1) S자 수로 - 서쪽 커브
+        const westCurveShape = new THREE.Shape();
+        westCurveShape.moveTo(-550, -100 - canalWidth/2);
+        westCurveShape.bezierCurveTo(-480, -100 - canalWidth/2, -420, -canalWidth/2, -350, -canalWidth/2);
+        westCurveShape.lineTo(-350, canalWidth/2);
+        westCurveShape.bezierCurveTo(-420, canalWidth/2, -480, -100 + canalWidth/2, -550, -100 + canalWidth/2);
+        westCurveShape.closePath();
+
+        const westCurveGeo = new THREE.ShapeGeometry(westCurveShape);
+        const waterWest = new THREE.Mesh(westCurveGeo, waterMat);
+        waterWest.rotation.x = -Math.PI / 2;
+        scene.add(waterWest);
+
+        // 2) S자 수로 - 중간 메인 직선 구간
+        const mainStraightLength = 320;
+        const mainStraightGeo = new THREE.PlaneGeometry(mainStraightLength, canalWidth);
+        const waterMain = new THREE.Mesh(mainStraightGeo, waterMat);
+        waterMain.rotation.x = -Math.PI / 2;
+        waterMain.position.set(-350 + mainStraightLength / 2, 0, 0);
+        scene.add(waterMain);
+
+        // 3) S자 수로 - 동쪽 커브
+        const eastCurveShape = new THREE.Shape();
+        eastCurveShape.moveTo(-30, -canalWidth/2);
+        eastCurveShape.bezierCurveTo(40, -canalWidth/2, 90, 120 - canalWidth/2, 170, 120 - canalWidth/2);
+        eastCurveShape.lineTo(170, 120 + canalWidth/2);
+        eastCurveShape.bezierCurveTo(90, 120 + canalWidth/2, 40, canalWidth/2, -30, canalWidth/2);
+        eastCurveShape.closePath();
+
+        const eastCurveGeo = new THREE.ShapeGeometry(eastCurveShape);
+        const waterEast = new THREE.Mesh(eastCurveGeo, waterMat);
+        waterEast.rotation.x = -Math.PI / 2;
+        scene.add(waterEast);
+
+        // 공원 잔디 대지
+        const parkGeo = new THREE.PlaneGeometry(1000, 600);
+        const parkMat = new THREE.MeshStandardMaterial({ map: parkTexture, roughness: 0.8 });
+        const parkFloor = new THREE.Mesh(parkGeo, parkMat);
+        parkFloor.rotation.x = -Math.PI / 2;
+        parkFloor.position.set(-150, -0.1, 0);
+        parkFloor.receiveShadow = true;
+        scene.add(parkFloor);
+
+        // 공원 나무
+        function createTree(x, z) {
+            const treeGroup = new THREE.Group();
+            const trunkGeo = new THREE.CylinderGeometry(0.8, 1.2, 6, 8);
+            const trunkMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.9 });
+            const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+            trunk.position.y = 3;
+            trunk.castShadow = true;
+            treeGroup.add(trunk);
+
+            const leavesGeo = new THREE.ConeGeometry(4, 10, 8);
+            const leavesMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.5 });
+            const leaves = new THREE.Mesh(leavesGeo, leavesMat);
+            leaves.position.y = 9;
+            leaves.castShadow = true;
+            treeGroup.add(leaves);
+
+            treeGroup.position.set(x, 0, z);
+            scene.add(treeGroup);
+        }
+
+        for (let x = -500; x <= 200; x += 35) {
+            if (Math.abs(x) > 30 || Math.abs(TOWER_Z_POS) > 40) {
+                createTree(x + Math.random()*10, -50 - Math.random()*40);
+                createTree(x + Math.random()*10, 50 + Math.random()*40);
+            }
+        }
+
+        // --- G타워 3D 모델링 ---
+        const gTowerGroup = new THREE.Group();
+
+        const baseGeo = new THREE.BoxGeometry(45, 18, 45);
+        const baseMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.3, metalness: 0.5 });
+        const baseMesh = new THREE.Mesh(baseGeo, baseMat);
+        baseMesh.position.y = 9;
+        baseMesh.castShadow = true;
+        gTowerGroup.add(baseMesh);
+
+        const towerMainGeo = new THREE.BoxGeometry(32, TOWER_ACTUAL_HEIGHT - 38, 32);
+        const towerGlassMat = new THREE.MeshStandardMaterial({ 
+            color: 0x0284c7, 
+            roughness: 0.1, 
+            metalness: 0.9,
+            transparent: true,
+            opacity: 0.9
+        });
+        const towerMainMesh = new THREE.Mesh(towerMainGeo, towerGlassMat);
+        towerMainMesh.position.y = 18 + (TOWER_ACTUAL_HEIGHT - 38) / 2;
+        towerMainMesh.castShadow = true;
+        gTowerGroup.add(towerMainMesh);
+
+        const topRoofShape = new THREE.ConeGeometry(24, 30, 4);
+        const topRoofMat = new THREE.MeshStandardMaterial({ color: 0x0369a1, metalness: 0.85, roughness: 0.15 });
+        const topRoofMesh = new THREE.Mesh(topRoofShape, topRoofMat);
+        topRoofMesh.position.y = TOWER_ACTUAL_HEIGHT - 8;
+        topRoofMesh.rotation.y = Math.PI / 4;
+        topRoofMesh.rotation.z = -0.15;
+        topRoofMesh.castShadow = true;
+        gTowerGroup.add(topRoofMesh);
+
+        const trussGeo = new THREE.BoxGeometry(33, TOWER_ACTUAL_HEIGHT - 32, 3);
+        const trussMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, metalness: 0.95, roughness: 0.1, wireframe: true });
+        const trussMesh = new THREE.Mesh(trussGeo, trussMat);
+        trussMesh.position.y = TOWER_ACTUAL_HEIGHT / 2;
+        gTowerGroup.add(trussMesh);
+
+        gTowerGroup.position.set(TOWER_X_POS + 15, 0, TOWER_Z_POS);
+        scene.add(gTowerGroup);
+
+        const targetGeo = new THREE.SphereGeometry(2.0, 16, 16);
+        const targetMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+        const targetPoint = new THREE.Mesh(targetGeo, targetMat);
+        targetPoint.position.set(TOWER_X_POS + 15, TOWER_ACTUAL_HEIGHT, TOWER_Z_POS);
+        scene.add(targetPoint);
+
+        // --- 캐릭터 및 수상택시 ---
+        function createStudentCharacter(isBoy) {
+            const charGroup = new THREE.Group();
+
+            const bodyGeo = new THREE.CylinderGeometry(0.5, 0.6, 1.2, 12);
+            const bodyMat = new THREE.MeshStandardMaterial({ color: isBoy ? 0x2563eb : 0xf43f5e });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.position.y = 0.6;
+            body.castShadow = true;
+            charGroup.add(body);
+
+            const headGeo = new THREE.SphereGeometry(0.4, 16, 16);
+            const headMat = new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.6 });
+            const head = new THREE.Mesh(headGeo, headMat);
+            head.position.y = 1.4;
+            head.castShadow = true;
+            charGroup.add(head);
+
+            if (isBoy) {
+                const hairGeo = new THREE.SphereGeometry(0.43, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+                const hairMat = new THREE.MeshStandardMaterial({ color: 0x1e293b });
+                const hair = new THREE.Mesh(hairGeo, hairMat);
+                hair.position.y = 1.45;
+                charGroup.add(hair);
+            } else {
+                const hairGeo = new THREE.SphereGeometry(0.44, 16, 16, 0, Math.PI * 2, 0, Math.PI / 1.7);
+                const hairMat = new THREE.MeshStandardMaterial({ color: 0x78350f });
+                const hair = new THREE.Mesh(hairGeo, hairMat);
+                hair.position.y = 1.42;
+                charGroup.add(hair);
+
+                const pigtailGeo = new THREE.CylinderGeometry(0.1, 0.2, 0.6);
+                const pigtailLeft = new THREE.Mesh(pigtailGeo, hairMat);
+                pigtailLeft.position.set(-0.4, 1.3, -0.2);
+                pigtailLeft.rotation.z = 0.4;
+                charGroup.add(pigtailLeft);
+
+                const pigtailRight = new THREE.Mesh(pigtailGeo, hairMat);
+                pigtailRight.position.set(0.4, 1.3, -0.2);
+                pigtailRight.rotation.z = -0.4;
+                charGroup.add(pigtailRight);
+            }
+
+            const capGeo = new THREE.CylinderGeometry(0.45, 0.45, 0.1, 12);
+            const capMat = new THREE.MeshStandardMaterial({ color: isBoy ? 0x0284c7 : 0xfbbf24 });
+            const cap = new THREE.Mesh(capGeo, capMat);
+            cap.position.y = 1.75;
+            charGroup.add(cap);
+
+            return charGroup;
+        }
+
+        const boatGroup = new THREE.Group();
+
+        const hullGeo = new THREE.BoxGeometry(14, 2.5, 6);
+        const hullMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.3 });
+        const hull = new THREE.Mesh(hullGeo, hullMat);
+        hull.position.y = 1.25;
+        hull.castShadow = true;
+        boatGroup.add(hull);
+
+        const bowGeo = new THREE.ConeGeometry(4.2, 6, 4);
+        const bowMat = new THREE.MeshStandardMaterial({ color: 0xd97706 });
+        const bow = new THREE.Mesh(bowGeo, bowMat);
+        bow.rotation.z = Math.PI / 2;
+        bow.rotation.y = Math.PI / 4;
+        bow.position.set(8, 1.25, 0);
+        boatGroup.add(bow);
+
+        const cabinGeo = new THREE.BoxGeometry(9, 3, 4.8);
+        const cabinMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.6, roughness: 0.1 });
+        const cabin = new THREE.Mesh(cabinGeo, cabinMat);
+        cabin.position.set(-1, 3.5, 0);
+        boatGroup.add(cabin);
+
+        const roofTopGeo = new THREE.BoxGeometry(10, 0.6, 5.2);
+        const roofTopMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        const roofTop = new THREE.Mesh(roofTopGeo, roofTopMat);
+        roofTop.position.set(-1, 5.2, 0);
+        boatGroup.add(roofTop);
+
+        const boyStudent = createStudentCharacter(true);
+        boyStudent.position.set(1, 5.5, -1.2);
+        boatGroup.add(boyStudent);
+
+        const girlStudent = createStudentCharacter(false);
+        girlStudent.position.set(1, 5.5, 1.2);
+        boatGroup.add(girlStudent);
+
+        scene.add(boatGroup);
+
+        // --- 관측 점선 시스템 ---
+        const currentLineMat = new THREE.LineDashedMaterial({
+            color: 0x38bdf8,
+            linewidth: 2,
+            scale: 1,
+            dashSize: 2,
+            gapSize: 1.5,
+        });
+        const currentLineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+        const currentSightLine = new THREE.Line(currentLineGeo, currentLineMat);
+        scene.add(currentSightLine);
+
+        const lineAMat = new THREE.LineDashedMaterial({
+            color: 0xf43f5e,
+            linewidth: 3,
+            scale: 1,
+            dashSize: 2.5,
+            gapSize: 1.5,
+        });
+        const lineAGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+        const sightLineA = new THREE.Line(lineAGeo, lineAMat);
+        scene.add(sightLineA);
+        sightLineA.visible = false;
+
+        const lineBMat = new THREE.LineDashedMaterial({
+            color: 0x10b981,
+            linewidth: 3,
+            scale: 1,
+            dashSize: 2.5,
+            gapSize: 1.5,
+        });
+        const lineBGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+        const sightLineB = new THREE.Line(lineBGeo, lineBMat);
+        scene.add(sightLineB);
+        sightLineB.visible = false;
+
+        function createMarker(color) {
+            const group = new THREE.Group();
+            const pinGeo = new THREE.ConeGeometry(2, 6, 8);
+            const pinMat = new THREE.MeshBasicMaterial({ color: color });
+            const pin = new THREE.Mesh(pinGeo, pinMat);
+            pin.rotation.x = Math.PI;
+            pin.position.y = 8;
+            group.add(pin);
+            return group;
+        }
+
+        const markerA = createMarker(0xf43f5e);
+        const markerB = createMarker(0x10b981);
+        scene.add(markerA);
+        scene.add(markerB);
+        markerA.visible = false;
+        markerB.visible = false;
+
+        // --- 카메라 시점 세팅 ---
+        function setCameraView(viewType) {
+            const currentBoatX = (TOWER_X_POS + 15) - parseFloat(document.getElementById('slider-boat-pos').value);
+            if (viewType === 'side') {
+                camera.position.set(currentBoatX - 40, 50, 160);
+                controls.target.set(currentBoatX - 40, 50, 0);
+            } else if (viewType === 'iso') {
+                camera.position.set(-180, 160, 220);
+                controls.target.set(-50, 40, 0);
+            } else if (viewType === 'boat') {
+                camera.position.set(currentBoatX, 8, 0);
+                controls.target.set(TOWER_X_POS + 15, TOWER_ACTUAL_HEIGHT, TOWER_Z_POS);
+            }
+            controls.update();
+        }
+
+        setCameraView('side');
+
+        // --- 위치 업데이트 ---
+        const boatSlider = document.getElementById('slider-boat-pos');
+        
+        function updateBoatPosition() {
+            const distanceDX = parseFloat(boatSlider.value);
+            const boatX = (TOWER_X_POS + 15) - distanceDX;
+            
+            boatGroup.position.set(boatX, 0, 0);
+            document.getElementById('val-boat-dist').innerText = `${distanceDX.toFixed(3)} m`;
+
+            const eyePos = new THREE.Vector3(boatX + 1, 5.5 + EYE_LEVEL, 0);
+            const towerTargetPos = new THREE.Vector3(TOWER_X_POS + 15, TOWER_ACTUAL_HEIGHT, TOWER_Z_POS);
+
+            currentSightLine.geometry.setFromPoints([eyePos, towerTargetPos]);
+            currentSightLine.computeLineDistances();
+
+            const dy = TOWER_ACTUAL_HEIGHT - EYE_LEVEL;
+            const angleRad = Math.atan2(dy, distanceDX);
+            const angleDeg = angleRad * (180 / Math.PI);
+
+            document.getElementById('val-current-angle').innerText = `${angleDeg.toFixed(3)}°`;
+
+            return { dist: distanceDX, angle: angleDeg, eyePos: eyePos, boatX: boatX };
+        }
+
+        boatSlider.addEventListener('input', updateBoatPosition);
+
+        // tan 계산기
+        function calcTanValue() {
+            const angleVal = parseFloat(document.getElementById('tan-input').value);
+            if (isNaN(angleVal)) {
+                alert("각도를 올바르게 입력해주세요!");
+                return;
+            }
+            const rad = angleVal * (Math.PI / 180);
+            const tanVal = Math.tan(rad);
+            document.getElementById('tan-result').innerText = tanVal.toFixed(3);
+        }
+
+        // A/B 지점 기록
+        function recordPoint(type) {
+            const current = updateBoatPosition();
+            const towerTargetPos = new THREE.Vector3(TOWER_X_POS + 15, TOWER_ACTUAL_HEIGHT, TOWER_Z_POS);
+            const toast = document.getElementById('guide-toast');
+
+            if (type === 'A') {
+                pointA = current;
+                document.getElementById('hud-dist-a').innerText = `${pointA.dist.toFixed(3)} m`;
+                document.getElementById('hud-angle-a').innerText = `${pointA.angle.toFixed(3)}°`;
+                
+                markerA.position.set(pointA.boatX, 0, 0);
+                markerA.visible = true;
+
+                sightLineA.geometry.setFromPoints([pointA.eyePos, towerTargetPos]);
+                sightLineA.computeLineDistances();
+                sightLineA.visible = true;
+
+                toast.innerText = "A지점이 기록되었습니다! 이제 B지점을 기록하세요.";
+            } else if (type === 'B') {
+                pointB = current;
+                document.getElementById('hud-dist-b').innerText = `${pointB.dist.toFixed(3)} m`;
+                document.getElementById('hud-angle-b').innerText = `${pointB.angle.toFixed(3)}°`;
+
+                markerB.position.set(pointB.boatX, 0, 0);
+                markerB.visible = true;
+
+                sightLineB.geometry.setFromPoints([pointB.eyePos, towerTargetPos]);
+                sightLineB.computeLineDistances();
+                sightLineB.visible = true;
+
+                toast.innerText = "B지점이 기록되었습니다!";
+            }
+
+            if (pointA && pointB) {
+                if (Math.abs(pointA.dist - pointB.dist) < 2) {
+                    alert("두 지점 사이의 거리가 너무 가깝습니다. 더 이동하여 기록해주세요!");
+                    return;
+                }
+                const distD = Math.abs(pointA.dist - pointB.dist);
+                document.getElementById('hud-dist-d').innerText = `${distD.toFixed(3)} m`;
+                toast.innerText = "A, B지점 기록 완료! 아래 4단계 공식 빈칸에 수치를 복사하여 대입하세요.";
+            }
+        }
+
+        // 4단계 공식 빈칸 채우기 복사 함수
+        function fillSlot(type) {
+            if (!pointA || !pointB) {
+                alert("A지점과 B지점을 모두 먼저 기록해주세요!");
+                return;
+            }
+
+            // 거리가 더 먼 지점을 멀리 있는 A(tanX), 가까운 지점을 B(tanY)로 자동 매핑하여 공식 오류 방지
+            const farPoint = pointA.dist > pointB.dist ? pointA : pointB;
+            const nearPoint = pointA.dist > pointB.dist ? pointB : pointA;
+
+            if (type === 'A') {
+                const rad = farPoint.angle * (Math.PI / 180);
+                document.getElementById('slot-tan-x').value = Math.tan(rad).toFixed(3);
+            } else if (type === 'B') {
+                const rad = nearPoint.angle * (Math.PI / 180);
+                document.getElementById('slot-tan-y').value = Math.tan(rad).toFixed(3);
+            } else if (type === 'D') {
+                document.getElementById('slot-d').value = Math.abs(farPoint.dist - nearPoint.dist).toFixed(3);
+            }
+            calculateSlotFormula();
+        }
+
+        // 올바른 분모 수식 (1/tanX - 1/tanY) 계산기
+        function calculateSlotFormula() {
+            const dVal = parseFloat(document.getElementById('slot-d').value);
+            const tanX = parseFloat(document.getElementById('slot-tan-x').value);
+            const tanY = parseFloat(document.getElementById('slot-tan-y').value);
+
+            const statusEl = document.getElementById('slot-status-msg');
+            const hPrimeEl = document.getElementById('val-slot-hprime');
+            const hFinalEl = document.getElementById('val-slot-hfinal');
+
+            if (isNaN(dVal) || isNaN(tanX) || isNaN(tanY)) {
+                statusEl.style.color = "#94a3b8";
+                statusEl.innerText = "💡 위 공식 빈칸에 D, tanX, tanY 수치를 대입하세요.";
+                hPrimeEl.innerText = "-- m";
+                hFinalEl.innerText = "-- m";
+                return;
+            }
+
+            if (tanX <= 0 || tanY <= 0) {
+                statusEl.style.color = "#ef4444";
+                statusEl.innerText = "⚠️ 탄젠트(tan) 값은 양수이어야 합니다.";
+                hPrimeEl.innerText = "오류";
+                hFinalEl.innerText = "오류";
+                return;
+            }
+
+            const termX = 1 / tanX;
+            const termY = 1 / tanY;
+            const denominator = termX - termY;
+
+            if (denominator <= 0) {
+                statusEl.style.color = "#ef4444";
+                statusEl.innerText = "⚠️ 먼 지점(tanX)보다 가까운 지점(tanY)의 탄젠트 값이 더 커야 합니다.";
+                hPrimeEl.innerText = "오류";
+                hFinalEl.innerText = "오류";
+                return;
+            }
+
+            const hPrime = dVal / denominator;
+            const hFinal = hPrime + EYE_LEVEL;
+
+            statusEl.style.color = "#10b981";
+            statusEl.innerText = "✅ 공식을 성공적으로 계산했습니다!";
+            hPrimeEl.innerText = `${hPrime.toFixed(3)} m`;
+            hFinalEl.innerText = `${hFinal.toFixed(3)} m`;
+
+            // 5단계 제출창 자동 동기화
+            document.getElementById('input-answer').value = hFinal.toFixed(3);
+        }
+
+        // 초기화
+        function resetData() {
+            pointA = null;
+            pointB = null;
+            document.getElementById('hud-dist-a').innerText = '미기록';
+            document.getElementById('hud-angle-a').innerText = '미기록';
+            document.getElementById('hud-dist-b').innerText = '미기록';
+            document.getElementById('hud-angle-b').innerText = '미기록';
+            document.getElementById('hud-dist-d').innerText = '미기록';
+            markerA.visible = false;
+            markerB.visible = false;
+            sightLineA.visible = false;
+            sightLineB.visible = false;
+            document.getElementById('input-answer').value = '';
+            document.getElementById('tan-input').value = '';
+            document.getElementById('tan-result').innerText = '--';
+            document.getElementById('slot-d').value = '';
+            document.getElementById('slot-tan-x').value = '';
+            document.getElementById('slot-tan-y').value = '';
+            document.getElementById('val-slot-hprime').innerText = '-- m';
+            document.getElementById('val-slot-hfinal').innerText = '-- m';
+            document.getElementById('slot-status-msg').style.color = "#94a3b8";
+            document.getElementById('slot-status-msg').innerText = "💡 위 공식 빈칸에 D, tanX, tanY 수치를 대입하세요.";
+            document.getElementById('guide-toast').innerText = "👇 화면 아래쪽 슬라이더를 조작하여 수상택시를 이동시키세요!";
+        }
+
+        // 정답 검증 제출
+        function submitAnswer() {
+            const userAns = parseFloat(document.getElementById('input-answer').value);
+
+            if (isNaN(userAns)) {
+                alert("계산한 G타워 높이를 숫자 형태로 입력해주세요!");
+                return;
+            }
+
+            const error = Math.abs(userAns - TOWER_ACTUAL_HEIGHT);
+
+            if (error <= 3.0) {
+                document.getElementById('modal-user-ans').innerText = userAns.toFixed(3);
+                document.getElementById('modal-real-ans').innerText = TOWER_ACTUAL_HEIGHT.toFixed(3);
+                document.getElementById('modal-error').innerText = error.toFixed(3);
+                document.getElementById('modal-overlay').style.display = 'flex';
+            } else {
+                alert(`❌ 아쉽습니다! 오차가 있습니다. (입력값: ${userAns}m)\n공식과 탄젠트(tan) 값을 다시 확인하고 계산해보세요!`);
+            }
+        }
+
+        // ★ 핵심 수정: 버튼 클릭 시 D04.html로 페이지 전환
+        function nextStage() {
+            window.location.href = 'D04.html';
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        });
+
+        updateBoatPosition();
+        animate();
+    </script>
+</body>
+</html>

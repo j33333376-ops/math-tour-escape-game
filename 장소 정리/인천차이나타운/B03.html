@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천차이나타운 MATHTOUR - B03</title>
+    <style>
+        /* [공통 UI/UX 및 폰트 규칙] */
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f5f0e6; /* 따뜻한 연베이지 (양피지 느낌) */
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+        }
+
+        /* 스테이지 상단 표시바 */
+        .top-bar {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-bottom: 2px solid #d4af37; /* 앤틱 골드 */
+            color: #d4af37;
+            padding: 10px 20px;
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            background-color: #8c3030; /* 다크 레드 */
+            color: white;
+            border: 1px solid #d4af37; /* 앤틱 골드 */
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 100;
+            transition: background-color 0.2s;
+        }
+        .btn-nav:hover {
+            background-color: #661f1f;
+        }
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+        #btn-next {
+            right: 20px;
+            bottom: 20px;
+            display: none; /* 정답을 맞추기 전까지 숨김 */
+        }
+
+        /* ----------------------------------------------------
+           유형 3: 수학 퀴즈 컨테이너 및 제공된 UI 스타일 
+           (근대 개항기 테마 색상 및 폰트에 맞게 조정)
+           ---------------------------------------------------- */
+        .quiz-container {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 600px;
+            height: calc(100% - 140px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 20px 30px;
+            box-sizing: border-box;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            text-align: center;
+            z-index: 5;
+            overflow-y: auto;
+        }
+        .quiz-container::-webkit-scrollbar { width: 6px; }
+        .quiz-container::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 3px; }
+
+        .quiz-container h2 { 
+            color: #8c3030; 
+            font-family: 'Nanum Myeongjo', serif; 
+            margin-top: 0;
+        }
+        .highlight { color: #8c3030; font-weight: bold; }
+        
+        /* 찢어진 영수증 퍼즐 영역 */
+        .puzzle-board { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 5px; 
+            margin: 20px auto; 
+            background: #e0d8c8; 
+            padding: 10px; 
+            border-radius: 5px;
+            border: 1px solid #d4af37;
+        }
+        .piece { 
+            background: #fdfaf4; 
+            border: 2px dashed #a89f91; 
+            height: 80px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            user-select: none; 
+            font-family: 'Nanum Gothic Coding', monospace; 
+            font-size: 14px; 
+            font-weight: bold;
+            white-space: pre-wrap; 
+            padding: 10px; 
+            box-sizing: border-box; 
+            transition: 0.2s;
+            color: #2d3748;
+        }
+        .piece:hover { background-color: #f5f0e6; }
+        .piece.selected { 
+            border-color: #8c3030; 
+            background-color: #f2dfdf; 
+            transform: scale(0.95); 
+        }
+        
+        .hidden { display: none !important; }
+        
+        /* 수학 문제(식 변형) 영역 */
+        .receipt-font { 
+            font-family: 'Nanum Gothic Coding', monospace; 
+            font-weight: bold; 
+            background: #fdfaf4; 
+            padding: 15px; 
+            border: 1px solid #d4af37; 
+            display: inline-block; 
+            text-align: left;
+            border-left: 5px solid #8c3030;
+        }
+        .equation-box {
+            background-color: #f5f0e6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 18px;
+            font-weight: bold;
+            font-family: 'Nanum Gothic Coding', monospace;
+            border: 1px solid #e0d8c8;
+        }
+        .quiz-container input[type="number"] { 
+            width: 80px; 
+            padding: 8px; 
+            font-size: 16px; 
+            text-align: center;
+            border: 2px solid #d4af37; 
+            border-radius: 4px; 
+            outline: none;
+            font-family: 'Nanum Gothic Coding', monospace;
+            background-color: #fff;
+            color: #2d3748;
+        }
+        .action-btn { 
+            background-color: #8c3030; 
+            color: white; 
+            border: 1px solid #d4af37; 
+            padding: 10px 20px; 
+            font-size: 16px; 
+            font-weight: bold;
+            cursor: pointer; 
+            border-radius: 4px; 
+            margin-top: 15px; 
+            transition: 0.3s;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .action-btn:hover { background-color: #661f1f; transform: translateY(-2px); }
+        #error-msg { color: #8c3030; font-weight: bold; margin-top: 10px; font-size: 14px; }
+        
+        /* 성공 화면 */
+        .success-box { 
+            background: rgba(212, 175, 55, 0.15); 
+            border: 2px solid #d4af37; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-top: 20px;
+        }
+        .success-box h2 { color: #8c3030; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- 상단 표시바 -->
+        <div class="top-bar">
+            <span>인천차이나타운 MATHTOUR</span>
+            <span>스테이지 B03 : 비밀 영수증 복원</span>
+        </div>
+
+        <!-- 퀴즈 컨테이너 (유형 3) -->
+        <div class="quiz-container">
+            <h2>🍜 짜장면 박물관 암호 해독</h2>
+            <p id="instruction">비밀 요원님! 누군가 단서가 적힌 <strong>영수증을 4조각으로 찢어버렸습니다.</strong><br>두 조각을 차례로 클릭해 자리를 바꾸고 영수증을 복원하세요!</p>
+
+            <!-- 1단계: 영수증 퍼즐 -->
+            <div id="puzzle-board" class="puzzle-board">
+                <!-- 자바스크립트로 생성됨 -->
+            </div>
+
+            <!-- 2단계: 대입법 식 세우기 미션 (해 구하기 제외) -->
+            <div id="math-section" class="hidden">
+                <h3 style="color: #8c3030; font-family: 'Nanum Myeongjo', serif;">✅ 영수증 복원 완료!</h3>
+                <p class="receipt-font">
+                    [1번 테이블] 짜장면 4 + 탕수육 1 = 42,000원<br>
+                    [2번 테이블] 짜장면 2 + 탕수육 2 = 48,000원
+                </p>
+                <p>짜장면 가격을 <span class="highlight">x</span>, 탕수육 가격을 <span class="highlight">y</span>라고 합시다.<br>
+                본격적인 가격 계산을 위해 <strong>'대입법'</strong>을 쓸 준비를 해볼까요?</p>
+                
+                <p>1번 테이블의 식 <strong style="font-family: 'Nanum Gothic Coding', monospace;">[ 4x + y = 42000 ]</strong>을<br>
+                <span class="highlight">y = (  )</span> 형태로 변형해 보세요!</p>
+
+                <div class="equation-box">
+                    y = <input type="number" id="ans-const" placeholder="숫자"> - <input type="number" id="ans-x" placeholder="숫자"> x
+                </div>
+                
+                <button class="action-btn" onclick="checkAnswer()">식 변형 완료!</button>
+                <p id="error-msg"></p>
+            </div>
+
+            <!-- 3단계: 성공 및 다음 화면 안내 -->
+            <div id="success-section" class="hidden success-box">
+                <h2>🎉 대입 준비 완료! 🎉</h2>
+                <p>훌륭합니다! <strong style="font-family: 'Nanum Gothic Coding', monospace;">y = 42000 - 4x</strong> 로 완벽하게 변형하셨습니다.</p>
+                <p>이제 이 식을 들고 다음 장소로 이동하여<br>본격적으로 짜장면과 탕수육의 진짜 가격을 알아내 봅시다!</p>
+                
+                <p style="margin-top: 15px; font-weight: bold; color: #8c3030;">
+                    (우측 하단의 '다음' 버튼을 눌러 이동하세요.)
+                </p>
+            </div>
+        </div>
+
+        <!-- 공통 이동 버튼 -->
+        <button id="btn-prev" class="btn-nav" onclick="window.location.href='B02.html'">이전</button>
+        <button id="btn-next" class="btn-nav" onclick="window.location.href='B04.html'">다음</button>
+    </div>
+
+    <script>
+        // 영수증 조각 데이터
+        const piecesData = [
+            { id: 0, text: "공화춘(짜장면 박물관)\n--- 영 수 증 ---" },
+            { id: 1, text: "날짜: 19XX년 O월 O일\n테이블: 1번, 2번" },
+            { id: 2, text: "[1번] 짜장4, 탕수1\n   = 42,000원" },
+            { id: 3, text: "[2번] 짜장2, 탕수2\n   = 48,000원" }
+        ];
+        
+        let currentOrder = [2, 0, 3, 1]; 
+        let selectedIdx = -1;
+
+        function renderPuzzle() {
+            const board = document.getElementById('puzzle-board');
+            board.innerHTML = '';
+            currentOrder.forEach((pieceId, index) => {
+                const div = document.createElement('div');
+                div.className = 'piece';
+                div.innerText = piecesData.find(p => p.id === pieceId).text;
+                div.onclick = () => handlePieceClick(index);
+                if (selectedIdx === index) div.classList.add('selected');
+                board.appendChild(div);
+            });
+        }
+
+        function handlePieceClick(index) {
+            if (selectedIdx === -1) {
+                selectedIdx = index;
+            } else {
+                const temp = currentOrder[selectedIdx];
+                currentOrder[selectedIdx] = currentOrder[index];
+                currentOrder[index] = temp;
+                selectedIdx = -1; 
+                checkPuzzleComplete();
+            }
+            renderPuzzle();
+        }
+
+        function checkPuzzleComplete() {
+            if (currentOrder.join('') === '0123') {
+                document.getElementById('puzzle-board').style.pointerEvents = 'none';
+                document.getElementById('puzzle-board').style.opacity = '0.6';
+                document.getElementById('instruction').innerHTML = "<span style='color:#8c3030; font-weight:bold;'>영수증 복원 성공! 다음 미션을 확인하세요.</span>";
+                
+                const mathSection = document.getElementById('math-section');
+                mathSection.classList.remove('hidden');
+                
+                // 스크롤을 부드럽게 수학 퀴즈 영역으로 이동
+                document.querySelector('.quiz-container').scrollTo({
+                    top: mathSection.offsetTop,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        function checkAnswer() {
+            const constVal = document.getElementById('ans-const').value;
+            const xVal = document.getElementById('ans-x').value;
+            const errorMsg = document.getElementById('error-msg');
+
+            // 정답: y = 42000 - 4x
+            if (constVal === "42000" && xVal === "4") {
+                document.getElementById('math-section').classList.add('hidden');
+                document.getElementById('success-section').classList.remove('hidden');
+                
+                // 정답 시 우측 하단 공통 '다음' 버튼을 나타나게 처리
+                document.getElementById('btn-next').style.display = 'block';
+            } else {
+                errorMsg.innerHTML = "❌ 변형이 틀렸습니다.<br>힌트: 4x를 반대편으로 넘기면 부호가 어떻게 바뀔까요?";
+            }
+        }
+
+        // 초기 화면 퍼즐 렌더링
+        renderPuzzle();
+    </script>
+</body>
+</html>

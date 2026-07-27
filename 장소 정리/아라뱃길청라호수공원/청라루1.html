@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheongnaroo - Day View</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { width: 100vw; height: 100vh; overflow: hidden; background: #87CEEB; }
+        svg { width: 100%; height: 100%; display: block; }
+    </style>
+</head>
+<body>
+    <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <!-- Sky Gradient -->
+            <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#74b9ff" />
+                <stop offset="60%" stop-color="#dfe6e9" />
+                <stop offset="100%" stop-color="#ffeaa7" />
+            </linearGradient>
+            <!-- Water Gradient -->
+            <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#74b9ff" />
+                <stop offset="30%" stop-color="#0984e3" />
+                <stop offset="100%" stop-color="#025187" />
+            </linearGradient>
+            <!-- Roof Gradient -->
+            <linearGradient id="roofGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2d3436" />
+                <stop offset="100%" stop-color="#636e72" />
+            </linearGradient>
+        </defs>
+
+        <!-- Sky -->
+        <rect width="1200" height="500" fill="url(#skyGrad)" />
+        
+        <!-- Clouds -->
+        <ellipse cx="200" cy="120" rx="80" ry="25" fill="#ffffff" opacity="0.7"/>
+        <ellipse cx="250" cy="110" rx="60" ry="20" fill="#ffffff" opacity="0.8"/>
+        <ellipse cx="900" cy="150" rx="120" ry="35" fill="#ffffff" opacity="0.6"/>
+
+        <!-- Background Skyscrapers (Cheongna City Skyline) -->
+        <g fill="#b2bec3" opacity="0.8">
+            <rect x="50" y="200" width="70" height="300" />
+            <rect x="130" y="150" width="80" height="350" />
+            <rect x="220" y="220" width="65" height="280" />
+            <rect x="300" y="180" width="90" height="320" />
+            <rect x="800" y="140" width="85" height="360" />
+            <rect x="895" y="190" width="75" height="310" />
+            <rect x="980" y="110" width="95" height="390" />
+            <rect x="1085" y="230" width="70" height="270" />
+        </g>
+        
+        <!-- Water Lake -->
+        <rect y="480" width="1200" height="320" fill="url(#waterGrad)" />
+        
+        <!-- Reflection of Buildings -->
+        <g fill="#0984e3" opacity="0.3">
+            <rect x="130" y="480" width="80" height="150" />
+            <rect x="300" y="480" width="90" height="120" />
+            <rect x="800" y="480" width="85" height="180" />
+            <rect x="980" y="480" width="95" height="200" />
+        </g>
+
+        <!-- Bridge / Causeway to Pavilion -->
+        <rect x="250" y="520" width="350" height="25" fill="#dfe6e9" stroke="#b2bec3" stroke-width="2"/>
+        <!-- Bridge Pillars -->
+        <rect x="280" y="545" width="20" height="60" fill="#b2bec3"/>
+        <rect x="380" y="545" width="20" height="60" fill="#b2bec3"/>
+        <rect x="480" y="545" width="20" height="60" fill="#b2bec3"/>
+        <rect x="580" y="545" width="20" height="60" fill="#b2bec3"/>
+
+        <!-- Cheongnaroo Platform (Stone Base) -->
+        <polygon points="520,550 880,550 920,590 480,590" fill="#b2bec3" stroke="#636e72" stroke-width="2"/>
+        <rect x="500" y="530" width="400" height="25" fill="#dfe6e9" stroke="#b2bec3"/>
+        <!-- Platform Foundation Pillars -->
+        <rect x="530" y="550" width="30" height="70" fill="#7f8c8d"/>
+        <rect x="630" y="550" width="30" height="70" fill="#7f8c8d"/>
+        <rect x="730" y="550" width="30" height="70" fill="#7f8c8d"/>
+        <rect x="830" y="550" width="30" height="70" fill="#7f8c8d"/>
+
+        <!-- Pavilion Main Pillars (Wood/Red) -->
+        <g fill="#c0392b">
+            <rect x="540" y="400" width="16" height="130" />
+            <rect x="590" y="400" width="16" height="130" />
+            <rect x="640" y="400" width="16" height="130" />
+            <rect x="690" y="400" width="16" height="130" />
+            <rect x="740" y="400" width="16" height="130" />
+            <rect x="790" y="400" width="16" height="130" />
+            <rect x="840" y="400" width="16" height="130" />
+        </g>
+
+        <!-- Dancheong Beam (Traditional Decorative Beam) -->
+        <rect x="525" y="390" width="350" height="18" fill="#27ae60"/>
+        <rect x="525" y="395" width="350" height="5" fill="#e74c3c"/>
+
+        <!-- Roof Level 1 (Lower Eaves) -->
+        <path d="M 500,400 Q 700,375 900,400 L 870,370 Q 700,355 530,370 Z" fill="url(#roofGrad)" />
+        
+        <!-- Second Tier Pillars -->
+        <g fill="#c0392b">
+            <rect x="570" y="320" width="14" height="50" />
+            <rect x="630" y="320" width="14" height="50" />
+            <rect x="690" y="320" width="14" height="50" />
+            <rect x="750" y="320" width="14" height="50" />
+            <rect x="810" y="320" width="14" height="50" />
+        </g>
+
+        <!-- Upper Dancheong Beam -->
+        <rect x="550" y="315" width="300" height="12" fill="#27ae60"/>
+
+        <!-- Main Curved Traditional Hanok Roof (팔작지붕) -->
+        <path d="M 450,330 Q 700,280 950,330 Q 880,260 700,240 Q 520,260 450,330 Z" fill="url(#roofGrad)" stroke="#1e272e" stroke-width="3"/>
+        
+        <!-- Roof Ornamental Top (용마루) -->
+        <path d="M 580,250 Q 700,240 820,250" fill="none" stroke="#d63031" stroke-width="6" stroke-linecap="round"/>
+
+        <!-- Reflection in Water -->
+        <g opacity="0.25" transform="translate(0, 1100) scale(1, -1)">
+            <path d="M 450,330 Q 700,280 950,330 Q 880,260 700,240 Q 520,260 450,330 Z" fill="#2d3436"/>
+            <rect x="525" y="390" width="350" height="18" fill="#27ae60"/>
+            <g fill="#c0392b">
+                <rect x="540" y="400" width="16" height="130" />
+                <rect x="640" y="400" width="16" height="130" />
+                <rect x="740" y="400" width="16" height="130" />
+                <rect x="840" y="400" width="16" height="130" />
+            </g>
+        </g>
+    </svg>
+</body>
+</html>

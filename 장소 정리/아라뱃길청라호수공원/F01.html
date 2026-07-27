@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>아라뱃길·청라호수공원 MATHTOUR - F01</title>
+  
+  <!-- 폰트 구성 -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+    @import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      background-color: #0b1d3a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Noto Sans KR', sans-serif;
+      overflow: hidden;
+    }
+
+    /* 16:9 비율 고정 스테이지 */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(180deg, #b2ebf2 0%, #e0f7fa 40%, #0077be 100%);
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+      border-radius: 12px;
+      transition: transform 0.8s cubic-bezier(0.6, -0.28, 0.735, 0.045), opacity 0.8s ease;
+    }
+
+    /* 다음 페이지 이동 시 빨려들어가는 효과 */
+    #game-container.suck-in {
+      transform: scale(0) rotate(720deg);
+      opacity: 0;
+    }
+
+    /* 스테이지 상단 표시바 */
+    .top-bar {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      right: 20px;
+      height: 48px;
+      background: rgba(0, 119, 190, 0.2);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(64, 224, 208, 0.5);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 10;
+    }
+
+    .top-title {
+      font-family: 'NanumSquareRound', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      color: #1a365d;
+      text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+    }
+
+    .stage-name {
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-weight: 700;
+      font-size: 14px;
+      color: #0077be;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 4px 12px;
+      border-radius: 12px;
+      border: 1px solid #40e0d0;
+    }
+
+    /* 무대 배경 및 에셋 레이어 */
+    .stage-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    /* 인물 레이어 */
+    .character-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* 상황 설명 박스 (유형 1) */
+    .situation-box {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70%;
+      max-width: 680px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid #81d4fa;
+      border-radius: 16px;
+      padding: 24px 28px;
+      box-shadow: 0 8px 24px rgba(0, 119, 190, 0.15);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 10;
+      text-align: center;
+    }
+
+    .situation-title {
+      font-family: 'NanumSquareRound', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #0077be;
+      margin-bottom: 12px;
+      display: inline-block;
+      border-bottom: 2px solid #40e0d0;
+      padding-bottom: 4px;
+    }
+
+    .situation-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #1a365d;
+      word-break: keep-all;
+    }
+
+    /* 공통 이동 버튼 규칙 */
+    .btn-nav {
+      position: absolute;
+      bottom: 20px;
+      padding: 12px 28px;
+      background-color: #0077be;
+      color: #ffffff;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      border: 1px solid #40e0d0;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: all 0.2s ease;
+      z-index: 10;
+      outline: none;
+    }
+
+    .btn-nav:hover {
+      background-color: #40e0d0;
+      color: #1a365d;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(64, 224, 208, 0.4);
+    }
+
+    #btn-prev {
+      left: 20px;
+    }
+
+    #btn-next {
+      right: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 상단 스테이지 표시바 -->
+    <div class="top-bar">
+      <div class="top-title">아라뱃길·청라호수공원 MATHTOUR</div>
+      <div class="stage-name">F01. 청라루 탐방</div>
+    </div>
+
+    <!-- 에셋 레이어 (건물 및 조형물) -->
+    <div class="stage-layer">
+      <!-- 에셋: 청라루 (원본 주석 힌트 기반 600x600, scale 0.55 -> 330x330, 중앙 바닥 배치) -->
+      <div style="position: absolute; left: 368px; bottom: 30px; width: 330px; height: 330px; overflow: hidden; z-index: 1;">
+        <iframe src="청라루.html" scrolling="no" style="border: 0; width: 600px; height: 600px; transform: scale(0.55); transform-origin: top left; pointer-events: none;"></iframe>
+      </div>
+    </div>
+
+    <!-- 인물 레이어 (260x320 고정 규격) -->
+    <div class="character-layer">
+      <!-- 등장인물: 민우 (좌측 배치) -->
+      <div class="char-wrapper" id="char-민우" style="position: absolute; left: 60px; bottom: 30px; width: 260px; height: 320px; overflow: visible; z-index: 3;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border: 0; width: 260px; height: 320px; transform: scale(1); transform-origin: bottom left; pointer-events: none;"></iframe>
+      </div>
+
+      <!-- 등장인물: 서연 (우측 배치, 좌우 반전하여 민우를 바라보게 설정) -->
+      <div class="char-wrapper" id="char-서연" style="position: absolute; right: 60px; bottom: 30px; width: 260px; height: 320px; overflow: visible; z-index: 3;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border: 0; width: 260px; height: 320px; transform: scale(1) scaleX(-1); transform-origin: bottom left; pointer-events: none;"></iframe>
+      </div>
+    </div>
+
+    <!-- 상황 연출 글상자 (유형 1) -->
+    <div class="situation-box">
+      <div class="situation-title">청라루의 멋진 풍경</div>
+      <div class="situation-text">
+        민우와 서연이는 청라호수공원의 상징인 청라루에 도착했습니다.<br>
+        전통적인 기와와 아름다운 누각의 모습을 둘러보며, 이곳에 숨겨진 수학적 원리와 건축의 비밀을 탐구하기 시작합니다.
+      </div>
+    </div>
+
+    <!-- 공통 네비게이션 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="goPage('index.html')">이전</button>
+    <button class="btn-nav" id="btn-next" onclick="suckAndGo('F02.html')">다음</button>
+  </div>
+
+  <script>
+    // 페이지 이동 함수
+    function goPage(url) {
+      if (url) {
+        window.location.href = url;
+      }
+    }
+
+    // 다음 페이지 이동 시 빨려들어가는 연출 후 이동
+    function suckAndGo(url) {
+      const container = document.getElementById('game-container');
+      container.classList.add('suck-in');
+      
+      setTimeout(() => {
+        goPage(url);
+      }, 750); // 트랜지션 시간(0.8s)과 보맞춤
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천차이나타운 MATHTOUR - 공화춘의 비밀</title>
+    <style>
+        /* 폰트 임포트 */
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        /* 공통 변수 및 팔레트 (근대 개항기) */
+        :root {
+            --main-dark-red: #8c3030;
+            --main-dark-red-hover: #661f1f;
+            --sub-antique-gold: #d4af37;
+            --bg-beige: #f5f0e6;
+            --text-dark: #2d3748;
+            --text-light: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #111; /* 게임 밖 여백 배경 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 16:9 게임 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: var(--bg-beige);
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            transition: opacity 1s ease; /* 화면 전환(페이드 아웃)을 위한 트랜지션 */
+        }
+
+        /* 화면 전환(페이드 아웃) 클래스 */
+        #game-container.fade-out {
+            opacity: 0;
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 스테이지 상단 표시바 */
+        .top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-bottom: 2px solid var(--sub-antique-gold);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            font-family: 'Nanum Myeongjo', serif;
+            font-weight: 700;
+            color: var(--sub-antique-gold);
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* 오프닝 상황 설명 박스 배경 오버레이 (초기 중앙 배치) */
+        #situation-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 30;
+        }
+
+        /* 상황 설명 박스 (양피지 스타일) */
+        .situation-box-center {
+            background: linear-gradient(135deg, #f5f0e6 0%, #e3d5ba 100%);
+            border: 2px solid var(--sub-antique-gold);
+            border-radius: 4px;
+            padding: 32px;
+            max-width: 55%;
+            box-shadow: 4px 6px 20px rgba(0,0,0,0.7);
+            font-family: 'Noto Sans KR', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.7;
+            letter-spacing: -0.02em;
+            font-size: 1.1rem;
+            text-align: center;
+            word-break: keep-all;
+        }
+
+        .situation-box-center button {
+            margin-top: 24px;
+            padding: 8px 30px;
+        }
+
+        /* 등장인물 래퍼 */
+        .char-wrapper {
+            position: absolute;
+            z-index: 3;
+            width: 260px;
+            height: 320px;
+            overflow: visible;
+            display: none; /* 상황 설명 박스 확인 전까지 숨김 */
+            transition: filter 0.3s ease;
+        }
+        
+        .char-wrapper iframe {
+            border: 0;
+            width: 260px;
+            height: 320px;
+            transform-origin: bottom left;
+            pointer-events: none;
+        }
+
+        /* 말하지 않는 캐릭터 어둡게 처리 */
+        .inactive {
+            filter: brightness(0.55);
+        }
+
+        /* 대화창 UI (유형 2) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%; /* 긴 대사를 위해 가로 너비를 70%에서 80%로 확장 */
+            min-height: 150px; /* 고정 높이(height) 대신 글자량에 따라 늘어날 수 있도록 min-height 적용 */
+            height: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--sub-antique-gold);
+            border-radius: 4px;
+            padding: 20px 24px;
+            box-sizing: border-box;
+            color: var(--text-light);
+            z-index: 10;
+            cursor: pointer;
+            display: none; /* 대화 시작 시 보임 */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        }
+
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            color: var(--sub-antique-gold);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            word-break: keep-all; /* 단어 단위로 줄바꿈 되도록 설정하여 텍스트 넘침 방지 */
+        }
+
+        /* 공통 네비게이션 버튼 */
+        .btn-nav {
+            position: absolute;
+            z-index: 20;
+            background-color: var(--main-dark-red);
+            color: var(--text-light);
+            border: 1px solid var(--sub-antique-gold);
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .btn-nav:hover {
+            background-color: var(--main-dark-red-hover);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+            display: none;
+        }
+
+        #btn-next {
+            right: 20px;
+            bottom: 20px;
+            display: none;
+        }
+
+        #btn-skip {
+            right: 20px;
+            bottom: 20px;
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 배경 이미지 -->
+        <img src="인천차이나타운_짜장면박물관내부.PNG" class="bg-img" alt="짜장면 박물관 내부">
+
+        <!-- 상단바 -->
+        <div class="top-bar">제 1장 - 공화춘의 비밀</div>
+
+        <!-- 1) 초기 상황 설명 오버레이 (대화 시작 전) -->
+        <div id="situation-overlay">
+            <div class="situation-box-center">
+                박물관 현판 아래, 초록색 치파오 스타일의 옷을 입은 박물관의 도슨트 겸 비밀 파수꾼 <strong>“미스터 첸”</strong>이 민우와 서연에게 다가온다.
+                <br>
+                <button class="btn-nav" style="position:relative; inset:auto;" onclick="startDialogue()">대화 시작하기</button>
+            </div>
+        </div>
+
+        <!-- 2) 등장인물 래퍼 
+             대화창 높이가 길어질 것에 대비하여 bottom 여백을 190px로 넉넉하게 변경 -->
+        
+        <!-- 민우 (왼쪽) -->
+        <div class="char-wrapper" id="char-민우" style="left: 6%; bottom: 190px;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="transform: scale(0.9); transform-origin: bottom center;"></iframe>
+        </div>
+
+        <!-- 미스터첸 (중앙) -->
+        <div class="char-wrapper" id="char-미스터첸" style="left: 50%; margin-left: -117px; bottom: 190px;">
+            <iframe src="등장인물_미스터첸.html" scrolling="no" style="transform: scale(0.9); transform-origin: bottom center;"></iframe>
+        </div>
+
+        <!-- 서연 (오른쪽, 좌우 반전으로 중앙을 바라보게) -->
+        <div class="char-wrapper" id="char-서연" style="right: 6%; bottom: 190px;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="transform: scale(0.9) scaleX(-1); transform-origin: bottom center;"></iframe>
+        </div>
+
+        <!-- 3) 대화창 UI -->
+        <div id="dialogue-box" onclick="advanceDialogue()">
+            <div id="speaker-name">화자 이름</div>
+            <div id="dialogue-text">대사 내용</div>
+        </div>
+
+        <!-- 4) 이동 버튼 -->
+        <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
+        <button class="btn-nav" id="btn-prev" onclick="location.href='B01.html'">이전</button>
+        <button class="btn-nav" id="btn-next" onclick="goToNextScene()">다음</button>
+    </div>
+
+    <script>
+        // 스토리 및 대사 스크립트 데이터
+        const dialogues = [
+            { 
+                speaker: '미스터 첸', 
+                text: '어서 오게, 공화춘의 비밀을 찾아온 꼬마 탐정들! 나는 이곳의 유물을 지키는 미스터 첸이라고 하네.', 
+                target: 'char-미스터첸' 
+            },
+            { 
+                speaker: '서연', 
+                text: '안녕하세요! 저희가 1985년의 찢어진 영수증을 복원하라는 미션을 받고 왔어요.', 
+                target: 'char-서연' 
+            },
+            { 
+                speaker: '미스터 첸', 
+                text: '허허, 쉽지 않을 텐데? 1985년 당시 공화춘은 늘 손님으로 붐벼서 영수증이 자주 찢어지곤 했지. 당시 짜장면과 탕수육의 가격이 얼마였는지 기록이 사라져버렸네. 하지만 자네들이 ‘연립방정식’의 눈으로 본다면 찢어진 영수증 속에 숨겨진 숫자가 보일 걸세. 준비가 되었나?', 
+                target: 'char-미스터첸' 
+            },
+            { 
+                speaker: '민우', 
+                text: '네! 저희가 꼭 완벽하게 복원해 볼게요!', 
+                target: 'char-민우' 
+            }
+        ];
+
+        let currentIndex = 0;
+
+        // 상황 설명 창을 닫고 대화 씬을 시작하는 함수
+        function startDialogue() {
+            document.getElementById('situation-overlay').style.display = 'none';
+            
+            // 모든 등장인물 보이게 하기
+            document.querySelectorAll('.char-wrapper').forEach(el => {
+                el.style.display = 'block';
+            });
+            
+            // 대화창 및 스킵 버튼 보이기
+            document.getElementById('dialogue-box').style.display = 'block';
+            document.getElementById('btn-skip').style.display = 'block';
+            
+            updateDialogue();
+        }
+
+        // 클릭 시 다음 대사로 넘어가기
+        function advanceDialogue() {
+            currentIndex++;
+            if (currentIndex >= dialogues.length) {
+                endDialogue(); // 대사가 끝나면 종료 함수 호출
+            } else {
+                updateDialogue();
+            }
+        }
+
+        // 대화 UI 및 캐릭터 밝기(Focus) 업데이트
+        function updateDialogue() {
+            const current = dialogues[currentIndex];
+            document.getElementById('speaker-name').innerText = current.speaker;
+            document.getElementById('dialogue-text').innerText = current.text;
+
+            // 말하는 캐릭터만 밝게(inactive 제거), 나머지는 어둡게(inactive 추가)
+            document.querySelectorAll('.char-wrapper').forEach(el => {
+                if (el.id === current.target) {
+                    el.classList.remove('inactive');
+                } else {
+                    el.classList.add('inactive');
+                }
+            });
+        }
+
+        // 건너뛰기 버튼 동작
+        function skipDialogue() {
+            endDialogue();
+        }
+
+        // 대화가 끝났을 때의 상태 처리
+        function endDialogue() {
+            document.getElementById('dialogue-box').style.display = 'none';
+            document.getElementById('btn-skip').style.display = 'none';
+            
+            // 모든 캐릭터 밝기 복구
+            document.querySelectorAll('.char-wrapper').forEach(el => {
+                el.classList.remove('inactive');
+            });
+
+            // 이전/다음 이동 버튼 표시
+            document.getElementById('btn-prev').style.display = 'block';
+            document.getElementById('btn-next').style.display = 'block';
+        }
+
+        // 화면 전환(페이드 아웃) 후 다음 페이지 이동
+        function goToNextScene() {
+            const container = document.getElementById('game-container');
+            container.classList.add('fade-out'); // 페이드 아웃 클래스 추가
+            
+            // CSS transition 시간에 맞추어(1초 후) 페이지 이동
+            setTimeout(() => {
+                window.location.href = 'B03.html';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

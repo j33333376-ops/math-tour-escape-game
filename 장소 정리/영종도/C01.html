@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+  <title>영종도 MATHTOUR - 을왕리해수욕장 입구</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    :root {
+      --neon-blue: #00f0ff;
+      --alert-red: #ff003c;
+      --cyan-text: #e0ffff;
+      --space-black: #0b0c10;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 30%, #172b3a 0%, #0b0c10 55%, #030406 100%);
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #ffffff;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    #game-container {
+      position: relative;
+      width: min(100vw, 1066px);
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      isolation: isolate;
+      background: var(--space-black);
+      box-shadow:
+        0 0 30px rgba(0, 240, 255, 0.28),
+        inset 0 0 50px rgba(0, 0, 0, 0.65);
+    }
+
+    /* 전체 배경 */
+    #background-image {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      user-select: none;
+      filter: brightness(0.82) saturate(0.95) contrast(1.04);
+    }
+
+    /* SF 색감 및 가독성 보정 */
+    #scene-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(0, 10, 20, 0.38) 0%,
+          rgba(0, 20, 30, 0.06) 35%,
+          rgba(0, 4, 10, 0.2) 68%,
+          rgba(0, 0, 0, 0.65) 100%
+        ),
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0,
+          transparent 3px,
+          rgba(0, 240, 255, 0.025) 4px
+        );
+    }
+
+    #edge-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      box-shadow:
+        inset 0 0 70px rgba(0, 0, 0, 0.72),
+        inset 0 0 4px var(--neon-blue);
+    }
+
+    /* 상단 스테이지 표시바 */
+    #stage-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      min-height: 54px;
+      padding: 7px 22px;
+      overflow: hidden;
+      background: rgba(3, 8, 14, 0.88);
+      border-bottom: 2px solid var(--neon-blue);
+      box-shadow: 0 0 14px rgba(0, 240, 255, 0.65);
+    }
+
+    #stage-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -35%;
+      width: 28%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 240, 255, 0.16),
+        transparent
+      );
+      animation: headerScan 5s linear infinite;
+    }
+
+    .stage-title {
+      position: relative;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(16px, 2.15vw, 25px);
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: var(--cyan-text);
+      text-shadow: 0 0 8px var(--neon-blue);
+    }
+
+    .stage-code {
+      position: relative;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(10px, 1.25vw, 14px);
+      color: var(--neon-blue);
+      letter-spacing: 0.08em;
+    }
+
+    /* 화면 모서리 SF 장식 */
+    .hud-corner {
+      position: absolute;
+      z-index: 12;
+      width: 42px;
+      height: 42px;
+      pointer-events: none;
+      opacity: 0.85;
+    }
+
+    .hud-corner.top-left {
+      top: 68px;
+      left: 14px;
+      border-top: 2px solid var(--neon-blue);
+      border-left: 2px solid var(--neon-blue);
+    }
+
+    .hud-corner.top-right {
+      top: 68px;
+      right: 14px;
+      border-top: 2px solid var(--neon-blue);
+      border-right: 2px solid var(--neon-blue);
+    }
+
+    .hud-corner.bottom-left {
+      bottom: 14px;
+      left: 14px;
+      border-bottom: 2px solid var(--neon-blue);
+      border-left: 2px solid var(--neon-blue);
+    }
+
+    .hud-corner.bottom-right {
+      right: 14px;
+      bottom: 14px;
+      border-right: 2px solid var(--neon-blue);
+      border-bottom: 2px solid var(--neon-blue);
+    }
+
+    /* 도착 좌표 홀로그램 */
+    #location-marker {
+      position: absolute;
+      top: 74px;
+      left: 50%;
+      z-index: 11;
+      min-width: 250px;
+      padding: 8px 18px;
+      border: 1px solid rgba(0, 240, 255, 0.75);
+      background: rgba(0, 15, 25, 0.72);
+      box-shadow:
+        0 0 12px rgba(0, 240, 255, 0.35),
+        inset 0 0 12px rgba(0, 240, 255, 0.08);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(10px, 1.25vw, 14px);
+      color: var(--neon-blue);
+      text-align: center;
+      letter-spacing: 0.08em;
+      opacity: 0;
+      transform: translateX(-50%) translateY(-15px);
+      animation: markerAppear 0.7s ease 1.3s forwards;
+    }
+
+    #location-marker::before,
+    #location-marker::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 42px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon-blue));
+    }
+
+    #location-marker::before {
+      right: 100%;
+    }
+
+    #location-marker::after {
+      left: 100%;
+      transform: rotate(180deg);
+    }
+
+    /* 인물 공통 */
+    .char-wrapper {
+      position: absolute;
+      z-index: 5;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      opacity: 0;
+      will-change: transform, opacity, filter;
+      filter:
+        drop-shadow(0 14px 9px rgba(0, 0, 0, 0.45))
+        drop-shadow(0 0 8px rgba(0, 240, 255, 0.18));
+    }
+
+    .char-wrapper iframe {
+      display: block;
+      width: 260px;
+      height: 320px;
+      border: 0;
+      pointer-events: none;
+    }
+
+    #char-민우 {
+      left: 145px;
+      bottom: 34px;
+      animation: arriveMinwoo 1.15s cubic-bezier(0.2, 0.8, 0.2, 1) 0.25s forwards;
+    }
+
+    #char-민우 iframe {
+      transform: scale(0.88);
+      transform-origin: bottom left;
+    }
+
+    #char-서연 {
+      right: 135px;
+      bottom: 34px;
+      animation: arriveSeoyeon 1.15s cubic-bezier(0.2, 0.8, 0.2, 1) 0.5s forwards;
+    }
+
+    #char-서연 iframe {
+      transform: scale(0.88) scaleX(-1);
+      transform-origin: bottom left;
+    }
+
+    /* 가운데로 모인 뒤 사라지는 퇴장 연출 */
+    #char-민우.exit-scene {
+      animation: exitMinwoo 1.65s ease-in-out forwards;
+    }
+
+    #char-서연.exit-scene {
+      animation: exitSeoyeon 1.65s ease-in-out forwards;
+    }
+
+    /* 캐릭터 도착 시 바닥 스캔 링 */
+    .arrival-ring {
+      position: absolute;
+      z-index: 4;
+      width: 190px;
+      height: 40px;
+      border: 2px solid var(--neon-blue);
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+      box-shadow:
+        0 0 12px var(--neon-blue),
+        inset 0 0 12px rgba(0, 240, 255, 0.45);
+    }
+
+    #ring-minwoo {
+      left: 162px;
+      bottom: 40px;
+      animation: arrivalRing 1.25s ease-out 0.2s forwards;
+    }
+
+    #ring-seoyeon {
+      right: 160px;
+      bottom: 40px;
+      animation: arrivalRing 1.25s ease-out 0.45s forwards;
+    }
+
+    /* 불법 비행 드론 경고 표시 */
+    #drone-alert {
+      position: absolute;
+      top: 116px;
+      right: 48px;
+      z-index: 15;
+      width: 225px;
+      padding: 10px 13px;
+      border: 2px solid var(--alert-red);
+      background: rgba(25, 0, 8, 0.88);
+      box-shadow:
+        0 0 14px rgba(255, 0, 60, 0.72),
+        inset 0 0 14px rgba(255, 0, 60, 0.12);
+      opacity: 0;
+      transform: translateX(25px);
+      pointer-events: none;
+    }
+
+    #drone-alert.visible {
+      animation:
+        alertAppear 0.35s ease forwards,
+        alertPulse 0.85s ease-in-out 0.35s infinite alternate;
+    }
+
+    .alert-heading {
+      margin-bottom: 4px;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(14px, 1.65vw, 19px);
+      color: var(--alert-red);
+      letter-spacing: 0.06em;
+    }
+
+    .alert-detail {
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(9px, 1.08vw, 12px);
+      line-height: 1.5;
+      color: #ffdce4;
+    }
+
+    /* 드론의 위치를 나타내는 홀로그램 표식 */
+    #drone-target {
+      position: absolute;
+      top: 205px;
+      right: 225px;
+      z-index: 8;
+      width: 66px;
+      height: 66px;
+      border: 2px solid var(--alert-red);
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #drone-target::before,
+    #drone-target::after {
+      content: '';
+      position: absolute;
+      background: var(--alert-red);
+      box-shadow: 0 0 7px var(--alert-red);
+    }
+
+    #drone-target::before {
+      top: 31px;
+      left: -12px;
+      width: 88px;
+      height: 2px;
+    }
+
+    #drone-target::after {
+      top: -12px;
+      left: 31px;
+      width: 2px;
+      height: 88px;
+    }
+
+    #drone-target.visible {
+      animation:
+        targetAppear 0.35s ease forwards,
+        targetRotate 4s linear 0.35s infinite;
+    }
+
+    /* 유형 1 상황 설명 박스 */
+    #situation-box {
+      position: absolute;
+      left: 50%;
+      bottom: 92px;
+      z-index: 20;
+      width: min(76%, 800px);
+      min-height: 112px;
+      padding: 17px 24px 18px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 240, 255, 0.75);
+      border-left: 5px solid var(--neon-blue);
+      background: rgba(0, 35, 48, 0.42);
+      backdrop-filter: blur(10px);
+      box-shadow:
+        0 0 18px rgba(0, 240, 255, 0.3),
+        inset 0 0 22px rgba(0, 240, 255, 0.08);
+      opacity: 0;
+      transform: translateX(-50%) translateY(18px);
+      animation: situationAppear 0.65s ease 1.6s forwards;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #situation-box::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -40%;
+      width: 35%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 240, 255, 0.12),
+        transparent
+      );
+      animation: boxScan 4.2s linear infinite;
+      pointer-events: none;
+    }
+
+    #speaker-label {
+      min-height: 25px;
+      margin-bottom: 5px;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(15px, 1.9vw, 21px);
+      color: var(--neon-blue);
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 7px rgba(0, 240, 255, 0.8);
+    }
+
+    #situation-text {
+      min-height: 49px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: clamp(12px, 1.52vw, 17px);
+      font-weight: 400;
+      line-height: 1.6;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+      text-shadow: 0 2px 3px #000000;
+    }
+
+    #progress-indicator {
+      position: absolute;
+      right: 18px;
+      bottom: 8px;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(9px, 1vw, 11px);
+      color: rgba(224, 255, 255, 0.72);
+    }
+
+    #click-guide {
+      position: absolute;
+      right: 18px;
+      top: 12px;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(8px, 0.95vw, 10px);
+      color: rgba(0, 240, 255, 0.78);
+      animation: guideBlink 1.2s ease-in-out infinite alternate;
+    }
+
+    /* 공통 이동 버튼 */
+    .btn-nav {
+      position: absolute;
+      z-index: 30;
+      min-width: 116px;
+      padding: 10px 20px;
+      border: 2px solid var(--neon-blue);
+      background: rgba(0, 0, 0, 0.72);
+      box-shadow: 0 0 10px var(--neon-blue);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(12px, 1.4vw, 16px);
+      font-weight: 700;
+      color: var(--neon-blue);
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .btn-nav:hover,
+    .btn-nav:focus-visible {
+      color: #000000;
+      background: var(--neon-blue);
+      box-shadow:
+        0 0 10px var(--neon-blue),
+        0 0 22px rgba(0, 240, 255, 0.8);
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .btn-nav:active {
+      transform: translateY(0);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+      display: none;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+    }
+
+    #btn-next.locked {
+      border-color: rgba(0, 240, 255, 0.45);
+      color: rgba(0, 240, 255, 0.55);
+      box-shadow: 0 0 7px rgba(0, 240, 255, 0.32);
+    }
+
+    #btn-next.locked:hover,
+    #btn-next.locked:focus-visible {
+      color: #062a30;
+    }
+
+    /* 전환용 검은 화면 */
+    #transition-screen {
+      position: absolute;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      background: #000000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.65s ease;
+    }
+
+    #transition-screen.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    #transition-message {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(19px, 3vw, 34px);
+      color: var(--neon-blue);
+      letter-spacing: 0.12em;
+      text-align: center;
+      text-shadow: 0 0 13px var(--neon-blue);
+    }
+
+    /* 애니메이션 */
+    @keyframes headerScan {
+      from {
+        left: -35%;
+      }
+      to {
+        left: 110%;
+      }
+    }
+
+    @keyframes markerAppear {
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    @keyframes arriveMinwoo {
+      0% {
+        opacity: 0;
+        transform: translateX(-105px) translateY(-20px);
+        filter:
+          brightness(2)
+          drop-shadow(0 0 24px var(--neon-blue));
+      }
+      55% {
+        opacity: 1;
+        filter:
+          brightness(1.25)
+          drop-shadow(0 0 16px rgba(0, 240, 255, 0.75));
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) translateY(0);
+        filter:
+          drop-shadow(0 14px 9px rgba(0, 0, 0, 0.45))
+          drop-shadow(0 0 8px rgba(0, 240, 255, 0.18));
+      }
+    }
+
+    @keyframes arriveSeoyeon {
+      0% {
+        opacity: 0;
+        transform: translateX(105px) translateY(-20px);
+        filter:
+          brightness(2)
+          drop-shadow(0 0 24px var(--neon-blue));
+      }
+      55% {
+        opacity: 1;
+        filter:
+          brightness(1.25)
+          drop-shadow(0 0 16px rgba(0, 240, 255, 0.75));
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) translateY(0);
+        filter:
+          drop-shadow(0 14px 9px rgba(0, 0, 0, 0.45))
+          drop-shadow(0 0 8px rgba(0, 240, 255, 0.18));
+      }
+    }
+
+    @keyframes arrivalRing {
+      0% {
+        opacity: 0;
+        transform: scale(0.25);
+      }
+      35% {
+        opacity: 0.95;
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.45);
+      }
+    }
+
+    @keyframes situationAppear {
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    @keyframes boxScan {
+      from {
+        left: -40%;
+      }
+      to {
+        left: 115%;
+      }
+    }
+
+    @keyframes guideBlink {
+      from {
+        opacity: 0.4;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes alertAppear {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes alertPulse {
+      from {
+        box-shadow:
+          0 0 10px rgba(255, 0, 60, 0.45),
+          inset 0 0 10px rgba(255, 0, 60, 0.08);
+      }
+      to {
+        box-shadow:
+          0 0 24px rgba(255, 0, 60, 0.92),
+          inset 0 0 18px rgba(255, 0, 60, 0.18);
+      }
+    }
+
+    @keyframes targetAppear {
+      from {
+        opacity: 0;
+        transform: scale(1.8);
+      }
+      to {
+        opacity: 0.9;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes targetRotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes exitMinwoo {
+      0% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+      55% {
+        opacity: 1;
+        transform: translateX(240px) scale(0.98);
+      }
+      72% {
+        opacity: 1;
+        transform: translateX(240px) scale(0.98);
+        filter:
+          brightness(1.8)
+          drop-shadow(0 0 20px var(--neon-blue));
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(240px) scale(0.22);
+        filter:
+          brightness(3)
+          blur(2px)
+          drop-shadow(0 0 28px var(--neon-blue));
+      }
+    }
+
+    @keyframes exitSeoyeon {
+      0% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+      55% {
+        opacity: 1;
+        transform: translateX(-230px) scale(0.98);
+      }
+      72% {
+        opacity: 1;
+        transform: translateX(-230px) scale(0.98);
+        filter:
+          brightness(1.8)
+          drop-shadow(0 0 20px var(--neon-blue));
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-230px) scale(0.22);
+        filter:
+          brightness(3)
+          blur(2px)
+          drop-shadow(0 0 28px var(--neon-blue));
+      }
+    }
+
+    /* 작은 화면에서도 16:9 무대 안에서 배치 유지 */
+    @media (max-width: 720px) {
+      #stage-header {
+        min-height: 42px;
+        padding: 5px 14px;
+      }
+
+      #location-marker {
+        top: 52px;
+        min-width: 190px;
+        padding: 5px 10px;
+      }
+
+      #char-민우 {
+        left: 9%;
+        bottom: 10px;
+        transform-origin: bottom left;
+      }
+
+      #char-민우 iframe {
+        transform: scale(0.62);
+      }
+
+      #char-서연 {
+        right: 5%;
+        bottom: 10px;
+        transform-origin: bottom left;
+      }
+
+      #char-서연 iframe {
+        transform: scale(0.62) scaleX(-1);
+      }
+
+      .char-wrapper {
+        width: 162px;
+        height: 200px;
+      }
+
+      #ring-minwoo {
+        left: 11%;
+        bottom: 20px;
+      }
+
+      #ring-seoyeon {
+        right: 8%;
+        bottom: 20px;
+      }
+
+      .arrival-ring {
+        width: 125px;
+        height: 26px;
+      }
+
+      #situation-box {
+        bottom: 60px;
+        width: 78%;
+        min-height: 85px;
+        padding: 10px 14px 13px;
+      }
+
+      #click-guide {
+        top: 6px;
+        right: 10px;
+      }
+
+      #progress-indicator {
+        right: 10px;
+        bottom: 4px;
+      }
+
+      .btn-nav {
+        min-width: 82px;
+        padding: 6px 10px;
+      }
+
+      #btn-next {
+        right: 12px;
+        bottom: 12px;
+      }
+
+      #drone-alert {
+        top: 76px;
+        right: 25px;
+        width: 170px;
+        padding: 7px 9px;
+      }
+
+      #drone-target {
+        top: 145px;
+        right: 150px;
+        width: 45px;
+        height: 45px;
+      }
+
+      #drone-target::before {
+        top: 20px;
+        left: -8px;
+        width: 58px;
+      }
+
+      #drone-target::after {
+        top: -8px;
+        left: 20px;
+        height: 58px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main id="game-container" aria-label="영종도 MATHTOUR 을왕리해수욕장 입구 장면">
+    <!-- 지정된 배경 이미지 -->
+    <img
+      id="background-image"
+      src="을왕리해수욕장입구.png"
+      alt="을왕리해수욕장 입구"
+      draggable="false"
+    />
+
+    <div id="scene-overlay"></div>
+    <div id="edge-vignette"></div>
+
+    <!-- 상단 스테이지 표시바 -->
+    <header id="stage-header">
+      <div class="stage-title">을왕리해수욕장 입구</div>
+      <div class="stage-code">C01 · COASTAL DEFENSE SECTOR</div>
+    </header>
+
+    <div class="hud-corner top-left"></div>
+    <div class="hud-corner top-right"></div>
+    <div class="hud-corner bottom-left"></div>
+    <div class="hud-corner bottom-right"></div>
+
+    <div id="location-marker">
+      ARRIVAL POINT VERIFIED · EURWANG-RI
+    </div>
+
+    <!-- 도착 효과 -->
+    <div class="arrival-ring" id="ring-minwoo"></div>
+    <div class="arrival-ring" id="ring-seoyeon"></div>
+
+    <!--
+      등장인물은 같은 폴더의 독립 HTML 파일을 iframe으로 로드한다.
+      민우: 260×320 고정, 표시 배율 0.88
+    -->
+    <div
+      class="char-wrapper"
+      id="char-민우"
+      style="
+        position: absolute;
+        left: 145px;
+        bottom: 34px;
+        width: 260px;
+        height: 320px;
+        overflow: visible;
+      "
+    >
+      <iframe
+        src="등장인물_민우.html"
+        title="민우"
+        scrolling="no"
+        style="
+          border: 0;
+          width: 260px;
+          height: 320px;
+          transform: scale(0.88);
+          transform-origin: bottom left;
+          pointer-events: none;
+        "
+      ></iframe>
+    </div>
+
+    <!--
+      서연: 260×320 고정, 표시 배율 0.88, 민우를 바라보도록 좌우 반전
+    -->
+    <div
+      class="char-wrapper"
+      id="char-서연"
+      style="
+        position: absolute;
+        right: 135px;
+        bottom: 34px;
+        width: 260px;
+        height: 320px;
+        overflow: visible;
+      "
+    >
+      <iframe
+        src="등장인물_서연.html"
+        title="서연"
+        scrolling="no"
+        style="
+          border: 0;
+          width: 260px;
+          height: 320px;
+          transform: scale(0.88) scaleX(-1);
+          transform-origin: bottom left;
+          pointer-events: none;
+        "
+      ></iframe>
+    </div>
+
+    <!-- 별도 드론 에셋이 지정되지 않았으므로 경고 HUD로만 탐지 상황 표현 -->
+    <div id="drone-target" aria-hidden="true"></div>
+
+    <aside id="drone-alert" aria-live="polite">
+      <div class="alert-heading">비행체 경고</div>
+      <div class="alert-detail">
+        UNAUTHORIZED DRONE DETECTED<br />
+        UNIT: 01 · FLIGHT STATUS: ILLEGAL
+      </div>
+    </aside>
+
+    <!-- 유형 1 상황 설명 박스 -->
+    <section
+      id="situation-box"
+      role="button"
+      tabindex="0"
+      aria-label="상황 설명 계속 보기"
+    >
+      <div id="click-guide">CLICK / SPACE ▶</div>
+      <div id="speaker-label">시스템</div>
+      <div id="situation-text"></div>
+      <div id="progress-indicator">01 / 07</div>
+    </section>
+
+    <!-- 이전 URL이 없으므로 이전 버튼 숨김 -->
+    <button
+      class="btn-nav"
+      id="btn-prev"
+      type="button"
+      aria-hidden="true"
+      tabindex="-1"
+    >
+      ◀ 이전
+    </button>
+
+    <!-- 유형 1 규칙에 따라 처음부터 표시 -->
+    <button
+      class="btn-nav locked"
+      id="btn-next"
+      type="button"
+      aria-label="대화 건너뛰기"
+    >
+      건너뛰기 ▶
+    </button>
+
+    <div id="transition-screen" aria-hidden="true">
+      <div id="transition-message">
+        을왕리해수욕장 내부로 이동 중...
+      </div>
+    </div>
+  </main>
+
+  <script>
+    'use strict';
+
+    const NEXT_SCENE_URL = 'C02.html';
+
+    const storySequence = [
+      {
+        speaker: '시스템',
+        text: '좌표 확인 완료. 민우와 서연은 을왕리해수욕장 입구에 도착했다.'
+      },
+      {
+        speaker: '민우',
+        text: '여기가 을왕리해수욕장이구나. 오래전부터 수도권 시민들이 즐겨 찾던 영종도의 대표적인 해변이래.'
+      },
+      {
+        speaker: '서연',
+        text: '맞아. 교통이 발달하면서 더 많은 사람이 방문하게 되었고, 지금은 영종도의 중요한 관광 명소가 되었지.'
+      },
+      {
+        speaker: '민우',
+        text: '해변 안으로 들어가서 이번 MATHTOUR 임무에 필요한 단서를 찾아보자.'
+      },
+      {
+        speaker: '효과음',
+        text: '위이이잉—! 갑자기 머리 위에서 날카롭고 시끄러운 비행음이 들려온다.'
+      },
+      {
+        speaker: '서연',
+        text: '민우야, 저쪽을 봐! 허가되지 않은 드론 한 기가 해변 위를 불법 비행하고 있어.'
+      },
+      {
+        speaker: '민우',
+        text: '사람들이 위험해질 수 있어. 드론의 이동 경로를 계산해서 막으려면 해수욕장 안으로 들어가야 해!'
+      }
+    ];
+
+    const situationBox = document.getElementById('situation-box');
+    const speakerLabel = document.getElementById('speaker-label');
+    const situationText = document.getElementById('situation-text');
+    const progressIndicator = document.getElementById('progress-indicator');
+    const clickGuide = document.getElementById('click-guide');
+    const nextButton = document.getElementById('btn-next');
+    const droneAlert = document.getElementById('drone-alert');
+    const droneTarget = document.getElementById('drone-target');
+    const minwoo = document.getElementById('char-민우');
+    const seoyeon = document.getElementById('char-서연');
+    const transitionScreen = document.getElementById('transition-screen');
+
+    let storyIndex = 0;
+    let typingTimer = null;
+    let isTyping = false;
+    let currentFullText = '';
+    let storyFinished = false;
+    let exitStarted = false;
+    let movingToNextScene = false;
+
+    /**
+     * 글자 단위 타이핑 효과
+     */
+    function typeText(text) {
+      clearInterval(typingTimer);
+
+      currentFullText = text;
+      situationText.textContent = '';
+      isTyping = true;
+
+      let characterIndex = 0;
+
+      typingTimer = window.setInterval(() => {
+        situationText.textContent += text.charAt(characterIndex);
+        characterIndex += 1;
+
+        if (characterIndex >= text.length) {
+          clearInterval(typingTimer);
+          typingTimer = null;
+          isTyping = false;
+        }
+      }, 31);
+    }
+
+    /**
+     * 현재 문장을 즉시 완성한다.
+     */
+    function completeTyping() {
+      if (!isTyping) return;
+
+      clearInterval(typingTimer);
+      typingTimer = null;
+      situationText.textContent = currentFullText;
+      isTyping = false;
+    }
+
+    /**
+     * 현재 순서의 상황 설명을 화면에 표시한다.
+     */
+    function renderStoryStep() {
+      const currentStory = storySequence[storyIndex];
+
+      speakerLabel.textContent = currentStory.speaker;
+      typeText(currentStory.text);
+
+      progressIndicator.textContent =
+        String(storyIndex + 1).padStart(2, '0') +
+        ' / ' +
+        String(storySequence.length).padStart(2, '0');
+
+      speakerLabel.style.color =
+        currentStory.speaker === '효과음' ? '#ff003c' : '#00f0ff';
+
+      if (storyIndex >= 4) {
+        droneAlert.classList.add('visible');
+        droneTarget.classList.add('visible');
+      }
+
+      if (storyIndex === storySequence.length - 1) {
+        clickGuide.textContent = 'CLICK TO PROCEED ▶';
+      } else {
+        clickGuide.textContent = 'CLICK / SPACE ▶';
+      }
+    }
+
+    /**
+     * 상황 설명을 다음 순서로 진행한다.
+     */
+    function advanceSituation() {
+      if (storyFinished || exitStarted) return;
+
+      if (isTyping) {
+        completeTyping();
+        return;
+      }
+
+      if (storyIndex < storySequence.length - 1) {
+        storyIndex += 1;
+        renderStoryStep();
+        return;
+      }
+
+      finishStory();
+    }
+
+    /**
+     * 마지막 설명 이후 두 인물이 가운데로 모였다가 사라진다.
+     */
+    function finishStory() {
+      if (exitStarted) return;
+
+      exitStarted = true;
+      storyFinished = true;
+
+      clearInterval(typingTimer);
+      typingTimer = null;
+      isTyping = false;
+
+      speakerLabel.textContent = '시스템';
+      speakerLabel.style.color = '#00f0ff';
+      situationText.textContent =
+        '두 사람은 드론을 추적하기 위해 을왕리해수욕장 안으로 이동한다.';
+      progressIndicator.textContent = 'MISSION ROUTE OPEN';
+      clickGuide.textContent = 'NEXT SCENE READY';
+
+      minwoo.classList.add('exit-scene');
+      seoyeon.classList.add('exit-scene');
+
+      nextButton.textContent = '다음 ▶';
+      nextButton.setAttribute('aria-label', '다음 장면으로 이동');
+      nextButton.classList.remove('locked');
+
+      window.setTimeout(() => {
+        droneAlert.style.transition = 'opacity 0.45s ease';
+        droneTarget.style.transition = 'opacity 0.45s ease';
+        droneAlert.style.opacity = '0';
+        droneTarget.style.opacity = '0';
+      }, 900);
+    }
+
+    /**
+     * 대화 진행 중에는 건너뛰고, 대화 종료 후에는 다음 장면으로 이동한다.
+     */
+    function goToNextScene() {
+      if (movingToNextScene) return;
+
+      if (!storyFinished) {
+        finishStory();
+        return;
+      }
+
+      movingToNextScene = true;
+      nextButton.disabled = true;
+      situationBox.style.pointerEvents = 'none';
+
+      transitionScreen.classList.add('active');
+      transitionScreen.setAttribute('aria-hidden', 'false');
+
+      window.setTimeout(() => {
+        window.location.href = NEXT_SCENE_URL;
+      }, 700);
+    }
+
+    situationBox.addEventListener('click', advanceSituation);
+
+    situationBox.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        advanceSituation();
+      }
+    });
+
+    nextButton.addEventListener('click', goToNextScene);
+
+    document.addEventListener('keydown', (event) => {
+      if (
+        event.key === ' ' ||
+        event.key === 'Enter' ||
+        event.key === 'ArrowRight'
+      ) {
+        if (
+          document.activeElement !== nextButton &&
+          document.activeElement !== situationBox
+        ) {
+          event.preventDefault();
+          advanceSituation();
+        }
+      }
+    });
+
+    window.addEventListener('load', () => {
+      window.setTimeout(renderStoryStep, 1650);
+    });
+  </script>
+</body>
+</html>

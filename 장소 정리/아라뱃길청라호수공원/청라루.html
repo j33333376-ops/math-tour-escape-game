@@ -1,0 +1,285 @@
+<!-- 원본 크기: 1200x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>청라루</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  svg { display:block; width:100%; height:auto; }
+</style>
+</head>
+<body>
+<svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">청라루 (靑羅樓)</title>
+  <desc id="desc">경복궁 경회루를 모티브로 한 인천 청라호수공원의 개방형 2층 전통 누각. 높은 석재 기단과 7개의 밝은 돌기둥, 화려한 단청과 붉은 목조 누각, 와이드한 검은 기와지붕이 특징입니다.</desc>
+
+  <defs>
+    <!-- 지붕 Gradients -->
+    <linearGradient id="roofGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3b4048"/>
+      <stop offset="35%" stop-color="#212529"/>
+      <stop offset="85%" stop-color="#121518"/>
+      <stop offset="100%" stop-color="#08090a"/>
+    </linearGradient>
+    <linearGradient id="roofEdge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a2e33"/>
+      <stop offset="100%" stop-color="#08090a"/>
+    </linearGradient>
+
+    <!-- 목재 Gradients (주칠, 단청 부재) -->
+    <linearGradient id="woodGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#b83d31"/>
+      <stop offset="50%" stop-color="#88221c"/>
+      <stop offset="100%" stop-color="#57110d"/>
+    </linearGradient>
+    <linearGradient id="woodLight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d65743"/>
+      <stop offset="100%" stop-color="#88221c"/>
+    </linearGradient>
+
+    <!-- 돌기둥 및 석재 Gradients -->
+    <linearGradient id="stoneGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8f7f2"/>
+      <stop offset="50%" stop-color="#d8d7cf"/>
+      <stop offset="100%" stop-color="#a3a6a1"/>
+    </linearGradient>
+    <linearGradient id="stoneTop" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#c5c8c2"/>
+    </linearGradient>
+    <linearGradient id="platformGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eceae2"/>
+      <stop offset="40%" stop-color="#cbccc6"/>
+      <stop offset="100%" stop-color="#939691"/>
+    </linearGradient>
+
+    <!-- 내부 그늘 효과 -->
+    <linearGradient id="darkInterior" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#140f0d" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#0a0706" stop-opacity="0.25"/>
+    </linearGradient>
+
+    <!-- 기와 패턴 -->
+    <pattern id="roofTiles" width="28" height="18" patternUnits="userSpaceOnUse">
+      <path d="M0 17 Q7 4 14 17 Q21 4 28 17" fill="none" stroke="#686f77" stroke-width="1.2" opacity="0.5"/>
+      <path d="M14 0 V17" stroke="#0a0c0e" stroke-width="1" opacity="0.8"/>
+    </pattern>
+
+    <!-- 상부 단청 패턴 -->
+    <pattern id="dancheong" width="56" height="26" patternUnits="userSpaceOnUse">
+      <rect width="56" height="26" fill="#1b6b62"/>
+      <path d="M0 13 H56" stroke="#0b3838" stroke-width="3"/>
+      <circle cx="14" cy="13" r="8" fill="#d4a329" stroke="#f4d36f" stroke-width="2"/>
+      <circle cx="14" cy="13" r="3.5" fill="#8f2528"/>
+      <path d="M28 3 L38 13 L28 23 L18 13 Z" fill="#246ba1" stroke="#d6bf61" stroke-width="1.8"/>
+      <path d="M42 3 L52 13 L42 23 L32 13 Z" fill="#aa3330" stroke="#f0cf69" stroke-width="1.8"/>
+    </pattern>
+
+    <!-- 소형 단청 패턴 -->
+    <pattern id="dancheongSmall" width="32" height="18" patternUnits="userSpaceOnUse">
+      <rect width="32" height="18" fill="#1d5c53"/>
+      <path d="M0 9 H32" stroke="#d4a83a" stroke-width="2"/>
+      <path d="M8 2 L15 9 L8 16 L1 9 Z" fill="#ad3430"/>
+      <path d="M24 2 L31 9 L24 16 L17 9 Z" fill="#2f78af"/>
+    </pattern>
+
+    <!-- 부드러운 그림자 필터 -->
+    <filter id="softShadow" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#000000" flood-opacity="0.32"/>
+    </filter>
+
+    <!-- 재사용 부품 1: 돌기둥 (하층) -->
+    <g id="stoneColumn">
+      <path d="M-23 0 L23 0 L19 142 L-19 142 Z" fill="url(#stoneGrad)" stroke="#818582" stroke-width="2"/>
+      <!-- 정면 반사광 & 음영 -->
+      <path d="M-18 6 L-2 3 L-4 136 L-14 138 Z" fill="#ffffff" opacity="0.28"/>
+      <path d="M9 8 L20 5 L17 137 L8 138 Z" fill="#585d5a" opacity="0.2"/>
+      <!-- 주춧돌 상단/하단 턱 -->
+      <rect x="-30" y="-8" width="60" height="14" rx="3" fill="url(#stoneTop)" stroke="#8d918c" stroke-width="2"/>
+      <path d="M-27 142 H27 L33 154 H-33 Z" fill="url(#stoneGrad)" stroke="#818582" stroke-width="2"/>
+      <!-- 석재 질감 선 -->
+      <path d="M-12 25 Q0 18 12 25 M-13 72 Q0 64 13 72 M-11 116 Q0 109 11 116" fill="none" stroke="#757a77" stroke-width="1.2" opacity="0.4"/>
+    </g>
+
+    <!-- 재사용 부품 2: 상층 목조 기둥 -->
+    <g id="upperColumn">
+      <rect x="-12" y="0" width="24" height="127" rx="6" fill="url(#woodGrad)" stroke="#430e10" stroke-width="2"/>
+      <path d="M-6 6 V120" stroke="#e6755a" stroke-width="2" opacity="0.35"/>
+      <rect x="-16" y="-6" width="32" height="12" rx="3" fill="#5d1614"/>
+      <rect x="-18" y="121" width="36" height="12" rx="3" fill="#5d1614"/>
+    </g>
+
+    <!-- 재사용 부품 3: 공포(공포 구조) -->
+    <g id="bracket">
+      <rect x="-25" y="0" width="50" height="11" rx="2" fill="#15544b" stroke="#0a2a26" stroke-width="1.5"/>
+      <rect x="-20" y="9" width="40" height="10" rx="2" fill="#b0392f" stroke="#5a1c19" stroke-width="1.5"/>
+      <path d="M-26 18 H26 L19 30 H-19 Z" fill="#d2a336" stroke="#6d5015" stroke-width="1.5"/>
+      <path d="M-13 18 V28 M0 18 V30 M13 18 V28" stroke="#226b9a" stroke-width="2.5"/>
+    </g>
+  </defs>
+
+  <!-- 메인 건물 그룹 (그림자 포함) -->
+  <g id="cheongraru" filter="url(#softShadow)">
+
+    <!-- 1. 상층 내부의 깊은 안쪽 그늘 (투과감 연출) -->
+    <path d="M118 244 H1082 L1048 335 H152 Z" fill="url(#darkInterior)"/>
+
+    <!-- 2. 넓은 검은 팔작지붕 (기와지붕 실루엣) -->
+    <path d="M18 210
+             Q92 198 154 172
+             Q240 118 362 86
+             Q480 55 600 47
+             Q720 55 838 86
+             Q960 118 1046 172
+             Q1108 198 1182 210
+             Q1132 224 1078 234
+             Q884 216 600 212
+             Q316 216 122 234
+             Q68 224 18 210 Z"
+          fill="url(#roofGrad)" stroke="#030405" stroke-width="5" stroke-linejoin="round"/>
+
+    <!-- 3. 지붕 기와 질감 패턴 Overlay -->
+    <path d="M38 207
+             Q112 193 172 167
+             Q258 119 374 91
+             Q487 64 600 57
+             Q713 64 826 91
+             Q942 119 1028 167
+             Q1088 193 1162 207
+             Q1128 214 1074 223
+             Q868 206 600 202
+             Q332 206 126 223
+             Q72 214 38 207 Z"
+          fill="url(#roofTiles)" opacity="0.95"/>
+
+    <!-- 4. 기와골 방사형 안내선 -->
+    <g fill="none" stroke="#687077" stroke-width="1.5" opacity="0.45">
+      <path d="M86 207 Q219 133 600 55"/>
+      <path d="M154 216 Q271 137 600 55"/>
+      <path d="M232 219 Q329 139 600 55"/>
+      <path d="M318 215 Q392 137 600 55"/>
+      <path d="M408 210 Q455 134 600 55"/>
+      <path d="M500 205 Q520 127 600 55"/>
+      <path d="M1114 207 Q981 133 600 55"/>
+      <path d="M1046 216 Q929 137 600 55"/>
+      <path d="M968 219 Q871 139 600 55"/>
+      <path d="M882 215 Q808 137 600 55"/>
+      <path d="M792 210 Q745 134 600 55"/>
+      <path d="M700 205 Q680 127 600 55"/>
+    </g>
+
+    <!-- 5. 용마루 (상단 중앙 묵직한 마루) -->
+    <path d="M344 83 Q472 40 600 34 Q728 40 856 83" fill="none" stroke="#080a0c" stroke-width="18" stroke-linecap="round"/>
+    <path d="M351 79 Q477 47 600 42 Q723 47 849 79" fill="none" stroke="#525860" stroke-width="3" opacity="0.7"/>
+
+    <!-- 용마루 끝 취두/장식 -->
+    <g fill="#12161a" stroke="#000000" stroke-width="2">
+      <path d="M335 82 l-18 -13 8 22 -20 8 27 3 8 22 7-29z"/>
+      <path d="M865 82 l18 -13 -8 22 20 8 -27 3 -8 22 -7-29z"/>
+      <path d="M584 38 q16 -25 32 0 l-6 10 h-20z"/>
+    </g>
+
+    <!-- 6. 처마 끝 살짝 치켜올려진 고풍스러운 곡선 디테일 -->
+    <path d="M18 210 Q48 207 82 190 Q58 214 31 225 Z" fill="#0d1114" stroke="#020203" stroke-width="2.5"/>
+    <path d="M1182 210 Q1152 207 1118 190 Q1142 214 1169 225 Z" fill="#0d1114" stroke="#020203" stroke-width="2.5"/>
+
+    <!-- 7. 처마 밑 서까래 및 짙은 그림자 라인 -->
+    <path d="M56 219 Q294 242 600 236 Q906 242 1144 219 L1116 249 Q885 270 600 265 Q315 270 84 249 Z" fill="url(#roofEdge)" stroke="#000000" stroke-width="3.5"/>
+
+    <!-- 8. 상부 주요 화려한 단청 띠 (화반 & 평방) -->
+    <path d="M88 246 Q327 268 600 263 Q873 268 1112 246 L1097 281 Q856 293 600 289 Q344 293 103 281 Z" fill="url(#dancheong)" stroke="#422913" stroke-width="3"/>
+
+    <!-- 단청 아래 붉은 대들보 -->
+    <path d="M112 278 Q350 291 600 287 Q850 291 1088 278 L1080 302 Q844 312 600 309 Q356 312 120 302 Z" fill="url(#woodLight)" stroke="#421011" stroke-width="3"/>
+
+    <!-- 9. 공포(Bracket) 9개 배치 -->
+    <g transform="translate(150 284)"><use href="#bracket"/></g>
+    <g transform="translate(260 289)"><use href="#bracket"/></g>
+    <g transform="translate(370 292)"><use href="#bracket"/></g>
+    <g transform="translate(485 294)"><use href="#bracket"/></g>
+    <g transform="translate(600 295)"><use href="#bracket"/></g>
+    <g transform="translate(715 294)"><use href="#bracket"/></g>
+    <g transform="translate(830 292)"><use href="#bracket"/></g>
+    <g transform="translate(940 289)"><use href="#bracket"/></g>
+    <g transform="translate(1050 284)"><use href="#bracket"/></g>
+
+    <!-- 10. 상층 목조 기둥 9개 배치 -->
+    <g transform="translate(150 300)"><use href="#upperColumn"/></g>
+    <g transform="translate(260 303)"><use href="#upperColumn"/></g>
+    <g transform="translate(370 305)"><use href="#upperColumn"/></g>
+    <g transform="translate(485 307)"><use href="#upperColumn"/></g>
+    <g transform="translate(600 308)"><use href="#upperColumn"/></g>
+    <g transform="translate(715 307)"><use href="#upperColumn"/></g>
+    <g transform="translate(830 305)"><use href="#upperColumn"/></g>
+    <g transform="translate(940 303)"><use href="#upperColumn"/></g>
+    <g transform="translate(1050 300)"><use href="#upperColumn"/></g>
+
+    <!-- 11. 상층 붉은 목조 계자난간 (상단/하단 가로대) -->
+    <path d="M128 365 Q360 374 600 372 Q840 374 1072 365" fill="none" stroke="#4a1213" stroke-width="18" stroke-linecap="round"/>
+    <path d="M134 396 Q363 404 600 402 Q837 404 1066 396" fill="none" stroke="#521414" stroke-width="16" stroke-linecap="round"/>
+
+    <!-- 난간 세로 동자살 (일정한 간격) -->
+    <g stroke="#7e1f1c" stroke-width="8" stroke-linecap="round">
+      <path d="M165 370 V397"/><path d="M195 371 V398"/><path d="M225 372 V399"/>
+      <path d="M285 373 V400"/><path d="M315 374 V400"/><path d="M345 375 V401"/>
+      <path d="M400 375 V401"/><path d="M430 376 V401"/><path d="M460 376 V402"/>
+      <path d="M520 377 V402"/><path d="M550 377 V402"/><path d="M580 377 V402"/>
+      <path d="M620 377 V402"/><path d="M650 377 V402"/><path d="M680 377 V402"/>
+      <path d="M740 376 V402"/><path d="M770 376 V401"/><path d="M800 375 V401"/>
+      <path d="M855 375 V401"/><path d="M885 374 V400"/><path d="M915 373 V400"/>
+      <path d="M975 372 V399"/><path d="M1005 371 V398"/><path d="M1035 370 V397"/>
+    </g>
+
+    <!-- 12. 상층 마루 바닥판 및 하부 단청 띠 -->
+    <path d="M105 409 Q351 421 600 418 Q849 421 1095 409 L1081 441 Q844 451 600 448 Q356 451 119 441 Z" fill="#541615" stroke="#330b0c" stroke-width="4"/>
+    <path d="M124 432 Q356 443 600 440 Q844 443 1076 432 L1069 454 Q840 463 600 460 Q360 463 131 454 Z" fill="url(#dancheongSmall)" stroke="#222a21" stroke-width="2.5"/>
+
+    <!-- 13. 하층 붉은 목조 횡창방(대들보) -->
+    <path d="M137 454 Q360 464 600 462 Q840 464 1063 454 L1056 478 Q839 486 600 484 Q361 486 144 478 Z" fill="url(#woodGrad)" stroke="#3f0d0f" stroke-width="3"/>
+
+    <!-- 14. 하층 경회루 양식의 대표적 '밝은 회백색 돌기둥 7개' (개방형 구조, 원근 보정 적용) -->
+    <g transform="translate(165 466) scale(0.92 0.72)"><use href="#stoneColumn"/></g>
+    <g transform="translate(310 470) scale(0.96 0.70)"><use href="#stoneColumn"/></g>
+    <g transform="translate(455 472) scale(1.00 0.69)"><use href="#stoneColumn"/></g>
+    <g transform="translate(600 473) scale(1.04 0.68)"><use href="#stoneColumn"/></g> <!-- 중앙 강조 -->
+    <g transform="translate(745 472) scale(1.00 0.69)"><use href="#stoneColumn"/></g>
+    <g transform="translate(890 470) scale(0.96 0.70)"><use href="#stoneColumn"/></g>
+    <g transform="translate(1035 466) scale(0.92 0.72)"><use href="#stoneColumn"/></g>
+
+    <!-- 돌기둥 사이 연결 목조 보강재 -->
+    <g fill="url(#woodGrad)" stroke="#3f0d0f" stroke-width="2">
+      <rect x="201" y="475" width="72" height="14" rx="3"/>
+      <rect x="346" y="478" width="72" height="14" rx="3"/>
+      <rect x="491" y="480" width="72" height="14" rx="3"/>
+      <rect x="637" y="480" width="72" height="14" rx="3"/>
+      <rect x="782" y="478" width="72" height="14" rx="3"/>
+      <rect x="927" y="475" width="72" height="14" rx="3"/>
+    </g>
+
+    <!-- 하층 상부 깊은 음영 띠 -->
+    <path d="M129 478 Q360 487 600 485 Q840 487 1071 478 L1061 493 Q837 500 600 498 Q363 500 139 493 Z" fill="#18100e" opacity="0.38"/>
+
+    <!-- 15. 높은 석재 기단 (장대석 석축 표현) -->
+    <!-- 기단 메인 구조 -->
+    <path d="M114 561 L1086 561 L1135 589 L65 589 Z" fill="url(#platformGrad)" stroke="#7c807d" stroke-width="3"/>
+
+    <!-- 기단 상단 디테일 몰딩 -->
+    <path d="M114 561 H1086 L1064 577 H136 Z" fill="#eeece3" stroke="#9a9d99" stroke-width="2"/>
+    <path d="M136 577 H1064 L1135 589 H65 Z" fill="#a4a7a2" opacity="0.85"/>
+
+    <!-- 기단 석재 장대석 이음새 라인들 -->
+    <g stroke="#7c807d" stroke-width="1.8" opacity="0.65">
+      <path d="M208 562 L177 588"/>
+      <path d="M354 562 L334 588"/>
+      <path d="M500 562 L491 588"/>
+      <path d="M646 562 L649 588"/>
+      <path d="M792 562 L807 588"/>
+      <path d="M938 562 L965 588"/>
+      <path d="M114 570 H1086"/>
+    </g>
+  </g>
+</svg>
+</body>
+</html>

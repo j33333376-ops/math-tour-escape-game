@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아라뱃길·청라호수공원 MATHTOUR - E03</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+        @import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
+
+        :root {
+            --primary-blue: #0077be;
+            --accent-mint: #40e0d0;
+            --dark-navy: #1a365d;
+            --bg-ice: #e0f7fa;
+            --text-color: #1a365d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #0b1d3a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 16:9 Game Container */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+            overflow: hidden;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.5);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Stage Header Bar */
+        #stage-header {
+            position: absolute;
+            top: 12px;
+            left: 20px;
+            right: 20px;
+            height: 48px;
+            background: rgba(0, 119, 190, 0.25);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(64, 224, 208, 0.4);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 20;
+        }
+
+        #stage-title {
+            font-family: 'NanumSquareRound', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #003366;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #stage-badge {
+            background: var(--primary-blue);
+            color: #fff;
+            font-size: 0.8rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        /* Stage Content Layer */
+        #stage-body {
+            position: absolute;
+            top: 70px;
+            bottom: 60px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+            z-index: 5;
+        }
+
+        /* Characters Sidebar Area */
+        .character-area {
+            position: relative;
+            width: 220px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(4px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 10px;
+        }
+
+        .char-wrapper {
+            position: absolute;
+            overflow: visible;
+        }
+
+        /* Math Quiz Container */
+        .quiz-container {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--accent-mint);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,119,190,0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Embedded Quiz Styles */
+        .quiz-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            gap: 8px;
+            overflow-y: auto;
+        }
+
+        .bridge-stage {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: #2f6d90;
+            border-radius: 10px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .bridge-svg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .bridge-svg-layer svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        #graphCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .info-panel {
+            padding: 8px 12px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            border: 1px solid #b0e0e6;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .equation-box {
+            background: white;
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 2px solid var(--primary-blue);
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #1e3799;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+
+        .equation-box .dynamic-eq {
+            color: #d63031;
+            font-size: 1rem;
+            margin-top: 2px;
+        }
+
+        .mission-status {
+            font-size: 0.8rem;
+            text-align: center;
+            font-weight: 600;
+            padding: 6px;
+            border-radius: 6px;
+            background-color: #e5e9f0;
+            color: #4c566a;
+            transition: all 0.3s ease;
+        }
+
+        .mission-status.success {
+            background-color: #d8edd6;
+            color: #2b7a2b;
+            border: 1px solid #a3d9a5;
+            font-size: 0.85rem;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .control-panel {
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #2f3640;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+
+        .slider-label span.val {
+            color: var(--primary-blue);
+            font-weight: bold;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #dfe4ea;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Common Navigation Buttons */
+        .btn-nav {
+            position: absolute;
+            height: 38px;
+            padding: 0 22px;
+            background: var(--primary-blue);
+            color: #ffffff;
+            border: 1px solid var(--accent-mint);
+            border-radius: 50px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,119,190,0.3);
+            transition: all 0.2s ease;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-nav:hover {
+            background: var(--accent-mint);
+            color: var(--dark-navy);
+            box-shadow: 0 6px 16px rgba(64,224,208,0.5);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 12px;
+            display: none; /* Disabled/hidden for initial state as requested */
+        }
+
+        #btn-next {
+            right: 20px;
+            bottom: 12px;
+            display: none; /* Revealed upon solving quiz */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- Background Asset: 청라호수공원_횡단교량 -->
+        <div style="position:absolute; left:0px; bottom:0px; width:1066px; height:600px; overflow:hidden; z-index:1; opacity:0.35; pointer-events:none;">
+            <iframe src="청라호수공원_횡단교량.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(1.066); transform-origin:top left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- Stage Header Bar -->
+        <div id="stage-header">
+            <div id="stage-title">
+                <span id="stage-badge">MISSION 03</span>
+                <span>청라호수공원 횡단교량 이차함수 모델링</span>
+            </div>
+            <div style="font-family: 'Nanum Gothic Coding', monospace; font-size: 0.85rem; color: #0077be; font-weight: bold;">
+                아라뱃길·청라호수공원 MATHTOUR
+            </div>
+        </div>
+
+        <!-- Stage Main Content -->
+        <div id="stage-body">
+            <!-- Characters Sidebar -->
+            <div class="character-area">
+                <!-- 민우 Character Wrapper -->
+                <div class="char-wrapper" id="char-민우" style="left:-15px; bottom:-10px; width:130px; height:160px; z-index:3;">
+                    <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.5); transform-origin:bottom left; pointer-events:none;"></iframe>
+                </div>
+                <!-- 서연 Character Wrapper -->
+                <div class="char-wrapper" id="char-서연" style="right:-15px; bottom:-10px; width:130px; height:160px; z-index:3;">
+                    <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.5) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+                </div>
+            </div>
+
+            <!-- Quiz Main Panel -->
+            <div class="quiz-container">
+                <div class="quiz-inner">
+                    <!-- Bridge Stage with SVG & Canvas -->
+                    <div class="bridge-stage" id="stage">
+                        <div class="bridge-svg-layer">
+                            <svg viewBox="0 0 1000 380" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="cqb-steel" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0" stop-color="#f2f4f6"/>
+                                        <stop offset="1" stop-color="#a9b2b9"/>
+                                    </linearGradient>
+                                    <linearGradient id="cqb-deck" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0" stop-color="#d9d2c0"/>
+                                        <stop offset="1" stop-color="#b3ab97"/>
+                                    </linearGradient>
+                                    <linearGradient id="cqb-water" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0" stop-color="#7fbdd8"/>
+                                        <stop offset="1" stop-color="#2f6d90"/>
+                                    </linearGradient>
+                                </defs>
+
+                                <!-- 호수 수면 -->
+                                <rect x="0" y="280" width="1000" height="100" fill="url(#cqb-water)"/>
+                                <g stroke="#eaf6fb" stroke-width="1.5" fill="none" opacity="0.3">
+                                    <path d="M20,310 Q60,305 100,310 T180,310 T260,310 T340,310"/>
+                                    <path d="M420,320 Q460,315 500,320 T580,320 T660,320"/>
+                                    <path d="M700,335 Q740,330 780,335 T860,335 T940,335"/>
+                                </g>
+
+                                <!-- 교각 기초 -->
+                                <polygon points="30,272 96,272 90,300 34,300" fill="#8f8f8f" stroke="#6e6e6e" stroke-width="1.5"/>
+                                <polygon points="904,272 970,272 966,300 908,300" fill="#8f8f8f" stroke="#6e6e6e" stroke-width="1.5"/>
+
+                                <!-- 아치 (튜브형) -->
+                                <path d="M60,270 L140,194 L220,133 L300,88 L380,57 L460,42 L500,40 L540,42 L620,57 L700,88 L780,133 L860,194 L940,270 L940,286 L860,210 L780,149 L700,104 L620,73 L540,58 L500,56 L460,58 L380,73 L300,104 L220,149 L140,210 L60,286 Z" fill="url(#cqb-steel)" stroke="#7c868c" stroke-width="1.5"/>
+                                <path d="M60,278 L140,202 L220,141 L300,96 L380,65 L460,50 L500,48 L540,50 L620,65 L700,96 L780,141 L860,202 L940,278" fill="none" stroke="#c0272a" stroke-width="3" opacity="0.85"/>
+
+                                <!-- 행어 케이블 -->
+                                <g stroke="#8a939a" stroke-width="2">
+                                    <line x1="140" y1="202" x2="140" y2="260"/>
+                                    <line x1="220" y1="141" x2="220" y2="260"/>
+                                    <line x1="300" y1="96"  x2="300" y2="260"/>
+                                    <line x1="380" y1="65"  x2="380" y2="260"/>
+                                    <line x1="460" y1="50"  x2="460" y2="260"/>
+                                    <line x1="540" y1="50"  x2="540" y2="260"/>
+                                    <line x1="620" y1="65"  x2="620" y2="260"/>
+                                    <line x1="700" y1="96"  x2="700" y2="260"/>
+                                    <line x1="780" y1="141" x2="780" y2="260"/>
+                                    <line x1="860" y1="202" x2="860" y2="260"/>
+                                </g>
+
+                                <!-- 보행 데크 -->
+                                <rect x="40" y="260" width="920" height="20" fill="url(#cqb-deck)" stroke="#8f8672" stroke-width="1.2"/>
+
+                                <!-- 난간 -->
+                                <line x1="46" y1="234" x2="954" y2="234" stroke="#7c868c" stroke-width="3"/>
+                                <g stroke="#9aa3aa" stroke-width="2">
+                                    <line x1="60"  y1="234" x2="60"  y2="260"/><line x1="140" y1="234" x2="140" y2="260"/>
+                                    <line x1="220" y1="234" x2="220" y2="260"/><line x1="300" y1="234" x2="300" y2="260"/>
+                                    <line x1="380" y1="234" x2="380" y2="260"/><line x1="460" y1="234" x2="460" y2="260"/>
+                                    <line x1="540" y1="234" x2="540" y2="260"/><line x1="620" y1="234" x2="620" y2="260"/>
+                                    <line x1="700" y1="234" x2="700" y2="260"/><line x1="780" y1="234" x2="780" y2="260"/>
+                                    <line x1="860" y1="234" x2="860" y2="260"/><line x1="940" y1="234" x2="940" y2="260"/>
+                                </g>
+                            </svg>
+                        </div>
+                        <canvas id="graphCanvas"></canvas>
+                    </div>
+
+                    <!-- Math Guide & Status Panel -->
+                    <div class="info-panel">
+                        <div class="equation-box">
+                            <div>표준형 모델: y = a(x - p)² + q</div>
+                            <div class="dynamic-eq" id="equationDisplay">y = -0.00100(x - 500)² + 300</div>
+                        </div>
+                        <div class="mission-status" id="missionStatus">
+                            🎯 목표: 빨간색 목표점(아치 최고점, 아치 왼쪽 받침점) 2개를 동시에 지나도록 맞추세요!
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="control-panel">
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>a (폭과 모양 - 최고차항 계수)</span>
+                                <span class="val" id="valA">-0.00100</span>
+                            </div>
+                            <input type="range" id="sliderA" min="-0.00300" max="-0.00010" step="0.00002" value="-0.00100">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>p (축의 위치 - 좌우 평행이동)</span>
+                                <span class="val" id="valP">400</span>
+                            </div>
+                            <input type="range" id="sliderP" min="300" max="700" step="1" value="400">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>q (꼭짓점 높이 - 상하 평행이동)</span>
+                                <span class="val" id="valQ">250</span>
+                            </div>
+                            <input type="range" id="sliderQ" min="150" max="370" step="1" value="250">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <button id="btn-prev" class="btn-nav" onclick="goPrev()">이전</button>
+        <button id="btn-next" class="btn-nav" onclick="goNext()">다음 ▶</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const stage = document.getElementById('stage');
+
+        const sliderA = document.getElementById('sliderA');
+        const sliderP = document.getElementById('sliderP');
+        const sliderQ = document.getElementById('sliderQ');
+
+        const valA = document.getElementById('valA');
+        const valP = document.getElementById('valP');
+        const valQ = document.getElementById('valQ');
+
+        const equationDisplay = document.getElementById('equationDisplay');
+        const missionStatus = document.getElementById('missionStatus');
+        const btnNext = document.getElementById('btn-next');
+
+        const V_WIDTH = 1000;
+        const V_HEIGHT = 380;
+
+        const TARGET_1 = { x: 500, yMath: 332, label: "아치 최고점" };
+        const TARGET_2 = { x: 60,  yMath: 102, label: "아치 받침점" };
+
+        function resizeCanvas() {
+            const rect = stage.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            draw();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function drawTargets(scaleX, scaleY) {
+            const targets = [TARGET_1, TARGET_2];
+
+            targets.forEach(pt => {
+                const cx = pt.x * scaleX;
+                const cy = (V_HEIGHT - pt.yMath) * scaleY;
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, 10, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(214, 48, 49, 0.25)';
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+                ctx.fillStyle = '#d63031';
+                ctx.fill();
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = '#ffffff';
+                ctx.stroke();
+
+                ctx.fillStyle = '#2d3436';
+                ctx.font = 'bold 11px sans-serif';
+                ctx.fillText(pt.label, cx - 25, cy - 12);
+            });
+        }
+
+        function draw() {
+            const scaleX = canvas.width / V_WIDTH;
+            const scaleY = canvas.height / V_HEIGHT;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const a = parseFloat(sliderA.value);
+            const p = parseFloat(sliderP.value);
+            const q = parseFloat(sliderQ.value);
+
+            valA.textContent = a.toFixed(5);
+            valP.textContent = Math.round(p);
+            valQ.textContent = Math.round(q);
+
+            const pSign = p >= 0 ? `- ${Math.round(p)}` : `+ ${Math.abs(Math.round(p))}`;
+            const qSign = q >= 0 ? `+ ${Math.round(q)}` : `- ${Math.abs(Math.round(q))}`;
+            equationDisplay.textContent = `y = ${a.toFixed(5)}(x ${pSign})² ${qSign}`;
+
+            ctx.beginPath();
+            ctx.lineWidth = 3.5;
+            ctx.strokeStyle = '#ff7675';
+
+            let isFirst = true;
+            for (let x = 0; x <= V_WIDTH; x += 2) {
+                const yMath = a * Math.pow(x - p, 2) + q;
+                const canvasX = x * scaleX;
+                const canvasY = (V_HEIGHT - yMath) * scaleY;
+
+                if (isFirst) {
+                    ctx.moveTo(canvasX, canvasY);
+                    isFirst = false;
+                } else {
+                    ctx.lineTo(canvasX, canvasY);
+                }
+            }
+            ctx.stroke();
+
+            drawTargets(scaleX, scaleY);
+            validateSolution(a, p, q);
+        }
+
+        function validateSolution(a, p, q) {
+            const y1Calc = a * Math.pow(TARGET_1.x - p, 2) + q;
+            const y2Calc = a * Math.pow(TARGET_2.x - p, 2) + q;
+
+            const err1 = Math.abs(y1Calc - TARGET_1.yMath);
+            const err2 = Math.abs(y2Calc - TARGET_2.yMath);
+
+            if (err1 <= 6 && err2 <= 6) {
+                missionStatus.className = "mission-status success";
+                missionStatus.innerHTML = "🎉 <strong>설계 최적화 완료!</strong> 현수교의 수학적 원리를 찾아냈습니다!";
+                btnNext.style.display = "flex";
+            } else {
+                missionStatus.className = "mission-status";
+                missionStatus.innerHTML = "🎯 목표: 빨간색 목표점(아치 최고점, 아치 왼쪽 받침점) 2개를 동시에 지나도록 맞추세요!";
+                btnNext.style.display = "none";
+            }
+        }
+
+        [sliderA, sliderP, sliderQ].forEach(slider => {
+            slider.addEventListener('input', draw);
+        });
+
+        function goPrev() {
+            // Previous URL is empty / disabled as per specification
+        }
+
+        function goNext() {
+            window.location.href = "E04.html";
+        }
+
+        window.onload = resizeCanvas;
+    </script>
+</body>
+</html>

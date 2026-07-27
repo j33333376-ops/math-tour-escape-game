@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>아라뱃길·청라호수공원 MATHTOUR - F02</title>
+  
+  <!-- 폰트 구성 -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css">
+
+  <style>
+    /* Reset & Base */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #0b1d3a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #1a365d;
+      overflow: hidden;
+    }
+
+    /* 게임 컨테이너 (16:9 비율 유지) */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(180deg, #e0f7fa 0%, #b2ebf2 100%);
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border-radius: 8px;
+    }
+
+    /* 화면 전환 전환 효과 (빨려들어가는 빨아들이기 / 웜홀 효과) */
+    #game-container.vortex-out {
+      animation: vortexAnimation 0.8s forwards ease-in-out;
+    }
+
+    @keyframes vortexAnimation {
+      0% {
+        transform: scale(1) rotate(0deg);
+        filter: brightness(1) blur(0px);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(0) rotate(720deg);
+        filter: brightness(2) blur(10px);
+        opacity: 0;
+      }
+    }
+
+    /* 스테이지 상단 표시바 */
+    .top-bar {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 24px;
+      background: rgba(0, 119, 190, 0.2);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(64, 224, 208, 0.5);
+      border-radius: 30px;
+      z-index: 10;
+      text-align: center;
+    }
+    .top-bar h1 {
+      font-family: 'NanumSquareRound', sans-serif;
+      font-size: 18px;
+      color: #0077be;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+    }
+
+    /* 에셋 - 청라루1 배경 무대 배치 */
+    .asset-building {
+      position: absolute;
+      left: 50%;
+      bottom: 60px;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 480px;
+      overflow: hidden;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .asset-building iframe {
+      border: 0;
+      width: 1000px;
+      height: 600px;
+      transform: scale(0.8);
+      transform-origin: top left;
+      pointer-events: none;
+    }
+
+    /* 등장인물 Wrapper 공통 */
+    .char-wrapper {
+      position: absolute;
+      bottom: 30px;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      z-index: 3;
+      transition: filter 0.2s ease, transform 0.2s ease;
+    }
+    .char-wrapper iframe {
+      border: 0;
+      width: 260px;
+      height: 320px;
+      transform: scale(1);
+      transform-origin: bottom left;
+      pointer-events: none;
+    }
+    /* 좌측 배치: 민우 */
+    #char-민우 {
+      left: 30px;
+    }
+    /* 우측 배치: 서연 (마주보도록 좌우 반전) */
+    #char-서연 {
+      right: 30px;
+    }
+    #char-서연 iframe {
+      transform: scale(1) scaleX(-1);
+      transform-origin: bottom center;
+    }
+
+    /* 턴 비활성화 캐릭터 어둡게 */
+    .char-wrapper.inactive {
+      filter: brightness(0.55);
+    }
+
+    /* 대화창 (유형 2) */
+    #dialogue-box {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 620px;
+      height: 140px;
+      background: rgba(26, 54, 93, 0.88);
+      border: 1.5px solid #40e0d0;
+      border-radius: 16px;
+      padding: 16px 22px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+      cursor: pointer;
+      user-select: none;
+    }
+    #speaker-name {
+      font-family: 'NanumSquareRound', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: #40e0d0;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #speaker-name::before {
+      content: '◆';
+      font-size: 12px;
+      color: #0077be;
+    }
+    #dialogue-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      word-break: keep-all;
+    }
+    .click-indicator {
+      position: absolute;
+      right: 20px;
+      bottom: 12px;
+      font-size: 12px;
+      color: #40e0d0;
+      animation: bounce 1s infinite alternate;
+    }
+    @keyframes bounce {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-4px); }
+    }
+
+    /* 공통 버튼 디자인 */
+    .btn-nav {
+      position: absolute;
+      padding: 10px 24px;
+      background-color: #0077be;
+      color: #ffffff;
+      border: 1px solid #40e0d0;
+      border-radius: 50px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      z-index: 12;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: all 0.2s ease;
+    }
+    .btn-nav:hover {
+      background-color: #40e0d0;
+      color: #1a365d;
+      box-shadow: 0 6px 16px rgba(64, 224, 208, 0.4);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+    }
+    #btn-next, #btn-skip {
+      right: 20px;
+      bottom: 20px;
+    }
+
+    /* 초기 이동 버튼 제어 (대화 진행 중일 땐 숨김/건너뛰기 표시) */
+    #btn-prev, #btn-next {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 상단 타이틀 바 -->
+    <div class="top-bar">
+      <h1>아라뱃길·청라호수공원 MATHTOUR - 청라루의 역사와 수학</h1>
+    </div>
+
+    <!-- 에셋: 청라루1 (배경 조형물 역할, 무대 중앙 뒤편 배치) -->
+    <div class="asset-building">
+      <iframe src="청라루1.html" scrolling="no"></iframe>
+    </div>
+
+    <!-- 등장인물: 민우 (좌측 배치) -->
+    <div class="char-wrapper" id="char-민우">
+      <iframe src="등장인물_민우.html" scrolling="no"></iframe>
+    </div>
+
+    <!-- 등장인물: 서연 (우측 배치) -->
+    <div class="char-wrapper" id="char-서연">
+      <iframe src="등장인물_서연.html" scrolling="no"></iframe>
+    </div>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+      <div id="speaker-name">민우</div>
+      <div id="dialogue-text">대사를 불러오는 중입니다...</div>
+      <div class="click-indicator">▼ 클릭하여 계속</div>
+    </div>
+
+    <!-- 이동 및 건너뛰기 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="goToUrl('F01.html')">이전</button>
+    <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
+    <button class="btn-nav" id="btn-next" onclick="goToNextWithVortex('F03.html')">다음</button>
+  </div>
+
+  <script>
+    // 대화 데이터 정의 (화자, 대사, 대상 ID)
+    const dialogues = [
+      {
+        speaker: "민우",
+        text: "와, 호수 한가운데 세워진 청라루가 정말 웅장하다! 한옥 특유의 곡선미가 고스란히 담겨 있어.",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "맞아! 청라루는 전통 건축 양식을 본떠 만든 멋진 누각이야. 청라호수공원을 대표하는 아름다운 역사 문화 공간이지.",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "전통 한옥의 처마 곡선이랑 호수 수면에 비친 누각의 모습이 정말 조화로워. 혹시 이 아름다움 속에도 수학적 원리가 숨어 있을까?",
+        target: "char-서연" // 질문을 던지며 주목
+      },
+      {
+        speaker: "서연",
+        text: "당연하지! 한옥의 곡선과 수면에 반사되는 모습에는 흥미로운 곡선 함수들이 숨겨져 있어. 이제 곧 우리가 직접 확인해 볼 거야!",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "우와, 너무 기대된다! 청라루 탐방도 하고 탐사선 조종 패널로 멋진 수학 활동도 어서 시작해 보자!",
+        target: "char-민우"
+      }
+    ];
+
+    let currentIndex = 0;
+
+    // 대화 진행 및 인물 하이라이트 제어
+    function updateDialogue() {
+      if (currentIndex < dialogues.length) {
+        const current = dialogues[currentIndex];
+        document.getElementById("speaker-name").innerText = current.speaker;
+        document.getElementById("dialogue-text").innerText = current.text;
+
+        // 모든 인물 비활성화(어둡게) 후, 말하는 인물만 활성화
+        document.querySelectorAll(".char-wrapper").forEach(wrapper => {
+          if (wrapper.id === current.target) {
+            wrapper.classList.remove("inactive");
+          } else {
+            wrapper.classList.add("inactive");
+          }
+        });
+      } else {
+        endDialogue();
+      }
+    }
+
+    // 다음 대화 진행
+    function advanceDialogue() {
+      currentIndex++;
+      if (currentIndex < dialogues.length) {
+        updateDialogue();
+      } else {
+        endDialogue();
+      }
+    }
+
+    // 대화 건너뛰기
+    function skipDialogue() {
+      endDialogue();
+    }
+
+    // 대화 종료 시 처리
+    function endDialogue() {
+      document.getElementById("dialogue-box").style.display = "none";
+      document.getElementById("btn-skip").style.display = "none";
+
+      // 모든 캐릭터 밝기 원복
+      document.querySelectorAll(".char-wrapper").forEach(wrapper => {
+        wrapper.classList.remove("inactive");
+      });
+
+      // 이전, 다음 버튼 표시
+      document.getElementById("btn-prev").style.display = "block";
+      document.getElementById("btn-next").style.display = "block";
+    }
+
+    // 일반 페이지 이동
+    function goToUrl(url) {
+      window.location.href = url;
+    }
+
+    // 다음 페이지 이동 (요청에 따른 빨려들어가는 웜홀 효과 적용)
+    function goToNextWithVortex(url) {
+      const container = document.getElementById("game-container");
+      container.classList.add("vortex-out");
+      setTimeout(() => {
+        window.location.href = url;
+      }, 750); // 애니메이션 지속시간 후 이동
+    }
+
+    // 초기화 실행
+    window.onload = function() {
+      updateDialogue();
+    };
+  </script>
+</body>
+</html>

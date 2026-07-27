@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>다리의 아치를 그리는 무리함수 설계자</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            color: #2d3748;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            color: #1a365d;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            color: #4a5568;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        @media (max-width: 900px) {
+            .main-container {
+                flex-direction: column;
+            }
+        }
+
+        .canvas-section {
+            flex: 1.3;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 1 / 1;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background-color: #fafafa;
+        }
+
+        .control-section {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .formula-card {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .formula-card .title {
+            font-size: 0.85rem;
+            color: #2b6cb0;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .formula-card .equation {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2d3748;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .slider-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .slider-header .var-name {
+            color: #2b6cb0;
+        }
+
+        input[type=range] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e2e8f0;
+            outline: none;
+            accent-color: #3182ce;
+        }
+
+        .status-card {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #edf2f7;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #e53e3e;
+            transition: width 0.2s, background-color 0.2s;
+        }
+
+        .feedback-msg {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #4a5568;
+            min-height: 40px;
+        }
+
+        .next-btn {
+            display: none;
+            width: 100%;
+            padding: 12px;
+            background-color: #38a169;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 6px rgba(56, 161, 105, 0.2);
+        }
+
+        .next-btn:hover {
+            background-color: #2f855a;
+            transform: translateY(-1px);
+        }
+
+        .next-btn.visible {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🌉 다리의 아치를 그리는 무리함수 설계자</h1>
+        <p>청라호수공원 아치교에 가장 적합한 무리함수 계수(a, b, c)를 찾아 안전한 아치 구조를 설계해 보세요!</p>
+    </header>
+
+    <div class="main-container">
+        <!-- Canvas Area -->
+        <div class="canvas-section">
+            <div class="canvas-wrapper">
+                <canvas id="archCanvas" width="600" height="600"></canvas>
+            </div>
+        </div>
+
+        <!-- Control Panel Area -->
+        <div class="control-section">
+            <div class="formula-card">
+                <div class="title">현재 설계된 무리함수 수식</div>
+                <div class="equation" id="formulaText">y = 1.0 √(x + 0.0) + 0.0</div>
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-item">
+                    <div class="slider-header">
+                        <span class="var-name">계수 a (곡률 및 방향)</span>
+                        <span id="valA">1.0</span>
+                    </div>
+                    <input type="range" id="sliderA" min="-5" max="5" step="0.1" value="1.0">
+                </div>
+
+                <div class="slider-item">
+                    <div class="slider-header">
+                        <span class="var-name">계수 b (X축 평행이동)</span>
+                        <span id="valB">0.0</span>
+                    </div>
+                    <input type="range" id="sliderB" min="-10" max="10" step="0.1" value="0.0">
+                </div>
+
+                <div class="slider-item">
+                    <div class="slider-header">
+                        <span class="var-name">계수 c (Y축 평행이동)</span>
+                        <span id="valC">0.0</span>
+                    </div>
+                    <input type="range" id="sliderC" min="-10" max="10" step="0.1" value="0.0">
+                </div>
+            </div>
+
+            <div class="status-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: bold; font-size: 0.9rem;">설계 일치율</span>
+                    <span id="matchPercent" style="font-weight: bold; font-color: #2b6cb0;">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="feedback-msg" id="feedbackMsg">
+                    슬라이더를 조작하여 다리의 아치 라인과 함수 그래프를 일치시켜 보세요.
+                </div>
+            </div>
+
+            <button class="next-btn" id="nextBtn" onclick="location.href='F04.html'">
+                [다음 장소(F04)로 이동하기] ➔
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('archCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Target parameters
+        const TARGET_A = -2.0;
+        const TARGET_B = 8.0;
+        const TARGET_C = 5.0;
+
+        // Sliders & Elements
+        const sliderA = document.getElementById('sliderA');
+        const sliderB = document.getElementById('sliderB');
+        const sliderC = document.getElementById('sliderC');
+
+        const valA = document.getElementById('valA');
+        const valB = document.getElementById('valB');
+        const valC = document.getElementById('valC');
+
+        const formulaText = document.getElementById('formulaText');
+        const matchPercentStr = document.getElementById('matchPercent');
+        const progressBar = document.getElementById('progressBar');
+        const feedbackMsg = document.getElementById('feedbackMsg');
+        const nextBtn = document.getElementById('nextBtn');
+
+        // Coordinate System Mapping
+        // Math coords: x: [-12, 12], y: [-4, 12]
+        const xMin = -12, xMax = 12;
+        const yMin = -4, yMax = 12;
+
+        function toCanvasX(x) {
+            return ((x - xMin) / (xMax - xMin)) * canvas.width;
+        }
+
+        function toCanvasY(y) {
+            return canvas.height - ((y - yMin) / (yMax - yMin)) * canvas.height;
+        }
+
+        // Draw Background Bridge Vector Image
+        function drawBridgeBackground() {
+            // Sky background
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGrad.addColorStop(0, '#e0f2fe');
+            skyGrad.addColorStop(0.7, '#bae6fd');
+            skyGrad.addColorStop(1, '#7dd3fc');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Water at bottom
+            const waterY = toCanvasY(0);
+            ctx.fillStyle = '#0284c7';
+            ctx.fillRect(0, waterY, canvas.width, canvas.height - waterY);
+
+            // Grid Lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 1;
+            for (let x = Math.ceil(xMin); x <= xMax; x += 2) {
+                ctx.beginPath();
+                ctx.moveTo(toCanvasX(x), 0);
+                ctx.lineTo(toCanvasX(x), canvas.height);
+                ctx.stroke();
+            }
+            for (let y = Math.ceil(yMin); y <= yMax; y += 2) {
+                ctx.beginPath();
+                ctx.moveTo(0, toCanvasY(y));
+                ctx.lineTo(canvas.width, toCanvasY(y));
+                ctx.stroke();
+            }
+
+            // Target Arch Bridge Structure (Reference Guide)
+            ctx.strokeStyle = 'rgba(203, 213, 225, 0.8)';
+            ctx.lineWidth = 8;
+            ctx.beginPath();
+            let started = false;
+            for (let x = -TARGET_B; x <= 12; x += 0.1) {
+                const val = x + TARGET_B;
+                if (val >= 0) {
+                    const y = TARGET_A * Math.sqrt(val) + TARGET_C;
+                    const cx = toCanvasX(x);
+                    const cy = toCanvasY(y);
+                    if (!started) {
+                        ctx.moveTo(cx, cy);
+                        started = true;
+                    } else {
+                        ctx.lineTo(cx, cy);
+                    }
+                }
+            }
+            ctx.stroke();
+
+            // Bridge Deck (Horizontal)
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.moveTo(toCanvasX(-10), toCanvasY(-0.5));
+            ctx.lineTo(toCanvasX(10), toCanvasY(-0.5));
+            ctx.stroke();
+
+            // Pillars
+            ctx.fillStyle = '#64748b';
+            ctx.fillRect(toCanvasX(-8) - 5, toCanvasY(0), 10, toCanvasY(-4) - toCanvasY(0));
+            ctx.fillRect(toCanvasX(8) - 5, toCanvasY(0), 10, toCanvasY(-4) - toCanvasY(0));
+
+            // Axes
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 2;
+            
+            // X-Axis
+            ctx.beginPath();
+            ctx.moveTo(0, toCanvasY(0));
+            ctx.lineTo(canvas.width, toCanvasY(0));
+            ctx.stroke();
+
+            // Y-Axis
+            ctx.beginPath();
+            ctx.moveTo(toCanvasX(0), 0);
+            ctx.lineTo(toCanvasX(0), canvas.height);
+            ctx.stroke();
+
+            // Origin / Labels
+            ctx.fillStyle = '#0f172a';
+            ctx.font = '12px sans-serif';
+            ctx.fillText('O', toCanvasX(0) + 5, toCanvasY(0) + 15);
+            ctx.fillText('X', canvas.width - 15, toCanvasY(0) - 8);
+            ctx.fillText('Y', toCanvasX(0) + 8, 15);
+        }
+
+        function drawGraph(a, b, c) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBridgeBackground();
+
+            // Draw Student's Curve
+            ctx.strokeStyle = '#2563eb';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+
+            let started = false;
+            const startX = -b; // Domain: x + b >= 0 => x >= -b
+
+            for (let x = startX; x <= xMax; x += 0.05) {
+                const insideSqrt = x + b;
+                if (insideSqrt >= 0) {
+                    const y = a * Math.sqrt(insideSqrt) + c;
+                    const cx = toCanvasX(x);
+                    const cy = toCanvasY(y);
+
+                    if (cx >= 0 && cx <= canvas.width && cy >= 0 && cy <= canvas.height) {
+                        if (!started) {
+                            ctx.moveTo(cx, cy);
+                            started = true;
+                        } else {
+                            ctx.lineTo(cx, cy);
+                        }
+                    }
+                }
+            }
+            ctx.stroke();
+
+            // Draw Starting Point (-b, c)
+            if (startX >= xMin && startX <= xMax && c >= yMin && c <= yMax) {
+                const spX = toCanvasX(startX);
+                const spY = toCanvasY(c);
+
+                ctx.fillStyle = '#dc2626';
+                ctx.beginPath();
+                ctx.arc(spX, spY, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#991b1b';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.fillText(`시작점 (${(-b).toFixed(1)}, ${c.toFixed(1)})`, spX + 8, spY - 8);
+            }
+        }
+
+        function update() {
+            const a = parseFloat(sliderA.value);
+            const b = parseFloat(sliderB.value);
+            const c = parseFloat(sliderC.value);
+
+            valA.textContent = a.toFixed(1);
+            valB.textContent = b.toFixed(1);
+            valC.textContent = c.toFixed(1);
+
+            // Formula display string
+            const bSign = b >= 0 ? `+ ${b.toFixed(1)}` : `- ${Math.abs(b).toFixed(1)}`;
+            const cSign = c >= 0 ? `+ ${c.toFixed(1)}` : `- ${Math.abs(c).toFixed(1)}`;
+            formulaText.textContent = `y = ${a.toFixed(1)} √(x ${bSign}) ${cSign}`;
+
+            // Draw Graph
+            drawGraph(a, b, c);
+
+            // Match Calculation
+            const diffA = Math.abs(a - TARGET_A);
+            const diffB = Math.abs(b - TARGET_B);
+            const diffC = Math.abs(c - TARGET_C);
+
+            let accuracy = 100 - (diffA * 15 + diffB * 10 + diffC * 10);
+            accuracy = Math.max(0, Math.min(100, accuracy));
+
+            const matchVal = Math.round(accuracy);
+            matchPercentStr.textContent = `${matchVal}%`;
+            progressBar.style.width = `${matchVal}%`;
+
+            if (matchVal >= 95) {
+                progressBar.style.backgroundColor = '#38a169';
+                feedbackMsg.innerHTML = '<strong style="color: #2f855a;">🎉 완벽한 설계입니다!</strong><br>아치 구조는 하중을 효과적으로 분산시키는 수학적 원리가 담겨 있습니다.';
+                nextBtn.classList.add('visible');
+            } else {
+                if (matchVal > 70) {
+                    progressBar.style.backgroundColor = '#dd6b20';
+                    feedbackMsg.textContent = '목표 아치 라인에 매우 가까워졌습니다! 조금만 더 세밀하게 조절해 보세요.';
+                } else {
+                    progressBar.style.backgroundColor = '#e53e3e';
+                    feedbackMsg.textContent = '슬라이더를 조작하여 회색 아치 가이드라인에 무리함수 그래프를 맞춰보세요.';
+                }
+                nextBtn.classList.remove('visible');
+            }
+        }
+
+        sliderA.addEventListener('input', update);
+        sliderB.addEventListener('input', update);
+        sliderC.addEventListener('input', update);
+
+        // Initial render
+        update();
+    </script>
+</body>
+</html>

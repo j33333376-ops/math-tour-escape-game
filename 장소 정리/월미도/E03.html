@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>월미도 MATHTOUR — 바이킹과 사인 함수</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+    :root {
+      --red:#8c3030; --red-dark:#661f1f; --gold:#d4af37;
+      --ink:#2d3748; --paper:#f5f0e6; --cream:#fffaf0;
+    }
+    * { box-sizing:border-box; }
+    html, body {
+      width:100%; height:100%; margin:0; overflow:hidden;
+      background:#1b1612;
+    }
+    body {
+      display:grid; place-items:center;
+      font-family:'Noto Sans KR',sans-serif; color:var(--ink);
+    }
+    #game-container {
+      position:relative; width:min(1066px,100vw); max-width:1066px;
+      aspect-ratio:16/9; overflow:hidden;
+      background:
+        linear-gradient(rgba(245,240,230,.91),rgba(245,240,230,.93)),
+        repeating-linear-gradient(90deg,transparent 0 42px,rgba(140,48,48,.06) 43px 44px),
+        #f5f0e6;
+      box-shadow:0 20px 70px rgba(0,0,0,.48);
+    }
+    #game-container::before {
+      content:""; position:absolute; inset:10px; z-index:1; pointer-events:none;
+      border:1px solid rgba(140,48,48,.35);
+      box-shadow:inset 0 0 0 4px rgba(212,175,55,.13);
+    }
+    .stage-bar {
+      position:absolute; z-index:20; top:18px; left:22px; right:22px;
+      height:46px; display:flex; align-items:center; justify-content:space-between;
+      padding:0 18px; color:white; border:1px solid var(--gold);
+      background:rgba(40,28,23,.9); box-shadow:0 5px 16px rgba(0,0,0,.2);
+    }
+    .stage-title {
+      font:700 17px 'Nanum Myeongjo',serif; letter-spacing:.08em;
+    }
+    .stage-number {
+      font:700 13px 'Nanum Gothic Coding',monospace; color:#f1d887;
+    }
+    .heading {
+      position:absolute; z-index:4; top:81px; left:0; right:0; text-align:center;
+    }
+    .heading h1 {
+      margin:0; font:700 25px 'Nanum Myeongjo',serif; color:#682323;
+    }
+    .heading p {
+      margin:5px 0 0; font-size:12px; color:#685b50;
+    }
+    .math-board {
+      position:absolute; z-index:3; left:94px; right:94px; top:132px; bottom:78px;
+      display:grid; grid-template-columns:.88fr 1.12fr; gap:15px;
+      padding:14px; border:2px solid var(--gold); border-radius:4px;
+      background:rgba(255,250,240,.9);
+      box-shadow:0 12px 30px rgba(75,45,30,.18),inset 0 0 28px rgba(212,175,55,.09);
+    }
+    .panel {
+      position:relative; min-width:0; overflow:hidden;
+      border:1px solid #ad9368; background:#f9f4e9;
+    }
+    .panel-label {
+      position:absolute; z-index:3; top:10px; left:12px;
+      padding:5px 10px; color:white; border-left:3px solid var(--gold);
+      background:rgba(102,31,31,.92);
+      font:700 12px 'Nanum Gothic Coding',monospace;
+    }
+    canvas { width:100%; height:100%; display:block; }
+    .formula {
+      position:absolute; z-index:4; left:50%; bottom:10px; transform:translateX(-50%);
+      width:max-content; padding:5px 13px; border:1px solid rgba(140,48,48,.28);
+      background:rgba(255,255,255,.86);
+      font:700 13px 'Nanum Gothic Coding',monospace; color:#682323;
+    }
+    .trace-legend {
+      position:absolute; z-index:4; right:10px; top:10px; max-width:158px;
+      padding:7px 9px; background:rgba(255,255,255,.88);
+      border:1px solid #cab888; font-size:10px; line-height:1.5;
+    }
+    .trace-legend i {
+      display:inline-block; width:8px; height:8px; margin-right:5px;
+      border-radius:50%; background:#d7193f; box-shadow:0 0 7px #d7193f;
+    }
+    .progress-wrap {
+      position:absolute; z-index:22; left:50%; bottom:20px; transform:translateX(-50%);
+      width:360px; height:34px; display:flex; align-items:center; gap:10px;
+      padding:0 12px; color:white; border:1px solid var(--gold);
+      background:rgba(42,30,24,.92); font-size:11px;
+    }
+    .progress-track {
+      flex:1; height:5px; overflow:hidden; background:rgba(255,255,255,.2);
+    }
+    .progress-fill {
+      width:0; height:100%; background:linear-gradient(90deg,var(--gold),#f5dd81);
+    }
+    #countdown { min-width:36px; text-align:right; font-family:'Nanum Gothic Coding'; }
+    .btn-nav {
+      position:absolute; z-index:30; bottom:20px; padding:9px 20px;
+      color:white; border:1px solid var(--gold); border-radius:4px;
+      background:var(--red); font-weight:700; cursor:pointer;
+      font-family:'Noto Sans KR',sans-serif;
+    }
+    .btn-nav:hover { background:var(--red-dark); }
+    #btn-prev { left:20px; }
+    #btn-next { right:20px; display:none; }
+    .char-wrapper {
+      position:absolute; z-index:2; bottom:52px; width:130px; height:160px;
+      overflow:visible; opacity:.7; filter:sepia(.18);
+    }
+    .char-wrapper iframe {
+      border:0; width:260px; height:320px; transform:scale(.5);
+      transform-origin:bottom left; pointer-events:none;
+    }
+    #char-민우 { left:-22px; }
+    #char-서연 { right:-22px; }
+    #char-서연 iframe { transform:scale(.5) scaleX(-1); transform-origin:bottom left; }
+    body.preview .char-wrapper { display:none; }
+    .complete-card {
+      position:absolute; z-index:40; inset:0; display:none; place-items:center;
+      background:rgba(22,16,13,.58); backdrop-filter:blur(2px);
+    }
+    .complete-card.show { display:grid; }
+    .complete-inner {
+      width:350px; padding:24px 28px; text-align:center;
+      color:#3b2c23; border:2px solid var(--gold);
+      background:var(--paper); box-shadow:0 16px 60px rgba(0,0,0,.35);
+    }
+    .complete-inner strong {
+      display:block; margin-bottom:7px;
+      font:700 20px 'Nanum Myeongjo',serif; color:#7a2828;
+    }
+    .complete-inner span { font-size:12px; }
+    @media (max-width:720px) {
+      .math-board { left:62px; right:62px; }
+      .heading h1 { font-size:20px; }
+      .progress-wrap { width:290px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div class="stage-bar">
+      <span class="stage-title">월미도 MATHTOUR · 수학 단서</span>
+      <span class="stage-number">STAGE E03</span>
+    </div>
+
+    <div class="heading">
+      <h1>바이킹의 움직임에서 사인 곡선을 찾아라</h1>
+      <p>붉은 추적 점의 높이가 오른쪽 좌표평면에 어떻게 기록되는지 관찰하세요.</p>
+    </div>
+
+    <div class="char-wrapper" id="char-민우">
+      <iframe src="등장인물_민우.html" scrolling="no" title="민우"></iframe>
+    </div>
+    <div class="char-wrapper" id="char-서연">
+      <iframe src="등장인물_서연.html" scrolling="no" title="서연"></iframe>
+    </div>
+
+    <section class="math-board" aria-label="바이킹과 사인 함수 애니메이션">
+      <div class="panel">
+        <div class="panel-label">바이킹의 진자 운동</div>
+        <canvas id="rideCanvas"></canvas>
+        <div class="formula">θ(t) = 60° sin(2πt/T)</div>
+      </div>
+      <div class="panel">
+        <div class="panel-label">시간–높이 그래프</div>
+        <div class="trace-legend"><i></i>바이킹 끝점의 현재 높이<br>한 번 왕복 = 한 개의 파형</div>
+        <canvas id="graphCanvas"></canvas>
+        <div class="formula">y = a sin(bt) + d</div>
+      </div>
+    </section>
+
+    <button class="btn-nav" id="btn-prev" type="button">이전</button>
+    <button class="btn-nav" id="btn-next" type="button">다음</button>
+
+    <div class="progress-wrap" aria-live="polite">
+      <span>파형 관찰 중</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <span id="countdown">4.0초</span>
+    </div>
+
+    <div class="complete-card" id="completeCard">
+      <div class="complete-inner">
+        <strong>관찰 완료</strong>
+        <span>바이킹이 한 번 왕복하며 하나의 사인 파형을 완성했습니다.</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const DURATION = 4000;
+      const isPreview = new URLSearchParams(location.search).has('preview');
+      if (isPreview) document.body.classList.add('preview');
+      const rideCanvas = document.getElementById('rideCanvas');
+      const graphCanvas = document.getElementById('graphCanvas');
+      const rideCtx = rideCanvas.getContext('2d');
+      const graphCtx = graphCanvas.getContext('2d');
+      const fill = document.getElementById('progressFill');
+      const countdown = document.getElementById('countdown');
+      const next = document.getElementById('btn-next');
+      const completeCard = document.getElementById('completeCard');
+      let started = performance.now();
+      let done = false;
+
+      function resize(canvas) {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        canvas.width = Math.max(1, Math.round(rect.width * dpr));
+        canvas.height = Math.max(1, Math.round(rect.height * dpr));
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      function resizeAll() { resize(rideCanvas); resize(graphCanvas); }
+      addEventListener('resize', resizeAll);
+      resizeAll();
+
+      function line(ctx, x1, y1, x2, y2, color, width) {
+        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+        ctx.strokeStyle=color; ctx.lineWidth=width; ctx.stroke();
+      }
+
+      function drawRide(phase) {
+        const w=rideCanvas.clientWidth, h=rideCanvas.clientHeight;
+        rideCtx.clearRect(0,0,w,h);
+        const sky=rideCtx.createLinearGradient(0,0,0,h);
+        sky.addColorStop(0,'#d6d0bd'); sky.addColorStop(.7,'#f4ead2'); sky.addColorStop(1,'#c8ad75');
+        rideCtx.fillStyle=sky; rideCtx.fillRect(0,0,w,h);
+        rideCtx.fillStyle='rgba(255,255,255,.32)';
+        [[.18,.25,20],[.27,.23,28],[.76,.28,25],[.84,.25,34]].forEach(c=>{
+          rideCtx.beginPath(); rideCtx.arc(w*c[0],h*c[1],c[2],0,Math.PI*2); rideCtx.fill();
+        });
+        const px=w*.5, py=h*.20, arm=Math.min(w*.36,h*.43);
+        line(rideCtx,px,py,px-w*.23,h*.88,'#504a43',12);
+        line(rideCtx,px,py,px+w*.23,h*.88,'#504a43',12);
+        line(rideCtx,px-w*.31,h*.88,px+w*.31,h*.88,'#9b772e',7);
+        const angle=(Math.PI/3)*Math.sin(phase);
+        rideCtx.save(); rideCtx.translate(px,py); rideCtx.rotate(angle);
+        line(rideCtx,0,0,0,arm,'#604634',8);
+        rideCtx.translate(0,arm);
+        const bw=Math.min(w*.61,260), bh=55;
+        rideCtx.beginPath();
+        rideCtx.moveTo(-bw/2,-8);
+        rideCtx.quadraticCurveTo(-bw*.34,bh,0,bh);
+        rideCtx.quadraticCurveTo(bw*.34,bh,bw/2,-8);
+        rideCtx.quadraticCurveTo(0,13,-bw/2,-8);
+        rideCtx.closePath();
+        rideCtx.fillStyle='#8c3030'; rideCtx.fill();
+        rideCtx.strokeStyle='#d4af37'; rideCtx.lineWidth=4; rideCtx.stroke();
+        for(let i=0;i<7;i++){
+          const x=-bw*.34+i*(bw*.68/6);
+          rideCtx.fillStyle=i%2?'#d4af37':'#ede0bd';
+          rideCtx.fillRect(x-8,2,16,15);
+        }
+        rideCtx.beginPath(); rideCtx.arc(bw/2,-8,8,0,Math.PI*2);
+        rideCtx.fillStyle='#d7193f'; rideCtx.shadowColor='#d7193f'; rideCtx.shadowBlur=14; rideCtx.fill();
+        rideCtx.shadowBlur=0; rideCtx.strokeStyle='white'; rideCtx.lineWidth=2; rideCtx.stroke();
+        rideCtx.restore();
+        rideCtx.beginPath(); rideCtx.arc(px,py,14,0,Math.PI*2);
+        rideCtx.fillStyle='#d4af37'; rideCtx.fill(); rideCtx.strokeStyle='#55462c'; rideCtx.lineWidth=4; rideCtx.stroke();
+        return Math.sin(angle);
+      }
+
+      function drawGraph(progress,currentY) {
+        const w=graphCanvas.clientWidth,h=graphCanvas.clientHeight;
+        graphCtx.clearRect(0,0,w,h); graphCtx.fillStyle='#fffdf8'; graphCtx.fillRect(0,0,w,h);
+        const l=43,r=18,t=55,b=39,pw=w-l-r,ph=h-t-b,mid=t+ph/2;
+        graphCtx.strokeStyle='#e2d8c5'; graphCtx.lineWidth=1;
+        for(let i=0;i<=8;i++) line(graphCtx,l+pw*i/8,t,l+pw*i/8,t+ph,'#e2d8c5',1);
+        for(let i=0;i<=6;i++) line(graphCtx,l,t+ph*i/6,l+pw,t+ph*i/6,'#e2d8c5',1);
+        line(graphCtx,l,t,l,t+ph,'#4a463f',2); line(graphCtx,l,mid,l+pw,mid,'#4a463f',2);
+        graphCtx.fillStyle='#5e5548'; graphCtx.font='11px Noto Sans KR';
+        graphCtx.fillText('높이 y',5,t+3); graphCtx.fillText('시간 t',w-48,mid+18);
+        graphCtx.fillText('+a',l-25,t+5); graphCtx.fillText('−a',l-25,t+ph);
+        const amp=ph*.36, end=Math.max(progress,.005);
+        graphCtx.beginPath();
+        for(let i=0;i<=160*end;i++){
+          const p=i/160, x=l+p*pw, y=mid-Math.sin(p*Math.PI*2)*amp;
+          i===0?graphCtx.moveTo(x,y):graphCtx.lineTo(x,y);
+        }
+        graphCtx.strokeStyle='#8c3030'; graphCtx.lineWidth=3; graphCtx.stroke();
+        const cx=l+progress*pw, cy=mid-currentY*amp;
+        graphCtx.beginPath(); graphCtx.arc(cx,cy,7,0,Math.PI*2);
+        graphCtx.fillStyle='#d7193f'; graphCtx.shadowColor='#d7193f'; graphCtx.shadowBlur=12; graphCtx.fill();
+        graphCtx.shadowBlur=0; graphCtx.strokeStyle='white'; graphCtx.lineWidth=2; graphCtx.stroke();
+      }
+
+      function finish() {
+        if(done) return; done=true;
+        fill.style.width='100%'; countdown.textContent='완료';
+        next.style.display='block';
+        completeCard.classList.add('show');
+        setTimeout(()=>{
+          completeCard.classList.remove('show');
+          if(!isPreview) window.location.href='E04.html';
+        },700);
+      }
+
+      function animate(now) {
+        const elapsed=now-started;
+        const progress=Math.min(elapsed/DURATION,1);
+        const phase=progress*Math.PI*2;
+        const height=drawRide(phase);
+        drawGraph(progress,height);
+        fill.style.width=(progress*100)+'%';
+        countdown.textContent=Math.max(0,(DURATION-elapsed)/1000).toFixed(1)+'초';
+        if(progress>=1) finish();
+        else requestAnimationFrame(animate);
+      }
+
+      document.getElementById('btn-prev').addEventListener('click',()=>location.href='E02.html');
+      next.addEventListener('click',()=>location.href='E04.html');
+      requestAnimationFrame(animate);
+    })();
+  </script>
+</body>
+</html>

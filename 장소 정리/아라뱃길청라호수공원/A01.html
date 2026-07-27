@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아라뱃길·청라호수공원 MATHTOUR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+        @import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #0d1b2a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #1a365d;
+        }
+
+        /* 16:9 가로 화면 유지 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background-color: #e0f7fa;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 스테이지 상단 표시바 (글래스모피즘) */
+        #top-bar {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            height: 44px;
+            background: rgba(0, 119, 190, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(64, 224, 208, 0.4);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 10;
+        }
+
+        .stage-title {
+            font-family: 'NanumSquareRound', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+        }
+
+        /* 인물 필터 및 모션 */
+        .char-wrapper {
+            transition: filter 0.2s ease;
+        }
+
+        .char-wrapper.inactive {
+            filter: brightness(0.55);
+        }
+
+        /* 대화창 UI (유형 2) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 88%;
+            height: 130px;
+            background: rgba(26, 54, 93, 0.85);
+            border: 1px solid #40e0d0;
+            border-radius: 15px;
+            padding: 15px 25px;
+            z-index: 10;
+            cursor: pointer;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        #speaker-name {
+            font-family: 'NanumSquareRound', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #40e0d0;
+            margin-bottom: 8px;
+            text-shadow: 0 0 5px rgba(64, 224, 208, 0.4);
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.98rem;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            word-break: keep-all;
+        }
+
+        .click-prompt {
+            position: absolute;
+            right: 20px;
+            bottom: 12px;
+            font-size: 0.8rem;
+            color: #40e0d0;
+            animation: blink 1.2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* 공통 이동 버튼 (유선형 알약형) */
+        .btn-nav {
+            position: absolute;
+            padding: 10px 24px;
+            background-color: #0077be;
+            color: #ffffff;
+            border: 1px solid #40e0d0;
+            border-radius: 50px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 11;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-nav:hover {
+            background-color: #40e0d0;
+            color: #1a365d;
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+            display: none;
+        }
+
+        #btn-next {
+            right: 20px;
+            bottom: 20px;
+            display: none;
+        }
+
+        #btn-skip {
+            right: 20px;
+            bottom: 20px;
+            z-index: 12;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <img src="배경1.png" alt="아라뱃길 배경" class="bg-img">
+
+    <div id="top-bar">
+        <span class="stage-title">아라뱃길·청라호수공원 MATHTOUR - 아라타워 전망대</span>
+    </div>
+
+    <div style="position:absolute; left:193px; bottom:60px; width:680px; height:340px; overflow:hidden; z-index:1;">
+        <iframe src="아라타워전망대앞.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(0.68); transform-origin:top left; pointer-events:none;"></iframe>
+    </div>
+
+    <div class="char-wrapper" id="char-민우" style="position:absolute; left:170px; bottom:30px; width:260px; height:320px; overflow:visible; z-index:3;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <div class="char-wrapper" id="char-서연" style="position:absolute; left:900px; bottom:30px; width:260px; height:320px; overflow:visible; z-index:3;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-name">민우</div>
+        <div id="dialogue-text">대사를 불러오는 중입니다...</div>
+        <div class="click-prompt">클릭하여 계속 ▼</div>
+    </div>
+
+    <button class="btn-nav" id="btn-prev" onclick="navigate('index.html')">이전</button>
+    <button class="btn-nav" id="btn-next" onclick="navigate('A02.html')">다음</button>
+    <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
+</div>
+
+<script>
+    // 대화 스크립트 데이터
+    const dialogues = [
+        {
+            speaker: "민우",
+            text: "(전망대를 올려다보며) 와, 서연아! 저기 봐. 건물이 정말 독특하게 생겼다. 저기가 우리가 오늘 갈 아라타워 전망대지? 그런데 '아라'라는 이름은 무슨 뜻이야?",
+            target: "char-민우"
+        },
+        {
+            speaker: "서연",
+            text: "민우야, '아라'는 우리말로 '바다'라는 뜻이야. 이 전망대가 서 있는 곳이 바로 서해와 한강을 잇는 '경인 아라뱃길'의 시작점이거든.",
+            target: "char-서연"
+        },
+        {
+            speaker: "민우",
+            text: "바다로 가는 길이라는 뜻이구나! 멋진데? 그냥 최근에 지어진 세련된 건물인 줄만 알았어.",
+            target: "char-민우"
+        },
+        {
+            speaker: "서연",
+            text: "그렇게만 생각하면 섭섭하지! 사실 이 물길을 내려다보는 아라타워에는 800년의 기다림이 담겨 있어. 고려 시대 최충헌의 아들 최이부터 조선 시대 김인로까지, 수많은 이들이 서해와 한강을 연결하려 했지만 암석층 때문에 실패했던 국가적 숙원 사업이었거든.",
+            target: "char-서연"
+        },
+        {
+            speaker: "민우",
+            text: "(깜짝 놀라며) 800년 전부터? 와... 그럼 저 높은 전망대에서 그 역사가 담긴 물길을 한눈에 볼 수 있다는 거네? 저 타워, 도대체 얼마나 높은 거야?",
+            target: "char-민우"
+        },
+        {
+            speaker: "서연",
+            text: "그건 우리가 들어가서 수학적으로 직접 측정해 볼 수 있어. 정말 궁금하니까 얼른 한 번 들어가 보자!",
+            target: "char-서연"
+        }
+    ];
+
+    let currentIndex = 0;
+
+    // 대화 진행 및 화자 강조 처리
+    function updateDialogue() {
+        if (currentIndex < dialogues.length) {
+            const current = dialogues[currentIndex];
+            
+            document.getElementById('speaker-name').textContent = current.speaker;
+            document.getElementById('dialogue-text').textContent = current.text;
+
+            const charWrappers = document.querySelectorAll('.char-wrapper');
+            charWrappers.forEach(wrapper => {
+                if (wrapper.id === current.target) {
+                    wrapper.classList.remove('inactive');
+                } else {
+                    wrapper.classList.add('inactive');
+                }
+            });
+        } else {
+            endDialogue();
+        }
+    }
+
+    function advanceDialogue() {
+        currentIndex++;
+        updateDialogue();
+    }
+
+    function skipDialogue() {
+        endDialogue();
+    }
+
+    function endDialogue() {
+        document.getElementById('dialogue-box').style.display = 'none';
+        document.getElementById('btn-skip').style.display = 'none';
+
+        // 대화 종료 시 모든 인물 활성화
+        const charWrappers = document.querySelectorAll('.char-wrapper');
+        charWrappers.forEach(wrapper => {
+            wrapper.classList.remove('inactive');
+        });
+
+        // 이전/다음 버튼 표시
+        document.getElementById('btn-prev').style.display = 'block';
+        document.getElementById('btn-next').style.display = 'block';
+    }
+
+    function navigate(url) {
+        window.location.href = url;
+    }
+
+    window.onload = function() {
+        updateDialogue();
+    };
+</script>
+
+</body>
+</html>

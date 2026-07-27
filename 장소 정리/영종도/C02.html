@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>영종도 MATHTOUR - 을왕리해수욕장 드론 추적</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    :root {
+      --neon-blue: #00f0ff;
+      --alert-red: #ff003c;
+      --cyan-text: #e0ffff;
+      --space-black: #0b0c10;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 30%, #163141 0%, #0b0c10 58%, #030406 100%);
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #fff;
+    }
+
+    button { font: inherit; }
+
+    #game-container {
+      position: relative;
+      width: min(100vw, 1066px);
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      isolation: isolate;
+      background: var(--space-black);
+      box-shadow: 0 0 30px rgba(0,240,255,.28), inset 0 0 50px rgba(0,0,0,.65);
+    }
+
+    #background-image {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      user-select: none;
+      filter: brightness(.78) saturate(.94) contrast(1.05);
+    }
+
+    #scene-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(to bottom, rgba(0,10,20,.4) 0%, rgba(0,20,30,.05) 34%, rgba(0,5,12,.18) 66%, rgba(0,0,0,.68) 100%),
+        repeating-linear-gradient(to bottom, transparent 0, transparent 3px, rgba(0,240,255,.025) 4px);
+    }
+
+    #edge-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      box-shadow: inset 0 0 75px rgba(0,0,0,.78), inset 0 0 4px var(--neon-blue);
+    }
+
+    #stage-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      min-height: 54px;
+      padding: 7px 22px;
+      overflow: hidden;
+      background: rgba(3,8,14,.88);
+      border-bottom: 2px solid var(--neon-blue);
+      box-shadow: 0 0 14px rgba(0,240,255,.65);
+    }
+
+    #stage-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -35%;
+      width: 28%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0,240,255,.16), transparent);
+      animation: headerScan 5s linear infinite;
+    }
+
+    .stage-title {
+      position: relative;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(16px, 2.15vw, 25px);
+      font-weight: 400;
+      letter-spacing: .08em;
+      color: var(--cyan-text);
+      text-shadow: 0 0 8px var(--neon-blue);
+    }
+
+    .stage-code {
+      position: relative;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(10px, 1.25vw, 14px);
+      color: var(--neon-blue);
+      letter-spacing: .08em;
+    }
+
+    .hud-corner {
+      position: absolute;
+      z-index: 12;
+      width: 42px;
+      height: 42px;
+      pointer-events: none;
+      opacity: .85;
+    }
+    .top-left { top: 68px; left: 14px; border-top: 2px solid var(--neon-blue); border-left: 2px solid var(--neon-blue); }
+    .top-right { top: 68px; right: 14px; border-top: 2px solid var(--neon-blue); border-right: 2px solid var(--neon-blue); }
+    .bottom-left { bottom: 14px; left: 14px; border-bottom: 2px solid var(--neon-blue); border-left: 2px solid var(--neon-blue); }
+    .bottom-right { right: 14px; bottom: 14px; border-right: 2px solid var(--neon-blue); border-bottom: 2px solid var(--neon-blue); }
+
+    #mission-status {
+      position: absolute;
+      top: 72px;
+      left: 50%;
+      z-index: 14;
+      min-width: 300px;
+      padding: 8px 18px;
+      border: 1px solid rgba(255,0,60,.78);
+      background: rgba(30,0,9,.75);
+      box-shadow: 0 0 12px rgba(255,0,60,.38), inset 0 0 14px rgba(255,0,60,.08);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(10px, 1.25vw, 14px);
+      color: #ffd9e2;
+      text-align: center;
+      letter-spacing: .08em;
+      opacity: 0;
+      transform: translateX(-50%) translateY(-14px);
+      animation: statusAppear .65s ease 1.2s forwards;
+    }
+    #mission-status strong { color: var(--alert-red); }
+
+    .char-wrapper {
+      position: absolute;
+      z-index: 5;
+      overflow: visible;
+      opacity: 0;
+      will-change: transform, opacity, filter;
+      filter: drop-shadow(0 14px 9px rgba(0,0,0,.48)) drop-shadow(0 0 8px rgba(0,240,255,.16));
+      transition: filter .2s ease;
+    }
+
+    .char-wrapper.inactive {
+      filter: brightness(.55) drop-shadow(0 14px 9px rgba(0,0,0,.48));
+    }
+
+    .char-wrapper iframe {
+      display: block;
+      width: 260px;
+      height: 320px;
+      border: 0;
+      pointer-events: none;
+    }
+
+    #char-민우 {
+      left: 115px;
+      bottom: 92px;
+      width: 234px;
+      height: 288px;
+      animation: arriveMinwoo 1.05s cubic-bezier(.2,.8,.2,1) .2s forwards;
+    }
+    #char-민우 iframe { transform: scale(.9); transform-origin: bottom left; }
+
+    #char-서연 {
+      right: 105px;
+      bottom: 92px;
+      width: 234px;
+      height: 288px;
+      animation: arriveSeoyeon 1.05s cubic-bezier(.2,.8,.2,1) .45s forwards;
+    }
+    #char-서연 iframe { transform: scale(.9) scaleX(-1); transform-origin: bottom left; }
+
+    #char-민우.exit-scene { animation: exitMinwoo 1.7s ease-in-out forwards; }
+    #char-서연.exit-scene { animation: exitSeoyeon 1.7s ease-in-out forwards; }
+
+    .arrival-ring {
+      position: absolute;
+      z-index: 4;
+      width: 190px;
+      height: 40px;
+      border: 2px solid var(--neon-blue);
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+      box-shadow: 0 0 12px var(--neon-blue), inset 0 0 12px rgba(0,240,255,.45);
+    }
+    #ring-minwoo { left: 135px; bottom: 100px; animation: arrivalRing 1.2s ease-out .16s forwards; }
+    #ring-seoyeon { right: 135px; bottom: 100px; animation: arrivalRing 1.2s ease-out .42s forwards; }
+
+    /* 드론.html 원본 크기를 확인할 수 없어 정사각형 기본값 600×600 적용 */
+    #asset-drone {
+      position: absolute;
+      top: 102px;
+      left: 50%;
+      z-index: 4;
+      width: 150px;
+      height: 150px;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateX(-50%);
+      animation: droneAppear .85s ease 1.1s forwards, droneHover 2.4s ease-in-out 1.95s infinite alternate;
+      filter: drop-shadow(0 0 10px rgba(255,0,60,.72)) drop-shadow(0 8px 8px rgba(0,0,0,.55));
+    }
+    #asset-drone iframe {
+      display: block;
+      width: 600px;
+      height: 600px;
+      border: 0;
+      transform: scale(.25);
+      transform-origin: top left;
+      pointer-events: none;
+    }
+
+    #drone-target {
+      position: absolute;
+      top: 107px;
+      left: 50%;
+      z-index: 7;
+      width: 138px;
+      height: 138px;
+      border: 2px solid var(--alert-red);
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-50%);
+      animation: targetAppear .45s ease 1.65s forwards, targetPulse 1.15s ease-in-out 2.1s infinite alternate;
+    }
+    #drone-target::before, #drone-target::after {
+      content: '';
+      position: absolute;
+      background: var(--alert-red);
+      box-shadow: 0 0 7px var(--alert-red);
+    }
+    #drone-target::before { top: 67px; left: -16px; width: 166px; height: 2px; }
+    #drone-target::after { top: -16px; left: 67px; width: 2px; height: 166px; }
+
+    #drone-scan-label {
+      position: absolute;
+      top: 247px;
+      left: 50%;
+      z-index: 8;
+      padding: 5px 11px;
+      border: 1px solid var(--alert-red);
+      background: rgba(24,0,7,.78);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(9px, 1vw, 12px);
+      color: #ffd8e1;
+      letter-spacing: .07em;
+      opacity: 0;
+      transform: translateX(-50%);
+      animation: labelAppear .45s ease 1.85s forwards;
+    }
+
+    #trajectory-preview {
+      position: absolute;
+      left: 285px;
+      bottom: 182px;
+      z-index: 3;
+      width: 500px;
+      height: 250px;
+      overflow: hidden;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .4s ease;
+    }
+    #trajectory-preview.visible { opacity: 1; }
+    #trajectory-preview::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -185px;
+      width: 500px;
+      height: 370px;
+      border: 3px dashed rgba(0,240,255,.88);
+      border-right-color: transparent;
+      border-bottom-color: transparent;
+      border-left-color: transparent;
+      border-radius: 50%;
+      transform: rotate(-3deg);
+      filter: drop-shadow(0 0 5px var(--neon-blue));
+      animation: trajectoryBlink 1.2s ease-in-out infinite alternate;
+    }
+
+    #trajectory-label {
+      position: absolute;
+      left: 50%;
+      bottom: 225px;
+      z-index: 9;
+      padding: 5px 10px;
+      border: 1px solid var(--neon-blue);
+      background: rgba(0,20,30,.75);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(9px, 1vw, 12px);
+      color: var(--neon-blue);
+      letter-spacing: .06em;
+      opacity: 0;
+      transform: translateX(-50%);
+      transition: opacity .4s ease;
+    }
+    #trajectory-label.visible { opacity: 1; }
+
+    /* C01.html의 상황 설명 박스 서식을 그대로 적용한 대화 박스 */
+    #dialogue-box {
+      position: absolute;
+      left: 50%;
+      bottom: 92px;
+      z-index: 20;
+      width: min(76%, 800px);
+      min-height: 112px;
+      padding: 17px 24px 18px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 240, 255, 0.75);
+      border-left: 5px solid var(--neon-blue);
+      background: rgba(0, 35, 48, 0.42);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.3), inset 0 0 22px rgba(0, 240, 255, 0.08);
+      opacity: 0;
+      transform: translateX(-50%) translateY(18px);
+      animation: dialogueAppear .65s ease 1.6s forwards;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #dialogue-box::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -40%;
+      width: 35%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.12), transparent);
+      animation: boxScan 4.2s linear infinite;
+      pointer-events: none;
+    }
+
+    #speaker-name {
+      min-height: 25px;
+      margin-bottom: 5px;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(15px, 1.9vw, 21px);
+      color: var(--neon-blue);
+      letter-spacing: .08em;
+      text-shadow: 0 0 7px rgba(0,240,255,.8);
+    }
+
+    #dialogue-text {
+      min-height: 49px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: clamp(12px, 1.52vw, 17px);
+      font-weight: 400;
+      line-height: 1.6;
+      letter-spacing: .05em;
+      color: #fff;
+      text-shadow: 0 2px 3px #000;
+    }
+
+    #dialogue-progress {
+      position: absolute;
+      right: 18px;
+      bottom: 8px;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(9px, 1vw, 11px);
+      color: rgba(224,255,255,.72);
+    }
+
+    #dialogue-guide {
+      position: absolute;
+      right: 18px;
+      top: 12px;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(8px, .95vw, 10px);
+      color: rgba(0,240,255,.78);
+      animation: guideBlink 1.2s ease-in-out infinite alternate;
+    }
+
+    .btn-nav {
+      position: absolute;
+      z-index: 30;
+      min-width: 116px;
+      padding: 10px 20px;
+      border: 2px solid var(--neon-blue);
+      background: rgba(0,0,0,.72);
+      box-shadow: 0 0 10px var(--neon-blue);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: clamp(12px, 1.4vw, 16px);
+      font-weight: 700;
+      color: var(--neon-blue);
+      letter-spacing: .08em;
+      cursor: pointer;
+      transition: background .2s ease, color .2s ease, transform .2s ease, box-shadow .2s ease;
+    }
+
+    .btn-nav:hover, .btn-nav:focus-visible {
+      color: #000;
+      background: var(--neon-blue);
+      box-shadow: 0 0 10px var(--neon-blue), 0 0 22px rgba(0,240,255,.8);
+      transform: translateY(-2px);
+      outline: none;
+    }
+    .btn-nav:active { transform: translateY(0); }
+
+    #btn-prev { left: 20px; bottom: 20px; display: none; }
+    #btn-next, #btn-skip { right: 20px; bottom: 20px; }
+    #btn-next { display: none; }
+    #btn-skip { background: rgba(0,0,0,.72); }
+
+    #transition-screen {
+      position: absolute;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .65s ease;
+    }
+    #transition-screen.active { visibility: visible; opacity: 1; }
+    #transition-message {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(19px, 3vw, 34px);
+      color: var(--neon-blue);
+      letter-spacing: .12em;
+      text-align: center;
+      text-shadow: 0 0 13px var(--neon-blue);
+    }
+
+    @keyframes headerScan { from { left: -35%; } to { left: 110%; } }
+    @keyframes statusAppear { to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    @keyframes arriveMinwoo {
+      0% { opacity: 0; transform: translateX(-100px) translateY(-18px); filter: brightness(2) drop-shadow(0 0 24px var(--neon-blue)); }
+      55% { opacity: 1; filter: brightness(1.2) drop-shadow(0 0 16px rgba(0,240,255,.72)); }
+      100% { opacity: 1; transform: translateX(0) translateY(0); }
+    }
+    @keyframes arriveSeoyeon {
+      0% { opacity: 0; transform: translateX(100px) translateY(-18px); filter: brightness(2) drop-shadow(0 0 24px var(--neon-blue)); }
+      55% { opacity: 1; filter: brightness(1.2) drop-shadow(0 0 16px rgba(0,240,255,.72)); }
+      100% { opacity: 1; transform: translateX(0) translateY(0); }
+    }
+    @keyframes arrivalRing {
+      0% { opacity: 0; transform: scale(.25); }
+      35% { opacity: .95; }
+      100% { opacity: 0; transform: scale(1.45); }
+    }
+    @keyframes droneAppear {
+      from { opacity: 0; transform: translateX(-50%) translateY(-45px) scale(.4); filter: brightness(2) drop-shadow(0 0 26px var(--alert-red)); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+    }
+    @keyframes droneHover { from { margin-top: -5px; } to { margin-top: 8px; } }
+    @keyframes targetAppear { from { opacity: 0; transform: translateX(-50%) scale(1.7); } to { opacity: .88; transform: translateX(-50%) scale(1); } }
+    @keyframes targetPulse {
+      from { box-shadow: 0 0 8px rgba(255,0,60,.42), inset 0 0 7px rgba(255,0,60,.08); }
+      to { box-shadow: 0 0 22px rgba(255,0,60,.92), inset 0 0 15px rgba(255,0,60,.18); }
+    }
+    @keyframes labelAppear { to { opacity: 1; } }
+    @keyframes dialogueAppear { to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    @keyframes boxScan { from { left: -40%; } to { left: 115%; } }
+    @keyframes guideBlink { from { opacity: .4; } to { opacity: 1; } }
+    @keyframes trajectoryBlink { from { opacity: .4; } to { opacity: 1; } }
+    @keyframes exitMinwoo {
+      0% { opacity: 1; transform: translateX(0) scale(1); }
+      56% { opacity: 1; transform: translateX(265px) scale(.96); }
+      74% { opacity: 1; transform: translateX(265px) scale(.96); filter: brightness(1.9) drop-shadow(0 0 22px var(--neon-blue)); }
+      100% { opacity: 0; transform: translateX(265px) scale(.2); filter: brightness(3) blur(2px) drop-shadow(0 0 30px var(--neon-blue)); }
+    }
+    @keyframes exitSeoyeon {
+      0% { opacity: 1; transform: translateX(0) scale(1); }
+      56% { opacity: 1; transform: translateX(-255px) scale(.96); }
+      74% { opacity: 1; transform: translateX(-255px) scale(.96); filter: brightness(1.9) drop-shadow(0 0 22px var(--neon-blue)); }
+      100% { opacity: 0; transform: translateX(-255px) scale(.2); filter: brightness(3) blur(2px) drop-shadow(0 0 30px var(--neon-blue)); }
+    }
+
+    @media (max-width: 720px) {
+      #stage-header { min-height: 42px; padding: 5px 14px; }
+      #mission-status { top: 50px; min-width: 220px; padding: 5px 10px; }
+      #char-민우 { left: 8%; bottom: 75px; width: 169px; height: 208px; }
+      #char-민우 iframe { transform: scale(.65); }
+      #char-서연 { right: 4%; bottom: 75px; width: 169px; height: 208px; }
+      #char-서연 iframe { transform: scale(.65) scaleX(-1); }
+      #ring-minwoo { left: 10%; bottom: 80px; }
+      #ring-seoyeon { right: 7%; bottom: 80px; }
+      .arrival-ring { width: 125px; height: 27px; }
+      #asset-drone { top: 72px; width: 105px; height: 105px; }
+      #asset-drone iframe { transform: scale(.175); }
+      #drone-target { top: 76px; width: 98px; height: 98px; }
+      #drone-target::before { top: 47px; left: -11px; width: 116px; }
+      #drone-target::after { top: -11px; left: 47px; height: 116px; }
+      #drone-scan-label { top: 177px; }
+      #dialogue-box { bottom: 60px; width: 78%; min-height: 85px; padding: 10px 14px 13px; }
+      #dialogue-guide { top: 6px; right: 10px; }
+      #dialogue-progress { right: 10px; bottom: 4px; }
+      .btn-nav { min-width: 82px; padding: 6px 10px; }
+      #btn-prev { left: 12px; bottom: 12px; }
+      #btn-next, #btn-skip { right: 12px; bottom: 12px; }
+      #trajectory-preview, #trajectory-label { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main id="game-container" aria-label="영종도 MATHTOUR 을왕리해수욕장 드론 추적 대화 장면">
+    <img id="background-image" src="을왕리해수욕장.png" alt="을왕리해수욕장" draggable="false" />
+    <div id="scene-overlay"></div>
+    <div id="edge-vignette"></div>
+
+    <header id="stage-header">
+      <div class="stage-title">을왕리해수욕장 · 드론 추적</div>
+      <div class="stage-code">C02 · AERIAL THREAT ANALYSIS</div>
+    </header>
+
+    <div class="hud-corner top-left"></div>
+    <div class="hud-corner top-right"></div>
+    <div class="hud-corner bottom-left"></div>
+    <div class="hud-corner bottom-right"></div>
+
+    <div id="mission-status"><strong>WARNING</strong> · UNAUTHORIZED AERIAL RECORDING DETECTED</div>
+
+    <div class="arrival-ring" id="ring-minwoo"></div>
+    <div class="arrival-ring" id="ring-seoyeon"></div>
+
+    <div class="char-wrapper" id="char-민우" style="position:absolute; left:115px; bottom:92px; width:234px; height:288px; overflow:visible;">
+      <iframe src="등장인물_민우.html" title="민우" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <div class="char-wrapper" id="char-서연" style="position:absolute; right:105px; bottom:92px; width:234px; height:288px; overflow:visible;">
+      <iframe src="등장인물_서연.html" title="서연" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.9) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <div id="asset-drone" style="position:absolute; top:102px; left:50%; width:150px; height:150px; overflow:hidden;">
+      <iframe src="드론.html" title="불법 비행 드론" scrolling="no" style="border:0; width:600px; height:600px; transform:scale(0.25); transform-origin:top left; pointer-events:none;"></iframe>
+    </div>
+
+    <div id="drone-target" aria-hidden="true"></div>
+    <div id="drone-scan-label">TARGET LOCKED · DRONE 01</div>
+    <div id="trajectory-preview" aria-hidden="true"></div>
+    <div id="trajectory-label">PROJECTILE PATH · y = ax² + bx + c</div>
+
+    <section id="dialogue-box" role="button" tabindex="0" aria-label="대화 계속하기" onclick="advanceDialogue()">
+      <div id="dialogue-guide">CLICK / SPACE ▶</div>
+      <div id="speaker-name">민우</div>
+      <div id="dialogue-text"></div>
+      <div id="dialogue-progress">01 / 09</div>
+    </section>
+
+    <button class="btn-nav" id="btn-prev" type="button" onclick="goToScene('C01.html')">◀ 이전</button>
+    <button class="btn-nav" id="btn-next" type="button" onclick="goToScene('C03.html')">다음 ▶</button>
+    <button class="btn-nav" id="btn-skip" type="button" onclick="skipDialogue(event)">건너뛰기</button>
+
+    <div id="transition-screen" aria-hidden="true">
+      <div id="transition-message">요격 좌표 계산 구역으로 이동 중...</div>
+    </div>
+  </main>
+
+  <script>
+    'use strict';
+
+    const dialogues = [
+      { speaker: '민우', text: '서연아, 입구에서 봤던 드론이야. 아직도 해수욕장 위에 멈춰 있어.', target: 'char-민우' },
+      { speaker: '서연', text: '움직이지 않고 같은 위치에서 카메라를 아래쪽으로 향하고 있어. 해수욕장 내부를 불법으로 촬영하는 것 같아.', target: 'char-서연' },
+      { speaker: '민우', text: '사람들이 많은 곳을 계속 촬영하게 둘 수는 없어. 빨리 비행을 멈추게 해야 해.', target: 'char-민우' },
+      { speaker: '서연', text: '조종자를 찾기에는 시간이 부족해. 주변의 돌을 던져서 드론의 비행을 방해하는 건 어떨까?', target: 'char-서연' },
+      { speaker: '민우', text: '좋은 생각이야. 하지만 아무 방향으로 던지면 드론에 닿지 않거나 주변 사람이 다칠 수도 있어.', target: 'char-민우' },
+      { speaker: '서연', text: '돌을 던지면 위로 올라갔다가 다시 내려오는 곡선 모양의 경로를 그리겠지?', target: 'char-서연' },
+      { speaker: '민우', text: '맞아. 학교에서 배운 이차함수의 그래프처럼 포물선 모양으로 움직일 거야.', target: 'char-민우' },
+      { speaker: '서연', text: '그렇다면 드론의 높이와 거리를 좌표로 나타내고, 돌이 지나갈 포물선의 식을 구해야 정확히 맞힐 수 있겠어.', target: 'char-서연' },
+      { speaker: '민우', text: '좋아. 안전한 위치에서 드론까지의 좌표를 분석하고, 돌을 어떤 각도와 세기로 던져야 할지 계산해 보자.', target: 'char-민우' }
+    ];
+
+    const characterWrappers = document.querySelectorAll('.char-wrapper');
+    const dialogueBox = document.getElementById('dialogue-box');
+    const speakerName = document.getElementById('speaker-name');
+    const dialogueText = document.getElementById('dialogue-text');
+    const dialogueProgress = document.getElementById('dialogue-progress');
+    const dialogueGuide = document.getElementById('dialogue-guide');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    const btnSkip = document.getElementById('btn-skip');
+    const minwoo = document.getElementById('char-민우');
+    const seoyeon = document.getElementById('char-서연');
+    const trajectoryPreview = document.getElementById('trajectory-preview');
+    const trajectoryLabel = document.getElementById('trajectory-label');
+    const transitionScreen = document.getElementById('transition-screen');
+
+    let currentIndex = 0;
+    let typingTimer = null;
+    let isTyping = false;
+    let currentFullText = '';
+    let dialogueFinished = false;
+    let exitStarted = false;
+    let movingScene = false;
+
+    function setActiveCharacter(targetId) {
+      characterWrappers.forEach((wrapper) => {
+        wrapper.classList.toggle('inactive', wrapper.id !== targetId);
+      });
+    }
+
+    function typeDialogue(text) {
+      clearInterval(typingTimer);
+      dialogueText.textContent = '';
+      currentFullText = text;
+      isTyping = true;
+      let characterIndex = 0;
+
+      typingTimer = window.setInterval(() => {
+        dialogueText.textContent += text.charAt(characterIndex);
+        characterIndex += 1;
+        if (characterIndex >= text.length) {
+          clearInterval(typingTimer);
+          typingTimer = null;
+          isTyping = false;
+        }
+      }, 31);
+    }
+
+    function completeTyping() {
+      if (!isTyping) return;
+      clearInterval(typingTimer);
+      typingTimer = null;
+      dialogueText.textContent = currentFullText;
+      isTyping = false;
+    }
+
+    function renderDialogue() {
+      const currentDialogue = dialogues[currentIndex];
+      speakerName.textContent = currentDialogue.speaker;
+      setActiveCharacter(currentDialogue.target);
+      typeDialogue(currentDialogue.text);
+
+      dialogueProgress.textContent =
+        String(currentIndex + 1).padStart(2, '0') + ' / ' +
+        String(dialogues.length).padStart(2, '0');
+
+      if (currentIndex >= 5) {
+        trajectoryPreview.classList.add('visible');
+        trajectoryLabel.classList.add('visible');
+      }
+
+      dialogueGuide.textContent =
+        currentIndex === dialogues.length - 1 ? 'CLICK TO COMPLETE ▶' : 'CLICK / SPACE ▶';
+    }
+
+    function advanceDialogue() {
+      if (dialogueFinished || exitStarted) return;
+      if (isTyping) {
+        completeTyping();
+        return;
+      }
+
+      currentIndex += 1;
+      if (currentIndex < dialogues.length) renderDialogue();
+      else finishDialogue();
+    }
+
+    function skipDialogue(event) {
+      if (event) event.stopPropagation();
+      if (dialogueFinished || exitStarted) return;
+      clearInterval(typingTimer);
+      typingTimer = null;
+      isTyping = false;
+      finishDialogue();
+    }
+
+    function restoreCharacters() {
+      characterWrappers.forEach((wrapper) => wrapper.classList.remove('inactive'));
+    }
+
+    function finishDialogue() {
+      if (exitStarted) return;
+      dialogueFinished = true;
+      exitStarted = true;
+      clearInterval(typingTimer);
+      typingTimer = null;
+      isTyping = false;
+      restoreCharacters();
+
+      dialogueBox.style.display = 'none';
+      btnSkip.style.display = 'none';
+      trajectoryPreview.classList.add('visible');
+      trajectoryLabel.classList.add('visible');
+      minwoo.classList.add('exit-scene');
+      seoyeon.classList.add('exit-scene');
+
+      window.setTimeout(() => {
+        btnPrev.style.display = 'block';
+        btnNext.style.display = 'block';
+      }, 1050);
+    }
+
+    function goToScene(url) {
+      if (movingScene) return;
+      movingScene = true;
+      btnPrev.disabled = true;
+      btnNext.disabled = true;
+      transitionScreen.classList.add('active');
+      transitionScreen.setAttribute('aria-hidden', 'false');
+      window.setTimeout(() => { window.location.href = url; }, 700);
+    }
+
+    dialogueBox.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        advanceDialogue();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (dialogueFinished) return;
+      if (event.key === ' ' || event.key === 'Enter' || event.key === 'ArrowRight') {
+        if (document.activeElement !== dialogueBox) {
+          event.preventDefault();
+          advanceDialogue();
+        }
+      }
+      if (event.key === 'Escape') skipDialogue(event);
+    });
+
+    window.addEventListener('load', () => {
+      window.setTimeout(renderDialogue, 1650);
+    });
+  </script>
+</body>
+</html>

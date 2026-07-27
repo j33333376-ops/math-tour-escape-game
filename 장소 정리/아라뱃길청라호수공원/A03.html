@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아라뱃길·청라호수공원 MATHTOUR - A03</title>
+    <style>
+        /* 폰트 및 공통 스타일 */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+        @import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
+
+        :root {
+            --primary-blue: #0077be;
+            --emerald-mint: #40e0d0;
+            --navy-text: #1a365d;
+            --ice-blue: #e0f7fa;
+            --white: #ffffff;
+            --error-red: #d9534f;
+            --success-green: #5cb85c;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            position: relative;
+            overflow: hidden;
+            background-color: var(--ice-blue);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* 배경 이미지 */
+        .background-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 스테이지 상단 표시바 */
+        .stage-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: rgba(0, 119, 190, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(64, 224, 208, 0.5);
+            padding: 10px 40px;
+            border-radius: 20px;
+            font-family: 'NanumSquareRound', sans-serif;
+            color: var(--white);
+            font-weight: 700;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        /* 인물 배치 */
+        .char-wrapper {
+            position: absolute;
+            z-index: 3;
+            overflow: visible;
+        }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            z-index: 110;
+            background-color: var(--primary-blue);
+            color: var(--white);
+            border: 1px solid var(--emerald-mint);
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-nav:hover {
+            background-color: var(--emerald-mint);
+            color: var(--navy-text);
+            border-color: var(--primary-blue);
+        }
+
+        #btn-prev { left: 20px; bottom: 20px; }
+        #btn-next { right: 20px; bottom: 20px; display: none; } /* 초기 숨김 */
+
+        /* 수학 퀴즈 컨테이너 - 에메랄드 오션 테마 적용 */
+        .quiz-wrapper {
+            position: absolute;
+            top: 80px;
+            right: 40px;
+            width: 600px;
+            height: 440px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            border: 2px solid var(--emerald-mint);
+            box-shadow: 0 8px 32px rgba(0, 119, 190, 0.2);
+            z-index: 10;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Noto Sans KR', sans-serif;
+            overflow-y: auto;
+            pointer-events: auto;
+        }
+
+        /* 퀴즈 내부 스타일 재정의 */
+        .quiz-wrapper h1 { color: var(--primary-blue); font-size: 20px; margin: 0 0 10px 0; text-align: center; font-family: 'NanumSquareRound', sans-serif; }
+        .quiz-wrapper .math-concept { 
+            background-color: var(--ice-blue); 
+            padding: 10px; 
+            border-radius: 10px; 
+            font-size: 13px; 
+            margin-bottom: 15px; 
+            color: var(--navy-text);
+            text-align: center;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+        
+        .quiz-sim-area { display: flex; gap: 15px; justify-content: center; margin-bottom: 15px; }
+        .tower-box { display: flex; flex-direction: column; align-items: center; }
+        .tower { width: 50px; height: 200px; background: #eee; border: 2px solid #ccc; position: relative; border-radius: 5px; overflow: hidden; }
+        .elevator { width: 100%; height: 15px; background: var(--primary-blue); position: absolute; bottom: 0; transition: bottom 0.05s linear; }
+        .target-line { position: absolute; bottom: 76%; width: 100%; border-top: 2px dashed var(--error-red); z-index: 1; }
+        
+        canvas { background: #fafafa; border: 1px solid #ccc; border-radius: 5px; }
+
+        .info-board { 
+            display: flex; 
+            justify-content: space-around; 
+            background: var(--white); 
+            padding: 10px; 
+            border-radius: 10px; 
+            margin-bottom: 15px;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 14px;
+        }
+        .info-board span { color: var(--primary-blue); font-weight: bold; }
+
+        .quiz-btns { display: flex; justify-content: center; gap: 10px; }
+        .quiz-btns button { 
+            padding: 8px 20px; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; 
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        #btn-start { background-color: var(--primary-blue); }
+        #btn-stop { background-color: var(--error-red); }
+        #btn-reset { background-color: #f0ad4e; }
+
+        /* 결과 메시지 */
+        .result-message { text-align: center; margin-top: 10px; font-weight: bold; min-height: 20px; font-size: 14px; }
+        .success { color: var(--success-green); }
+        .fail { color: var(--error-red); }
+
+        /* 모달 */
+        .modal { 
+            display: none; position: absolute; inset: 0; background: rgba(26, 54, 93, 0.8); 
+            z-index: 200; justify-content: center; align-items: center; 
+        }
+        .modal-content { 
+            background: white; padding: 30px; border-radius: 20px; text-align: center; width: 400px; 
+            border: 3px solid var(--emerald-mint);
+        }
+        .modal-content input { 
+            background-color: var(--ice-blue); border: 2px solid var(--primary-blue); 
+            padding: 10px; border-radius: 10px; width: 100px; text-align: center; font-family: 'Nanum Gothic Coding', monospace;
+        }
+        .modal-content button { 
+            background: var(--primary-blue); color: white; border: none; padding: 10px 20px; 
+            border-radius: 10px; cursor: pointer; margin-top: 15px; font-family: 'Noto Sans KR', sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <img src="배경3.png" class="background-img" alt="배경">
+
+        <div class="stage-bar">아라뱃길·청라호수공원 MATHTOUR</div>
+
+        <div class="char-wrapper" id="char-민우" style="left: 60px; bottom: 30px; width: 260px; height: 320px;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+        <div class="char-wrapper" id="char-서연" style="left: 180px; bottom: 30px; width: 260px; height: 320px;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <div class="quiz-wrapper">
+            <h1>아라타워 전망대 탈출 도전</h1>
+            <div class="math-concept">v(t) = 2 m/s (등속도 운동) | 목표 높이: 76 m</div>
+            
+            <div class="quiz-sim-area">
+                <div class="tower-box">
+                    <div class="tower">
+                        <div class="target-line"></div>
+                        <div class="elevator" id="elevator"></div>
+                    </div>
+                </div>
+                <div class="graph-box">
+                    <canvas id="graphCanvas" width="300" height="200"></canvas>
+                </div>
+            </div>
+
+            <div class="info-board">
+                <div>시간(t): <span id="time-display">0.00</span>s</div>
+                <div>높이(y): <span id="height-display">0.00</span>m</div>
+            </div>
+
+            <div class="quiz-btns">
+                <button id="btn-start">출발</button>
+                <button id="btn-stop" disabled>정지</button>
+                <button id="btn-reset">다시 하기</button>
+            </div>
+            <div id="result-message" class="result-message"></div>
+        </div>
+
+        <div id="quiz-modal" class="modal">
+            <div class="modal-content">
+                <h2 style="font-family:'NanumSquareRound'; color:var(--primary-blue);">📝 개념 확인</h2>
+                <p class="quiz-text" style="font-size:15px; font-weight:bold; color:var(--navy-text);">
+                    위치함수 y = f(t)의 기울기(도함수)는<br>
+                    <input type="text" id="quiz-input" placeholder="??"> (이)다.
+                </p>
+                <button id="btn-submit-quiz">확인</button>
+                <div id="quiz-feedback" style="margin-top:10px; font-weight:bold;"></div>
+            </div>
+        </div>
+
+        <a href="A02.html" class="btn-nav" id="btn-prev">이전</a>
+        <button class="btn-nav" id="btn-next" onclick="window.location.href='A04.html'">다음</button>
+    </div>
+
+    <script>
+        // 퀴즈 및 애니메이션 로직
+        const elevator = document.getElementById('elevator');
+        const timeDisplay = document.getElementById('time-display');
+        const heightDisplay = document.getElementById('height-display');
+        const btnStart = document.getElementById('btn-start');
+        const btnStop = document.getElementById('btn-stop');
+        const btnReset = document.getElementById('btn-reset');
+        const resMsg = document.getElementById('result-message');
+        
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const velocity = 2;
+        const targetHeight = 76;
+        const targetTime = targetHeight / velocity; // 38s
+        const maxTime = 50;
+        const maxHeight = 100;
+        
+        let startTime = 0;
+        let animationId;
+        let isRunning = false;
+        let currentT = 0;
+        let currentY = 0;
+
+        function initGraph() {
+            ctx.clearRect(0,0,300,200);
+            ctx.beginPath();
+            ctx.strokeStyle = '#999';
+            ctx.moveTo(30, 10); ctx.lineTo(30, 180); ctx.lineTo(290, 180);
+            ctx.stroke();
+            
+            // 목표선
+            const targetY = 180 - (targetHeight/maxHeight) * 170;
+            ctx.beginPath();
+            ctx.strokeStyle = '#d9534f';
+            ctx.setLineDash([5,5]);
+            ctx.moveTo(30, targetY); ctx.lineTo(290, targetY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function drawPoint(t, y) {
+            const x = 30 + (t/maxTime) * 260;
+            const py = 180 - (y/maxHeight) * 170;
+            ctx.fillStyle = '#0077be';
+            ctx.beginPath(); ctx.arc(x, py, 2, 0, Math.PI*2); ctx.fill();
+        }
+
+        function animate(timestamp) {
+            if(!startTime) startTime = timestamp;
+            currentT = (timestamp - startTime) / 1000;
+            currentY = velocity * currentT;
+            
+            if(currentY > maxHeight) { stopSim(); return; }
+
+            timeDisplay.innerText = currentT.toFixed(2);
+            heightDisplay.innerText = currentY.toFixed(2);
+            elevator.style.bottom = (currentY/maxHeight*100) + '%';
+            drawPoint(currentT, currentY);
+
+            if(isRunning) animationId = requestAnimationFrame(animate);
+        }
+
+        function stopSim() {
+            isRunning = false;
+            cancelAnimationFrame(animationId);
+            btnStart.disabled = true;
+            btnStop.disabled = true;
+            checkResult();
+        }
+
+        function checkResult() {
+            const diff = Math.abs(currentT - targetTime);
+            if(diff <= 1.5) {
+                resMsg.innerHTML = '<span class="success">정확합니다! 목표 층에 도달했습니다.</span>';
+                setTimeout(() => { document.getElementById('quiz-modal').style.display = 'flex'; }, 1000);
+            } else {
+                resMsg.innerHTML = '<span class="fail">오차가 큽니다. 다시 시도해보세요.</span>';
+            }
+        }
+
+        btnStart.onclick = () => {
+            isRunning = true;
+            startTime = 0;
+            btnStart.disabled = true;
+            btnStop.disabled = false;
+            resMsg.innerHTML = '';
+            animate(performance.now());
+        };
+
+        btnStop.onclick = () => { stopSim(); };
+
+        btnReset.onclick = () => {
+            stopSim();
+            currentT = 0; currentY = 0;
+            timeDisplay.innerText = '0.00';
+            heightDisplay.innerText = '0.00';
+            elevator.style.bottom = '0%';
+            btnStart.disabled = false;
+            btnStop.disabled = true;
+            initGraph();
+        };
+
+        // 퀴즈 모달 로직
+        const modal = document.getElementById('quiz-modal');
+        const qInput = document.getElementById('quiz-input');
+        const qFeedback = document.getElementById('quiz-feedback');
+        
+        document.getElementById('btn-submit-quiz').onclick = () => {
+            const val = qInput.value.trim().toLowerCase();
+            if(val === '속도' || val === '속력' || val === 'velocity') {
+                qFeedback.innerHTML = '<span class="success">정답입니다!</span>';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    document.getElementById('btn-next').style.display = 'flex';
+                    alert('미션 성공! 전망대 구경을 시작해볼까요?');
+                }, 1000);
+            } else {
+                qFeedback.innerHTML = '<span class="fail">다시 생각해보세요.</span>';
+            }
+        };
+
+        initGraph();
+    </script>
+</body>
+</html>

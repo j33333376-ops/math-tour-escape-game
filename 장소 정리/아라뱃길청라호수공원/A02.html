@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아라뱃길·청라호수공원 MATHTOUR - A01</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+        @import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #0d1b2a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #1a365d;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            position: relative;
+            overflow: hidden;
+            background-color: #e0f7fa;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 8px;
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 에셋 레이어 */
+        .asset-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* 캐릭터 레이어 */
+        .character-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .char-wrapper {
+            position: absolute;
+            overflow: visible;
+            transition: filter 0.2s ease, transform 0.2s ease;
+        }
+
+        .char-wrapper.inactive {
+            filter: brightness(0.55);
+        }
+
+        /* UI 레이어 */
+        .ui-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* 상단 스테이지 표시바 */
+        .stage-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 24px;
+            background: rgba(0, 119, 190, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(64, 224, 208, 0.5);
+            border-radius: 30px;
+            color: #ffffff;
+            font-family: 'NanumSquareRound', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            pointer-events: auto;
+        }
+
+        /* 대화창 UI */
+        #dialogue-box {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            height: 160px;
+            background: rgba(26, 54, 93, 0.85);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: 1.5px solid #40e0d0;
+            border-radius: 16px;
+            padding: 20px 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            cursor: pointer;
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        #speaker-name {
+            font-family: 'NanumSquareRound', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #40e0d0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        #speaker-name::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #40e0d0;
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 6px #40e0d0;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.05rem;
+            color: #ffffff;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            word-break: keep-all;
+        }
+
+        .click-prompt {
+            position: absolute;
+            bottom: 12px;
+            right: 20px;
+            font-size: 0.85rem;
+            color: #81d4fa;
+            animation: blink 1.2s infinite alternate;
+        }
+
+        @keyframes blink {
+            from { opacity: 0.3; }
+            to { opacity: 1; }
+        }
+
+        /* 이동 및 기능 버튼 */
+        .btn-nav {
+            position: absolute;
+            padding: 10px 24px;
+            background-color: #0077be;
+            color: #ffffff;
+            border: 1px solid #40e0d0;
+            border-radius: 50px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            pointer-events: auto;
+            text-decoration: none;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-nav:hover {
+            background-color: #40e0d0;
+            color: #1a365d;
+            box-shadow: 0 0 12px rgba(64, 224, 208, 0.6);
+            transform: translateY(-2px);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next, #btn-skip {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <img src="배경2.png" alt="배경" class="bg-img">
+
+        <div class="asset-layer">
+            <div style="position:absolute; left:233px; bottom:60px; width:600px; height:450px; overflow:hidden;">
+                <iframe src="엘리베이터앞.html" scrolling="no" style="border:0; width:800px; height:600px; transform:scale(0.75); transform-origin:top left; pointer-events:none;"></iframe>
+            </div>
+        </div>
+
+        <div class="character-layer">
+            <div class="char-wrapper inactive" id="char-민우" style="position:absolute; left:180px; bottom:40px; width:260px; height:320px;">
+                <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+            </div>
+
+            <div class="char-wrapper inactive" id="char-서연" style="position:absolute; left:900px; bottom:40px; width:260px; height:320px;">
+                <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+            </div>
+        </div>
+
+        <div class="ui-layer">
+            <div class="stage-bar">
+                아라뱃길·청라호수공원 MATHTOUR
+            </div>
+
+            <div id="dialogue-box" onclick="advanceDialogue()">
+                <div id="speaker-name">민우</div>
+                <div id="dialogue-text">대사가 로딩 중입니다...</div>
+                <div class="click-prompt">클릭하여 계속 ▼</div>
+            </div>
+
+            <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+            <button id="btn-prev" class="btn-nav hidden" onclick="navigate('A01.html')">이전</button>
+            <button id="btn-next" class="btn-nav hidden" onclick="navigate('A03.html')">다음</button>
+        </div>
+    </div>
+
+    <script>
+        // 대화 스크립트 데이터
+        const dialogues = [
+            {
+                speaker: "민우",
+                text: "(엘리베이터 층수 표시기를 보며) 우와, 서연아! 전망대가 23층인데 벌써 엘리베이터가 내려오고 있어. 정말 눈 깜짝할 새인걸?",
+                target: "char-민우"
+            },
+            {
+                speaker: "서연",
+                text: "맞아, 민우야. 그런데 이 엘리베이터가 단순히 빨리 움직이는 게 아니야. 여기에는 우리가 수학 시간에 배운 미분과 함수의 원리가 숨어 있어!",
+                target: "char-서연"
+            },
+            {
+                speaker: "민우",
+                text: "미분? 엘리베이터를 타는 데 미분이 왜 필요해?",
+                target: "char-민우"
+            },
+            {
+                speaker: "서연",
+                text: "이 엘리베이터는 일정한 속력으로 움직이는 등속도 운동을 하거든. 우리가 시간에 따른 엘리베이터의 높이를 y=f(t)라는 함수로 나타낸다면, 이 함수의 미분계수(기울기)가 바로 엘리베이터의 속도가 되는 거야.",
+                target: "char-서연"
+            },
+            {
+                speaker: "민우",
+                text: "아! 그럼 엘리베이터의 속도를 알면 우리가 목표로 하는 76m 높이(23층)에 정확히 몇 초 뒤에 도착할지도 함수로 예측할 수 있겠네?",
+                target: "char-민우"
+            },
+            {
+                speaker: "서연",
+                text: "정확해! 위치 함수를 알면 언제 멈춰야 할지 미분적 사고로 미리 계산할 수 있는 거지. 그냥 버튼만 누르는 게 아니라, 우리가 수학으로 정지 타이밍을 맞추는 미션을 수행하는 거야.",
+                target: "char-서연"
+            },
+            {
+                speaker: "민우",
+                text: "오, 수학으로 엘리베이터의 움직임을 정복하는 기분인데? 800년의 역사가 담긴 풍경을 보러 가는 길이 더 스릴 넘치겠어!",
+                target: "char-민우"
+            },
+            {
+                speaker: "서연",
+                text: "이론은 완벽해. 이제 실전이야. 민우야, 어서 타보자!",
+                target: "char-서연"
+            }
+        ];
+
+        let currentIndex = 0;
+
+        // 대화 진행 및 상태 업데이트
+        function updateDialogue() {
+            if (currentIndex < dialogues.length) {
+                const current = dialogues[currentIndex];
+                
+                // 대화 내용 갱신
+                document.getElementById('speaker-name').textContent = current.speaker;
+                document.getElementById('dialogue-text').textContent = current.text;
+
+                // 캐릭터 하이라이트/비활성화 처리
+                document.querySelectorAll('.char-wrapper').forEach(wrapper => {
+                    if (wrapper.id === current.target) {
+                        wrapper.classList.remove('inactive');
+                    } else {
+                        wrapper.classList.add('inactive');
+                    }
+                });
+            } else {
+                finishDialogue();
+            }
+        }
+
+        function advanceDialogue() {
+            currentIndex++;
+            if (currentIndex < dialogues.length) {
+                updateDialogue();
+            } else {
+                finishDialogue();
+            }
+        }
+
+        function skipDialogue() {
+            finishDialogue();
+        }
+
+        function finishDialogue() {
+            // 대화창 및 스킵 버튼 숨김
+            document.getElementById('dialogue-box').style.display = 'none';
+            document.getElementById('btn-skip').classList.add('hidden');
+
+            // 캐릭터 복구
+            document.querySelectorAll('.char-wrapper').forEach(wrapper => {
+                wrapper.classList.remove('inactive');
+            });
+
+            // 이전 / 다음 버튼 표시
+            document.getElementById('btn-prev').classList.remove('hidden');
+            document.getElementById('btn-next').classList.remove('hidden');
+        }
+
+        function navigate(url) {
+            if (url) {
+                window.location.href = url;
+            }
+        }
+
+        // 초기 시작
+        window.addEventListener('DOMContentLoaded', () => {
+            updateDialogue();
+        });
+    </script>
+</body>
+</html>

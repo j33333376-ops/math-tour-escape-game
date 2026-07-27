@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아라뱃길·청라호수공원 MATHTOUR - E05</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+        @import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #0b1d3a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #1a365d;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(180deg, #b2ebf2 0%, #e0f7fa 40%, #80deea 100%);
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+            border: 2px solid #40e0d0;
+        }
+
+        /* 상단 타이틀 바 (글래스모피즘) */
+        #top-bar {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 92%;
+            height: 48px;
+            background: rgba(0, 119, 190, 0.25);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(64, 224, 208, 0.5);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 10;
+        }
+
+        .title-text {
+            font-family: 'NanumSquareRound', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a365d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stage-badge {
+            background: #0077be;
+            color: #ffffff;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1px solid #40e0d0;
+        }
+
+        /* 무대 요소 영역 */
+        #stage-area {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        /* 교량 에셋 wrapper */
+        .bridge-asset-wrapper {
+            position: absolute;
+            left: 50%;
+            bottom: 80px;
+            transform: translateX(-50%);
+            width: 900px;
+            height: 380px;
+            overflow: hidden;
+            z-index: 1;
+            filter: drop-shadow(0 6px 12px rgba(0, 77, 150, 0.25));
+        }
+
+        .bridge-asset-wrapper iframe {
+            border: 0;
+            width: 1000px;
+            height: 500px;
+            transform: scale(0.9);
+            transform-origin: top left;
+            pointer-events: none;
+        }
+
+        /* 캐릭터 Wrapper */
+        .char-wrapper {
+            position: absolute;
+            bottom: 45px;
+            width: 260px;
+            height: 320px;
+            overflow: visible;
+            z-index: 3;
+            transition: filter 0.25s ease, transform 0.25s ease;
+        }
+
+        .char-wrapper.inactive {
+            filter: brightness(0.55);
+        }
+
+        .char-wrapper iframe {
+            border: 0;
+            width: 260px;
+            height: 320px;
+            transform-origin: bottom left;
+            pointer-events: none;
+        }
+
+        #char-민우 {
+            left: 80px;
+        }
+
+        #char-서연 {
+            right: 80px;
+        }
+
+        /* 수식/그래프 오버레이 패널 */
+        .math-card {
+            position: absolute;
+            top: 75px;
+            right: 40px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 2px solid #40e0d0;
+            border-radius: 16px;
+            padding: 14px 20px;
+            box-shadow: 0 8px 24px rgba(0, 119, 190, 0.15);
+            z-index: 5;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 14px;
+            color: #1a365d;
+            max-width: 340px;
+            backdrop-filter: blur(4px);
+        }
+
+        .math-card h4 {
+            font-family: 'NanumSquareRound', sans-serif;
+            color: #0077be;
+            margin-bottom: 6px;
+            font-size: 15px;
+            border-bottom: 1px dashed #40e0d0;
+            padding-bottom: 4px;
+        }
+
+        .math-card ul {
+            list-style: none;
+            margin-top: 6px;
+        }
+
+        .math-card li {
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .highlight-d {
+            color: #0077be;
+            font-weight: bold;
+        }
+
+        /* 대화창 UI */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 92%;
+            height: 135px;
+            background: rgba(26, 54, 93, 0.88);
+            border: 2px solid #40e0d0;
+            border-radius: 16px;
+            padding: 16px 24px;
+            z-index: 10;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        #dialogue-box:hover {
+            border-color: #76effe;
+            background: rgba(26, 54, 93, 0.93);
+        }
+
+        .speaker-tag {
+            font-family: 'NanumSquareRound', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: #40e0d0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .speaker-tag::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #40e0d0;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #40e0d0;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 15px;
+            color: #ffffff;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+            margin-top: 6px;
+            white-space: pre-line;
+        }
+
+        .click-prompt {
+            align-self: flex-end;
+            font-size: 12px;
+            color: #81d4fa;
+            font-family: 'NanumSquareRound', sans-serif;
+            animation: blink 1.2s infinite alternate;
+        }
+
+        @keyframes blink {
+            from { opacity: 0.4; }
+            to { opacity: 1; }
+        }
+
+        /* 공통 버튼 스타일 */
+        .btn-nav {
+            position: absolute;
+            background: #0077be;
+            color: #ffffff;
+            border: 1px solid #40e0d0;
+            border-radius: 50px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            transition: all 0.2s ease;
+            display: none;
+        }
+
+        .btn-nav:hover {
+            background: #40e0d0;
+            color: #1a365d;
+            box-shadow: 0 0 15px rgba(64, 224, 208, 0.6);
+            transform: translateY(-2px);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next, #btn-skip {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        #btn-skip {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 상단 내비게이션 / 스테이지 타이틀 -->
+        <div id="top-bar">
+            <div class="title-text">
+                <span class="stage-badge">Final Scene</span>
+                아라뱃길·청라호수공원 MATHTOUR
+            </div>
+            <div style="font-family: 'Nanum Gothic Coding', monospace; font-size: 13px; color: #e0f7fa;">
+                LOCATION: 청라호수공원 횡단교량
+            </div>
+        </div>
+
+        <!-- 무대 요소 -->
+        <div id="stage-area">
+            <!-- 청라호수공원 횡단교량 에셋 -->
+            <div class="bridge-asset-wrapper">
+                <iframe src="청라호수공원_횡단교량.html" scrolling="no"></iframe>
+            </div>
+
+            <!-- 수학 공식 및 개념 오버레이 카드 -->
+            <div class="math-card" id="math-card">
+                <h4>📐 이차방정식 판별식 & 교점</h4>
+                <div>연립방정식: Ax² + Bx + C = 0</div>
+                <ul>
+                    <li><span class="highlight-d">D > 0</span> : 교점 2개 (충돌 위험 궤도)</li>
+                    <li><span class="highlight-d">D = 0</span> : 교점 1개 (최적 접선 궤도)</li>
+                    <li><span class="highlight-d">D < 0</span> : 교점 0개 (관측 불가 궤도)</li>
+                </ul>
+            </div>
+
+            <!-- 인물 1: 민우 -->
+            <div class="char-wrapper" id="char-민우">
+                <iframe src="등장인물_민우.html" scrolling="no" style="transform: scale(1);"></iframe>
+            </div>
+
+            <!-- 인물 2: 서연 -->
+            <div class="char-wrapper" id="char-서연">
+                <iframe src="등장인물_서연.html" scrolling="no" style="transform: scale(1) scaleX(-1);"></iframe>
+            </div>
+        </div>
+
+        <!-- 대화창 -->
+        <div id="dialogue-box" onclick="advanceDialogue()">
+            <div>
+                <div class="speaker-tag" id="speaker-name">민우</div>
+                <div id="dialogue-text">대사를 불러오는 중입니다...</div>
+            </div>
+            <div class="click-prompt">클릭하여 계속 ▼</div>
+        </div>
+
+        <!-- 이동 버튼 -->
+        <button class="btn-nav" id="btn-prev" onclick="goPrev()">이전</button>
+        <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
+        <button class="btn-nav" id="btn-next" onclick="goNext()">End</button>
+    </div>
+
+    <script>
+        // 대화 스크립트 데이터 정의
+        const dialogues = [
+            {
+                speaker: "민우",
+                text: "서연아! 청라호수공원 횡단교량 케이블을 안전하게 점검하려면, 드론 비행 경로와 교량 곡선의 위치 관계를 꼭 계산해야 해.",
+                target: "char-민우"
+            },
+            {
+                speaker: "서연",
+                text: "맞아! 교량 곡선 f(x)와 드론의 직선 경로 g(x)를 연립해서 만든 이차방정식 AX² + BX + C = 0의 판별식 D가 핵심이지!",
+                target: "char-서연"
+            },
+            {
+                speaker: "민우",
+                text: "기울기 m이 변하면서 판별식 D의 부호에 따라 그래프 위치가 매끄럽게 바뀌잖아. D < 0 일 땐 교점이 전혀 없어.",
+                target: "char-민우"
+            },
+            {
+                speaker: "서연",
+                text: "D < 0 상황은 드론이 교량과 너무 멀리 떨어져 있어서 정밀 촬영이나 안전 점검을 제대로 수행할 수 없는 효율성 저하 궤도야.",
+                target: "char-서연"
+            },
+            {
+                speaker: "민우",
+                text: "반대로 D > 0 이 되면 교점이 2개가 되니까, 드론이 교량 케이블을 관통해서 충돌할 위험이 생기겠네!",
+                target: "char-민우"
+            },
+            {
+                speaker: "서연",
+                text: "정확해! 그래서 구조물에 충돌하지 않으면서도 가장 가까이 접근해 정밀 점검하는 최적 경로는 바로 D = 0 인 '접선 궤도'야!",
+                target: "char-서연"
+            },
+            {
+                speaker: "민우",
+                text: "교과서에서 배우던 D = 0 공식이 실제 드론 자율주행과 충돌 방지 시스템의 핵심 기준이었다니, 정말 신기하다!",
+                target: "char-민우"
+            },
+            {
+                speaker: "서연",
+                text: "수학적 판별식과 공학적 안전성이 완벽하게 연결되는 순간이야. 이번 아라뱃길·청라호수공원 매스투어 정말 유익했어!",
+                target: "char-서연"
+            }
+        ];
+
+        let currentIndex = 0;
+
+        function updateDialogue() {
+            if (currentIndex < dialogues.length) {
+                const current = dialogues[currentIndex];
+                document.getElementById('speaker-name').innerText = current.speaker;
+                document.getElementById('dialogue-text').innerText = current.text;
+
+                // 모든 인물 inactive 처리 후 말하는 인물만 활성화
+                const characters = document.querySelectorAll('.char-wrapper');
+                characters.forEach(char => {
+                    if (char.id === current.target) {
+                        char.classList.remove('inactive');
+                    } else {
+                        char.classList.add('inactive');
+                    }
+                });
+            } else {
+                finishDialogue();
+            }
+        }
+
+        function advanceDialogue() {
+            currentIndex++;
+            if (currentIndex >= dialogues.length) {
+                finishDialogue();
+            } else {
+                updateDialogue();
+            }
+        }
+
+        function finishDialogue() {
+            // 대화창 제거 및 모든 캐릭터 밝기 복구
+            document.getElementById('dialogue-box').style.display = 'none';
+            document.getElementById('btn-skip').style.display = 'none';
+            
+            const characters = document.querySelectorAll('.char-wrapper');
+            characters.forEach(char => char.classList.remove('inactive'));
+
+            // 마지막 페이지 처리: 다음 버튼 대신 End 버튼 표시
+            document.getElementById('btn-next').style.display = 'block';
+        }
+
+        function skipDialogue() {
+            currentIndex = dialogues.length;
+            finishDialogue();
+        }
+
+        function goPrev() {
+            // 이전 장면 URL이 지정되지 않음
+            alert("이전 장면에 대한 URL이 존재하지 않습니다.");
+        }
+
+        function goNext() {
+            // 마지막 장면: 탐험 종료 안내 또는 메인으로 복귀
+            alert("아라뱃길·청라호수공원 MATHTOUR가 모두 종료되었습니다! 수고하셨습니다.");
+            window.location.href = "index.html";
+        }
+
+        // 초기화 실행
+        window.addEventListener('DOMContentLoaded', () => {
+            updateDialogue();
+        });
+    </script>
+</body>
+</html>
