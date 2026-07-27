@@ -1,0 +1,98 @@
+<!-- 원본 크기: 500x750 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>영종도 등대</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .yde-svg { display:block; width:100%; height:auto; }
+  .yde-beam { animation: yde-beam 4s ease-in-out infinite; transform-origin: 250px 150px; }
+  @keyframes yde-beam { 0%,100% { opacity:0.1; transform: rotate(-9deg);} 50% { opacity:0.4; transform: rotate(9deg);} }
+  .yde-lamp { animation: yde-lamp 4s ease-in-out infinite; }
+  @keyframes yde-lamp { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
+</style>
+</head>
+<body>
+<svg class="yde-svg" viewBox="0 0 500 750" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="영종도 등대">
+<title>영종도 등대</title>
+<desc>영종도 앞바다의 홍백 줄무늬 등대.</desc>
+<defs>
+  <linearGradient id="ydeBody" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#c8cdd2"/><stop offset="0.32" stop-color="#ffffff"/>
+    <stop offset="0.62" stop-color="#eef2f5"/><stop offset="1" stop-color="#a8b0b8"/>
+  </linearGradient>
+  <linearGradient id="ydeRed" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#a8241c"/><stop offset="0.34" stop-color="#e6403a"/>
+    <stop offset="0.64" stop-color="#c2302a"/><stop offset="1" stop-color="#8c1f18"/>
+  </linearGradient>
+  <linearGradient id="ydeRock" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#9aa4a8"/><stop offset="1" stop-color="#5f686c"/>
+  </linearGradient>
+  <radialGradient id="ydeLamp" cx="0.4" cy="0.35" r="0.75">
+    <stop offset="0" stop-color="#fffbe0"/><stop offset="1" stop-color="#f2c14e"/>
+  </radialGradient>
+</defs>
+<!-- 빛줄기 -->
+<g class="yde-beam">
+  <path d="M250,150 L20,60 L20,240 Z" fill="#ffe9a8" opacity="0.5"/>
+  <path d="M250,150 L480,60 L480,240 Z" fill="#ffe9a8" opacity="0.5"/>
+</g>
+<!-- 피뢰침 -->
+<line x1="250" y1="66" x2="250" y2="34" stroke="#5f686c" stroke-width="5" stroke-linecap="round"/>
+<circle cx="250" cy="30" r="6" fill="#5f686c"/>
+<!-- 지붕 -->
+<path d="M186,104 L314,104 L250,62 Z" fill="url(#ydeRed)" stroke="#6e120c" stroke-width="4"/>
+<rect x="180" y="104" width="140" height="12" rx="5" fill="#8c1f18"/>
+<!-- 등실 -->
+<rect x="196" y="116" width="108" height="70" rx="6" fill="#3a4650" stroke="#20262c" stroke-width="4"/>
+<ellipse cx="250" cy="150" rx="34" ry="30" fill="url(#ydeLamp)" class="yde-lamp"/>
+<g stroke="#20262c" stroke-width="3.4">
+  <line x1="224" y1="116" x2="224" y2="186"/><line x1="250" y1="116" x2="250" y2="186"/><line x1="276" y1="116" x2="276" y2="186"/>
+</g>
+<!-- 난간 -->
+<rect x="172" y="186" width="156" height="14" rx="6" fill="#8f9aa4" stroke="#5f686c" stroke-width="3.4"/>
+<g stroke="#8f9aa4" stroke-width="4">
+  <line x1="186" y1="200" x2="186" y2="228"/><line x1="218" y1="200" x2="218" y2="228"/>
+  <line x1="250" y1="200" x2="250" y2="228"/><line x1="282" y1="200" x2="282" y2="228"/>
+  <line x1="314" y1="200" x2="314" y2="228"/>
+</g>
+<rect x="172" y="224" width="156" height="12" rx="5" fill="#6b757c" stroke="#4a5258" stroke-width="3"/>
+<!-- 탑신 -->
+<path d="M200,236 L300,236 L332,636 L168,636 Z" fill="url(#ydeBody)" stroke="#7d868c" stroke-width="5"/>
+<!-- 홍백 줄무늬 -->
+<g>
+  <path d="M206,306 L294,306 L300,376 L200,376 Z" fill="url(#ydeRed)"/>
+  <path d="M212,446 L308,446 L314,516 L206,516 Z" fill="url(#ydeRed)"/>
+  <path d="M218,586 L322,586 L328,636 L172,636 L178,586 Z" fill="url(#ydeRed)" opacity="0"/>
+</g>
+<path d="M200,376 L300,376" stroke="#7d868c" stroke-width="2.4" opacity="0.5"/>
+<!-- 문과 창 -->
+<path d="M226,636 L226,566 Q250,548 274,566 L274,636 Z" fill="#5a3f22" stroke="#3a2412" stroke-width="4"/>
+<circle cx="250" cy="596" r="6" fill="#e8b64c"/>
+<g fill="#7fb0c8" stroke="#4a6a7c" stroke-width="3.4">
+  <rect x="234" y="272" width="32" height="26" rx="4"/>
+  <rect x="234" y="404" width="32" height="26" rx="4"/>
+  <rect x="234" y="530" width="32" height="26" rx="4"/>
+</g>
+<!-- 광택 -->
+<path d="M212,250 L188,626" stroke="#ffffff" stroke-width="12" opacity="0.4" stroke-linecap="round"/>
+<!-- 갯바위 -->
+<path d="M60,700 C90,646 150,624 200,634 C232,610 300,610 336,634 C388,622 440,650 452,700 Z"
+      fill="url(#ydeRock)" stroke="#4a5258" stroke-width="5"/>
+<g fill="#7d868c" opacity="0.7">
+  <ellipse cx="130" cy="668" rx="26" ry="12"/><ellipse cx="376" cy="670" rx="22" ry="10"/>
+</g>
+<!-- 파도 -->
+<g fill="none" stroke="#7fb4c4" stroke-width="8" stroke-linecap="round" opacity="0.85">
+  <path d="M24,706 q30,-14 60,0 q30,14 60,0"/>
+  <path d="M356,710 q30,-14 60,0 q30,14 60,0"/>
+  <path d="M140,736 q34,-14 68,0 q34,14 68,0 q34,-14 68,0"/>
+</g>
+<g fill="#ffffff" opacity="0.6">
+  <ellipse cx="120" cy="722" rx="22" ry="5"/><ellipse cx="392" cy="726" rx="20" ry="5"/>
+</g>
+</svg>
+</body>
+</html>

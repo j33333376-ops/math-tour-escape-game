@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>송도센트럴파크 MATHTOUR - 메인</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #1b261a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      overflow: hidden;
+    }
+
+    /* 게임 컨테이너 & 16:9 비율 유지 */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #f2f7f2;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border-radius: 8px;
+    }
+
+    /* 슬라이드 넘김 효과 오버레이 */
+    .page-transition-overlay {
+      position: absolute;
+      top: 0;
+      left: 100%;
+      width: 100%;
+      height: 100%;
+      background-color: #2d5a27;
+      z-index: 100;
+      pointer-events: none;
+      transition: left 0.5s ease-in-out;
+    }
+
+    .page-transition-overlay.slide-left {
+      left: 0;
+    }
+
+    /* 배경 이미지 */
+    .bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    /* 에셋 (건물) 무대 레이어 */
+    #asset-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* 에셋 래퍼: 국립세계문자박물관 에셋 (가로형/건물 에셋, 표시 높이 약 60~65% 수준 조정) */
+    .building-wrapper {
+      position: absolute;
+      left: 50%;
+      bottom: 110px;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 300px;
+      overflow: hidden;
+    }
+
+    .building-wrapper iframe {
+      border: 0;
+      width: 1000px;
+      height: 500px;
+      transform: scale(0.6);
+      transform-origin: top left;
+      pointer-events: none;
+    }
+
+    /* 스테이지 상단 무드 바 (나무 팻말) */
+    .stage-signpost {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      z-index: 10;
+      background: #6d4c41;
+      color: #fdfbf7;
+      font-family: 'Gowun Batang', serif;
+      font-weight: bold;
+      font-size: 16px;
+      padding: 6px 18px;
+      border-radius: 12px;
+      border: 2px solid #8aa171;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stage-signpost::before {
+      content: '🌿';
+      font-size: 14px;
+    }
+
+    /* UI 레이어 */
+    #ui-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* 타이틀 및 스토리 상황 설명 박스 (유형 1) */
+    #situation-box {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 88%;
+      max-width: 900px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 2px solid #8aa171;
+      border-radius: 16px;
+      padding: 20px 28px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      text-align: center;
+      color: #3e4a3d;
+      pointer-events: auto;
+    }
+
+    .game-title {
+      font-family: 'Gowun Batang', serif;
+      font-size: 22px;
+      font-weight: bold;
+      color: #2d5a27;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .game-title::before, .game-title::after {
+      content: '✦';
+      color: #f4a261;
+      font-size: 16px;
+    }
+
+    .story-desc {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15.5px;
+      line-height: 1.65;
+      letter-spacing: -0.02em;
+      word-break: keep-all;
+      color: #3e4a3d;
+    }
+
+    /* 공통 버튼 디자인 */
+    .btn-nav {
+      position: absolute;
+      z-index: 20;
+      background-color: #2d5a27;
+      color: #ffffff;
+      border: none;
+      padding: 10px 24px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 20px;
+      box-shadow: 0 4px 6px rgba(45, 90, 39, 0.3);
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-nav:hover {
+      background-color: #6d4c41;
+    }
+
+    .btn-nav:active {
+      transform: scale(0.96);
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 화면 슬라이드 전환 오버레이 -->
+    <div id="page-overlay" class="page-transition-overlay"></div>
+
+    <!-- 배경 이미지 -->
+    <img src="배경_송도센트럴파크.png" alt="송도센트럴파크 배경" class="bg-img" />
+
+    <!-- 에셋 레이어 (송도센트럴파크_국립세계문자박물관) -->
+    <div id="asset-layer">
+      <!-- W=1000, H=500 원본에 배율 s=0.6 적용 -> div 크기 600x300 -->
+      <div class="building-wrapper">
+        <iframe src="송도센트럴파크_국립세계문자박물관.html" scrolling="no"></iframe>
+      </div>
+    </div>
+
+    <!-- 상단 나무 팻말 표시바 -->
+    <div class="stage-signpost">
+      송도센트럴파크 MATHTOUR
+    </div>
+
+    <!-- UI 레이어 (상황 설명 박스) -->
+    <div id="ui-layer">
+      <div id="situation-box">
+        <div class="game-title">송도센트럴파크 MATHTOUR</div>
+        <p class="story-desc">
+          어느 날, 미래의 기록에서 국립세계문자박물관 ‘페이지스’의 곡선이 사라지기 시작합니다.<br>
+          학생 탐정단은 인공지능 조수 큐, 미래에서 온 페이지 박사와 함께 건물에 숨은 이차함수의 규칙을 찾아 곡선을 복원하는 시간 탐정 임무에 나섭니다.
+        </p>
+      </div>
+    </div>
+
+    <!-- 내비게이션 버튼 (이전 버튼은 비활성화/숨김 처리, 다음 버튼만 배치) -->
+    <button id="btn-next" class="btn-nav" onclick="goNextUrl('A01.html')">시작하기 ▶</button>
+  </div>
+
+  <script>
+    // 다음 페이지 이동 처리 (좌측으로 넘겨지는 슬라이드 애니메이션 적용)
+    function goNextUrl(url) {
+      if (!url) return;
+      const overlay = document.getElementById('page-overlay');
+      overlay.classList.add('slide-left');
+      setTimeout(() => {
+        window.location.href = url;
+      }, 500);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,802 @@
+html_content = """<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아라뱃길·청라호수공원 MATHTOUR - STAGE 4</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+        @import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #fdfbf7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* 게임 컨테이너 (16:9 비율 고정) */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background: #e0f7fa; /* 아이스 블루 */
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 스테이지 상단 표시바 */
+        .stage-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 119, 190, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(64, 224, 208, 0.5);
+            border-radius: 30px;
+            padding: 10px 30px;
+            font-family: 'NanumSquareRound', sans-serif;
+            color: #1a365d;
+            font-size: 1.2rem;
+            font-weight: 700;
+            z-index: 20;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        /* 캐릭터 배치 영역 */
+        .char-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            overflow: visible;
+            z-index: 3;
+            transition: filter 0.2s ease, transform 0.5s ease, left 0.5s ease;
+        }
+
+        .inactive {
+            filter: brightness(0.55);
+        }
+
+        /* 대화창 (유형 2) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            background: rgba(26, 54, 93, 0.85);
+            border: 1px solid #40e0d0;
+            border-radius: 15px;
+            padding: 25px 35px;
+            box-sizing: border-box;
+            z-index: 15;
+            color: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #speaker-name {
+            font-family: 'NanumSquareRound', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #40e0d0;
+            margin-bottom: 10px;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.15rem;
+            color: #ffffff;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+        }
+
+        /* 건너뛰기 버튼 */
+        #btn-skip {
+            position: absolute;
+            right: 20px;
+            bottom: 150px;
+            padding: 10px 20px;
+            background-color: transparent;
+            color: #1a365d;
+            background: rgba(255,255,255,0.8);
+            border: 1px solid #0077be;
+            border-radius: 50px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.2s;
+        }
+
+        #btn-skip:hover {
+            background-color: #0077be;
+            color: #ffffff;
+        }
+
+        /* 수학 퀴즈 컨테이너 */
+        .quiz-container {
+            display: none;
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 560px;
+            height: 520px;
+            background: rgba(11, 17, 32, 0.95);
+            backdrop-filter: blur(12px);
+            border: 2px solid #40e0d0;
+            border-radius: 20px;
+            padding: 24px;
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(64, 224, 208, 0.2);
+            overflow-y: auto;
+            overflow-x: hidden;
+            animation: fadeIn 0.5s forwards;
+            color: #f8fafc;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, 10px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        .quiz-container::-webkit-scrollbar { width: 8px; }
+        .quiz-container::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 10px; }
+        .quiz-container::-webkit-scrollbar-thumb { background: #0077be; border-radius: 10px; }
+
+        /* 매쓰봇 아바타 & 말풍선 */
+        .bot-section {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        .bot-avatar {
+            font-size: 2.8rem;
+            background: #1e293b;
+            padding: 12px;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+        .speech-bubble {
+            background: #1e293b;
+            padding: 16px;
+            border-radius: 0 15px 15px 15px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            border: 1px solid #334155;
+            position: relative;
+        }
+
+        /* 규칙 및 힌트 카드 */
+        .card {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 18px;
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 18px;
+        }
+        .rules-title {
+            color: #fbbf24;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .hint-title {
+            color: #38bdf8;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        /* 게임 보드 UI */
+        .game-board {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .guess-slots {
+            display: flex;
+            gap: 18px;
+        }
+        .slot {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: #334155;
+            border: 2px dashed #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .slot.filled {
+            border: 2px solid #fff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        .color-btn {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .color-btn:active {
+            transform: scale(0.95);
+        }
+        .color-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .btn-check {
+            background-color: #38bdf8;
+            color: #000;
+        }
+        .btn-check:disabled {
+            background-color: #475569;
+            color: #94a3b8;
+        }
+        .btn-clear {
+            background-color: #ef4444;
+            color: white;
+            flex: 0.4;
+        }
+
+        .history-log {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 15px;
+            max-height: 180px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #334155;
+        }
+        .history-colors {
+            display: flex;
+            gap: 8px;
+        }
+        .history-color {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+        }
+        .history-result {
+            font-weight: bold;
+            font-size: 1.15rem;
+            letter-spacing: 1px;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+        .strike { color: #34d399; }
+        .ball { color: #fbbf24; }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            bottom: 20px;
+            padding: 12px 30px;
+            background-color: #0077be;
+            color: #ffffff;
+            border: 1px solid #40e0d0;
+            border-radius: 50px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 119, 190, 0.3);
+            transition: all 0.3s ease;
+            z-index: 120;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-nav:hover {
+            background-color: #40e0d0;
+            color: #1a365d;
+            box-shadow: 0 6px 15px rgba(64, 224, 208, 0.4);
+        }
+
+        #btn-prev {
+            left: 20px;
+            display: none;
+        }
+
+        #btn-next {
+            right: 20px;
+            display: none;
+        }
+        
+        /* MISSION COMPLETED 전체화면 오버레이 */
+        #mission-complete-screen {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at center, #10182b 0%, #000000 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            overflow: hidden;
+        }
+
+        /* 별빛 배경 효과 */
+        .stars-bg {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 80px 170px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 150px 240px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 290px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 430px 180px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 560px 120px, #ffffff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 300px 300px;
+            opacity: 0.4;
+            z-index: 1;
+        }
+
+        /* 분수 그래픽 */
+        .mc-fountain {
+            font-size: 8rem;
+            color: transparent;
+            text-shadow: 0 0 0 #c7f8ff, 0 0 30px #38bdf8, 0 0 60px #0ea5e9;
+            margin-bottom: 50px;
+            z-index: 2;
+            animation: floatGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes floatGlow {
+            0% { transform: translateY(0); text-shadow: 0 0 0 #c7f8ff, 0 0 30px #38bdf8, 0 0 60px #0ea5e9; }
+            50% { transform: translateY(-10px); text-shadow: 0 0 0 #ffffff, 0 0 50px #38bdf8, 0 0 80px #0ea5e9; }
+            100% { transform: translateY(0); text-shadow: 0 0 0 #c7f8ff, 0 0 30px #38bdf8, 0 0 60px #0ea5e9; }
+        }
+
+        /* 텍스트 컨테이너 */
+        .mc-text-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 2;
+            animation: expandWidth 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        @keyframes expandWidth {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .mc-text {
+            font-family: Arial, 'Noto Sans KR', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #facc15;
+            letter-spacing: 2px;
+            text-shadow: 0px 3px 5px rgba(0,0,0,0.8);
+        }
+
+        /* 양옆 노란색 날개(Wing) 장식 */
+        .mc-wing {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            justify-content: center;
+        }
+        .mc-wing .bar {
+            background-color: #facc15;
+            height: 8px;
+            box-shadow: 0px 2px 4px rgba(0,0,0,0.5);
+        }
+        /* 왼쪽 날개 */
+        .mc-wing-left .bar { transform: skewX(-30deg); }
+        .mc-wing-left .bar:nth-child(1) { width: 50px; margin-left: 0; }
+        .mc-wing-left .bar:nth-child(2) { width: 40px; margin-left: 10px; }
+        .mc-wing-left .bar:nth-child(3) { width: 30px; margin-left: 20px; }
+        .mc-wing-left .bar:nth-child(4) { width: 20px; margin-left: 30px; }
+
+        /* 오른쪽 날개 */
+        .mc-wing-right .bar { transform: skewX(30deg); }
+        .mc-wing-right .bar:nth-child(1) { width: 50px; margin-right: 0; margin-left: auto; }
+        .mc-wing-right .bar:nth-child(2) { width: 40px; margin-right: 10px; margin-left: auto; }
+        .mc-wing-right .bar:nth-child(3) { width: 30px; margin-right: 20px; margin-left: auto; }
+        .mc-wing-right .bar:nth-child(4) { width: 20px; margin-right: 30px; margin-left: auto; }
+
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- 상단 스테이지 표시바 -->
+    <div class="stage-bar">아라뱃길·청라호수공원 MATHTOUR</div>
+
+    <!-- 에셋: 청라호수공원 음악분수 -->
+    <div style="position:absolute; left:0; bottom:0; width:1066px; height:600px; overflow:hidden; z-index:1;">
+        <iframe src="청라호수공원_음악분수.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(1.2); transform-origin:top left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 인보 (화면 왼쪽) -->
+    <div class="char-wrapper" id="char-인보" style="left:70px; bottom:20px;">
+        <iframe src="등장인물_인보.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 서연 (화면 오른쪽 첫 번째) -->
+    <div class="char-wrapper" id="char-서연" style="left:650px; bottom:20px;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 민우 (화면 오른쪽 두 번째) -->
+    <div class="char-wrapper" id="char-민우" style="left:800px; bottom:20px;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-name">화자</div>
+        <div id="dialogue-text">대사 내용</div>
+    </div>
+    <button id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
+
+    <!-- 수학 퀴즈 컨테이너 -->
+    <div class="quiz-container" id="quiz-container">
+        <!-- 1. 매쓰봇 대사 -->
+        <header class="bot-section">
+            <div class="bot-avatar">🤖</div>
+            <div class="speech-bubble">
+                <strong>삐리릭-</strong> 분수가 완벽하게 작동하려면 메인 조명 3개의 정확한 <strong>색상과 순서</strong>를 복구해야 해!
+            </div>
+        </header>
+
+        <!-- 2. 게임 규칙 설명 (정상화 코드) -->
+        <div class="card">
+            <div class="rules-title">🎮 정상화 코드 입력 규칙</div>
+            빨, 주, 노, 초, 파, 남, 보 7가지 색깔 중 <strong>중복 없이 3가지 색깔</strong>로 이루어진 정상화 코드를 찾아야 합니다.<br>
+            • <strong style="color:#34d399">스트라이크(S):</strong> 순서와 색깔이 모두 일치함<br>
+            • <strong style="color:#fbbf24">볼(B):</strong> 색깔은 일치하지만 순서가 다름
+        </div>
+
+        <!-- 3. 수학 힌트 (인보의 힌트) -->
+        <div class="card">
+            <div class="hint-title">💡 인보의 힌트</div>
+            7가지 색상 중 3가지를 순서대로 나열하는 모든 경우의 수는 수학적으로 <strong>'순열(Permutation)'</strong>이라고 해.<br>
+            계산해보면 <strong>7 × 6 × 5 = 210가지</strong>나 된단다! 이 중에 단 하나의 정상화 코드를 찾아야 해!
+        </div>
+
+        <!-- 4. 게임 보드 -->
+        <div class="game-board">
+            <div class="guess-slots" id="slots">
+                <div class="slot" id="slot-0"></div>
+                <div class="slot" id="slot-1"></div>
+                <div class="slot" id="slot-2"></div>
+            </div>
+
+            <div class="color-palette" id="palette">
+                <!-- 자바스크립트로 버튼 생성 -->
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-clear" id="btn-clear" onclick="clearGuess()">지우기</button>
+                <button class="btn btn-check" id="btn-check" onclick="checkGuess()" disabled>입력 확인</button>
+            </div>
+        </div>
+
+        <!-- 5. 입력 기록 (로그) -->
+        <div class="history-log" id="history">
+            <div style="text-align: center; color: #94a3b8; font-size: 0.9rem; margin-top: 10px;">
+                아직 입력된 기록이 없습니다.
+            </div>
+        </div>
+    </div>
+
+    <!-- MISSION COMPLETED 전체 화면 오버레이 -->
+    <div id="mission-complete-screen">
+        <div class="stars-bg"></div>
+        <div class="mc-fountain">⛲</div>
+        <div class="mc-text-wrapper">
+            <div class="mc-wing mc-wing-left">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+            <div class="mc-text">MISSION COMPLETED</div>
+            <div class="mc-wing mc-wing-right">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 하단 공통 이동 버튼 -->
+    <button id="btn-prev" class="btn-nav" onclick="window.location.href='d04.html'">◀ 이전</button>
+    <button id="btn-next" class="btn-nav" onclick="window.location.href='d05.html'">다음 ▶</button>
+</div>
+
+<script>
+    const dialogues = [
+        { speaker: "민우", text: "제어기를 돌려놨는데 아직 분수가 정상적으로 작동하지 않는거같아.", target: "char-민우" },
+        { speaker: "인보", text: "맞아. 다시 정상적으로 작동시키기 위해서는 정상화 코드를 분수에 입력해야 할 것 같아.", target: "char-인보" },
+        { speaker: "서연", text: "정상화 코드? 그게 뭐야?", target: "char-서연" },
+        { speaker: "인보", text: "내가 자세히 설명해줄게. 코드를 함께 찾아줘!", target: "char-인보" }
+    ];
+
+    let currentDialogueIndex = 0;
+    const charWrappers = [
+        document.getElementById('char-인보'),
+        document.getElementById('char-서연'),
+        document.getElementById('char-민우')
+    ];
+    const dialogueBox = document.getElementById('dialogue-box');
+    const speakerNameEl = document.getElementById('speaker-name');
+    const dialogueTextEl = document.getElementById('dialogue-text');
+    const btnSkip = document.getElementById('btn-skip');
+    const quizContainer = document.getElementById('quiz-container');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+
+    function updateDialogueUI() {
+        if (currentDialogueIndex >= dialogues.length) {
+            startQuiz();
+            return;
+        }
+        
+        const currentData = dialogues[currentDialogueIndex];
+        speakerNameEl.innerText = currentData.speaker;
+        dialogueTextEl.innerText = currentData.text;
+
+        charWrappers.forEach(wrapper => {
+            if (wrapper.id === currentData.target) {
+                wrapper.classList.remove('inactive');
+            } else {
+                wrapper.classList.add('inactive');
+            }
+        });
+    }
+
+    function advanceDialogue() {
+        currentDialogueIndex++;
+        updateDialogueUI();
+    }
+
+    function skipDialogue() {
+        startQuiz();
+    }
+
+    function startQuiz() {
+        dialogueBox.style.display = 'none';
+        btnSkip.style.display = 'none';
+        quizContainer.style.display = 'block';
+        btnPrev.style.display = 'flex';
+
+        // 퀴즈 시작 시 인보(로봇) 확대 및 중앙 이동, 서연/민우 어둡게 유지
+        charWrappers.forEach(wrapper => {
+            if (wrapper.id === 'char-인보') {
+                wrapper.classList.remove('inactive');
+                // 중앙 근처로 이동 및 확대
+                wrapper.style.transform = 'scale(1.2)';
+                wrapper.style.left = '100px'; 
+                wrapper.style.zIndex = '5';
+            } else {
+                wrapper.classList.add('inactive');
+            }
+        });
+        
+        initGame();
+    }
+
+    updateDialogueUI();
+
+
+    // --- 마스터마인드 게임 로직 ---
+    const colors = [
+        { id: 'red', hex: '#ef4444' },
+        { id: 'orange', hex: '#f97316' },
+        { id: 'yellow', hex: '#eab308' },
+        { id: 'green', hex: '#22c55e' },
+        { id: 'blue', hex: '#3b82f6' },
+        { id: 'indigo', hex: '#6366f1' },
+        { id: 'violet', hex: '#a855f7' }
+    ];
+
+    let secretCode = [];
+    let currentGuess = [];
+    let historyCount = 0;
+
+    function initGame() {
+        let shuffled = [...colors].sort(() => 0.5 - Math.random());
+        secretCode = shuffled.slice(0, 3).map(c => c.id);
+        
+        const palette = document.getElementById('palette');
+        palette.innerHTML = '';
+        
+        colors.forEach(color => {
+            const btn = document.createElement('button');
+            btn.className = 'color-btn';
+            btn.style.backgroundColor = color.hex;
+            btn.onclick = () => selectColor(color);
+            btn.id = `btn-${color.id}`;
+            palette.appendChild(btn);
+        });
+    }
+
+    function selectColor(color) {
+        if (currentGuess.length >= 3) return; 
+        if (currentGuess.some(c => c.id === color.id)) return; 
+
+        currentGuess.push(color);
+        document.getElementById(`btn-${color.id}`).disabled = true; 
+        updateSlots();
+    }
+
+    function updateSlots() {
+        for (let i = 0; i < 3; i++) {
+            const slot = document.getElementById(`slot-${i}`);
+            if (currentGuess[i]) {
+                slot.style.backgroundColor = currentGuess[i].hex;
+                slot.classList.add('filled');
+            } else {
+                slot.style.backgroundColor = '#334155';
+                slot.classList.remove('filled');
+            }
+        }
+        document.getElementById('btn-check').disabled = currentGuess.length !== 3;
+    }
+
+    function clearGuess() {
+        currentGuess = [];
+        colors.forEach(color => {
+            document.getElementById(`btn-${color.id}`).disabled = false;
+        });
+        updateSlots();
+    }
+
+    function checkGuess() {
+        if (currentGuess.length !== 3) return;
+
+        let strikes = 0;
+        let balls = 0;
+
+        currentGuess.forEach((guessColor, index) => {
+            if (guessColor.id === secretCode[index]) {
+                strikes++;
+            } else if (secretCode.includes(guessColor.id)) {
+                balls++;
+            }
+        });
+
+        addHistory(currentGuess, strikes, balls);
+
+        if (strikes === 3) {
+            triggerMissionComplete();
+        } else {
+            clearGuess();
+            // 틀렸을 때 스크롤 맨 아래로
+            setTimeout(() => {
+                const historyEl = document.getElementById('history');
+                historyEl.scrollTop = 0;
+            }, 100);
+        }
+    }
+
+    function addHistory(guessArr, strikes, balls) {
+        const historyContainer = document.getElementById('history');
+        if (historyCount === 0) historyContainer.innerHTML = ''; 
+
+        const item = document.createElement('div');
+        item.className = 'history-item';
+
+        let colorsHtml = '<div class="history-colors">';
+        guessArr.forEach(c => {
+            colorsHtml += `<div class="history-color" style="background-color: ${c.hex}"></div>`;
+        });
+        colorsHtml += '</div>';
+
+        let resultText = '';
+        if (strikes === 0 && balls === 0) {
+            resultText = '<span style="color: #ef4444">OUT</span>';
+        } else {
+            if (strikes > 0) resultText += `<span class="strike">${strikes}S</span> `;
+            if (balls > 0) resultText += `<span class="ball">${balls}B</span>`;
+        }
+
+        item.innerHTML = `
+            <div style="color: #64748b; font-size: 0.9rem;">#${historyCount + 1}</div>
+            ${colorsHtml}
+            <div class="history-result">${resultText}</div>
+        `;
+
+        historyContainer.prepend(item); 
+        historyCount++;
+    }
+
+    function triggerMissionComplete() {
+        // 기존 퀴즈창 가리기
+        document.getElementById('quiz-container').style.display = 'none';
+
+        // 새로운 미션 완료 오버레이 표시
+        const mcScreen = document.getElementById('mission-complete-screen');
+        mcScreen.style.display = 'flex';
+        
+        // CSS Transition 효과를 위해 약간 지연 후 opacity 적용
+        setTimeout(() => {
+            mcScreen.style.opacity = '1';
+        }, 50);
+        
+        // 다음으로 넘어가는 버튼 표시
+        btnNext.style.display = 'flex';
+    }
+</script>
+</body>
+</html>"""
+
+with open('d04.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
+print("d04.html updated with Mission Complete screen.")

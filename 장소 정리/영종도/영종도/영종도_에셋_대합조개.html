@@ -1,0 +1,85 @@
+<!-- 원본 크기: 600x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대합조개</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .ydj-svg { display:block; width:100%; height:auto; }
+  .ydj-shine { animation: ydj-shine 4s ease-in-out infinite; }
+  @keyframes ydj-shine { 0%,100% { opacity:0.25; } 50% { opacity:0.6; } }
+</style>
+</head>
+<body>
+<svg class="ydj-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="대합조개">
+<title>대합조개</title>
+<desc>영종도 갯벌에서 나는 대합조개. 부채꼴 무늬가 있는 큰 조개.</desc>
+<defs>
+  <linearGradient id="ydjTop" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f6ecd8"/><stop offset="0.5" stop-color="#e0cba4"/><stop offset="1" stop-color="#b89c6c"/>
+  </linearGradient>
+  <linearGradient id="ydjBot" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#d9c49c"/><stop offset="1" stop-color="#a88a5c"/>
+  </linearGradient>
+  <radialGradient id="ydjInner" cx="0.5" cy="0.2" r="0.85">
+    <stop offset="0" stop-color="#fff8ee"/><stop offset="0.6" stop-color="#f4d8d0"/><stop offset="1" stop-color="#d9a89c"/>
+  </radialGradient>
+</defs>
+<ellipse cx="300" cy="520" rx="240" ry="34" fill="#5a4a2c" opacity="0.2"/>
+<!-- 아래 껍데기 -->
+<path d="M300,300
+         C168,300 74,362 74,420
+         C74,472 168,506 300,506
+         C432,506 526,472 526,420
+         C526,362 432,300 300,300 Z"
+      fill="url(#ydjBot)" stroke="#7d6435" stroke-width="6"/>
+<!-- 내부 -->
+<path d="M300,308 C182,308 96,364 96,414 C96,458 182,486 300,486 C418,486 504,458 504,414 C504,364 418,308 300,308 Z"
+      fill="url(#ydjInner)"/>
+<g fill="#e8bcb0" opacity="0.6">
+  <ellipse cx="300" cy="410" rx="130" ry="46"/>
+</g>
+<!-- 조갯살 -->
+<path d="M300,346 C240,346 200,376 202,406 C204,438 250,458 300,458 C350,458 396,438 398,406 C400,376 360,346 300,346 Z"
+      fill="#f0a894" stroke="#c9756a" stroke-width="4"/>
+<path d="M230,400 C266,382 334,382 370,400" fill="none" stroke="#d9877c" stroke-width="4"/>
+<ellipse cx="300" cy="424" rx="52" ry="18" fill="#e08a7c" opacity="0.6"/>
+<!-- 위 껍데기 -->
+<path d="M300,296
+         C168,296 74,238 74,180
+         C74,122 168,62 300,62
+         C432,62 526,122 526,180
+         C526,238 432,296 300,296 Z"
+      fill="url(#ydjTop)" stroke="#7d6435" stroke-width="6"/>
+<!-- 방사 무늬 -->
+<g fill="none" stroke="#a88a5c" stroke-width="4" opacity="0.8">
+  <path d="M300,296 C280,232 250,150 190,88"/>
+  <path d="M300,296 C292,226 282,138 254,70"/>
+  <path d="M300,296 C300,222 300,132 300,62"/>
+  <path d="M300,296 C308,226 318,138 346,70"/>
+  <path d="M300,296 C320,232 350,150 410,88"/>
+  <path d="M300,296 C264,244 208,190 116,144"/>
+  <path d="M300,296 C336,244 392,190 484,144"/>
+</g>
+<!-- 성장선 -->
+<g fill="none" stroke="#8f7442" stroke-width="3" opacity="0.55">
+  <path d="M124,214 C186,258 414,258 476,214"/>
+  <path d="M100,180 C180,232 420,232 500,180"/>
+  <path d="M92,146 C176,204 424,204 508,146"/>
+</g>
+<!-- 힌지 -->
+<ellipse cx="300" cy="296" rx="70" ry="12" fill="#8f7442"/>
+<ellipse cx="300" cy="292" rx="50" ry="8" fill="#c9ab7c"/>
+<!-- 광택 -->
+<ellipse class="ydj-shine" cx="216" cy="140" rx="76" ry="34" transform="rotate(-18 216 140)" fill="#ffffff"/>
+<ellipse cx="392" cy="118" rx="40" ry="16" transform="rotate(14 392 118)" fill="#ffffff" opacity="0.35"/>
+<!-- 물방울 -->
+<g fill="#8fc4d8" opacity="0.75">
+  <ellipse cx="146" cy="500" rx="16" ry="7"/>
+  <ellipse cx="452" cy="506" rx="13" ry="6"/>
+</g>
+</svg>
+</body>
+</html>

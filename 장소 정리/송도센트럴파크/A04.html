@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>송도센트럴파크 MATHTOUR - A04</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        :root {
+            --bg-pastel-green: #f2f7f2;
+            --main-sage: #8aa171;
+            --dark-forest: #2d5a27;
+            --wood-brown: #6d4c41;
+            --accent-peach: #f4a261;
+            --white: #ffffff;
+            --text-main: #3e4a3d;
+            --card-shadow: 0 10px 25px rgba(45, 90, 39, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #121812;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: var(--text-main);
+        }
+
+        /* 16:9 비율 유지 메인 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background: #111;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease;
+        }
+
+        /* 슬라이드 넘김 효과 클래스 */
+        .slide-left-out {
+            animation: slideLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes slideLeft {
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(-100%); opacity: 0; }
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 상단 스테이지 표시바 (나무 팻말 느낌) */
+        header {
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(135deg, var(--dark-forest), #1e3e1a);
+            color: var(--white);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--main-sage);
+        }
+
+        header h1 {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        header .subtitle {
+            font-size: 0.85rem;
+            opacity: 0.85;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            z-index: 20;
+            padding: 10px 24px;
+            background: var(--dark-forest);
+            color: var(--white);
+            border: none;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(45, 90, 39, 0.2);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-nav:hover {
+            background: var(--wood-brown);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next, #btn-skip, #btn-end {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        /* 인물 Wrapper 공통 */
+        .char-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            overflow: visible;
+            transition: filter 0.25s ease, opacity 0.3s ease;
+            z-index: 3;
+        }
+
+        .char-wrapper iframe {
+            border: 0;
+            width: 260px;
+            height: 320px;
+            transform-origin: bottom left;
+            pointer-events: none;
+        }
+
+        .inactive {
+            filter: brightness(0.55);
+        }
+
+        /* 1. 상황 설명 박스 (유형 1 스타일) */
+        .situation-box {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 82%;
+            max-width: 840px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 2px solid var(--main-sage);
+            border-radius: 16px;
+            padding: 22px 30px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(8px);
+            text-align: center;
+            font-size: 1.05rem;
+            line-height: 1.65;
+            color: var(--text-main);
+            z-index: 15;
+            word-break: keep-all;
+        }
+
+        /* 2. 대화창 (유형 2 스타일) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 75px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 860px;
+            background: rgba(45, 90, 39, 0.88);
+            border: 2px solid var(--wood-brown);
+            border-radius: 16px;
+            padding: 18px 26px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            color: #fdfbf7;
+            z-index: 15;
+            cursor: pointer;
+        }
+
+        #speaker-name {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--accent-peach);
+            margin-bottom: 6px;
+        }
+
+        #dialogue-text {
+            font-size: 1.02rem;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+        }
+
+        /* 3. 엔딩 완료 카드 (미션 완수 패널) */
+        .ending-card {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 620px;
+            background: rgba(253, 251, 247, 0.95);
+            border: 4px double var(--wood-brown);
+            border-radius: 20px;
+            padding: 35px 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            z-index: 25;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .ending-badge {
+            background: var(--dark-forest);
+            color: var(--white);
+            font-family: 'Gowun Batang', serif;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .ending-title {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-forest);
+        }
+
+        .ending-desc {
+            font-size: 1.05rem;
+            line-height: 1.65;
+            color: #475569;
+            word-break: keep-all;
+        }
+
+        .ending-stamp {
+            margin-top: 10px;
+            width: 90px;
+            height: 90px;
+            border: 3px solid #b91c1c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b91c1c;
+            font-weight: 700;
+            font-family: 'Gowun Batang', serif;
+            font-size: 0.95rem;
+            transform: rotate(-12deg);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 배경 이미지 -->
+        <img src="배경_국립세계문자박물관(전경).png" alt="국립세계문자박물관 전경 배경" class="bg-img">
+
+        <!-- 상단 헤더 -->
+        <header>
+            <h1>🏛️ 송도 국립세계문자박물관 MATHTOUR</h1>
+            <span class="subtitle">EPILOGUE. 시간탐정단의 완수</span>
+        </header>
+
+        <!-- 네비게이션 버튼 -->
+        <button class="btn-nav" id="btn-prev" onclick="goPrev()">이전</button>
+        <button class="btn-nav" id="btn-skip" onclick="skipDialogue()" style="display: none;">건너뛰기</button>
+        <button class="btn-nav" id="btn-end" onclick="finishGame()" style="display: none;">End</button>
+
+        <!-- 캐릭터 레이어 (화면에 겹치지 않게 배치) -->
+        <!-- 페이지 박스 -->
+        <div class="char-wrapper inactive" id="char-페이지박사" style="left: 120px; bottom: 120px; display: none;">
+            <iframe src="등장인물_페이지박사.html" scrolling="no"></iframe>
+        </div>
+
+        <!-- Q -->
+        <div class="char-wrapper inactive" id="char-Q" style="left: 330px; bottom: 120px; display: none;">
+            <iframe src="등장인물_Q.html" scrolling="no"></iframe>
+        </div>
+
+        <!-- 민우 -->
+        <div class="char-wrapper inactive" id="char-민우" style="right: 330px; bottom: 120px; display: none;">
+            <iframe src="등장인물_민우.html" scrolling="no"></iframe>
+        </div>
+
+        <!-- 서연 -->
+        <div class="char-wrapper inactive" id="char-서연" style="right: 120px; bottom: 120px; display: none;">
+            <iframe src="등장인물_서연.html" scrolling="no"></iframe>
+        </div>
+
+        <!-- 1단계: 첫 번째 상황 설명 박스 -->
+        <div id="situation-box" class="situation-box">
+            학생 탐정이 함수의 마지막 성질을 설명하자, 사라졌던 곡선이 다시 박물관 외관을 따라 환하게 이어졌습니다.<br>
+            미래의 기록에도 아름다운 페이지스의 모습이 돌아왔습니다.
+        </div>
+
+        <!-- 2단계: 대화창 -->
+        <div id="dialogue-box" style="display: none;" onclick="advanceDialogue()">
+            <div id="speaker-name">화자</div>
+            <div id="dialogue-text">대화 내용</div>
+        </div>
+
+        <!-- 3단계: 완료 화면 카드 -->
+        <div id="ending-card" class="ending-card" style="display: none;">
+            <span class="ending-badge">MISSION COMPLETED</span>
+            <div class="ending-title">페이지스 시간탐정단 임무 완료</div>
+            <div class="ending-desc">
+                현실의 복잡한 곡선을 이차함수로 읽어 내는 데 성공했습니다.
+            </div>
+            <div class="ending-stamp">
+                MISSION<br>COMPLETE
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const prevUrl = "A03-2.html";
+
+        // 대화 시나리오 구조 (요청서 단계 반영)
+        // 0: 상황 설명
+        // 1: 페이지 박사 등장 대사
+        // 2: Q 등장 대사
+        // 3: 민우 & 서연 등장 대사 (민우)
+        // 4: 민우 & 서연 등장 대사 (서연)
+        // 5: 슬라이드 전환 후 페이지 박사 마무리 대사
+        // 6: 완수 화면
+        const dialogues = [
+            {
+                speaker: "페이지 박사",
+                text: "덕분에 문자박물관의 역사와 건축 기록을 지킬 수 있었어. 정말 고마워, 시간탐정!",
+                activeChars: ["char-페이지박사"],
+                visibleChars: ["char-페이지박사"],
+                triggerSlide: false
+            },
+            {
+                speaker: "Q",
+                text: "임무 결과를 저장했습니다. 장소 관찰, 좌표 설정, 이차함수 모델링, 그래프 해석 모두 완료했습니다.",
+                activeChars: ["char-Q"],
+                visibleChars: ["char-페이지박사", "char-Q"],
+                triggerSlide: false
+            },
+            {
+                speaker: "민우",
+                text: "오늘 알게 됐어. 이차함수는 교과서 속 그래프가 아니라, 현실의 모습을 설명하는 수학의 언어라는 것을!",
+                activeChars: ["char-민우"],
+                visibleChars: ["char-페이지박사", "char-Q", "char-민우", "char-서연"],
+                triggerSlide: false
+            },
+            {
+                speaker: "서연",
+                text: "맞아! 우리도 앞으로 세상 곳곳에 숨겨진 수학적 측면을 해석하고 지켜볼거야!!",
+                activeChars: ["char-서연"],
+                visibleChars: ["char-페이지박사", "char-Q", "char-민우", "char-서연"],
+                triggerSlide: true // 다음 대사 이동 시 슬라이드 효과 발동
+            },
+            {
+                speaker: "페이지 박사",
+                text: "도시에는 아직 발견되지 않은 수학적 암호가 많아. 다음 사건에서 다시 만나자!",
+                activeChars: ["char-페이지박사"],
+                visibleChars: ["char-페이지박사"],
+                triggerSlide: false
+            }
+        ];
+
+        let dialogueIndex = -1; // -1: 상황 설명 단계
+        let isTransitioning = false;
+
+        function goPrev() {
+            window.location.href = prevUrl;
+        }
+
+        // 초기 세팅 (상황 설명)
+        window.addEventListener('DOMContentLoaded', () => {
+            const situationBox = document.getElementById('situation-box');
+            situationBox.style.cursor = 'pointer';
+            situationBox.addEventListener('click', startDialogueSequence);
+        });
+
+        // 상황 설명 클릭 시 대화 시작
+        function startDialogueSequence() {
+            document.getElementById('situation-box').style.display = 'none';
+            document.getElementById('dialogue-box').style.display = 'block';
+            document.getElementById('btn-skip').style.display = 'block';
+            advanceDialogue();
+        }
+
+        // 대화 진행 함수
+        function advanceDialogue() {
+            if (isTransitioning) return;
+
+            dialogueIndex++;
+
+            if (dialogueIndex < dialogues.length) {
+                const currentData = dialogues[dialogueIndex];
+
+                // 이전 단계에서 화면 좌측 슬라이드 효과 요청이 있던 경우
+                if (dialogueIndex > 0 && dialogues[dialogueIndex - 1].triggerSlide) {
+                    performSlideAnimation(() => {
+                        renderDialogue(currentData);
+                    });
+                } else {
+                    renderDialogue(currentData);
+                }
+            } else {
+                // 대화 완료 -> 완수 화면
+                showEndingCard();
+            }
+        }
+
+        // 대화 UI 및 캐릭터 상태 갱신
+        function renderDialogue(data) {
+            document.getElementById('speaker-name').textContent = data.speaker;
+            document.getElementById('dialogue-text').textContent = data.text;
+
+            // 모든 캐릭터 표시 상태 및 활성화 제어
+            const allCharIds = ["char-페이지박사", "char-Q", "char-민우", "char-서연"];
+
+            allCharIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (data.visibleChars.includes(id)) {
+                    el.style.display = 'block';
+                    if (data.activeChars.includes(id)) {
+                        el.classList.remove('inactive');
+                    } else {
+                        el.classList.add('inactive');
+                    }
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+        }
+
+        // 슬라이드 애니메이션 연출
+        function performSlideAnimation(callback) {
+            isTransitioning = true;
+            const container = document.getElementById('game-container');
+            container.classList.add('slide-left-out');
+
+            setTimeout(() => {
+                container.classList.remove('slide-left-out');
+                if (callback) callback();
+                isTransitioning = false;
+            }, 600);
+        }
+
+        // 건너뛰기
+        function skipDialogue() {
+            if (isTransitioning) return;
+            showEndingCard();
+        }
+
+        // 최종 완수 화면 출력
+        function showEndingCard() {
+            document.getElementById('dialogue-box').style.display = 'none';
+            document.getElementById('btn-skip').style.display = 'none';
+            document.getElementById('situation-box').style.display = 'none';
+
+            // 모든 캐릭터 숨김
+            const allCharIds = ["char-페이지박사", "char-Q", "char-민우", "char-서연"];
+            allCharIds.forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+
+            // 완료 카드 및 End 버튼 표시
+            document.getElementById('ending-card').style.display = 'flex';
+            document.getElementById('btn-end').style.display = 'block';
+        }
+
+        // 게임 최종 종료/메인 복귀
+        function finishGame() {
+            alert("송도센트럴파크 MATHTOUR 탐구가 모두 완료되었습니다!");
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

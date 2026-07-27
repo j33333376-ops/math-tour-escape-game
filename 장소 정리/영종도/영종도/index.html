@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>영종도 MATHTOUR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&family=Nanum+Myeongjo:wght@700;800&family=Noto+Sans+KR:wght@700;900&display=swap');
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Jua', 'Noto Sans KR', sans-serif;
+            background: #cfe2ec;
+            background-image: radial-gradient(circle at 50% 38%, #fbfeff 0%, #cfe2ec 72%, #cfe2ec 100%);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .map-container {
+            width: 95vw; max-width: 1400px; max-height: 90vh;
+            aspect-ratio: 16 / 9;
+            background-color: #f2f8fc;
+            border-radius: 26px;
+            box-shadow: 0 14px 34px rgba(20,20,30,0.30), inset 0 0 0 6px rgba(255,255,255,0.85);
+            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+        svg { width: 100%; height: 100%; display: block; }
+
+        .point-scale {
+            transition: transform 0.25s ease;
+            transform-box: fill-box; transform-origin: center;
+        }
+        .point-link { outline: none; cursor: pointer; text-decoration: none; }
+        .point-link:hover .point-scale { transform: scale(1.1); }
+
+        .tile-frame { position: relative; overflow: hidden; pointer-events: none; background: transparent; }
+        .tile-iframe { position: absolute; border: 0; display: block; background: transparent; transform-origin: top left; pointer-events: none; }
+        .tile-badge {
+            position: absolute; top: 2px; left: 2px;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #2c7fa8; border: 2px solid #ffffff; color: #ffffff;
+            font-family: 'Black Han Sans', 'Jua', sans-serif; font-size: 12px; line-height: 1;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2; box-shadow: 0 1px 3px rgba(0,0,0,0.45); pointer-events: none;
+        }
+
+        .map-title {
+            font-family: 'Black Han Sans','Jua',sans-serif; font-size: 46px;
+            fill: url(#titleGrad); stroke: #0e3350; stroke-width: 7px;
+            paint-order: stroke; stroke-linejoin: round; filter: url(#titleShadow);
+        }
+        .label-wrap {
+            width: 200px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            pointer-events: none;
+        }
+        .place-tag {
+            background: rgba(252,254,255,0.94);
+            color: #1f4256;
+            font-family: 'Jua', 'Noto Sans KR', sans-serif;
+            font-size: 12px; font-weight: 700; line-height: 1.1;
+            padding: 2px 8px; border-radius: 9px; white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            border: 1px solid #9cc4dc;
+        }
+        .no-select { user-select: none; }
+    </style>
+</head>
+<body>
+    <div class="map-container">
+        <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <defs>
+                <radialGradient id="bgGrad" cx="50%" cy="42%" r="75%">
+                    <stop offset="0%" stop-color="#fbfeff"/>
+                    <stop offset="60%" stop-color="#dceef6"/>
+                    <stop offset="100%" stop-color="#b8d8ea"/>
+                </radialGradient>
+                <pattern id="pt" width="52" height="52" patternUnits="userSpaceOnUse">
+    <path d="M0,26 h52" stroke="#c4dcea" stroke-width="1.2" opacity="0.6"/>
+    <path d="M26,0 v52" stroke="#c4dcea" stroke-width="1.2" opacity="0.35"/>
+  </pattern>
+                <linearGradient id="titleGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="45%" stop-color="#7fc0e8"/>
+                    <stop offset="100%" stop-color="#1f5f8c"/>
+                </linearGradient>
+                <filter id="titleShadow" x="-20%" y="-20%" width="140%" height="160%">
+                    <feDropShadow dx="0" dy="4" stdDeviation="2" flood-color="#0e3350" flood-opacity="0.45"/>
+                </filter>
+            </defs>
+
+            <rect x="0" y="0" width="800" height="450" fill="url(#bgGrad)"/>
+            <rect x="0" y="0" width="800" height="450" fill="url(#pt)"/>
+
+            <!-- 비행기 -->
+              <g transform="translate(400,44) rotate(8)" opacity="0.9">
+                <path d="M-30,0 L18,0 L30,-4 L18,-8 L-30,-6 Z" fill="#f4f8fa" stroke="#7f96a4" stroke-width="1.6"/>
+                <path d="M-8,-2 L16,-2 L10,-16 L-2,-16 Z" fill="#dceaf2" stroke="#7f96a4" stroke-width="1.4"/>
+                <path d="M-30,-6 L-40,-14 L-33,-14 L-25,-6 Z" fill="#e6eef4" stroke="#7f96a4" stroke-width="1.2"/>
+              </g>
+              <g stroke="#b8d0dc" stroke-width="2.4" stroke-dasharray="8 8" fill="none" opacity="0.7">
+                <path d="M120,60 q140,-30 260,-14"/>
+              </g>
+              <!-- 인천대교 사장교 -->
+              <g opacity="0.55">
+                <line x1="640" y1="418" x2="740" y2="418" stroke="#8f9aa4" stroke-width="4"/>
+                <polygon points="690,418 684,378 696,378" fill="#c4d4dc"/>
+                <g stroke="#a8bcc8" stroke-width="1.4">
+                  <line x1="690" y1="380" x2="644" y2="416"/><line x1="690" y1="380" x2="736" y2="416"/>
+                  <line x1="690" y1="390" x2="660" y2="416"/><line x1="690" y1="390" x2="720" y2="416"/>
+                </g>
+              </g>
+              <!-- 파라솔 -->
+              <g transform="translate(66,400)" opacity="0.9">
+                <line x1="0" y1="0" x2="0" y2="-20" stroke="#8a8474" stroke-width="2.6"/>
+                <path d="M-20,-20 q20,-16 40,0 Z" fill="#e8623c"/>
+                <path d="M-20,-20 q10,-8 20,-8 l0,8 Z" fill="#f7f2e6"/>
+              </g>
+
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#4a5560" stroke-width="24" />
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#8f9aa4" stroke-width="16" />
+            <rect x="94" y="76" width="612" height="298" rx="30" ry="30" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-dasharray="26 20" opacity="0.9" />
+
+            <text x="400" y="225" dy="0.35em" text-anchor="middle" class="map-title no-select">영종도 MATHTOUR</text>
+
+            <a href="A01.html" class="point-link" aria-label="인천대교 기념관">
+                <g transform="translate(94, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-24.0" width="140.0" height="48.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:48.0px;">
+                                <iframe class="tile-iframe" src="영종도_인천대교기념관.html" scrolling="no" style="width:1400px;height:480px;left:0px;top:0px;transform:scale(0.1);"></iframe>
+                                <div class="tile-badge">A</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-24.0" width="140.0" height="48.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="B01.html" class="point-link" aria-label="왕산마리나">
+                <g transform="translate(400, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-33.09" width="140.0" height="66.18" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:66.18px;">
+                                <iframe class="tile-iframe" src="영종도_왕산마리나.html" scrolling="no" style="width:1100px;height:520px;left:0px;top:0px;transform:scale(0.12727);"></iframe>
+                                <div class="tile-badge">B</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-33.09" width="140.0" height="66.18" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="C01.html" class="point-link" aria-label="을왕리해수욕장">
+                <g transform="translate(706, 76)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-29.275" width="140.0" height="58.55" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:58.55px;">
+                                <iframe class="tile-iframe" src="영종도_을왕리해수욕장.html" scrolling="no" style="width:1100px;height:460px;left:0px;top:0px;transform:scale(0.12727);"></iframe>
+                                <div class="tile-badge">C</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-29.275" width="140.0" height="58.55" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="D01.html" class="point-link" aria-label="레일바이크">
+                <g transform="translate(706, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-37.335" width="140.0" height="74.67" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:74.67px;">
+                                <iframe class="tile-iframe" src="영종도_레일바이크.html" scrolling="no" style="width:900px;height:480px;left:0px;top:0px;transform:scale(0.15556);"></iframe>
+                                <div class="tile-badge">D</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-37.335" width="140.0" height="74.67" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="E01.html" class="point-link" aria-label="공항 전망대">
+                <g transform="translate(400, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-62.0" width="140.0" height="124.0" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:124.0px;">
+                                <iframe class="tile-iframe" src="영종도_공항전망대.html" scrolling="no" style="width:700px;height:620px;left:0px;top:0px;transform:scale(0.2);"></iframe>
+                                <div class="tile-badge">E</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-62.0" width="140.0" height="124.0" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+            <a href="F01.html" class="point-link" aria-label="영종진공원">
+                <g transform="translate(94, 374)">
+                    <g class="point-scale">
+                        <foreignObject x="-70.0" y="-30.335" width="140.0" height="60.67" overflow="visible">
+                            <div xmlns="http://www.w3.org/1999/xhtml" class="tile-frame" style="width:140.0px;height:60.67px;">
+                                <iframe class="tile-iframe" src="영종도_영종진공원.html" scrolling="no" style="width:1200px;height:520px;left:0px;top:0px;transform:scale(0.11667);"></iframe>
+                                <div class="tile-badge">F</div>
+                            </div>
+                        </foreignObject>
+                        <rect x="-70.0" y="-30.335" width="140.0" height="60.67" fill="#ffffff" fill-opacity="0" pointer-events="all"/>
+                    </g>
+                </g>
+            </a>
+
+            <foreignObject x="-6" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">A. 인천대교 기념관</span></div>
+            </foreignObject>
+            <foreignObject x="300" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">B. 왕산마리나</span></div>
+            </foreignObject>
+            <foreignObject x="606" y="60" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">C. 을왕리해수욕장</span></div>
+            </foreignObject>
+            <foreignObject x="606" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">D. 레일바이크</span></div>
+            </foreignObject>
+            <foreignObject x="300" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">E. 공항 전망대</span></div>
+            </foreignObject>
+            <foreignObject x="-6" y="358" width="200" height="32" overflow="visible" pointer-events="none">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="label-wrap"><span class="place-tag">F. 영종진공원</span></div>
+            </foreignObject>
+
+        </svg>
+    </div>
+</body>
+</html>

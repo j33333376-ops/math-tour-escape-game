@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>인천도호부청사·인천향교 MATHTOUR - STAGE 2</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #12100e;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      overflow: hidden;
+    }
+
+    /* 게임 컨테이너 (16:9 비율 고정) */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #f5f0e6;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.85);
+      border: 2px solid #d4af37;
+    }
+
+    /* 배경 에셋 (인천향교 대성전) */
+    .bg-iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* 상단 상태 바 */
+    #stage-header {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92%;
+      padding: 10px 22px;
+      background: rgba(20, 15, 12, 0.85);
+      border: 2px solid #d4af37;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .header-title {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #d4af37;
+      letter-spacing: 0.05em;
+    }
+
+    .header-stage {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 0.95rem;
+      color: #f5f0e6;
+    }
+
+    /* 캐릭터 영역 */
+    .char-wrapper {
+      position: absolute;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      z-index: 3;
+      transition: filter 0.25s ease;
+    }
+
+    .char-wrapper.inactive {
+      filter: brightness(0.55);
+    }
+
+    #char-민우 {
+      left: 160px;
+      bottom: 30px;
+    }
+
+    #char-서연 {
+      right: 160px;
+      bottom: 30px;
+    }
+
+    /* 하단 대화창 */
+    #dialogue-box {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92%;
+      height: 155px;
+      background: rgba(0, 0, 0, 0.75);
+      border: 2px solid #d4af37;
+      border-radius: 8px;
+      padding: 18px 24px;
+      box-sizing: border-box;
+      z-index: 10;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    #speaker-name {
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #d4af37;
+      margin-bottom: 8px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+      padding-bottom: 4px;
+      display: inline-block;
+    }
+
+    #dialogue-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+    }
+
+    .click-hint {
+      position: absolute;
+      right: 20px;
+      bottom: 12px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 0.8rem;
+      color: #d4af37;
+      opacity: 0.8;
+      animation: blink 1.2s infinite alternate;
+    }
+
+    @keyframes blink {
+      from { opacity: 0.3; }
+      to { opacity: 1; }
+    }
+
+    /* 네비게이션 버튼 공통 스타일 */
+    .btn-nav {
+      position: absolute;
+      background: #8c3030;
+      color: #ffffff;
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      padding: 10px 24px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: bold;
+      font-size: 0.95rem;
+      cursor: pointer;
+      z-index: 20;
+      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-nav:hover {
+      background: #661f1f;
+    }
+
+    .btn-nav:active {
+      transform: scale(0.97);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+      display: none;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+      display: none;
+    }
+
+    #btn-skip {
+      right: 20px;
+      bottom: 20px;
+      display: block;
+      background: #661f1f;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 배경 이미지 에셋 -->
+    <iframe class="bg-iframe" src="인천향교_대성전.html" scrolling="no"></iframe>
+
+    <!-- 상단 헤더 바 -->
+    <div id="stage-header">
+      <div class="header-title">인천도호부청사·인천향교 MATHTOUR</div>
+      <div class="header-stage">STAGE 02. 인천향교 대성전과 구고현의 정리</div>
+    </div>
+
+    <!-- 등장 인물 (민우) -->
+    <div class="char-wrapper" id="char-민우">
+      <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장 인물 (서연) -->
+    <div class="char-wrapper" id="char-서연">
+      <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform: scaleX(-1); pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+      <div id="speaker-name">민우</div>
+      <div id="dialogue-text">대사를 불러오는 중입니다...</div>
+      <div class="click-hint">▼ 클릭하여 계속</div>
+    </div>
+
+    <!-- 공통 이동 버튼 -->
+    <button id="btn-prev" class="btn-nav" onclick="location.href='D01.html'">이전</button>
+    <button id="btn-next" class="btn-nav" onclick="location.href='D03.html'">다음</button>
+    <button id="btn-skip" class="btn-nav" onclick="skipDialogue()">건너뛰기</button>
+  </div>
+
+  <script>
+    // 대화 데이터 정의
+    const dialogues = [
+      {
+        speaker: "민우",
+        text: "여기가 바로 인천향교의 대성전이구나! 세월의 깊이가 느껴지는 고풍스러운 건축물이 정말 멋져.",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "맞아. 향교는 조선시대 지방의 공공 교육기관으로, 유교 학문을 가르치고 성현들의 위패를 모시던 곳이야.",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "유교라고 하면 보통 한자나 경전을 읽고 도덕을 공부하는 곳으로만 생각했는데, 수학과도 깊은 연관이 있어?",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "물론이지! 유교 선비가 갖추어야 할 6가지 필수 학문과 기술을 '육예(六藝)'라고 부르는데, 예(禮)·악(樂)·사(射)·어(御)·서(書)·수(數)로 이루어져 있어.",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "아! 그중 여섯 번째에 있는 '수(數)'가 바로 산수, 즉 수학을 뜻하는 거구나!",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "정확해. 유교에서는 실생활의 계산과 국가의 재정, 토지 관리, 건축 등을 담당하는 수리적 능력을 선비의 핵심 덕목으로 보았단다.",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "그렇구나! 그럼 당시 선비들이 수학을 공부할 때 주로 보던 교재는 무엇이었어?",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "대표적인 교재가 바로 동양 최고의 수학 고전인 <구장산술(九章算術)>이야. 토지 측량, 세금 계산, 토목 공사 등 실용적인 문제 246개가 수록되어 있지.",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "<구장산술>! 들어본 적 있어. 거기에도 우리가 잘 아는 수학 공식이나 정리가 나오니?",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "그럼! 특히 제9장 '구고(勾股)' 편에는 서양의 피타고라스 정리와 동일한 '구고현의 정리(勾股弦之定理)'가 수록되어 있어.",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "'구고현의 정리'? 구(勾), 고(股), 현(弦)이 각각 무엇을 의미하는지 궁금해!",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "직각삼각형에서 직각을 낀 짧은 변을 '구(勾)', 긴 변을 '고(股)', 그리고 빗변을 '현(弦)'이라고 해. 즉, 구² + 고² = 현² 이 성립하는 거지.",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "아하! 밑변 구가 3이고 높이 고가 4라면, 3² + 4² = 9 + 16 = 25가 되니까 빗변 현의 길이는 5가 되는 거구나!",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "정확하게 이해했네! 이제 대성전 곳곳을 둘러보며 구고현의 정리를 활용한 다음 퀴즈를 해결하러 가보자!",
+        target: "char-서연"
+      }
+    ];
+
+    let currentIndex = 0;
+
+    // 대화 진행 및 하이라이트 갱신
+    function updateDialogue() {
+      if (currentIndex >= dialogues.length) {
+        endDialogue();
+        return;
+      }
+
+      const current = dialogues[currentIndex];
+      document.getElementById('speaker-name').textContent = current.speaker;
+      document.getElementById('dialogue-text').textContent = current.text;
+
+      const charMinwoo = document.getElementById('char-민우');
+      const charSeoyeon = document.getElementById('char-서연');
+
+      if (current.target === 'char-민우') {
+        charMinwoo.classList.remove('inactive');
+        charSeoyeon.classList.add('inactive');
+      } else if (current.target === 'char-서연') {
+        charSeoyeon.classList.remove('inactive');
+        charMinwoo.classList.add('inactive');
+      } else {
+        charMinwoo.classList.remove('inactive');
+        charSeoyeon.classList.remove('inactive');
+      }
+    }
+
+    function advanceDialogue() {
+      currentIndex++;
+      updateDialogue();
+    }
+
+    function skipDialogue() {
+      endDialogue();
+    }
+
+    function endDialogue() {
+      document.getElementById('dialogue-box').style.display = 'none';
+      document.getElementById('btn-skip').style.display = 'none';
+
+      document.getElementById('char-민우').classList.remove('inactive');
+      document.getElementById('char-서연').classList.remove('inactive');
+
+      document.getElementById('btn-prev').style.display = 'block';
+      document.getElementById('btn-next').style.display = 'block';
+    }
+
+    // 키보드 조작 지원 (스페이스바 / 엔터키)
+    window.addEventListener('keydown', (e) => {
+      if (document.getElementById('dialogue-box').style.display !== 'none') {
+        if (e.code === 'Space' || e.code === 'Enter') {
+          advanceDialogue();
+        }
+      }
+    });
+
+    // 초기화
+    window.addEventListener('DOMContentLoaded', () => {
+      updateDialogue();
+    });
+  </script>
+</body>
+</html>

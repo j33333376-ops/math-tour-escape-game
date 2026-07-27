@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>송도센트럴파크 MATHTOUR - A03-1 (곡선 모델링)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        :root {
+            --primary-green: #2d5a27;
+            --wood-brown: #6d4c41;
+            --sage-green: #8aa171;
+            --moss-beige: #f2f7f2;
+            --olive-dark: #3e4a3d;
+            --ivory: #fdfbf7;
+            --sunshine-yellow: #f4a261;
+            
+            --primary-blue: #2d5a27; /* Theme alignment */
+            --primary-dark: #1b3b17;
+            --secondary-blue: #e8f0e8;
+            --accent-gold: #f4a261;
+            --text-dark: #3e4a3d;
+            --white: #ffffff;
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #121812;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 16:9 메인 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: var(--moss-beige);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 단계 1~4: 대화 및 상황 연출 레이어 */
+        #story-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            pointer-events: auto;
+        }
+
+        /* 캐릭터 영역 */
+        .char-wrapper {
+            position: absolute;
+            bottom: 110px;
+            width: 260px;
+            height: 320px;
+            overflow: visible;
+            transition: filter 0.3s ease, transform 0.3s ease;
+            z-index: 3;
+        }
+
+        .char-wrapper.inactive {
+            filter: brightness(0.55);
+        }
+
+        #char-민우 {
+            left: 120px;
+        }
+
+        #char-서연 {
+            right: 120px;
+        }
+
+        #char-Q {
+            left: 360px;
+            bottom: 120px;
+        }
+
+        #char-페이지박사 {
+            right: 360px;
+            bottom: 120px;
+        }
+
+        /* 나무 팻말 상단 표시바 */
+        .wooden-signpost {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: var(--wood-brown);
+            color: var(--ivory);
+            padding: 8px 18px;
+            border-radius: 12px;
+            border: 2px solid #8d6e63;
+            font-family: 'Gowun Batang', serif;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 12;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 상황 설명 박스 (유형 1 스타일) */
+        #situation-box {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 2px solid var(--sage-green);
+            border-radius: 16px;
+            padding: 20px 25px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            backdrop-filter: blur(5px);
+            z-index: 15;
+            color: var(--olive-dark);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        /* 대화창 (유형 2 스타일) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 88%;
+            max-width: 920px;
+            background: rgba(45, 90, 39, 0.90);
+            border: 2px solid var(--wood-brown);
+            border-radius: 16px;
+            padding: 18px 25px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
+            z-index: 15;
+            cursor: pointer;
+            display: none;
+        }
+
+        #speaker-name {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: var(--sunshine-yellow);
+            margin-bottom: 6px;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.98rem;
+            color: var(--ivory);
+            line-height: 1.6;
+            min-height: 2.8em;
+        }
+
+        .click-guide {
+            position: absolute;
+            right: 20px;
+            bottom: 12px;
+            font-size: 0.8rem;
+            color: rgba(253, 251, 247, 0.7);
+            animation: blink 1.2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* 네비게이션 버튼 공통 */
+        .btn-nav {
+            background: var(--primary-green);
+            color: var(--white);
+            border: none;
+            padding: 9px 22px;
+            border-radius: 20px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(45, 90, 39, 0.2);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background: var(--wood-brown);
+        }
+
+        .btn-nav:disabled {
+            background: #aaa;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .btn-nav:active:not(:disabled) {
+            transform: scale(0.96);
+        }
+
+        #btn-story-next {
+            position: absolute;
+            right: 25px;
+            bottom: 25px;
+            z-index: 20;
+        }
+
+        #btn-story-skip {
+            position: absolute;
+            right: 25px;
+            top: 15px;
+            z-index: 20;
+            background: rgba(109, 76, 65, 0.85);
+        }
+
+        /* 퀴즈 영역 (단계 5) */
+        #quiz-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 20;
+            display: none;
+            flex-direction: column;
+            background-color: var(--white);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-green));
+            color: var(--white);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        header p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+
+        .canvas-section {
+            position: relative;
+            flex: 1;
+            width: 100%;
+            background-color: #000;
+            overflow: hidden;
+        }
+
+        .quiz-bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0.85;
+        }
+
+        canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .equation-badge {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            border: 2px solid var(--sage-green);
+        }
+
+        .controls-section {
+            padding: 12px 20px;
+            background: var(--moss-beige);
+            border-top: 2px solid var(--sage-green);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sliders-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .control-group {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--sage-green);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .control-label span.val {
+            color: var(--primary-green);
+            font-weight: 700;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: #c8e6c9;
+            outline: none;
+            accent-color: var(--primary-green);
+            cursor: pointer;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .guide-text {
+            font-size: 0.82rem;
+            color: var(--olive-dark);
+            font-weight: 500;
+        }
+
+        /* 성공 모달 팝업 */
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: var(--white);
+            padding: 25px 30px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 420px;
+            width: 85%;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--sage-green);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+
+        .modal-card h2 {
+            color: var(--primary-dark);
+            font-size: 1.2rem;
+            font-family: 'Gowun Batang', serif;
+            margin-bottom: 10px;
+            word-break: keep-all;
+        }
+
+        .modal-card p {
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* 화면 전환 효과: 좌측으로 넘겨지는 애니메이션 */
+        .slide-left-out {
+            animation: slideLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes slideLeft {
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(-100%); opacity: 0.8; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 배경 이미지 -->
+        <img src="배경_국립세계문자박물관(위).png" alt="국립세계문자박물관 전경" class="bg-img" onerror="this.src='https://images.unsplash.com/photo-1580130248039-389304928172?auto=format&fit=crop&w=1200&q=80'">
+
+        <!-- 스토리 & 서사 진행 레이어 (단계 1 ~ 4) -->
+        <div id="story-layer">
+            <div class="wooden-signpost">
+                🌿 <span>송도센트럴파크 MATHTOUR - 곡선 모델링</span>
+            </div>
+
+            <button class="btn-nav" id="btn-story-skip" onclick="startQuizPhase()">건너뛰기</button>
+
+            <!-- 등장 인물 배치 -->
+            <div class="char-wrapper" id="char-민우" style="display:none;">
+                <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; pointer-events:none;"></iframe>
+            </div>
+            
+            <div class="char-wrapper" id="char-Q" style="display:none;">
+                <iframe src="등장인물_Q.html" scrolling="no" style="border:0; width:260px; height:320px; pointer-events:none;"></iframe>
+            </div>
+
+            <div class="char-wrapper" id="char-페이지박사" style="display:none;">
+                <iframe src="등장인물_페이지박사.html" scrolling="no" style="border:0; width:260px; height:320px; pointer-events:none;"></iframe>
+            </div>
+
+            <div class="char-wrapper" id="char-서연" style="display:none;">
+                <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; pointer-events:none;"></iframe>
+            </div>
+
+            <!-- 1단계: 상황 설명 박스 -->
+            <div id="situation-box">
+                학생 탐정단과 큐는 박물관 외부를 걸으며 곡선의 흔적을 찾았습니다. 하지만 같은 건물도 바라보는 위치에 따라 곡선의 모습이 다르게 보였습니다. 정확한 모델링을 위해서는 곡선이 가장 선명하게 보이는 위치를 선택해야 합니다.
+            </div>
+
+            <!-- 2~4단계: 대화창 UI -->
+            <div id="dialogue-box" onclick="advanceDialogue()">
+                <div id="speaker-name">화자</div>
+                <div id="dialogue-text">대사 내용</div>
+                <div class="click-guide">클릭하여 다음 대화 ▶</div>
+            </div>
+
+            <button class="btn-nav" id="btn-story-next" onclick="nextStoryPhase()">다음</button>
+        </div>
+
+        <!-- 5단계: 수학 퀴즈 레이어 -->
+        <div id="quiz-layer">
+            <!-- 상단 헤더 -->
+            <header>
+                <h1>송도 국립세계문자박물관 : 곡선 모델링 탐구</h1>
+                <p>y = a(x - p)² + q</p>
+            </header>
+
+            <!-- 캔버스 및 배경 영역 -->
+            <div class="canvas-section">
+                <img src="배경_국립세계문자박물관(위).png" alt="국립세계문자박물관 전경" class="quiz-bg-img" onerror="this.src='https://images.unsplash.com/photo-1580130248039-389304928172?auto=format&fit=crop&w=1200&q=80'">
+                <div class="equation-badge" id="equation-text">y = 1.00(x - 0.0)² + 0.0</div>
+                <canvas id="graphCanvas"></canvas>
+            </div>
+
+            <!-- 슬라이더 조작 영역 -->
+            <div class="controls-section">
+                <div class="sliders-grid">
+                    <!-- 슬라이더 a -->
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>a (폭/방향)</span>
+                            <span class="val" id="val-a">0.50</span>
+                        </div>
+                        <input type="range" id="slider-a" min="-2.0" max="2.0" step="0.05" value="0.5">
+                    </div>
+
+                    <!-- 슬라이더 p -->
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>p (좌우 이동)</span>
+                            <span class="val" id="val-p">0.0</span>
+                        </div>
+                        <input type="range" id="slider-p" min="-10" max="10" step="0.1" value="0.0">
+                    </div>
+
+                    <!-- 슬라이더 q -->
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>q (상하 이동)</span>
+                            <span class="val" id="val-q">0.0</span>
+                        </div>
+                        <input type="range" id="slider-q" min="-10" max="10" step="0.1" value="0.0">
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <button class="btn-nav" id="btn-prev" onclick="navigateToPrev()">이전</button>
+                    <span class="guide-text">💡 3개의 별 모양 타겟 포인트를 지나는 이차함수 식을 만드세요.</span>
+                    <button class="btn-nav" id="btn-next" onclick="navigateToNext()" disabled>다음 단계로 이동</button>
+                </div>
+            </div>
+
+            <!-- 성공 알림 모달 -->
+            <div class="modal-overlay" id="success-modal">
+                <div class="modal-card">
+                    <h2>건축 설계 최적화 성공!</h2>
+                    <p>박물관의 아름다운 곡선을 완성했습니다!</p>
+                    <button class="btn-nav" onclick="closeModal()">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PREV_URL = "A02.html";
+        const NEXT_URL = "A03-2.html";
+
+        // 서사 진행 단계 제어 변수
+        // 1: 상황 설명, 2: 민우 & Q, 3: 페이지박사 & 서연, 4: Q & 민우, 5: 수학 활동(퀴즈)
+        let storyPhase = 1;
+        let dialogueIndex = 0;
+
+        // 대화 데이터 그룹
+        const dialogueGroups = {
+            2: [
+                { speaker: "민우", text: "입구에서는 곡선이 건물에 가려져 잘 보이지 않아. 조금 더 옆으로 이동해 보자.", target: "char-민우" },
+                { speaker: "Q", text: "현재 위치에서는 원근에 의한 변형이 큽니다. 건물의 곡선과 최대한 마주 보는 위치를 추천합니다.", target: "char-Q" }
+            ],
+            3: [
+                { speaker: "페이지 박사", text: "건물 전체를 하나의 포물선이라고 생각하면 안 돼. 복원할 곡선의 일부만 선택해야 해.", target: "char-페이지박사" },
+                { speaker: "서연", text: "좋아! 곡선이 가장 부드럽게 이어지는 구간을 찾았어. 이 부분을 촬영하고 기준점 세 곳을 표시하자.", target: "char-서연" }
+            ],
+            4: [
+                { speaker: "Q", text: "기준점 등록 완료. 이제 사진 위에 좌표평면을 불러오겠습니다.", target: "char-Q" },
+                { speaker: "민우", text: "곡선의 가장 높은 지점 또는 가장 낮은 지점을 꼭짓점 후보로 정하고, 양옆의 점 두 곳도 선택하겠어.", target: "char-민우" },
+                { speaker: "Q", text: "세 개의 기준점을 확보했습니다. 이제 이 점들을 지나는 이차함수의 암호를 찾아야 합니다.", target: "char-Q" }
+            ]
+        };
+
+        function nextStoryPhase() {
+            if (storyPhase === 1) {
+                // 1단계(상황 설명) -> 2단계(민우 & Q)
+                storyPhase = 2;
+                dialogueIndex = 0;
+                document.getElementById('situation-box').style.display = 'none';
+                document.getElementById('dialogue-box').style.display = 'block';
+                document.getElementById('btn-story-next').style.display = 'none'; // 대화 중에는 대화창 클릭으로 넘김
+                
+                showCharacters(['char-민우', 'char-Q']);
+                updateDialogueUI();
+            }
+        }
+
+        function showCharacters(charIds) {
+            // 모든 캐릭터 숨김
+            const allChars = ['char-민우', 'char-Q', 'char-페이지박사', 'char-서연'];
+            allChars.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+
+            // 지정된 캐릭터만 표시
+            charIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'block';
+            });
+        }
+
+        function advanceDialogue() {
+            const currentList = dialogueGroups[storyPhase];
+            if (!currentList) return;
+
+            dialogueIndex++;
+            if (dialogueIndex < currentList.length) {
+                updateDialogueUI();
+            } else {
+                // 현재 그룹 대화 종료 후 다음 그룹/단계로 전환
+                if (storyPhase === 2) {
+                    storyPhase = 3;
+                    dialogueIndex = 0;
+                    showCharacters(['char-페이지박사', 'char-서연']);
+                    updateDialogueUI();
+                } else if (storyPhase === 3) {
+                    storyPhase = 4;
+                    dialogueIndex = 0;
+                    showCharacters(['char-Q', 'char-민우']);
+                    updateDialogueUI();
+                } else if (storyPhase === 4) {
+                    // 퀴즈 페이즈 시작
+                    startQuizPhase();
+                }
+            }
+        }
+
+        function updateDialogueUI() {
+            const currentList = dialogueGroups[storyPhase];
+            if (!currentList || !currentList[dialogueIndex]) return;
+
+            const item = currentList[dialogueIndex];
+            document.getElementById('speaker-name').textContent = item.speaker;
+            document.getElementById('dialogue-text').textContent = item.text;
+
+            // 말하는 사람만 강조, 나머지는 inactive
+            const currentGroupChars = (storyPhase === 2) ? ['char-민우', 'char-Q'] :
+                                       (storyPhase === 3) ? ['char-페이지박사', 'char-서연'] : ['char-Q', 'char-민우'];
+
+            currentGroupChars.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (id === item.target) {
+                        el.classList.remove('inactive');
+                    } else {
+                        el.classList.add('inactive');
+                    }
+                }
+            });
+        }
+
+        function startQuizPhase() {
+            document.getElementById('story-layer').style.display = 'none';
+            document.getElementById('quiz-layer').style.display = 'flex';
+            resizeCanvas();
+        }
+
+        // ================= 퀴즈 로직 (유형 3) =================
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const sliderA = document.getElementById('slider-a');
+        const sliderP = document.getElementById('slider-p');
+        const sliderQ = document.getElementById('slider-q');
+        const valA = document.getElementById('val-a');
+        const valP = document.getElementById('val-p');
+        const valQ = document.getElementById('val-q');
+        const equationText = document.getElementById('equation-text');
+        const btnNext = document.getElementById('btn-next');
+        const modal = document.getElementById('success-modal');
+
+        let isSuccess = false;
+
+        const targetPoints = [
+            { x: -3.0, y: 6.0 },  // 0.25 * (-4)^2 + 2 = 6
+            { x: 1.0,  y: 2.0 },  // 꼭짓점
+            { x: 5.0,  y: 6.0 }   // 0.25 * (4)^2 + 2 = 6
+        ];
+
+        const SCALE = 32;
+        let originX, originY;
+
+        function resizeCanvas() {
+            if (!canvas.parentElement) return;
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            originX = canvas.width / 2;
+            originY = canvas.height * 0.75;
+            render();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function toCanvasX(x) {
+            return originX + (x * SCALE);
+        }
+        function toCanvasY(y) {
+            return originY - (y * SCALE);
+        }
+
+        function drawStar(cx, cy, spikes, outerRadius, innerRadius, color) {
+            let rot = Math.PI / 2 * 3;
+            let x = cx;
+            let y = cy;
+            let step = Math.PI / spikes;
+
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - outerRadius);
+            for (let i = 0; i < spikes; i++) {
+                x = cx + Math.cos(rot) * outerRadius;
+                y = cy + Math.sin(rot) * outerRadius;
+                ctx.lineTo(x, y);
+                rot += step;
+
+                x = cx + Math.cos(rot) * innerRadius;
+                y = cy + Math.sin(rot) * innerRadius;
+                ctx.lineTo(x, y);
+                rot += step;
+            }
+            ctx.lineTo(cx, cy - outerRadius);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+        }
+
+        function drawGrid() {
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+
+            for (let x = originX % SCALE; x < canvas.width; x += SCALE) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+
+            for (let y = originY % SCALE; y < canvas.height; y += SCALE) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+
+            ctx.beginPath();
+            ctx.moveTo(0, originY);
+            ctx.lineTo(canvas.width, originY);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(originX, 0);
+            ctx.lineTo(originX, canvas.height);
+            ctx.stroke();
+        }
+
+        function drawParabola(a, p, q) {
+            ctx.beginPath();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#2d5a27';
+
+            let firstPoint = true;
+            for (let canvasX = 0; canvasX <= canvas.width; canvasX += 2) {
+                const x = (canvasX - originX) / SCALE;
+                const y = a * Math.pow((x - p), 2) + q;
+                const canvasY = toCanvasY(y);
+
+                if (firstPoint) {
+                    ctx.moveTo(canvasX, canvasY);
+                    firstPoint = false;
+                } else {
+                    ctx.lineTo(canvasX, canvasY);
+                }
+            }
+            ctx.stroke();
+        }
+
+        function drawTargetPoints() {
+            targetPoints.forEach(pt => {
+                const cx = toCanvasX(pt.x);
+                const cy = toCanvasY(pt.y);
+                drawStar(cx, cy, 5, 11, 5.5, '#f4a261');
+            });
+        }
+
+        function updateEquationText(a, p, q) {
+            let pStr = p >= 0 ? `- ${p.toFixed(1)}` : `+ ${Math.abs(p).toFixed(1)}`;
+            let qStr = q >= 0 ? `+ ${q.toFixed(1)}` : `- ${Math.abs(q).toFixed(1)}`;
+            equationText.textContent = `y = ${a.toFixed(2)}(x ${pStr})² ${qStr}`;
+        }
+
+        function checkSuccess(a, p, q) {
+            const TOLERANCE = 0.35;
+
+            const allPassed = targetPoints.every(pt => {
+                const expectedY = a * Math.pow((pt.x - p), 2) + q;
+                return Math.abs(expectedY - pt.y) <= TOLERANCE;
+            });
+
+            if (allPassed && !isSuccess) {
+                isSuccess = true;
+                btnNext.disabled = false;
+                showModal();
+            }
+        }
+
+        function showModal() {
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        function render() {
+            const a = parseFloat(sliderA.value);
+            const p = parseFloat(sliderP.value);
+            const q = parseFloat(sliderQ.value);
+
+            valA.textContent = a.toFixed(2);
+            valP.textContent = p.toFixed(1);
+            valQ.textContent = q.toFixed(1);
+            updateEquationText(a, p, q);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawGrid();
+            drawParabola(a, p, q);
+            drawTargetPoints();
+
+            checkSuccess(a, p, q);
+        }
+
+        [sliderA, sliderP, sliderQ].forEach(slider => {
+            slider.addEventListener('input', render);
+        });
+
+        function navigateToPrev() {
+            if (PREV_URL && PREV_URL !== '') {
+                window.location.href = PREV_URL;
+            }
+        }
+
+        function navigateToNext() {
+            const container = document.getElementById('game-container');
+            container.classList.add('slide-left-out');
+
+            setTimeout(() => {
+                if (NEXT_URL && NEXT_URL !== '') {
+                    window.location.href = NEXT_URL;
+                } else {
+                    alert('End');
+                }
+            }, 550);
+        }
+    </script>
+</body>
+</html>

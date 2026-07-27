@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>인천도호부청사·인천향교 MATHTOUR - D04</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    /* 게임 컨테이너 (16:9 비율) */
+    #game-container {
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      overflow: hidden;
+      background-color: #f5f0e6;
+      border: 2px solid #d4af37;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 배경 iframe */
+    .bg-frame {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* 상단 상태바 */
+    #stage-bar {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      padding: 8px 24px;
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid #d4af37;
+      border-radius: 20px;
+      color: #d4af37;
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 16px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* 등장인물 Wrapper */
+    .char-wrapper {
+      position: absolute;
+      bottom: 20px;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      z-index: 3;
+      transition: filter 0.3s ease;
+    }
+
+    .char-wrapper.inactive {
+      filter: brightness(0.55);
+    }
+
+    #char-민우 {
+      left: 150px;
+    }
+
+    #char-서연 {
+      right: 150px;
+    }
+
+    /* 공통 이동 버튼 스타일 */
+    .btn-nav {
+      position: absolute;
+      background-color: #8c3030;
+      color: #ffffff;
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      padding: 10px 24px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      z-index: 15;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-nav:hover {
+      background-color: #661f1f;
+    }
+
+    .btn-nav:active {
+      transform: scale(0.98);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+      display: none;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+      display: none;
+    }
+
+    #btn-skip {
+      right: 20px;
+      bottom: 20px;
+    }
+
+    /* 대화창 UI (유형 2) */
+    #dialogue-box {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 86%;
+      min-height: 130px;
+      padding: 18px 24px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 2px solid #d4af37;
+      border-radius: 8px;
+      z-index: 10;
+      cursor: pointer;
+      color: #ffffff;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      user-select: none;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    #speaker-name {
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 18px;
+      font-weight: bold;
+      color: #d4af37;
+      margin-bottom: 8px;
+      display: inline-block;
+      border-bottom: 1px dashed #d4af37;
+      padding-bottom: 2px;
+    }
+
+    #dialogue-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      flex-grow: 1;
+    }
+
+    .click-indicator {
+      align-self: flex-end;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 12px;
+      color: #d4af37;
+      animation: blink 1.2s infinite;
+      margin-top: 6px;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 배경 이미지 에셋 -->
+    <iframe src="인천향교_대성전.html" scrolling="no" class="bg-frame"></iframe>
+
+    <!-- 상단 스테이지 표시바 -->
+    <div id="stage-bar">인천향교 대성전 · 탐험 종료</div>
+
+    <!-- 등장 인물 : 민우 -->
+    <div class="char-wrapper inactive" id="char-민우">
+      <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장 인물 : 서연 -->
+    <div class="char-wrapper inactive" id="char-서연">
+      <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom center; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+      <div>
+        <div id="speaker-name">민우</div>
+        <div id="dialogue-text">대사를 불러오는 중입니다...</div>
+      </div>
+      <div class="click-indicator">▼ 클릭하여 계속</div>
+    </div>
+
+    <!-- 네비게이션 버튼 -->
+    <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
+    <button class="btn-nav" id="btn-prev" onclick="goToPrev()">이전</button>
+    <button class="btn-nav" id="btn-next" onclick="goToNext()">다음</button>
+  </div>
+
+  <script>
+    // 대화 데이터 정의
+    const dialogues = [
+      {
+        speaker: "민우",
+        text: "휴, 드디어 인천향교 대성전에서의 모든 수학 미션을 마쳤어!",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "그동안 어렵게만 느껴졌던 피타고라스 정리가 향교 건축물 구조 속에 숨어 있었다니 정말 신기해.",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "맞아! 책에서 공식으로만 외울 땐 지루했는데, 이렇게 역사 유적지에서 직접 측정하고 계산해 보니까 수학이 훨씬 친근하게 느껴져.",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "선조들의 뛰어난 건축 지혜와 수학적 원리가 결합된 걸 눈으로 확인한 소중한 시간이었어.",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "응, 이번 인천향교 매스투어 덕분에 수학에 대한 자신감도 생기고 흥미도 부쩍 커진 것 같아!",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "우리의 매스투어 탐험은 대성공이야! 다음에도 또 다른 문화유산으로 수학 여행을 떠나보고 싶다.",
+        target: "char-서연"
+      }
+    ];
+
+    let currentIndex = 0;
+
+    // 대화 상태 갱신 함수
+    function updateDialogue() {
+      if (currentIndex >= dialogues.length) {
+        finishDialogue();
+        return;
+      }
+
+      const current = dialogues[currentIndex];
+      document.getElementById("speaker-name").textContent = current.speaker;
+      document.getElementById("dialogue-text").textContent = current.text;
+
+      // 캐릭터 하이라이트/비활성화 처리
+      const minwoo = document.getElementById("char-민우");
+      const seoyeon = document.getElementById("char-서연");
+
+      if (current.target === "char-민우") {
+        minwoo.classList.remove("inactive");
+        seoyeon.classList.add("inactive");
+      } else if (current.target === "char-서연") {
+        seoyeon.classList.remove("inactive");
+        minwoo.classList.add("inactive");
+      }
+    }
+
+    // 다음 대화 진행
+    function advanceDialogue() {
+      currentIndex++;
+      updateDialogue();
+    }
+
+    // 대화 건너뛰기
+    function skipDialogue() {
+      finishDialogue();
+    }
+
+    // 대화 종료 후 UI 전환
+    function finishDialogue() {
+      document.getElementById("dialogue-box").style.display = "none";
+      document.getElementById("btn-skip").style.display = "none";
+
+      // 인물 밝기 원복
+      document.getElementById("char-민우").classList.remove("inactive");
+      document.getElementById("char-서연").classList.remove("inactive");
+
+      // 이동 버튼 표시
+      document.getElementById("btn-prev").style.display = "block";
+      document.getElementById("btn-next").style.display = "block";
+    }
+
+    // 페이지 이동 함수
+    function goToPrev() {
+      window.location.href = "D03.html";
+    }
+
+    function goToNext() {
+      window.location.href = "index.html";
+    }
+
+    // Initial load
+    window.onload = function() {
+      updateDialogue();
+    };
+  </script>
+</body>
+</html>

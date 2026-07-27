@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아라뱃길·청라호수공원 MATHTOUR - d05</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+        @import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #fdfbf7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* 게임 컨테이너 (16:9 비율 고정) */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background: #e0f7fa; /* 아이스 블루 */
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* d04와 동일하게 배경 음악분수가 화면을 가득 채우도록 래퍼 및 iframe 스타일 설정 */
+        .asset-wrapper {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 1066px;
+            height: 600px;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .asset-wrapper iframe {
+            border: 0;
+            width: 1000px;
+            height: 500px;
+            transform: scale(1.2);
+            transform-origin: top left;
+            pointer-events: none;
+        }
+
+        /* 스테이지 상단 표시바 (d04 통일) */
+        .stage-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 119, 190, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(64, 224, 208, 0.5);
+            border-radius: 30px;
+            padding: 10px 30px;
+            font-family: 'NanumSquareRound', sans-serif;
+            color: #1a365d;
+            font-size: 1.2rem;
+            font-weight: 700;
+            z-index: 20;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+            transition: opacity 1s ease;
+        }
+
+        /* 첫 화면 부드럽게 살랑거리는 흔들림 연출 (어지러움 최소화) */
+        @keyframes gentle-sway {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1.2); }
+            50% { transform: translate(0, -5px) rotate(0.3deg) scale(1.23); }
+            100% { transform: translate(0, 0) rotate(0deg) scale(1.2); }
+        }
+
+        .fountain-gentle-sway {
+            animation: gentle-sway 2.5s ease-in-out infinite;
+        }
+
+        @keyframes flash-rainbow {
+            0% { background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(56,189,248,0.3) 50%, rgba(0,119,190,0.1) 100%); }
+            50% { background: radial-gradient(circle, rgba(250,204,21,0.8) 0%, rgba(239,68,68,0.3) 50%, rgba(168,85,247,0.1) 100%); }
+            100% { background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(56,189,248,0.3) 50%, rgba(0,119,190,0.1) 100%); }
+        }
+
+        .lighting-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .lighting-active {
+            animation: flash-rainbow 1.5s infinite;
+            opacity: 1;
+        }
+
+        /* 최종 페이드아웃 및 클로즈업 연출용 오버레이 */
+        #fade-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: #000000;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 4.5s ease-in-out;
+        }
+
+        /* 캐릭터 배치 영역 */
+        .char-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            overflow: visible;
+            z-index: 3;
+            transition: filter 0.2s ease, transform 0.8s ease-in-out, opacity 0.8s ease-in-out, left 0.5s ease;
+        }
+
+        .inactive {
+            filter: brightness(0.55);
+        }
+
+        /* 퇴장 애니메이션 클래스 (서연이를 화면 밖 완전한 좌측으로 멀리 퇴장하여 남지 않도록 함) */
+        .char-exit-far-left {
+            transform: translateX(-700px) !important;
+            opacity: 0;
+        }
+
+        .char-exit-left {
+            transform: translateX(-450px) !important;
+            opacity: 0;
+        }
+
+        .char-exit-right {
+            transform: translateX(450px) !important;
+            opacity: 0;
+        }
+
+        /* 대화창 (유형 2 - d04 통일 스타일) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            background: rgba(26, 54, 93, 0.88);
+            border: 1px solid #40e0d0;
+            border-radius: 15px;
+            padding: 25px 35px;
+            box-sizing: border-box;
+            z-index: 15;
+            color: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            display: none; /* 연출 시간 동안 숨김 */
+            flex-direction: column;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+
+        #speaker-name {
+            font-family: 'NanumSquareRound', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #40e0d0;
+            margin-bottom: 10px;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.15rem;
+            color: #ffffff;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+        }
+
+        /* 인트로 안내 텍스트 배너 (초반 3~4초 동안 표시) */
+        #intro-banner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(26, 54, 93, 0.9);
+            border: 2px solid #40e0d0;
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-family: 'NanumSquareRound', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #facc15;
+            z-index: 25;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: fadeInOut 3.5s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -40%) scale(0.9); }
+            15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            85% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -60%) scale(0.9); display: none; }
+        }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            bottom: 20px;
+            padding: 12px 30px;
+            background-color: #0077be;
+            color: #ffffff;
+            border: 1px solid #40e0d0;
+            border-radius: 50px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 119, 190, 0.3);
+            transition: all 0.3s ease;
+            z-index: 120;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-nav:hover {
+            background-color: #40e0d0;
+            color: #1a365d;
+            box-shadow: 0 6px 15px rgba(64, 224, 208, 0.4);
+        }
+
+        #btn-prev {
+            left: 20px;
+            display: flex;
+            z-index: 60;
+        }
+
+        #btn-end {
+            right: 20px;
+            display: none;
+            z-index: 60;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- 최종 페이드아웃 오버레이 -->
+    <div id="fade-overlay"></div>
+
+    <!-- 상단 스테이지 표시바 (d04 통일) -->
+    <div class="stage-bar" id="stage-bar">아라뱃길·청라호수공원 MATHTOUR</div>
+
+    <!-- 초반 3~4초 연출 안내 배너 -->
+    <div id="intro-banner">🎵 환상적인 음악분수 축하 연출 시작! 🎵</div>
+
+    <!-- 화려한 조명 오버레이 -->
+    <div id="lighting-overlay" class="lighting-overlay lighting-active"></div>
+
+    <!-- 에셋: 청라호수공원 음악분수 (d04와 동일하게 화면을 가득 채우도록 설정) -->
+    <div class="asset-wrapper" id="fountain-wrapper">
+        <iframe id="fountain-iframe" src="청라호수공원_음악분수.html" scrolling="no" class="fountain-gentle-sway"></iframe>
+    </div>
+
+    <!-- 등장인물: 민우 (좌측) -->
+    <div class="char-wrapper inactive" id="char-민우" style="left: 150px; bottom: 20px; opacity: 0; transition: opacity 0.8s ease, transform 0.8s ease;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 서연 (중앙) -->
+    <div class="char-wrapper inactive" id="char-서연" style="left: 403px; bottom: 20px; opacity: 0; transition: opacity 0.8s ease, transform 0.8s ease;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 인보 (우측) -->
+    <div class="char-wrapper inactive" id="char-인보" style="left: 650px; bottom: 20px; opacity: 0; transition: opacity 0.8s ease, transform 0.8s ease; transform: scaleX(-1);">
+        <iframe src="등장인물_인보.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-name">화자</div>
+        <div id="dialogue-text">대사 내용</div>
+    </div>
+
+    <!-- 하단 공통 이동 버튼 -->
+    <button id="btn-prev" class="btn-nav" onclick="window.location.href='d04.html'">◀ 이전</button>
+    <button id="btn-end" class="btn-nav" id="btn-end" onclick="onEndClick()">End ▶</button>
+</div>
+
+<script>
+    const dialogues = [
+        { speaker: "서연", text: "우리가 성공한 것 같아 !!", target: "char-서연" },
+        { speaker: "민우", text: "그러게 확률과 통계를 열심히 듣길 잘했어 !", target: "char-민우" },
+        { speaker: "인보", text: "두 사람 덕분에 아름다운 음악분수가 정상으로 돌아왔어! 모두 고마워!", target: "char-인보" },
+        { speaker: "인보", text: "청라호수공원에는 음악분수 말고도 다양한 볼거리와 즐길 것들이 많아 !", target: "char-인보" },
+        { speaker: "서연", text: "응! 우리 다른 곳도 꼭 들러볼게 !", target: "char-서연" },
+        { speaker: "민우", text: "서연아 이번에는 이쪽으로 가보자! ", target: "char-민우" }
+    ];
+
+    let currentDialogueIndex = 0;
+    const charWrappers = [
+        document.getElementById('char-민우'),
+        document.getElementById('char-서연'),
+        document.getElementById('char-인보')
+    ];
+    const dialogueBox = document.getElementById('dialogue-box');
+    const speakerNameEl = document.getElementById('speaker-name');
+    const dialogueTextEl = document.getElementById('dialogue-text');
+    const fountainIframe = document.getElementById('fountain-iframe');
+    const lightingOverlay = document.getElementById('lighting-overlay');
+    const fadeOverlay = document.getElementById('fade-overlay');
+    const stageBar = document.getElementById('stage-bar');
+    const btnEnd = document.getElementById('btn-end');
+
+    // 3.5초 동안 분수 클로즈업 + 부드러운 살랑거림 & 조명 연출 유지 후 대화 시작
+    setTimeout(() => {
+        // 연출 종료 후 분수 원래 스케일로 복귀
+        fountainIframe.classList.remove('fountain-gentle-sway');
+        fountainIframe.style.transform = 'scale(1.2)';
+        lightingOverlay.classList.remove('lighting-active');
+
+        // 캐릭터 등장 (투명도 1로 변경)
+        charWrappers.forEach(wrapper => {
+            wrapper.style.opacity = '1';
+        });
+
+        // 대화창 표시 및 첫 대화 시작
+        dialogueBox.style.display = 'flex';
+        updateDialogueUI();
+    }, 3800);
+
+    function updateDialogueUI() {
+        if (currentDialogueIndex >= dialogues.length) {
+            handleFinalSequence();
+            return;
+        }
+        
+        const currentData = dialogues[currentDialogueIndex];
+        speakerNameEl.innerText = currentData.speaker;
+        dialogueTextEl.innerText = currentData.text;
+
+        charWrappers.forEach(wrapper => {
+            if (wrapper.id === currentData.target) {
+                wrapper.classList.remove('inactive');
+            } else {
+                wrapper.classList.add('inactive');
+            }
+        });
+    }
+
+    function advanceDialogue() {
+        currentDialogueIndex++;
+        updateDialogueUI();
+    }
+
+    function handleFinalSequence() {
+        // 대화창 및 상단바 숨기기
+        dialogueBox.style.opacity = '0';
+        stageBar.style.opacity = '0';
+        setTimeout(() => {
+            dialogueBox.style.display = 'none';
+            stageBar.style.display = 'none';
+        }, 500);
+
+        // 1단계: 서연이를 화면에서 완전히 보이지 않도록 멀리 퇴장시키고(잔류 방지), 민우도 함께 왼쪽으로 퇴장
+        document.getElementById('char-서연').classList.add('char-exit-far-left');
+        document.getElementById('char-민우').classList.add('char-exit-left');
+
+        // 2단계: 1초 후 인보가 반대 방향(오른쪽)으로 퇴장
+        setTimeout(() => {
+            document.getElementById('char-인보').classList.remove('inactive');
+            document.getElementById('char-인보').classList.add('char-exit-right');
+        }, 900);
+
+        // 3단계: 모든 캐릭터가 퇴장한 후 4~5초간 분수를 서서히 클로즈업하며 완전히 검은 화면으로 페이드아웃
+        setTimeout(() => {
+            // 부드러운 클로즈업 전환을 위한 transition 설정 추가
+            fountainIframe.style.transition = 'transform 4.5s ease-in-out';
+            fountainIframe.style.transform = 'scale(2.2)';
+            
+            // 조명 다시 켜고 페이드아웃 오버레이 활성화 (완전한 검은 화면)
+            lightingOverlay.classList.add('lighting-active');
+            fadeOverlay.style.opacity = '1';
+
+            // 4.5초 후 End 버튼 표시
+            setTimeout(() => {
+                btnEnd.style.display = 'flex';
+            }, 4600);
+        }, 2000);
+    }
+
+    function onEndClick() {
+        alert("아라뱃길·청라호수공원 MATHTOUR의 모든 여정을 완료했습니다! 수고하셨습니다.");
+        window.location.href = "index.html";
+    }
+</script>
+</body>
+</html>

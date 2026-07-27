@@ -1,0 +1,91 @@
+<!-- 원본 크기: 600x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>갈매기</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .ygm-svg { display:block; width:100%; height:auto; }
+  .ygm-w1 { animation: ygm-w1 2.4s ease-in-out infinite; transform-origin: 300px 286px; }
+  .ygm-w2 { animation: ygm-w2 2.4s ease-in-out infinite; transform-origin: 300px 286px; }
+  @keyframes ygm-w1 { 0%,100% { transform: rotate(-9deg);} 50% { transform: rotate(11deg);} }
+  @keyframes ygm-w2 { 0%,100% { transform: rotate(9deg);} 50% { transform: rotate(-11deg);} }
+  .ygm-float { animation: ygm-float 4.4s ease-in-out infinite; }
+  @keyframes ygm-float { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-14px);} }
+</style>
+</head>
+<body>
+<svg class="ygm-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="갈매기">
+<title>갈매기</title>
+<desc>영종도 여객선을 따라다니는 흰 갈매기.</desc>
+<defs>
+  <linearGradient id="ygmWing" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffffff"/><stop offset="0.6" stop-color="#e6ecf0"/><stop offset="1" stop-color="#b0bcc4"/>
+  </linearGradient>
+  <radialGradient id="ygmBody" cx="0.36" cy="0.3" r="0.8">
+    <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dae2e8"/>
+  </radialGradient>
+</defs>
+<g class="ygm-float">
+  <!-- 왼쪽 날개 -->
+  <g class="ygm-w1">
+    <path d="M280,282 C210,236 120,208 34,214 C96,246 152,282 196,318 C224,340 258,336 280,312 Z"
+          fill="url(#ygmWing)" stroke="#8f9ba4" stroke-width="4.4" stroke-linejoin="round"/>
+    <g fill="#3a4650">
+      <path d="M34,214 C60,222 84,234 106,248 L74,250 Z"/>
+      <path d="M74,250 C96,262 116,276 134,290 L104,292 Z"/>
+      <path d="M104,292 C122,304 140,314 156,322 L134,326 Z"/>
+    </g>
+    <g fill="none" stroke="#b6c2ca" stroke-width="3" opacity="0.8">
+      <path d="M120,232 C160,262 214,292 262,306"/>
+      <path d="M170,268 C204,290 240,308 272,318"/>
+    </g>
+  </g>
+  <!-- 오른쪽 날개 -->
+  <g class="ygm-w2">
+    <path d="M320,282 C390,236 480,208 566,214 C504,246 448,282 404,318 C376,340 342,336 320,312 Z"
+          fill="url(#ygmWing)" stroke="#8f9ba4" stroke-width="4.4" stroke-linejoin="round"/>
+    <g fill="#3a4650">
+      <path d="M566,214 C540,222 516,234 494,248 L526,250 Z"/>
+      <path d="M526,250 C504,262 484,276 466,290 L496,292 Z"/>
+      <path d="M496,292 C478,304 460,314 444,322 L466,326 Z"/>
+    </g>
+    <g fill="none" stroke="#b6c2ca" stroke-width="3" opacity="0.8">
+      <path d="M480,232 C440,262 386,292 338,306"/>
+      <path d="M430,268 C396,290 360,308 328,318"/>
+    </g>
+  </g>
+  <!-- 몸통 -->
+  <path d="M300,222
+           C258,222 236,254 238,300
+           C240,352 268,396 300,412
+           C332,396 360,352 362,300
+           C364,254 342,222 300,222 Z"
+        fill="url(#ygmBody)" stroke="#8f9ba4" stroke-width="5"/>
+  <!-- 꼬리 -->
+  <path d="M270,398 L330,398 L346,458 L300,440 L254,458 Z" fill="#f2f5f7" stroke="#8f9ba4" stroke-width="4"/>
+  <g fill="#3a4650" opacity="0.85">
+    <path d="M262,440 L254,458 L280,446 Z"/><path d="M338,440 L346,458 L320,446 Z"/>
+  </g>
+  <!-- 머리 -->
+  <circle cx="300" cy="192" r="60" fill="#ffffff" stroke="#8f9ba4" stroke-width="5"/>
+  <!-- 부리 -->
+  <path d="M300,196 C300,196 344,190 360,204 C344,220 300,214 300,214 Z" fill="#f2b03c" stroke="#b8801c" stroke-width="4"/>
+  <circle cx="344" cy="212" r="5" fill="#e6403a"/>
+  <!-- 눈 -->
+  <circle cx="318" cy="176" r="12" fill="#2b3138"/>
+  <circle cx="314" cy="171" r="4" fill="#ffffff"/>
+  <!-- 발 -->
+  <g stroke="#f2b03c" stroke-width="7" stroke-linecap="round" fill="none">
+    <path d="M286,408 L282,442"/><path d="M314,408 L318,442"/>
+  </g>
+  <g fill="#f2b03c">
+    <path d="M282,442 l-16,10 l16,2 l14,-4 Z"/>
+    <path d="M318,442 l16,10 l-16,2 l-14,-4 Z"/>
+  </g>
+</g>
+</svg>
+</body>
+</html>

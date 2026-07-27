@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>영종도 MATHTOUR - SF 우주 방어기지</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #050508;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #ffffff;
+      overflow: hidden;
+    }
+
+    /* 16:9 게임 컨테이너 */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #0b0c10;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      transition: transform 0.8s ease-in, opacity 0.8s ease-in, filter 0.8s ease-in;
+    }
+
+    /* 워프/빨려들어가는 효과 클래스 */
+    #game-container.warp-effect {
+      transform: scale(0) rotate(720deg);
+      opacity: 0;
+      filter: blur(10px) brightness(3);
+    }
+
+    /* 배경 이미지 */
+    .bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      filter: brightness(0.6) contrast(1.1) hue-rotate(180deg); /* SF 테마감 부여 */
+    }
+
+    /* SF 사이버네틱 그리드 오버레이 */
+    .cyber-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(rgba(11, 12, 16, 0.3) 50%, rgba(0, 0, 0, 0.6) 50%),
+                  linear-gradient(90deg, rgba(0, 240, 255, 0.03), rgba(0, 0, 0, 0));
+      background-size: 100% 4px, 6px 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* 스테이지 상단 헤더 바 */
+    .header-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 40px;
+      background: rgba(11, 12, 16, 0.85);
+      border-bottom: 2px solid #00f0ff;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 10;
+    }
+
+    .header-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 18px;
+      color: #00f0ff;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 8px #00f0ff;
+    }
+
+    .header-info {
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 13px;
+      color: #e0ffff;
+    }
+
+    /* 캐릭터 영역 */
+    .char-wrapper {
+      position: absolute;
+      bottom: 20px;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      z-index: 3;
+      filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.3));
+      transition: filter 0.3s;
+    }
+
+    /* 상황 설명 박스 (글래스모피즘) */
+    .situation-box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      padding: 30px 25px;
+      background: rgba(11, 12, 16, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 240, 255, 0.5);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.2), inset 0 0 15px rgba(0, 240, 255, 0.1);
+      border-radius: 4px;
+      z-index: 5;
+      text-align: center;
+    }
+
+    .situation-box::before {
+      content: 'SYSTEM LOG // BRIEFING';
+      display: block;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-size: 12px;
+      color: #00f0ff;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+      padding-bottom: 6px;
+    }
+
+    .situation-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #e0ffff;
+      word-break: keep-all;
+      letter-spacing: 0.05em;
+    }
+
+    .situation-highlight {
+      color: #00f0ff;
+      font-weight: 700;
+      text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
+    }
+
+    /* 공통 버튼 스타일 */
+    .btn-nav {
+      position: absolute;
+      bottom: 20px;
+      padding: 10px 24px;
+      background: transparent;
+      border: 2px solid #00f0ff;
+      color: #00f0ff;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 16px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00f0ff;
+      transition: all 0.25s ease;
+      z-index: 10;
+      outline: none;
+    }
+
+    .btn-nav:hover {
+      background: #00f0ff;
+      color: #0b0c10;
+      box-shadow: 0 0 20px #00f0ff, 0 0 30px #00f0ff;
+    }
+
+    #btn-prev {
+      left: 20px;
+      display: none; /* 이전 페이지 없음 처리 */
+    }
+
+    #btn-next {
+      right: 20px;
+    }
+
+    /* 코너 장식용 사이버 프레임 */
+    .corner-decor {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      border: 2px solid #00f0ff;
+      pointer-events: none;
+      z-index: 8;
+    }
+    .top-left { top: 48px; left: 10px; border-right: none; border-bottom: none; }
+    .top-right { top: 48px; right: 10px; border-left: none; border-bottom: none; }
+    .bottom-left { bottom: 10px; left: 10px; border-right: none; border-top: none; }
+    .bottom-right { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 배경 이미지 -->
+    <img src="인천대교기념관.png" alt="인천대교기념관 배경" class="bg-img">
+
+    <!-- 사이버네틱 그리드 오버레이 -->
+    <div class="cyber-overlay"></div>
+
+    <!-- 코너 장식 -->
+    <div class="corner-decor top-left"></div>
+    <div class="corner-decor top-right"></div>
+    <div class="corner-decor bottom-left"></div>
+    <div class="corner-decor bottom-right"></div>
+
+    <!-- 상단 스테이지 헤더 바 -->
+    <header class="header-bar">
+      <div class="header-title">영종도 MATHTOUR</div>
+      <div class="header-info">ZONE A01 // SECTOR: INCHEON BRIDGE</div>
+    </header>
+
+    <!-- 등장인물: 민우 (좌측 배치) -->
+    <div class="char-wrapper" id="char-민우" style="left: 60px; bottom: 30px;">
+      <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 상황 설명 박스 (가운데 배치) -->
+    <div class="situation-box">
+      <p class="situation-text">
+        탐사 대원 <span class="situation-highlight">민우</span>와 <span class="situation-highlight">서연</span>이는 
+        아름다운 <span class="situation-highlight">영종도</span>에 도착하여 
+        국내 최대 규모의 상징물인 <span class="situation-highlight">인천대교</span>의 장엄한 역사와 
+        그 구조 속에 숨겨진 놀라운 <span class="situation-highlight">수학적 원리</span>를 탐구하기 위한 탐사를 시작합니다.
+      </p>
+    </div>
+
+    <!-- 등장인물: 서연 (우측 배치) -->
+    <div class="char-wrapper" id="char-서연" style="right: 60px; bottom: 30px;">
+      <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 네비게이션 버튼 -->
+    <button class="btn-nav" id="btn-next" onclick="navigateToNext('A02.html')">NEXT PAGE &gt;</button>
+  </div>
+
+  <script>
+    /**
+     * 다음 페이지 이동 함수 (빨려들어가는 시각 효과 적용)
+     * @param {string} targetUrl - 이동할 다음 장면의 URL
+     */
+    function navigateToNext(targetUrl) {
+      if (!targetUrl) return;
+
+      const container = document.getElementById('game-container');
+      
+      // 빨려들어가는 연출(Warp Effect) 클래스 추가
+      container.classList.add('warp-effect');
+
+      // 애니메이션 완료 후 페이지 이동 (800ms 지연)
+      setTimeout(() => {
+        window.location.href = targetUrl;
+      }, 800);
+    }
+  </script>
+</body>
+</html>

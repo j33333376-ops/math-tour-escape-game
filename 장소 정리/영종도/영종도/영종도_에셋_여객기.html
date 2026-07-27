@@ -1,0 +1,87 @@
+<!-- 원본 크기: 1000x500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>여객기</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .yja-svg { display:block; width:100%; height:auto; }
+  .yja-float { animation: yja-float 5.5s ease-in-out infinite; transform-origin: 500px 260px; }
+  @keyframes yja-float { 0%,100% { transform: translateY(0) rotate(-0.6deg);} 50% { transform: translateY(-10px) rotate(0.6deg);} }
+</style>
+</head>
+<body>
+<svg class="yja-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="여객기">
+<title>여객기</title>
+<desc>인천국제공항에서 이륙하는 흰색 여객기.</desc>
+<defs>
+  <linearGradient id="yjaBody" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffffff"/><stop offset="0.5" stop-color="#eff3f6"/><stop offset="1" stop-color="#b6c2cc"/>
+  </linearGradient>
+  <linearGradient id="yjaWing" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#dfe6ec"/><stop offset="1" stop-color="#98a6b2"/>
+  </linearGradient>
+  <linearGradient id="yjaTail" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#3f8fd0"/><stop offset="1" stop-color="#1f5f96"/>
+  </linearGradient>
+</defs>
+<g class="yja-float">
+  <!-- 뒤쪽 날개 -->
+  <path d="M470,250 L300,388 L214,388 L370,258 Z" fill="#9fadb8" stroke="#6b7c88" stroke-width="4" stroke-linejoin="round"/>
+  <!-- 수평 꼬리날개 -->
+  <path d="M186,236 L92,180 L46,182 L138,240 Z" fill="url(#yjaWing)" stroke="#6b7c88" stroke-width="4" stroke-linejoin="round"/>
+  <!-- 수직 꼬리날개 -->
+  <path d="M182,232 L96,88 L142,84 L246,224 Z" fill="url(#yjaTail)" stroke="#164b78" stroke-width="4.4" stroke-linejoin="round"/>
+  <path d="M136,140 L188,206" stroke="#ffffff" stroke-width="8" opacity="0.55" stroke-linecap="round"/>
+  <!-- 동체 -->
+  <path d="M160,232
+           C260,208 520,196 760,214
+           C866,222 934,242 946,262
+           C934,282 866,300 760,308
+           C520,326 260,314 160,290
+           C142,286 138,238 160,232 Z"
+        fill="url(#yjaBody)" stroke="#7d8e9a" stroke-width="5"/>
+  <!-- 조종석 -->
+  <path d="M890,232 C918,240 940,252 946,262 C940,272 918,282 890,290 Z" fill="#4a5a66" opacity="0.85"/>
+  <path d="M862,230 C886,234 906,242 918,250 L900,254 C884,246 868,240 856,238 Z" fill="#8fc0dc" stroke="#4a6a7c" stroke-width="3"/>
+  <!-- 창문 -->
+  <g fill="#5f7f92">
+    <circle cx="270" cy="258" r="8"/><circle cx="316" cy="256" r="8"/><circle cx="362" cy="254" r="8"/>
+    <circle cx="408" cy="252" r="8"/><circle cx="454" cy="251" r="8"/><circle cx="500" cy="250" r="8"/>
+    <circle cx="546" cy="250" r="8"/><circle cx="592" cy="250" r="8"/><circle cx="638" cy="251" r="8"/>
+    <circle cx="684" cy="252" r="8"/><circle cx="730" cy="254" r="8"/><circle cx="776" cy="256" r="8"/>
+  </g>
+  <!-- 도색 라인 -->
+  <path d="M170,286 C300,306 600,318 820,300 C880,294 926,280 942,268"
+        fill="none" stroke="#3f8fd0" stroke-width="9" stroke-linecap="round"/>
+  <path d="M172,296 C302,314 600,326 822,308 C876,302 918,290 936,278"
+        fill="none" stroke="#e6403a" stroke-width="5" stroke-linecap="round"/>
+  <!-- 앞쪽 날개 -->
+  <path d="M520,268 L400,420 L494,420 L640,278 Z" fill="url(#yjaWing)" stroke="#6b7c88" stroke-width="4.4" stroke-linejoin="round"/>
+  <!-- 엔진 -->
+  <g>
+    <ellipse cx="470" cy="342" rx="62" ry="30" fill="#c4ced8" stroke="#6b7c88" stroke-width="4.4"/>
+    <ellipse cx="418" cy="342" rx="12" ry="28" fill="#3a4650" stroke="#28323a" stroke-width="3.4"/>
+    <ellipse cx="524" cy="342" rx="10" ry="24" fill="#8f9eaa"/>
+    <path d="M430,320 L512,320" stroke="#ffffff" stroke-width="5" opacity="0.6"/>
+  </g>
+  <g>
+    <ellipse cx="586" cy="308" rx="52" ry="25" fill="#d4dce4" stroke="#6b7c88" stroke-width="4"/>
+    <ellipse cx="542" cy="308" rx="10" ry="23" fill="#3a4650" stroke="#28323a" stroke-width="3"/>
+  </g>
+  <!-- 로고 -->
+  <text x="600" y="266" text-anchor="middle" font-family="sans-serif" font-size="30" font-weight="bold" fill="#1f5f96" letter-spacing="4">INCHEON</text>
+  <!-- 광택 -->
+  <path d="M260,224 C440,210 700,208 880,226" fill="none" stroke="#ffffff" stroke-width="9" opacity="0.7" stroke-linecap="round"/>
+</g>
+<!-- 구름 자취 -->
+<g fill="#ffffff" opacity="0.65">
+  <ellipse cx="120" cy="330" rx="52" ry="17"/>
+  <ellipse cx="72" cy="342" rx="34" ry="13"/>
+  <ellipse cx="170" cy="322" rx="30" ry="11"/>
+</g>
+</svg>
+</body>
+</html>

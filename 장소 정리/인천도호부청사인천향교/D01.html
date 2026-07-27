@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인천도호부청사·인천향교 MATHTOUR - D01</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #121212;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2d3748;
+        }
+
+        /* 게임 무대 컨테이너 (16:9 비율 유지) */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #f5f0e6;
+            overflow: hidden;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+            border: 2px solid #d4af37;
+        }
+
+        /* 배경 에셋 (HTML 파일) */
+        .bg-iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 스테이지 상단 표시바 */
+        #top-bar {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 15, 10, 0.85);
+            border: 1.5px solid #d4af37;
+            border-radius: 4px;
+            padding: 8px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        #top-bar .game-title {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 14px;
+            color: #d4af37;
+            letter-spacing: 0.5px;
+        }
+
+        #top-bar .divider {
+            color: #8c3030;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        #top-bar .stage-title {
+            font-family: 'Nanum Myeongjo', serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #ffffff;
+        }
+
+        /* 상황 설명 박스 (양피지/오래된 종이 느낌) */
+        .situation-box {
+            position: absolute;
+            top: 72px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 66%;
+            max-height: 330px;
+            background-color: #f5f0e6;
+            background-image: radial-gradient(#e2d7c3 1px, transparent 1px);
+            background-size: 14px 14px;
+            border: 3px double #8c3030;
+            outline: 1px solid #d4af37;
+            border-radius: 6px;
+            padding: 22px 26px;
+            z-index: 8;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 0 20px rgba(140, 48, 48, 0.08);
+            overflow-y: auto;
+        }
+
+        .situation-box h2 {
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 20px;
+            color: #8c3030;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .situation-section {
+            margin-bottom: 14px;
+        }
+
+        .situation-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .situation-section h3 {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 15px;
+            color: #8c3030;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .situation-section p {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 13.5px;
+            color: #2d3748;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+        }
+
+        /* 커스텀 스크롤바 (상황 설명 박스용) */
+        .situation-box::-webkit-scrollbar {
+            width: 6px;
+        }
+        .situation-box::-webkit-scrollbar-track {
+            background: rgba(212, 175, 55, 0.15);
+            border-radius: 3px;
+        }
+        .situation-box::-webkit-scrollbar-thumb {
+            background: #8c3030;
+            border-radius: 3px;
+        }
+
+        /* 등장인물 Wrapper (s = 0.85 적용: W=221px, H=272px) */
+        .char-wrapper {
+            position: absolute;
+            bottom: 15px;
+            width: 221px;
+            height: 272px;
+            overflow: visible;
+            z-index: 3;
+            filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+        }
+
+        #char-민우 {
+            left: 35px;
+        }
+
+        #char-서연 {
+            right: 35px;
+        }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            bottom: 20px;
+            background-color: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            z-index: 10;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .btn-nav:hover {
+            background-color: #661f1f;
+            transform: translateY(-2px);
+        }
+
+        .btn-nav:active {
+            transform: translateY(0);
+        }
+
+        #btn-prev {
+            left: 20px;
+        }
+
+        #btn-next {
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 배경 에셋 -->
+        <iframe class="bg-iframe" src="인천향교_대성전.html" scrolling="no"></iframe>
+
+        <!-- 상단 표시바 -->
+        <div id="top-bar">
+            <span class="game-title">인천도호부청사·인천향교 MATHTOUR</span>
+            <span class="divider">|</span>
+            <span class="stage-title">인천향교 대성전</span>
+        </div>
+
+        <!-- 상황 설명 박스 (양피지 풍) -->
+        <div class="situation-box">
+            <h2>📜 인천향교 대성전 견학</h2>
+            
+            <div class="situation-section">
+                <h3>[1] 인천향교</h3>
+                <p>인천향교는 조선 시대 지방 국립 교육기관으로, 유학 교육과 성현들의 위패를 모시고 제사를 지내던 지방의 중심 교육기관입니다.</p>
+            </div>
+
+            <div class="situation-section">
+                <h3>[2] 대성전(大成殿)</h3>
+                <p>향교 내에서 가장 신성시되는 제향 공간으로, 공자를 비롯한 4성, 10철, 송조6현 및 우리나라 동국18현의 위패를 모시고 석전대제를 올리는 곳입니다.</p>
+            </div>
+
+            <div class="situation-section">
+                <h3>[3] 조선시대 향교의 역할과 유교</h3>
+                <p>조선은 유교(성리학)를 통치 이념으로 삼았습니다. 향교는 단순한 학문 전달을 넘어 지방 양반과 자제들에게 유교적 인륜과 도덕 질서를 확립하는 중추적인 역할을 담당했습니다.</p>
+            </div>
+        </div>
+
+        <!-- 등장인물: 민우 (W: 260*0.85 = 221px, H: 320*0.85 = 272px) -->
+        <div class="char-wrapper" id="char-민우">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.85); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 등장인물: 서연 (W: 260*0.85 = 221px, H: 320*0.85 = 272px) -->
+        <div class="char-wrapper" id="char-서연">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.85); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 공통 이동 버튼 -->
+        <button class="btn-nav" id="btn-prev" onclick="goTo('index.html')">이전</button>
+        <button class="btn-nav" id="btn-next" onclick="goTo('D02.html')">다음</button>
+    </div>
+
+    <script>
+        function goTo(url) {
+            window.location.href = url;
+        }
+    </script>
+</body>
+</html>

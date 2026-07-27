@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>아라뱃길·청라호수공원 MATHTOUR</title>
+<style>
+  /* [공통 UI/UX] 폰트 임포트 */
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+  @import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
+
+  body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #fdfbf7; /* 옅은 모래색 */
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  /* 16:9 비율 유지 & 에메랄드 오션 스타일 */
+  #game-container {
+    position: relative;
+    width: 100%;
+    max-width: 1066px;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background-color: #e0f7fa; /* 아이스 블루 */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  /* 스테이지 상단 표시바 (글래스모피즘) */
+  .stage-bar {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 119, 190, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(64, 224, 208, 0.5);
+    border-radius: 30px;
+    padding: 10px 30px;
+    font-family: 'NanumSquareRound', sans-serif;
+    color: #1a365d;
+    font-size: 1.2rem;
+    font-weight: 700;
+    z-index: 20;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+  }
+
+  /* 유형 2: 대화창 UI */
+  #dialogue-box {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    background: rgba(26, 54, 93, 0.85); /* 짙은 네이비 반투명 */
+    border: 1px solid #40e0d0; /* 에메랄드 민트 얇은 테두리 */
+    border-radius: 15px;
+    padding: 25px 35px;
+    box-sizing: border-box;
+    z-index: 15;
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.3s ease;
+  }
+
+  #speaker-name {
+    font-family: 'NanumSquareRound', sans-serif;
+    color: #40e0d0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  #dialogue-text {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    letter-spacing: -0.02em;
+  }
+
+  /* 화자 강조 연출용 (어둡게 처리) */
+  .char-wrapper {
+    transition: filter 0.2s ease;
+  }
+  .char-wrapper.inactive {
+    filter: brightness(0.55);
+  }
+
+  /* 공통 버튼 디자인 */
+  .btn-nav {
+    position: absolute;
+    background-color: #0077be;
+    color: #ffffff;
+    border: 1px solid #40e0d0;
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 20;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 119, 190, 0.3);
+  }
+
+  .btn-nav:hover {
+    background-color: #40e0d0;
+    color: #1a365d;
+    box-shadow: 0 6px 15px rgba(64, 224, 208, 0.4);
+  }
+
+  /* 버튼 위치 고정 및 초기 표시 상태 */
+  #btn-prev { left: 20px; bottom: 20px; display: none; }
+  #btn-next { right: 20px; bottom: 20px; display: none; }
+  #btn-skip { right: 20px; bottom: 120px; } /* 대화창 위쪽에 배치 */
+
+</style>
+</head>
+<body>
+
+<div id="game-container">
+  <!-- 상단 표시바 -->
+  <div class="stage-bar">아라뱃길·청라호수공원 MATHTOUR</div>
+
+  <!-- 에셋: 청라호수공원 음악분수 (배경으로 사용하기 위해 크게 확대하여 배치) -->
+  <div style="position:absolute; left:0; bottom:0; width:1066px; height:600px; overflow:hidden; z-index:1;">
+    <iframe src="청라호수공원_음악분수.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(1.2); transform-origin:top left; pointer-events:none;"></iframe>
+  </div>
+
+  <!-- 등장 인물: 인보 (화면 왼쪽) -->
+  <div class="char-wrapper" id="char-인보" style="position:absolute; left:70px; bottom:20px; width:260px; height:320px; overflow:visible; z-index:3;">
+    <iframe src="등장인물_인보.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+  </div>
+
+  <!-- 등장 인물: 서연 (화면 오른쪽 첫 번째, 인보를 향해 반전) -->
+  <div class="char-wrapper" id="char-서연" style="position:absolute; left:650px; bottom:20px; width:260px; height:320px; overflow:visible; z-index:3;">
+    <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+  </div>
+
+  <!-- 등장 인물: 민우 (화면 오른쪽 두 번째, 인보를 향해 반전) -->
+  <div class="char-wrapper" id="char-민우" style="position:absolute; left:800px; bottom:20px; width:260px; height:320px; overflow:visible; z-index:3;">
+    <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+  </div>
+
+  <!-- 유형 2: 대화창 UI -->
+  <div id="dialogue-box" onclick="advanceDialogue()">
+    <div id="speaker-name"></div>
+    <div id="dialogue-text"></div>
+  </div>
+
+  <!-- 하단 네비게이션 버튼 -->
+  <button id="btn-prev" class="btn-nav" onclick="goPrev()">이전</button>
+  <button id="btn-next" class="btn-nav" onclick="goNext()">다음</button>
+  <button id="btn-skip" class="btn-nav" onclick="endDialogue()">건너뛰기</button>
+</div>
+
+<script>
+  // 대사 스크립트 배열
+  const dialogues = [
+    { speaker: "인보", target: "char-인보", text: "안녕, 과거의 친구들! 나는 미래에서 온 로봇 '인보'라고 해. 이곳 청라호수공원 음악분수에 대해 소개해줄게!" },
+    { speaker: "민우", target: "char-민우", text: "미래에서 온 로봇이라고?! 정말 신기하다!" },
+    { speaker: "서연", target: "char-서연", text: "음악분수에 대해 어서 알려줘, 인보!" },
+    { speaker: "인보", target: "char-인보", text: "이곳 음악분수는 음악에 맞춰 다양한 조명을 통해 다채로운 아름다움을 선사하는 아주 멋진 장소야." },
+    { speaker: "인보", target: "char-인보", text: "음악분수의 조명은 빨, 주, 노, 초, 파, 남, 보 7가지 색깔의 조명이 준비되어 있어." },
+    { speaker: "서연", target: "char-서연", text: "우와, 7가지 색깔의 조명이 음악과 어우러지면 정말 아름답겠다!" }
+  ];
+
+  let currentIndex = 0;
+  const dialogueBox = document.getElementById('dialogue-box');
+  const speakerName = document.getElementById('speaker-name');
+  const dialogueText = document.getElementById('dialogue-text');
+  const btnSkip = document.getElementById('btn-skip');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  
+  // 모든 캐릭터 wrapper 요소를 배열로 저장
+  const charWrappers = [
+    document.getElementById('char-인보'),
+    document.getElementById('char-서연'),
+    document.getElementById('char-민우')
+  ];
+
+  // 초기 첫 대사 세팅
+  advanceDialogue();
+
+  function advanceDialogue() {
+    if (currentIndex < dialogues.length) {
+      const current = dialogues[currentIndex];
+      
+      // 대사 및 화자 업데이트
+      speakerName.textContent = current.speaker;
+      dialogueText.textContent = current.text;
+      
+      // 말하는 캐릭터만 밝게, 나머지는 어둡게 처리
+      charWrappers.forEach(wrapper => {
+        if (wrapper.id === current.target) {
+          wrapper.classList.remove('inactive');
+        } else {
+          wrapper.classList.add('inactive');
+        }
+      });
+      
+      currentIndex++;
+    } else {
+      endDialogue(); // 대사가 모두 끝나면 종료 처리
+    }
+  }
+
+  function endDialogue() {
+    // 대화창 및 스킵 버튼 숨김
+    dialogueBox.style.display = 'none';
+    btnSkip.style.display = 'none';
+    
+    // 대화 종료 후 이전/다음 버튼 표시
+    btnPrev.style.display = 'block';
+    btnNext.style.display = 'block';
+    
+    // 모든 캐릭터 밝기 복구
+    charWrappers.forEach(wrapper => {
+      wrapper.classList.remove('inactive');
+    });
+  }
+
+  function goPrev() {
+    // 이전 페이지 URL 설정
+    window.location.href = 'd01.html';
+  }
+
+  function goNext() {
+    // 다음 페이지 URL 설정
+    window.location.href = 'd03.html';
+  }
+</script>
+
+</body>
+</html>

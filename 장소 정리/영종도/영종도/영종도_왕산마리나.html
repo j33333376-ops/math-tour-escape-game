@@ -1,0 +1,151 @@
+<!-- 원본 크기: 1100x520 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>영종도 왕산마리나</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .wsm-svg { display:block; width:100%; height:auto; }
+
+  .wsm-water { fill:url(#wsmWaterGrad); }
+  .wsm-wave { stroke:#cfe9ee; stroke-width:2; fill:none; opacity:0.55; }
+  .wsm-dock { fill:#8a5a34; }
+  .wsm-dock-dark { fill:#6b4225; }
+
+  @keyframes wsmBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+  .wsm-yacht1 { animation: wsmBob 4.2s ease-in-out infinite; transform-origin: 220px 330px; }
+  .wsm-yacht2 { animation: wsmBob 3.6s ease-in-out infinite 0.6s; transform-origin: 480px 350px; }
+  .wsm-yacht3 { animation: wsmBob 4.8s ease-in-out infinite 1.2s; transform-origin: 760px 340px; }
+  .wsm-yacht4 { animation: wsmBob 3.9s ease-in-out infinite 0.3s; transform-origin: 960px 360px; }
+
+  @keyframes wsmFlag {
+    0%, 100% { transform: skewX(0deg); }
+    50% { transform: skewX(-8deg); }
+  }
+  .wsm-flag { animation: wsmFlag 2.4s ease-in-out infinite; transform-origin: left center; }
+</style>
+</head>
+<body>
+<svg class="wsm-svg" viewBox="0 0 1100 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="왕산마리나 요트 정박장">
+<title>영종도 왕산마리나</title>
+<defs>
+  <linearGradient id="wsmWaterGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#7fc4d6"/>
+    <stop offset="0.5" stop-color="#5aa8c2"/>
+    <stop offset="1" stop-color="#3f8aab"/>
+  </linearGradient>
+  <linearGradient id="wsmSailW" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#ffffff"/>
+    <stop offset="1" stop-color="#dfe8ec"/>
+  </linearGradient>
+  <linearGradient id="wsmHull1" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f5f5f2"/>
+    <stop offset="1" stop-color="#cfd2d0"/>
+  </linearGradient>
+</defs>
+
+<!-- 바다 -->
+<rect class="wsm-water" x="0" y="260" width="1100" height="260"/>
+<g class="wsm-wave">
+  <path d="M0,300 Q25,294 50,300 T100,300 T150,300 T200,300 T250,300 T300,300 T350,300 T400,300 T450,300 T500,300 T550,300 T600,300 T650,300 T700,300 T750,300 T800,300 T850,300 T900,300 T950,300 T1000,300 T1050,300 T1100,300"/>
+  <path d="M0,340 Q25,334 50,340 T100,340 T150,340 T200,340 T250,340 T300,340 T350,340 T400,340 T450,340 T500,340 T550,340 T600,340 T650,340 T700,340 T750,340 T800,340 T850,340 T900,340 T950,340 T1000,340 T1050,340 T1100,340" opacity="0.7"/>
+  <path d="M0,420 Q25,414 50,420 T100,420 T150,420 T200,420 T250,420 T300,420 T350,420 T400,420 T450,420 T500,420 T550,420 T600,420 T650,420 T700,420 T750,420 T800,420 T850,420 T900,420 T950,420 T1000,420 T1050,420 T1100,420" opacity="0.5"/>
+</g>
+
+<!-- 나무 잔교(부두) : 안쪽에서 바깥으로 뻗은 형태 -->
+<polygon class="wsm-dock" points="0,300 120,296 1100,270 1100,286 130,312 0,318"/>
+<polygon class="wsm-dock-dark" points="0,318 130,312 1100,286 1100,294 130,320 0,326"/>
+<!-- 세로 부두 (좌측에서 수직으로 뻗은 T자 잔교) -->
+<polygon class="wsm-dock" points="90,300 150,297 180,470 110,474"/>
+<polygon class="wsm-dock-dark" points="90,300 100,300 130,474 110,474"/>
+<!-- 널빤지 결 -->
+<g stroke="#5c3a1f" stroke-width="1" opacity="0.35">
+  <line x1="20" y1="303" x2="20" y2="316"/>
+  <line x1="200" y1="298" x2="200" y2="312"/>
+  <line x1="400" y1="292" x2="400" y2="306"/>
+  <line x1="600" y1="285" x2="600" y2="299"/>
+  <line x1="800" y1="279" x2="800" y2="293"/>
+  <line x1="1000" y1="272" x2="1000" y2="286"/>
+  <line x1="115" y1="330" x2="150" y2="330"/>
+  <line x1="118" y1="370" x2="156" y2="370"/>
+  <line x1="121" y1="410" x2="162" y2="410"/>
+  <line x1="124" y1="450" x2="167" y2="450"/>
+</g>
+<!-- 계류 기둥(피어) -->
+<g fill="#5c3a1f">
+  <rect x="215" y="296" width="10" height="60" rx="2"/>
+  <rect x="470" y="284" width="10" height="60" rx="2"/>
+  <rect x="720" y="272" width="10" height="60" rx="2"/>
+  <rect x="960" y="262" width="10" height="60" rx="2"/>
+</g>
+<g fill="#3f2a17">
+  <circle cx="220" cy="298" r="7"/>
+  <circle cx="475" cy="286" r="7"/>
+  <circle cx="725" cy="274" r="7"/>
+  <circle cx="965" cy="264" r="7"/>
+</g>
+
+<!-- ════════════════════════════════
+     요트 1 (좌측, 부두 옆 정박)
+════════════════════════════════ -->
+<g class="wsm-yacht1">
+  <path d="M175,335 Q220,352 270,335 L262,348 Q220,360 183,348 Z" fill="url(#wsmHull1)"/>
+  <path d="M183,348 Q220,360 262,348 L260,353 Q220,364 185,353 Z" fill="#2e4c63"/>
+  <line x1="222" y1="335" x2="222" y2="255" stroke="#8a8a86" stroke-width="3"/>
+  <polygon points="222,258 222,325 268,330" fill="url(#wsmSailW)" stroke="#c7cdd0" stroke-width="1"/>
+  <polygon points="222,270 222,325 190,328" fill="#e3583f" opacity="0.9"/>
+  <polygon class="wsm-flag" points="222,258 222,266 236,262" fill="#e3583f"/>
+</g>
+
+<!-- ════════════════════════════════
+     요트 2 (중앙, 물 위)
+════════════════════════════════ -->
+<g class="wsm-yacht2">
+  <path d="M435,352 Q480,370 535,352 L526,366 Q480,378 443,366 Z" fill="url(#wsmHull1)"/>
+  <path d="M443,366 Q480,378 526,366 L524,371 Q480,382 445,371 Z" fill="#2e4c63"/>
+  <line x1="483" y1="352" x2="483" y2="262" stroke="#8a8a86" stroke-width="3"/>
+  <polygon points="483,266 483,342 534,347" fill="url(#wsmSailW)" stroke="#c7cdd0" stroke-width="1"/>
+  <polygon points="483,280 483,342 448,345" fill="#3a7ea8" opacity="0.9"/>
+  <polygon class="wsm-flag" points="483,266 483,274 497,270" fill="#3a7ea8"/>
+</g>
+
+<!-- ════════════════════════════════
+     요트 3 (우측)
+════════════════════════════════ -->
+<g class="wsm-yacht3">
+  <path d="M715,342 Q760,360 815,342 L806,356 Q760,368 723,356 Z" fill="url(#wsmHull1)"/>
+  <path d="M723,356 Q760,368 806,356 L804,361 Q760,372 725,361 Z" fill="#2e4c63"/>
+  <line x1="763" y1="342" x2="763" y2="248" stroke="#8a8a86" stroke-width="3"/>
+  <polygon points="763,252 763,332 814,337" fill="url(#wsmSailW)" stroke="#c7cdd0" stroke-width="1"/>
+  <polygon points="763,266 763,332 728,335" fill="#e8b93f" opacity="0.9"/>
+  <polygon class="wsm-flag" points="763,252 763,260 777,256" fill="#e8b93f"/>
+</g>
+
+<!-- ════════════════════════════════
+     요트 4 (원경, 작게)
+════════════════════════════════ -->
+<g class="wsm-yacht4" opacity="0.9">
+  <path d="M935,364 Q965,376 1000,364 L994,373 Q965,382 941,373 Z" fill="url(#wsmHull1)"/>
+  <line x1="967" y1="364" x2="967" y2="308" stroke="#8a8a86" stroke-width="2"/>
+  <polygon points="967,311 967,358 998,362" fill="url(#wsmSailW)" stroke="#c7cdd0" stroke-width="0.8"/>
+</g>
+
+<!-- 마리나 클럽하우스 (좌측 저층 건물) -->
+<rect x="0" y="230" width="150" height="70" fill="#f2ede2"/>
+<polygon points="-5,230 75,205 155,230" fill="#3f6d8a"/>
+<rect x="20" y="255" width="30" height="45" fill="#5c7c8e"/>
+<rect x="60" y="255" width="30" height="45" fill="#5c7c8e"/>
+<rect x="100" y="255" width="30" height="45" fill="#5c7c8e"/>
+<rect x="0" y="298" width="150" height="4" fill="#c9c2b0"/>
+<text x="75" y="248" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#2e4c63" font-weight="bold">WANGSAN MARINA</text>
+
+<!-- 하단 물결 그림자 -->
+<rect x="0" y="508" width="1100" height="4" fill="#000" opacity="0.05"/>
+</svg>
+</body>
+</html>

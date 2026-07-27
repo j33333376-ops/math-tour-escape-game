@@ -1,0 +1,140 @@
+<!-- 원본 크기: 1100x460 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>영종도 을왕리해수욕장</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .ewb-svg { display:block; width:100%; height:auto; }
+
+  .ewb-water { fill:url(#ewbWaterGrad); }
+  .ewb-sand { fill:url(#ewbSandGrad); }
+  .ewb-wave { stroke:#ffffff; stroke-width:2.5; fill:none; opacity:0.75; }
+
+  @keyframes ewbWaveMove {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(10px); }
+    100% { transform: translateX(0); }
+  }
+  .ewb-waveline { animation: ewbWaveMove 5s ease-in-out infinite; }
+  .ewb-waveline:nth-of-type(2) { animation-delay: 0.7s; }
+  .ewb-waveline:nth-of-type(3) { animation-delay: 1.4s; }
+
+  @keyframes ewbSway {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(2deg); }
+  }
+  .ewb-parasol1 { animation: ewbSway 4.5s ease-in-out infinite; transform-origin: 260px 330px; }
+  .ewb-parasol2 { animation: ewbSway 5s ease-in-out infinite 0.5s; transform-origin: 560px 320px; }
+  .ewb-parasol3 { animation: ewbSway 4.2s ease-in-out infinite 1s; transform-origin: 850px 335px; }
+</style>
+</head>
+<body>
+<svg class="ewb-svg" viewBox="0 0 1100 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="을왕리 해수욕장 백사장과 파라솔">
+<title>영종도 을왕리해수욕장</title>
+<defs>
+  <linearGradient id="ewbWaterGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#3fa8c9"/>
+    <stop offset="1" stop-color="#7ecbdc"/>
+  </linearGradient>
+  <linearGradient id="ewbSandGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f0dcae"/>
+    <stop offset="1" stop-color="#e0c589"/>
+  </linearGradient>
+  <radialGradient id="ewbParasolR" cx="0.5" cy="0.2" r="0.8">
+    <stop offset="0" stop-color="#ff8a75"/>
+    <stop offset="1" stop-color="#e35b45"/>
+  </radialGradient>
+  <radialGradient id="ewbParasolY" cx="0.5" cy="0.2" r="0.8">
+    <stop offset="0" stop-color="#ffd873"/>
+    <stop offset="1" stop-color="#f0b23f"/>
+  </radialGradient>
+  <radialGradient id="ewbParasolB" cx="0.5" cy="0.2" r="0.8">
+    <stop offset="0" stop-color="#6fb8e8"/>
+    <stop offset="1" stop-color="#3f83c2"/>
+  </radialGradient>
+</defs>
+
+<!-- 바다 (상단 물결 영역) -->
+<path class="ewb-water" d="M0,60 Q280,20 550,60 T1100,55 L1100,190 Q820,235 550,195 T0,225 Z"/>
+<g class="ewb-wave">
+  <path class="ewb-waveline" d="M20,100 Q60,90 100,100 T180,100 T260,100 T340,100"/>
+  <path class="ewb-waveline" d="M420,120 Q460,110 500,120 T580,120 T660,120 T740,120"/>
+  <path class="ewb-waveline" d="M780,90 Q820,80 860,90 T940,90 T1020,90 T1090,90"/>
+</g>
+
+<!-- 백사장 (불규칙 모래사장) -->
+<path class="ewb-sand" d="M0,225 Q280,190 550,220 T1100,210 L1100,460 L0,460 Z"/>
+<!-- 파도가 닿는 젖은 모래 라인 -->
+<path d="M0,225 Q280,190 550,220 T1100,210" fill="none" stroke="#fff" stroke-width="6" opacity="0.55"/>
+<path d="M0,232 Q280,197 550,227 T1100,217" fill="none" stroke="#d9bd85" stroke-width="2" opacity="0.5"/>
+
+<!-- 조개 껍질 / 발자국 (디테일) -->
+<g fill="#c9a76b" opacity="0.6">
+  <ellipse cx="150" cy="290" rx="6" ry="3"/>
+  <ellipse cx="700" cy="270" rx="5" ry="2.5"/>
+  <ellipse cx="950" cy="300" rx="6" ry="3"/>
+</g>
+<g fill="#00000022">
+  <ellipse cx="420" cy="410" rx="8" ry="4"/>
+  <ellipse cx="450" cy="420" rx="8" ry="4"/>
+  <ellipse cx="482" cy="428" rx="8" ry="4"/>
+</g>
+
+<!-- ════════════════════════════════
+     파라솔 1 (좌측, 빨강)
+════════════════════════════════ -->
+<g class="ewb-parasol1">
+  <line x1="260" y1="330" x2="260" y2="420" stroke="#8a6c45" stroke-width="6"/>
+  <path d="M195,330 Q260,280 325,330 Q260,345 195,330 Z" fill="url(#ewbParasolR)"/>
+  <g stroke="#c9432f" stroke-width="2" opacity="0.6">
+    <path d="M228,332 Q260,300 260,332" fill="none"/>
+    <path d="M292,332 Q260,300 260,332" fill="none"/>
+  </g>
+  <path d="M195,330 Q210,338 225,330 Q240,340 255,330 Q270,340 285,330 Q300,338 325,330" fill="none" stroke="#fff" stroke-width="3" opacity="0.8"/>
+  <!-- 비치체어 -->
+  <path d="M215,395 L225,420 L200,420 L195,405 Z" fill="#f5f0e6" opacity="0.9"/>
+  <path d="M195,405 L235,395 L245,415 L205,420 Z" fill="#e8e0cf" opacity="0.9"/>
+</g>
+
+<!-- ════════════════════════════════
+     파라솔 2 (중앙, 노랑 - 가장 크게)
+════════════════════════════════ -->
+<g class="ewb-parasol2">
+  <line x1="560" y1="320" x2="560" y2="425" stroke="#8a6c45" stroke-width="7"/>
+  <path d="M480,320 Q560,258 640,320 Q560,338 480,320 Z" fill="url(#ewbParasolY)"/>
+  <g stroke="#c98d2c" stroke-width="2" opacity="0.6">
+    <path d="M520,323 Q560,280 560,323" fill="none"/>
+    <path d="M600,323 Q560,280 560,323" fill="none"/>
+  </g>
+  <path d="M480,320 Q500,330 520,320 Q540,332 560,320 Q580,332 600,320 Q620,330 640,320" fill="none" stroke="#fff" stroke-width="3" opacity="0.8"/>
+  <path d="M500,400 L515,425 L480,425 L470,405 Z" fill="#f5f0e6" opacity="0.9"/>
+  <path d="M470,405 L520,400 L530,418 L485,425 Z" fill="#e8e0cf" opacity="0.9"/>
+</g>
+
+<!-- ════════════════════════════════
+     파라솔 3 (우측, 파랑)
+════════════════════════════════ -->
+<g class="ewb-parasol3">
+  <line x1="850" y1="335" x2="850" y2="415" stroke="#8a6c45" stroke-width="5"/>
+  <path d="M795,335 Q850,292 905,335 Q850,348 795,335 Z" fill="url(#ewbParasolB)"/>
+  <g stroke="#2f689e" stroke-width="1.5" opacity="0.6">
+    <path d="M820,336 Q850,308 850,336" fill="none"/>
+    <path d="M880,336 Q850,308 850,336" fill="none"/>
+  </g>
+  <path d="M795,335 Q808,341 820,335 Q833,343 845,335 Q858,343 870,335 Q883,341 905,335" fill="none" stroke="#fff" stroke-width="2.5" opacity="0.8"/>
+</g>
+
+<!-- 야자수 실루엣 (배경 우측) -->
+<g opacity="0.85">
+  <path d="M1010,410 Q1000,340 1015,290" fill="none" stroke="#7a5a34" stroke-width="7" stroke-linecap="round"/>
+  <path d="M1015,290 Q980,270 950,285" fill="none" stroke="#4a7a3a" stroke-width="9" stroke-linecap="round"/>
+  <path d="M1015,290 Q1050,265 1075,285" fill="none" stroke="#4a7a3a" stroke-width="9" stroke-linecap="round"/>
+  <path d="M1015,290 Q1000,255 1010,225" fill="none" stroke="#5a8a4a" stroke-width="8" stroke-linecap="round"/>
+  <path d="M1015,290 Q1035,258 1055,235" fill="none" stroke="#5a8a4a" stroke-width="8" stroke-linecap="round"/>
+</g>
+</svg>
+</body>
+</html>

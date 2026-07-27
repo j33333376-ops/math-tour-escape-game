@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>인천도호부청사·인천향교 MATHTOUR - Stage 3</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    :root {
+      --theme-dark-red: #8c3030;
+      --theme-dark-red-hover: #661f1f;
+      --theme-gold: #d4af37;
+      --theme-beige: #f5f0e6;
+      --text-dark: #2d3748;
+      --bg-color: #F7F4EE;
+      --card-bg: #FFFFFF;
+      --wood-dark: #4A2311;
+      --wood-light: #C89D6C;
+      --dancheong-red: #9E2A2B;
+      --dancheong-green: #1B4D3E;
+      --dancheong-gold: #D4AF37;
+      --text-main: #2C2623;
+      --text-sub: #665E58;
+      --border-color: #E2D9CC;
+      --accent-glow: #FFD700;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #121212;
+      color: var(--text-dark);
+      font-family: 'Noto Sans KR', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* 게임 컨테이너 (16:9 비율 고정) */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #1a1a1a;
+      overflow: hidden;
+      border: 2px solid var(--theme-gold);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+    }
+
+    /* 배경 이미지 (인천향교_대성전.html) */
+    .bg-iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* 스테이지 상단 표시바 */
+    #top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 42px;
+      background: rgba(20, 15, 12, 0.85);
+      border-bottom: 2px solid var(--theme-gold);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      color: var(--theme-gold);
+      font-family: 'Nanum Myeongjo', serif;
+      font-weight: bold;
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* 등장인물 래퍼 */
+    .char-wrapper {
+      position: absolute;
+      overflow: visible;
+      z-index: 5;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+      transition: filter 0.2s;
+    }
+
+    /* 네비게이션 공통 버튼 스타일 */
+    .btn-nav {
+      position: absolute;
+      z-index: 20;
+      background: var(--theme-dark-red);
+      color: #ffffff;
+      border: 1px solid var(--theme-gold);
+      border-radius: 4px;
+      padding: 8px 22px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn-nav:hover {
+      background: var(--theme-dark-red-hover);
+      transform: translateY(-1px);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 15px;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 15px;
+      display: none; /* 정답을 맞추기 전까지 숨김 */
+    }
+
+    /* 유형 3: 수학 퀴즈 컨테이너 */
+    .quiz-container {
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 730px;
+      height: 520px;
+      z-index: 10;
+      background: rgba(247, 244, 238, 0.96);
+      border: 2px solid var(--theme-gold);
+      border-radius: 10px;
+      padding: 14px 18px;
+      overflow-y: auto;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    /* 퀴즈 내부 헤더 */
+    .quiz-header {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 12px;
+      padding: 10px;
+      background: #ffffff;
+      border-radius: 8px;
+      border-top: 4px solid var(--dancheong-red);
+      border-bottom: 2px solid var(--dancheong-green);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .quiz-header h1 {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 1.35rem;
+      color: var(--wood-dark);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .quiz-header h1 .badge {
+      background-color: var(--dancheong-green);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: normal;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .quiz-header p {
+      color: var(--text-sub);
+      font-size: 0.82rem;
+    }
+
+    /* 퀴즈 메인 그리드 레이아웃 */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--wood-dark);
+      border-bottom: 2px solid var(--bg-color);
+      padding-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* SVG 캔버스 컨테이너 */
+    .vis-container {
+      position: relative;
+      width: 100%;
+      background: linear-gradient(to bottom, #EBF3F5 0%, #F7F4EE 80%);
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    svg#canvas {
+      width: 100%;
+      height: 280px;
+      display: block;
+    }
+
+    .status-banner {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      font-family: 'Nanum Gothic Coding', monospace;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .status-banner.perpendicular {
+      background-color: var(--dancheong-green);
+      color: #FFF;
+      border: 1px solid var(--dancheong-gold);
+    }
+
+    .status-banner.tilted {
+      background-color: var(--dancheong-red);
+      color: #FFF;
+    }
+
+    .status-banner.invalid {
+      background-color: #7f8c8d;
+      color: #FFF;
+    }
+
+    .gokja-glow {
+      filter: drop-shadow(0 0 8px var(--accent-glow));
+      transition: filter 0.5s ease;
+    }
+
+    .smooth-transition {
+      transition: all 0.4s ease-out;
+    }
+
+    /* 컨트롤 영역 */
+    .preset-group {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .btn-preset {
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      color: var(--wood-dark);
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: 'Nanum Gothic Coding', monospace;
+      transition: all 0.2s;
+    }
+
+    .btn-preset:hover {
+      background-color: var(--wood-light);
+      color: #fff;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-color);
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+
+    .control-label {
+      width: 90px;
+      font-weight: bold;
+      font-size: 0.78rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .color-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .control-row input[type="range"] {
+      flex: 1;
+      accent-color: var(--dancheong-green);
+      cursor: pointer;
+    }
+
+    .control-row input[type="number"] {
+      width: 48px;
+      padding: 2px 4px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 0.85rem;
+      font-family: 'Nanum Gothic Coding', monospace;
+    }
+
+    /* 실시간 계산기 카드 */
+    .math-card {
+      background-color: #FAF8F5;
+      border: 1px dashed var(--wood-light);
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .math-equation {
+      font-size: 0.95rem;
+      font-weight: bold;
+      margin: 6px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Nanum Gothic Coding', monospace;
+    }
+
+    .math-box {
+      background: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      min-width: 65px;
+    }
+
+    .math-operator {
+      color: var(--dancheong-red);
+      font-size: 1.1rem;
+    }
+
+    .math-result-text {
+      margin-top: 4px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .info-box {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      background: #F2EFE9;
+      padding: 8px 10px;
+      border-radius: 4px;
+      border-left: 3px solid var(--dancheong-gold);
+      line-height: 1.4;
+    }
+
+    /* 모달 팝업 */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border: 2px solid var(--dancheong-gold);
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 400px;
+      width: 85%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transform: scale(0.85);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+    }
+
+    .modal-title {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 1.25rem;
+      color: var(--wood-dark);
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .modal-desc {
+      font-size: 0.88rem;
+      color: var(--text-sub);
+      margin-bottom: 16px;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+
+    .btn-close {
+      background-color: var(--dancheong-green);
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-family: 'Noto Sans KR', sans-serif;
+      transition: background 0.2s;
+    }
+
+    .btn-close:hover {
+      background-color: #143A2F;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 배경 HTML 파일 로드 -->
+    <iframe src="인천향교_대성전.html" class="bg-iframe" scrolling="no"></iframe>
+
+    <!-- 스테이지 상단 표시바 -->
+    <div id="top-bar">
+      <span>🏛️ 인천도호부청사·인천향교 MATHTOUR</span>
+      <span>Stage 3. 인천향교 대성전 건립</span>
+    </div>
+
+    <!-- 좌측 등장인물: 민우 -->
+    <div class="char-wrapper" id="char-민우" style="left: 15px; bottom: 15px; width: 182px; height: 224px;">
+      <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.7); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 우측 등장인물: 서연 -->
+    <div class="char-wrapper" id="char-서연" style="right: 15px; bottom: 15px; width: 182px; height: 224px;">
+      <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.7) scaleX(-1); transform-origin:bottom right; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 유형 3: 수학 퀴즈 컨테이너 -->
+    <div class="quiz-container">
+      
+      <!-- 헤더 영역 -->
+      <header class="quiz-header">
+        <h1>
+          <span>인천향교 대성전 건립</span>
+          <span class="badge">피타고라스 정리의 역</span>
+        </h1>
+        <p>목수 장인이 되어 전통 L자형 자인 <strong>'곡자'</strong>를 이용해 기둥을 바닥과 완벽한 직각(90°)으로 세워보세요!</p>
+      </header>
+
+      <!-- 메인 인터랙티브 레이아웃 -->
+      <main class="main-layout">
+
+        <!-- 좌측: 시각화 영역 (SVG 기반) -->
+        <section class="card">
+          <div class="card-title">
+            <span>🏗️ 인천향교 대성전 기둥 현장</span>
+            <span id="angle-display" style="font-size: 0.8rem; color: var(--dancheong-red); font-family: 'Nanum Gothic Coding', monospace;">기둥 각도: --°</span>
+          </div>
+
+          <div class="vis-container">
+            <!-- 상태 안내 배지 -->
+            <div id="status-badge" class="status-banner tilted">기울어짐!</div>
+
+            <!-- SVG 메인 캔버스 -->
+            <svg id="canvas" viewBox="0 0 600 380">
+              <defs>
+                <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#E5E0D8" stroke-width="0.8"/>
+                </pattern>
+                <linearGradient id="woodGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#4A2311" />
+                  <stop offset="50%" stop-color="#6A351C" />
+                  <stop offset="100%" stop-color="#3A1A0B" />
+                </linearGradient>
+              </defs>
+
+              <!-- 배경 모눈종이 -->
+              <rect width="100%" height="100%" fill="url(#grid)" />
+
+              <!-- 향교 초석 및 바닥 땅 -->
+              <rect x="0" y="310" width="600" height="70" fill="#D3C9BC" />
+              <line x1="0" y1="310" x2="600" y2="310" stroke="#8C8275" stroke-width="3" />
+              <!-- 초석 (Corner Origin: X=150, Y=310) -->
+              <polygon points="120,310 130,290 170,290 180,310" fill="#9E9589" stroke="#5C5549" stroke-width="2"/>
+
+              <!-- 변 b: 바닥 거리 라인 -->
+              <line id="line-b" x1="150" y1="310" x2="310" y2="310" stroke="#2B6CB0" stroke-width="4" stroke-dasharray="6,4" />
+              <circle id="point-b" cx="310" cy="310" r="5" fill="#2B6CB0" />
+              <text id="text-b" x="230" y="332" fill="#2B6CB0" font-weight="bold" font-size="12" text-anchor="middle" font-family="'Nanum Gothic Coding', monospace">바닥 b = 4</text>
+
+              <!-- 빗변 c: 가이드 줄 -->
+              <line id="line-c" x1="150" y1="150" x2="310" y2="310" stroke="#9E2A2B" stroke-width="2.5" stroke-dasharray="4,4" />
+              <text id="text-c" x="240" y="220" fill="#9E2A2B" font-weight="bold" font-size="12" text-anchor="middle" font-family="'Nanum Gothic Coding', monospace">빗변 c = 6</text>
+
+              <!-- 변 a: 목조 기둥 -->
+              <g id="pillar-group" class="smooth-transition">
+                <line id="line-a" x1="150" y1="310" x2="150" y2="150" stroke="url(#woodGradient)" stroke-width="16" stroke-linecap="round" />
+                <g id="pillar-top-decor">
+                  <rect id="decor-rect" x="139" y="142" width="22" height="10" fill="#1B4D3E" stroke="#D4AF37" stroke-width="1.5" rx="2" />
+                </g>
+              </g>
+              <text id="text-a" x="122" y="230" fill="#4A2311" font-weight="bold" font-size="12" text-anchor="end" font-family="'Nanum Gothic Coding', monospace">기둥 a = 4</text>
+
+              <!-- 직각 호 (Angle Arc) -->
+              <path id="angle-arc" d="" fill="none" stroke="#E5A93C" stroke-width="2.5" />
+
+              <!-- 고정된 곡자 도구 -->
+              <g id="gokja-tool" transform="translate(150, 310)">
+                <path id="gokja-shape" d="M 0,-75 L 0,0 L 75,0 L 75,10 L -10,10 L -10,-75 Z" 
+                      fill="#D4AF37" fill-opacity="0.75" stroke="#8C6D15" stroke-width="1.5" />
+                <path d="M 0,-65 L -5,-65 M 0,-50 L -5,-50 M 0,-35 L -5,-35 M 0,-20 L -5,-20 
+                         M 20,0 L 20,5 M 35,0 L 35,5 M 50,0 L 50,5 M 65,0 L 65,5" 
+                      stroke="#4A2311" stroke-width="1" />
+                <path id="right-angle-symbol" d="M 0,-12 L 12,-12 L 12,0" fill="none" stroke="#1B4D3E" stroke-width="2" opacity="0"/>
+              </g>
+
+              <!-- 삼각형 불가능 경고 메시지 -->
+              <text id="warning-text" x="300" y="180" fill="#9E2A2B" font-weight="bold" font-size="14" text-anchor="middle" visibility="hidden">
+                ⚠️ 세 변으로 삼각형을 만들 수 없습니다!
+              </text>
+            </svg>
+          </div>
+
+          <div class="info-box">
+            💡 <strong>곡자의 원리:</strong> 기둥 $a$, 바닥 $b$, 빗변 $c$가 $a^2 + b^2 = c^2$을 만족할 때만 기둥이 수직(90°)으로 세워집니다.
+          </div>
+        </section>
+
+        <!-- 우측: 조절 및 계산기 영역 -->
+        <section class="card">
+          <div class="card-title">
+            <span>⚙️ 치수 조절 및 수학 계산기</span>
+          </div>
+
+          <!-- 추천 피타고라스 수 프리셋 -->
+          <div>
+            <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-sub); display: block; margin-bottom: 4px;">
+              📌 피타고라스 수 탐색 (클릭):
+            </label>
+            <div class="preset-group">
+              <button class="btn-preset" onclick="setPreset(3, 4, 5)">3 - 4 - 5</button>
+              <button class="btn-preset" onclick="setPreset(6, 8, 10)">6 - 8 - 10</button>
+              <button class="btn-preset" onclick="setPreset(5, 12, 13)">5 - 12 - 13</button>
+              <button class="btn-preset" onclick="setPreset(4, 4, 6)" style="border-color: var(--dancheong-red); color: var(--dancheong-red);">초기 (4-4-6)</button>
+            </div>
+          </div>
+
+          <!-- 세 변 슬라이더 -->
+          <div class="control-group">
+            <div class="control-row">
+              <div class="control-label">
+                <span class="color-dot" style="background-color: var(--wood-dark);"></span>
+                기둥 높이 ($a$)
+              </div>
+              <input type="range" id="slider-a" min="3" max="15" value="4" oninput="onInputChange('a', this.value)">
+              <input type="number" id="num-a" min="3" max="15" value="4" onchange="onInputChange('a', this.value)">
+            </div>
+
+            <div class="control-row">
+              <div class="control-label">
+                <span class="color-dot" style="background-color: #2B6CB0;"></span>
+                바닥 거리 ($b$)
+              </div>
+              <input type="range" id="slider-b" min="3" max="15" value="4" oninput="onInputChange('b', this.value)">
+              <input type="number" id="num-b" min="3" max="15" value="4" onchange="onInputChange('b', this.value)">
+            </div>
+
+            <div class="control-row">
+              <div class="control-label">
+                <span class="color-dot" style="background-color: var(--dancheong-red);"></span>
+                빗변 길이 ($c$)
+              </div>
+              <input type="range" id="slider-c" min="3" max="25" value="6" oninput="onInputChange('c', this.value)">
+              <input type="number" id="num-c" min="3" max="25" value="6" onchange="onInputChange('c', this.value)">
+            </div>
+          </div>
+
+          <!-- 실시간 수학 계산기 카드 -->
+          <div class="math-card">
+            <div style="font-size: 0.8rem; font-weight: bold; color: var(--wood-dark);">
+              📐 피타고라스 정리의 역 검증
+            </div>
+            
+            <div class="math-equation">
+              <div class="math-box">
+                <div style="font-size:0.65rem; color: var(--text-sub);">$a^2 + b^2$</div>
+                <div id="calc-ab-detail" style="font-size:0.75rem; color:#666;">$4^2 + 4^2$</div>
+                <div id="calc-ab-val" style="color: var(--dancheong-green); font-size: 1.05rem;">32</div>
+              </div>
+
+              <div class="math-operator" id="calc-operator">≠</div>
+
+              <div class="math-box">
+                <div style="font-size:0.65rem; color: var(--text-sub);">$c^2$</div>
+                <div id="calc-c-detail" style="font-size:0.75rem; color:#666;">$6^2$</div>
+                <div id="calc-c-val" style="color: var(--dancheong-red); font-size: 1.05rem;">36</div>
+              </div>
+            </div>
+
+            <div id="math-summary-text" class="math-result-text" style="color: var(--dancheong-red);">
+              $a^2 + b^2 \neq c^2$ 이므로 직각삼각형이 아닙니다.
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+    </div>
+
+    <!-- 성공 모달 팝업 -->
+    <div id="success-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-icon">🏛️✨</div>
+        <div class="modal-title">직각 세우기 성공!</div>
+        <div class="modal-desc">
+          축하합니다! $a^2 + b^2 = c^2$ 관계가 성립하여 <strong>인천향교 대성전 기둥이 완벽한 수직(90°)</strong>으로 세워졌습니다!
+        </div>
+        <button class="btn-close" onclick="closeModal()">확인 및 탐색 지속</button>
+      </div>
+    </div>
+
+    <!-- 좌/우 이동 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="window.location.href='D02.html'">이전</button>
+    <button class="btn-nav" id="btn-next" onclick="window.location.href='D04.html'">다음</button>
+
+  </div>
+
+  <!-- 핵심 인터랙션 및 계산 스크립트 -->
+  <script>
+    const state = {
+      a: 4,
+      b: 4,
+      c: 6,
+      scale: 16,
+      originX: 150,
+      originY: 310,
+      isModalShown: false
+    };
+
+    const elements = {
+      sliderA: document.getElementById('slider-a'),
+      numA: document.getElementById('num-a'),
+      sliderB: document.getElementById('slider-b'),
+      numB: document.getElementById('num-b'),
+      sliderC: document.getElementById('slider-c'),
+      numC: document.getElementById('num-c'),
+      
+      lineA: document.getElementById('line-a'),
+      lineB: document.getElementById('line-b'),
+      lineC: document.getElementById('line-c'),
+      pointB: document.getElementById('point-b'),
+      textA: document.getElementById('text-a'),
+      textB: document.getElementById('text-b'),
+      textC: document.getElementById('text-c'),
+      pillarGroup: document.getElementById('pillar-group'),
+      pillarTopDecor: document.getElementById('pillar-top-decor'),
+      decorRect: document.getElementById('decor-rect'),
+      gokjaShape: document.getElementById('gokja-shape'),
+      rightAngleSymbol: document.getElementById('right-angle-symbol'),
+      angleArc: document.getElementById('angle-arc'),
+      warningText: document.getElementById('warning-text'),
+      
+      statusBadge: document.getElementById('status-badge'),
+      angleDisplay: document.getElementById('angle-display'),
+      calcAbDetail: document.getElementById('calc-ab-detail'),
+      calcAbVal: document.getElementById('calc-ab-val'),
+      calcCDetail: document.getElementById('calc-c-detail'),
+      calcCVal: document.getElementById('calc-c-val'),
+      calcOperator: document.getElementById('calc-operator'),
+      mathSummaryText: document.getElementById('math-summary-text'),
+      
+      modal: document.getElementById('success-modal')
+    };
+
+    function onInputChange(variable, value) {
+      let val = parseInt(value, 10);
+      if (isNaN(val)) return;
+
+      if (variable === 'a' || variable === 'b') {
+        val = Math.max(3, Math.min(15, val));
+      } else if (variable === 'c') {
+        val = Math.max(3, Math.min(25, val));
+      }
+
+      state[variable] = val;
+      state.isModalShown = false;
+
+      syncInputUI();
+      updateVisualization();
+    }
+
+    function setPreset(a, b, c) {
+      state.a = a;
+      state.b = b;
+      state.c = c;
+      state.isModalShown = false;
+
+      syncInputUI();
+      updateVisualization();
+    }
+
+    function syncInputUI() {
+      elements.sliderA.value = state.a;
+      elements.numA.value = state.a;
+      elements.sliderB.value = state.b;
+      elements.numB.value = state.b;
+      elements.sliderC.value = state.c;
+      elements.numC.value = state.c;
+    }
+
+    function isValidTriangle(a, b, c) {
+      return (a + b > c) && (a + c > b) && (b + c > a);
+    }
+
+    function updateVisualization() {
+      const { a, b, c, scale, originX, originY } = state;
+
+      const a2 = a * a;
+      const b2 = b * b;
+      const sumA2B2 = a2 + b2;
+      const c2 = c * c;
+
+      const valid = isValidTriangle(a, b, c);
+
+      elements.calcAbDetail.innerText = `${a}² + ${b}²`;
+      elements.calcAbVal.innerText = sumA2B2;
+      elements.calcCDetail.innerText = `${c}²`;
+      elements.calcCVal.innerText = c2;
+
+      if (!valid) {
+        elements.warningText.setAttribute('visibility', 'visible');
+        elements.statusBadge.innerText = "삼각형 불가능!";
+        elements.statusBadge.className = "status-banner invalid";
+        elements.angleDisplay.innerText = "기둥 각도: 형성 불가";
+        elements.calcOperator.innerText = "≠";
+        elements.mathSummaryText.innerText = "⚠️ 두 변의 길이의 합이 나머지 한 변보다 커야 합니다.";
+        elements.mathSummaryText.style.color = "var(--dancheong-red)";
+        elements.gokjaShape.classList.remove('gokja-glow');
+        elements.rightAngleSymbol.setAttribute('opacity', '0');
+        elements.angleArc.setAttribute('d', '');
+        return;
+      }
+
+      elements.warningText.setAttribute('visibility', 'hidden');
+
+      let cosTheta = (a2 + b2 - c2) / (2 * a * b);
+      cosTheta = Math.max(-1, Math.min(1, cosTheta));
+      
+      const thetaRad = Math.acos(cosTheta);
+      const thetaDeg = (thetaRad * 180) / Math.PI;
+
+      const pointBX = originX + (b * scale);
+      const pointBY = originY;
+
+      const pointAX = originX + (a * scale * Math.cos(Math.PI - thetaRad));
+      const pointAY = originY - (a * scale * Math.sin(thetaRad));
+
+      elements.lineB.setAttribute('x1', originX);
+      elements.lineB.setAttribute('y1', originY);
+      elements.lineB.setAttribute('x2', pointBX);
+      elements.lineB.setAttribute('y2', pointBY);
+      elements.pointB.setAttribute('cx', pointBX);
+      elements.pointB.setAttribute('cy', pointBY);
+      elements.textB.setAttribute('x', originX + (b * scale) / 2);
+      elements.textB.innerText = `바닥 b = ${b}`;
+
+      elements.lineA.setAttribute('x1', originX);
+      elements.lineA.setAttribute('y1', originY);
+      elements.lineA.setAttribute('x2', pointAX);
+      elements.lineA.setAttribute('y2', pointAY);
+      
+      elements.decorRect.setAttribute('x', pointAX - 11);
+      elements.decorRect.setAttribute('y', pointAY - 5);
+      
+      elements.textA.setAttribute('x', Math.min(originX - 12, pointAX - 12));
+      elements.textA.setAttribute('y', (originY + pointAY) / 2);
+      elements.textA.innerText = `기둥 a = ${a}`;
+
+      elements.lineC.setAttribute('x1', pointAX);
+      elements.lineC.setAttribute('y1', pointAY);
+      elements.lineC.setAttribute('x2', pointBX);
+      elements.lineC.setAttribute('y2', pointBY);
+      elements.textC.setAttribute('x', (pointAX + pointBX) / 2 + 10);
+      elements.textC.setAttribute('y', (pointAY + pointBY) / 2);
+      elements.textC.innerText = `빗변 c = ${c}`;
+
+      // 직각 / 일반 각도 호 그리기
+      const isRightAngle = (sumA2B2 === c2);
+      const arcRadius = 24;
+
+      if (isRightAngle) {
+        const pathD = `M ${originX + arcRadius} ${originY} L ${originX + arcRadius} ${originY - arcRadius} L ${originX} ${originY - arcRadius}`;
+        elements.angleArc.setAttribute('d', pathD);
+      } else {
+        const arcStartX = originX + arcRadius;
+        const arcStartY = originY;
+        const arcEndX = originX + arcRadius * Math.cos(Math.PI - thetaRad);
+        const arcEndY = originY - arcRadius * Math.sin(thetaRad);
+        const largeArcFlag = thetaDeg > 180 ? 1 : 0;
+        const pathD = `M ${arcStartX} ${arcStartY} A ${arcRadius} ${arcRadius} 0 ${largeArcFlag} 0 ${arcEndX} ${arcEndY}`;
+        elements.angleArc.setAttribute('d', pathD);
+      }
+
+      // 판정 및 정답 확인 처리
+      if (isRightAngle) {
+        elements.statusBadge.innerText = "직각 (90°) - 완벽!";
+        elements.statusBadge.className = "status-banner perpendicular";
+        elements.angleDisplay.innerText = "기둥 각도: 90.0°";
+        elements.calcOperator.innerText = "=";
+        elements.mathSummaryText.innerText = "a² + b² = c² 이 성립하여 완벽한 직각삼각형이 완성되었습니다!";
+        elements.mathSummaryText.style.color = "var(--dancheong-green)";
+        elements.gokjaShape.classList.add('gokja-glow');
+        elements.rightAngleSymbol.setAttribute('opacity', '1');
+
+        // 정답 성공 시 '다음' 버튼 표시
+        const btnNext = document.getElementById('btn-next');
+        if (btnNext) btnNext.style.display = 'block';
+
+        if (!state.isModalShown) {
+          elements.modal.classList.add('active');
+          state.isModalShown = true;
+        }
+      } else {
+        elements.statusBadge.innerText = "기울어짐!";
+        elements.statusBadge.className = "status-banner tilted";
+        elements.angleDisplay.innerText = `기둥 각도: ${thetaDeg.toFixed(1)}°`;
+        elements.calcOperator.innerText = "≠";
+        elements.mathSummaryText.innerText = `a² + b² ≠ c² 이므로 직각삼각형이 아닙니다.`;
+        elements.mathSummaryText.style.color = "var(--dancheong-red)";
+        elements.gokjaShape.classList.remove('gokja-glow');
+        elements.rightAngleSymbol.setAttribute('opacity', '0');
+      }
+    }
+
+    function closeModal() {
+      elements.modal.classList.remove('active');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateVisualization();
+    });
+  </script>
+</body>
+</html>

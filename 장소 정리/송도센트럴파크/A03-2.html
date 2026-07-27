@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>송도센트럴파크 MATHTOUR - A03-2</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        :root {
+            --bg-pastel-green: #f2f7f2;
+            --main-sage: #8aa171;
+            --dark-forest: #2d5a27;
+            --wood-brown: #6d4c41;
+            --accent-peach: #f4a261;
+            --white: #ffffff;
+            --text-main: #3e4a3d;
+            --card-shadow: 0 10px 25px rgba(45, 90, 39, 0.08);
+            --correct-green: #2e7d32;
+            --error-red: #d32f2f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #121812;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: var(--text-main);
+        }
+
+        /* 16:9 메인 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(135deg, #f8fbf8 0%, #ebf2eb 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* 상단 헤더 */
+        header {
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(135deg, var(--dark-forest), #1e3e1a);
+            color: var(--white);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--main-sage);
+        }
+
+        header h1 {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        header .subtitle {
+            font-size: 0.85rem;
+            opacity: 0.85;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            z-index: 20;
+            padding: 10px 24px;
+            background: var(--dark-forest);
+            color: var(--white);
+            border: none;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(45, 90, 39, 0.2);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-nav:hover {
+            background: var(--wood-brown);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next, #btn-skip {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        /* 연출 / 대화 레이어 */
+        .narrative-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 20px;
+            pointer-events: auto;
+        }
+
+        /* 캐릭터 레이어 */
+        .char-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            overflow: visible;
+            transition: filter 0.2s ease;
+        }
+
+        .char-wrapper iframe {
+            border: 0;
+            width: 260px;
+            height: 320px;
+            transform-origin: bottom left;
+            pointer-events: none;
+        }
+
+        .inactive {
+            filter: brightness(0.55);
+        }
+
+        /* 상황 설명 박스 (유형 1 스타일) */
+        .situation-box {
+            position: absolute;
+            bottom: 80px;
+            width: 80%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 2px solid var(--main-sage);
+            border-radius: 16px;
+            padding: 20px 28px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(6px);
+            text-align: center;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--text-main);
+            z-index: 15;
+            word-break: keep-all;
+        }
+
+        /* 대화창 (유형 2 스타일) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 75px;
+            width: 85%;
+            max-width: 850px;
+            background: rgba(45, 90, 39, 0.85);
+            border: 2px solid var(--wood-brown);
+            border-radius: 16px;
+            padding: 18px 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            backdrop-filter: blur(6px);
+            color: #fdfbf7;
+            z-index: 15;
+            cursor: pointer;
+        }
+
+        #speaker-name {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-peach);
+            margin-bottom: 6px;
+        }
+
+        #dialogue-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+        }
+
+        /* 메인 퀴즈 콘텐츠 영역 (유형 3) */
+        .content-body {
+            position: relative;
+            z-index: 5;
+            flex: 1;
+            display: flex;
+            padding: 20px 28px;
+            gap: 24px;
+            overflow: hidden;
+        }
+
+        /* 좌측: 건축물 정보 및 예시 식 패널 */
+        .info-panel {
+            flex: 0.9;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(4px);
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: var(--card-shadow);
+            border: 2px solid rgba(138, 161, 113, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .img-wrapper {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 2px solid var(--main-sage);
+        }
+
+        .img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .img-badge {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(45, 90, 39, 0.85);
+            color: var(--white);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .equation-box {
+            width: 100%;
+            background: var(--bg-pastel-green);
+            border: 2px dashed var(--main-sage);
+            border-radius: 16px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .equation-title {
+            font-size: 0.82rem;
+            color: var(--wood-brown);
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-family: 'Gowun Batang', serif;
+        }
+
+        .equation-text {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--dark-forest);
+        }
+
+        .equation-text .var-a { color: #d97706; }
+        .equation-text .var-p { color: #2563eb; }
+        .equation-text .var-q { color: #dc2626; }
+
+        /* 우측: 3단계 퀴즈 패널 */
+        .quiz-panel {
+            flex: 1.1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .quiz-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(4px);
+            border-radius: 16px;
+            padding: 14px 18px;
+            box-shadow: var(--card-shadow);
+            border: 2px solid transparent;
+            transition: all 0.25s ease;
+        }
+
+        .quiz-card.active {
+            border-color: var(--main-sage);
+            background: #ffffff;
+        }
+
+        .quiz-card.solved {
+            border-color: var(--correct-green);
+            background: #f4fbf4;
+        }
+
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .q-badge {
+            background: var(--dark-forest);
+            color: var(--white);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+
+        .q-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* 입력 폼 스타일링 */
+        .quiz-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .coord-inputs {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--dark-forest);
+        }
+
+        .math-input {
+            width: 65px;
+            height: 36px;
+            border: 2px solid var(--main-sage);
+            border-radius: 8px;
+            background: #fff;
+            text-align: center;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .math-input:focus {
+            border-color: var(--dark-forest);
+            background-color: #f8faf8;
+        }
+
+        .math-input:disabled {
+            background-color: #e2e8f0;
+            color: #64748b;
+        }
+
+        /* 선택 버튼 그룹 */
+        .choice-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .btn-choice {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            background: var(--white);
+            color: var(--text-main);
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .btn-choice:hover:not(:disabled) {
+            border-color: var(--main-sage);
+            background: var(--bg-pastel-green);
+        }
+
+        .btn-choice.selected {
+            border-color: var(--dark-forest);
+            background: var(--dark-forest);
+            color: var(--white);
+        }
+
+        .btn-choice:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* 확인 버튼 */
+        .btn-submit {
+            padding: 7px 16px;
+            background: var(--main-sage);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-left: auto;
+        }
+
+        .btn-submit:hover {
+            background: var(--dark-forest);
+        }
+
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* 피드백 박스 */
+        .feedback-text {
+            margin-top: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .feedback-text.correct {
+            display: block;
+            background: #e8f5e9;
+            color: var(--correct-green);
+        }
+
+        .feedback-text.wrong {
+            display: block;
+            background: #ffebee;
+            color: var(--error-red);
+        }
+
+        /* 개념 피드백 모달 팝업 */
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: var(--white);
+            padding: 24px 28px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 440px;
+            width: 88%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 3px solid var(--main-sage);
+            transform: translateY(15px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+
+        .modal-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        .modal-card h3 {
+            color: var(--dark-forest);
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+
+        .modal-card p {
+            font-size: 0.9rem;
+            line-height: 1.55;
+            color: #475569;
+            margin-bottom: 18px;
+            word-break: keep-all;
+        }
+
+        .btn-modal {
+            background: var(--dark-forest);
+            color: var(--white);
+            border: none;
+            padding: 9px 24px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* 완성 수료증 모달 */
+        .cert-card {
+            background: #fffdf9;
+            border: 6px double var(--wood-brown);
+            padding: 25px 20px;
+            border-radius: 16px;
+            position: relative;
+        }
+
+        .cert-title {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--wood-brown);
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+        }
+
+        .cert-body {
+            font-size: 0.88rem;
+            color: #334155;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .cert-stamp {
+            width: 70px;
+            height: 70px;
+            border: 2px solid #b91c1c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b91c1c;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin: 0 auto 15px auto;
+            transform: rotate(-12deg);
+            font-family: 'Gowun Batang', serif;
+        }
+
+        /* 슬라이드 넘김 애니메이션 효과 */
+        .slide-left-out {
+            animation: slideLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes slideLeft {
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(-100%); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 배경 이미지 -->
+        <img src="배경_국립세계문자박물관(위).png" alt="배경" class="bg-img">
+
+        <!-- 상단 헤더 -->
+        <header>
+            <h1>🏛️ 송도 국립세계문자박물관 MATHTOUR</h1>
+            <span class="subtitle">STEP 03. 이차함수의 비밀 분석하기</span>
+        </header>
+
+        <!-- 네비게이션 버튼 -->
+        <button class="btn-nav" id="btn-prev" onclick="goPrev()">이전</button>
+        <button class="btn-nav" id="btn-next" onclick="handleNextStep()" style="display: none;">다음</button>
+
+        <!-- 1단계: 상황 설명 및 대화 연출 레이어 -->
+        <div id="narrative-layer" class="narrative-layer">
+            <!-- 등장인물 Q -->
+            <div class="char-wrapper" id="char-Q" style="left: 403px; bottom: 120px; display: none;">
+                <iframe src="등장인물_Q.html" scrolling="no"></iframe>
+            </div>
+
+            <!-- 상황 설명 박스 -->
+            <div id="situation-box" class="situation-box">
+                곡선의 모습은 돌아왔지만 박물관은 아직 희미하게 흔들리고 있었습니다.<br>
+                복원을 완성하려면 이차함수의 꼭짓점과 대칭축, 열린 방향을 설명하고, 수학적 모델이 실제 건축물과 얼마나 잘 맞는지 판단해야 합니다.
+            </div>
+
+            <!-- 대화창 -->
+            <div id="dialogue-box" style="display: none;" onclick="advanceDialogue()">
+                <div id="speaker-name">Q</div>
+                <div id="dialogue-text">"최종 암호를 입력하세요."</div>
+            </div>
+        </div>
+
+        <!-- 2단계: 수학 퀴즈 레이어 -->
+        <div id="quiz-layer" class="content-body" style="display: none;">
+            <!-- 좌측 패널: 건축물 정보 및 A03-1 연동 식 -->
+            <div class="info-panel">
+                <div class="img-wrapper">
+                    <img src="배경_국립세계문자박물관(위).png" alt="국립세계문자박물관 전경" onerror="this.src='https://images.unsplash.com/photo-1580130248039-389304928172?auto=format&fit=crop&w=800&q=80'">
+                    <span class="img-badge">페이지스(Pages) 곡선</span>
+                </div>
+
+                <div class="equation-box">
+                    <div class="equation-title">📜 학생 탐정단이 모델링한 건축 곡선 식</div>
+                    <div class="equation-text">
+                        y = <span class="var-a">0.25</span>(x - <span class="var-p">1</span>)² + <span class="var-q">2</span>
+                    </div>
+                </div>
+
+                <p style="font-size: 0.78rem; color: #64748b; line-height: 1.4; text-align: center; word-break: keep-all;">
+                    💡 이전 활동(A03-1)에서 찾아낸 이차함수 모델을 분석하여 박물관 건축 곡선의 수학적 성질을 밝혀내세요!
+                </p>
+            </div>
+
+            <!-- 우측 패널: 퀴즈 3단계 -->
+            <div class="quiz-panel">
+                <!-- Q1. 꼭짓점 찾기 -->
+                <div class="quiz-card active" id="card-q1">
+                    <div class="quiz-header">
+                        <span class="q-badge">Q1</span>
+                        <span class="q-title">이 건축물 곡선의 가장 낮은 지점(꼭짓점)의 좌표는 무엇인가요?</span>
+                    </div>
+                    <div class="quiz-input-group">
+                        <div class="coord-inputs">
+                            ( <input type="text" id="q1-p" class="math-input" placeholder="p" autocomplete="off"> ,
+                              <input type="text" id="q1-q" class="math-input" placeholder="q" autocomplete="off"> )
+                        </div>
+                        <button class="btn-submit" onclick="checkQ1()">정답 확인</button>
+                    </div>
+                    <div class="feedback-text" id="fb-q1"></div>
+                </div>
+
+                <!-- Q2. 대칭축 이해 -->
+                <div class="quiz-card" id="card-q2">
+                    <div class="quiz-header">
+                        <span class="q-badge">Q2</span>
+                        <span class="q-title">건물을 좌우로 똑같이 나누는 대칭축의 방정식은 무엇인가요?</span>
+                    </div>
+                    <div class="quiz-input-group">
+                        <div class="coord-inputs">
+                            x = <input type="text" id="q2-x" class="math-input" placeholder="값" autocomplete="off">
+                        </div>
+                        <button class="btn-submit" id="btn-q2" onclick="checkQ2()">정답 확인</button>
+                    </div>
+                    <div class="feedback-text" id="fb-q2"></div>
+                </div>
+
+                <!-- Q3. 볼록성 판단 -->
+                <div class="quiz-card" id="card-q3">
+                    <div class="quiz-header">
+                        <span class="q-badge">Q3</span>
+                        <span class="q-title">이 그래프의 모양은 어느 방향으로 볼록한가요?</span>
+                    </div>
+                    <div class="choice-group">
+                        <button class="btn-choice" id="btn-convex-up" onclick="selectConvex('up')">위로 볼록</button>
+                        <button class="btn-choice" id="btn-convex-down" onclick="selectConvex('down')">아래로 볼록</button>
+                    </div>
+                    <div class="quiz-input-group" style="margin-top: 10px;">
+                        <button class="btn-submit" id="btn-q3" onclick="checkQ3()">정답 확인</button>
+                    </div>
+                    <div class="feedback-text" id="fb-q3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 개별 개념 설명 피드백 모달 -->
+    <div class="modal-overlay" id="concept-modal">
+        <div class="modal-card">
+            <div class="icon" id="modal-icon">✨</div>
+            <h3 id="modal-title">정답입니다!</h3>
+            <p id="modal-msg">개념 설명 메시지가 들어갑니다.</p>
+            <button class="btn-modal" onclick="closeConceptModal()">다음 문제로</button>
+        </div>
+    </div>
+
+    <!-- 최종 매쓰투어 수료증 모달 -->
+    <div class="modal-overlay" id="cert-modal">
+        <div class="modal-card cert-card">
+            <div class="cert-title">📜 매쓰투어 수료증</div>
+            <div class="cert-body">
+                축하합니다!<br>
+                <strong>송도 국립세계문자박물관</strong> 건축물에 담긴 이차함수의 모든 수학적 비밀(꼭짓점, 대칭축, 볼록성)을 완벽히 탐구하고 해독하였습니다.
+            </div>
+            <div class="cert-stamp">
+                MATHTOUR<br>완수 인증
+            </div>
+            <button class="btn-modal" onclick="finishTour()">탐구 완료하기</button>
+        </div>
+    </div>
+
+    <script>
+        const prevUrl = "A03-1.html";
+        const nextUrl = "A04.html";
+
+        // 연출 진행 단계 상태 관리 (0: 상황 설명, 1: Q 등장 및 대사, 2: 수학 퀴즈)
+        let storyStep = 0;
+
+        // 버튼 제어 및 네비게이션
+        function goPrev() {
+            window.location.href = prevUrl;
+        }
+
+        function handleNextStep() {
+            if (storyStep === 0) {
+                // 첫번째 단계(상황 설명) -> 두번째 단계(Q 등장 및 대사)
+                storyStep = 1;
+                document.getElementById('situation-box').style.display = 'none';
+                document.getElementById('char-Q').style.display = 'block';
+                document.getElementById('dialogue-box').style.display = 'block';
+            } else if (storyStep === 1) {
+                // 두번째 단계 -> 화면 좌측 슬라이드 효과 후 세번째 수학 활동으로 이동
+                storyStep = 2;
+                const container = document.getElementById('game-container');
+                container.classList.add('slide-left-out');
+
+                setTimeout(() => {
+                    container.classList.remove('slide-left-out');
+                    document.getElementById('narrative-layer').style.display = 'none';
+                    document.getElementById('quiz-layer').style.display = 'flex';
+                    document.getElementById('btn-next').style.display = 'none'; // 퀴즈 해결 전 숨김
+                }, 500);
+            }
+        }
+
+        function advanceDialogue() {
+            if (storyStep === 1) {
+                handleNextStep();
+            }
+        }
+
+        // 초기 시작 상태 세팅
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('btn-next').style.display = 'block';
+        });
+
+        // -------------------------------------------------------------
+        // 수학 퀴즈 로직
+        // -------------------------------------------------------------
+        const ANSWERS = {
+            q1_p: "1",
+            q1_q: "2",
+            q2_x: "1",
+            q3_convex: "down" // 아래로 볼록 (a = 0.25 > 0)
+        };
+
+        let selectedConvexValue = null;
+        let solvedCount = 0;
+
+        // Q1 정답 확인
+        function checkQ1() {
+            const inputP = document.getElementById('q1-p').value.trim();
+            const inputQ = document.getElementById('q1-q').value.trim();
+            const fb = document.getElementById('fb-q1');
+
+            if (inputP === ANSWERS.q1_p && (inputQ === ANSWERS.q1_q || inputQ === "2.0" || inputQ === "2.00")) {
+                fb.className = "feedback-text correct";
+                fb.textContent = "✓ 정답입니다! (1, 2)";
+                disableCard('card-card-q1');
+                disableCard('card-q1');
+                showConceptModal(
+                    "🎉 정답입니다!",
+                    "꼭짓점 <strong>(1, 2)</strong>는 평행이동을 나타냅니다.<br>기본형 $y = 0.25x^2$ 그래프를 $x$축 방향으로 $1$만큼, $y$축 방향으로 $2$만큼 평행이동한 지점입니다."
+                );
+                solvedCount++;
+            } else {
+                fb.className = "feedback-text wrong";
+                fb.textContent = "✕ 다시 생각해보세요. y = a(x - p)² + q 에서 꼭짓점은 (p, q)입니다.";
+            }
+        }
+
+        // Q2 정답 확인
+        function checkQ2() {
+            const inputX = document.getElementById('q2-x').value.trim();
+            const fb = document.getElementById('fb-q2');
+
+            if (inputX === ANSWERS.q2_x) {
+                fb.className = "feedback-text correct";
+                fb.textContent = "✓ 정답입니다! x = 1";
+                disableCard('card-q2');
+                showConceptModal(
+                    "🎉 정답입니다!",
+                    "대칭축의 방정식은 <strong>x = 1</strong>입니다.<br>축은 꼭짓점의 $x$좌표($p$)를 지나며, 건물의 좌우 곡선 형태를 완벽하게 대칭으로 나누어 줍니다."
+                );
+                solvedCount++;
+            } else {
+                fb.className = "feedback-text wrong";
+                fb.textContent = "✕ 다시 확인해보세요. 대칭축은 꼭짓점의 x좌표와 같습니다 (x = p).";
+            }
+        }
+
+        // Q3 선택 및 정답 확인
+        function selectConvex(type) {
+            selectedConvexValue = type;
+            document.getElementById('btn-convex-up').classList.toggle('selected', type === 'up');
+            document.getElementById('btn-convex-down').classList.toggle('selected', type === 'down');
+        }
+
+        function checkQ3() {
+            const fb = document.getElementById('fb-q3');
+            if (!selectedConvexValue) {
+                alert("보기 중 하나를 선택해 주세요!");
+                return;
+            }
+
+            if (selectedConvexValue === ANSWERS.q3_convex) {
+                fb.className = "feedback-text correct";
+                fb.textContent = "✓ 정답입니다! 아래로 볼록";
+                disableCard('card-q3');
+                showConceptModal(
+                    "🎉 정답입니다!",
+                    "이차항의 계수 $a = 0.25$로 <strong>양수($a > 0$)</strong>입니다.<br>따라서 그래프는 <strong>아래로 볼록</strong>한 형태를 이룹니다."
+                );
+                solvedCount++;
+            } else {
+                fb.className = "feedback-text wrong";
+                fb.textContent = "✕ 이차항의 계수 a = 0.25 의 부호(양수)를 확인해보세요.";
+            }
+        }
+
+        // 카드 비활성화 처리
+        function disableCard(cardId) {
+            const card = document.getElementById(cardId);
+            if (!card) return;
+            card.classList.remove('active');
+            card.classList.add('solved');
+            const inputs = card.querySelectorAll('input, button');
+            inputs.forEach(el => el.disabled = true);
+        }
+
+        // 개념 피드백 모달 표시
+        function showConceptModal(title, msg) {
+            document.getElementById('modal-title').innerHTML = title;
+            document.getElementById('modal-msg').innerHTML = msg;
+            document.getElementById('concept-modal').classList.add('active');
+        }
+
+        function closeConceptModal() {
+            document.getElementById('concept-modal').classList.remove('active');
+            
+            // 모든 문제를 풀었을 시 수료증 모달 출력
+            if (solvedCount >= 3) {
+                setTimeout(() => {
+                    document.getElementById('cert-modal').classList.add('active');
+                }, 300);
+            }
+        }
+
+        // 모든 매쓰투어 완료 처리 및 이동
+        function finishTour() {
+            document.getElementById('cert-modal').classList.remove('active');
+            document.getElementById('btn-next').style.display = 'block';
+            window.location.href = nextUrl;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!-- 원본 크기: 1400x480 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>영종도 인천대교기념관</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .ibm-svg { display:block; width:100%; height:auto; }
+
+  .ibm-cable { stroke:#e8ecef; stroke-width:1.4; opacity:0.85; }
+  .ibm-pylon { fill:url(#ibmPylonGrad); }
+  .ibm-pylon-edge { fill:#c3cbd1; }
+  .ibm-deck { fill:url(#ibmDeckGrad); }
+  .ibm-water { fill:url(#ibmWaterGrad); }
+  .ibm-wave { stroke:#bcd8dd; stroke-width:2; fill:none; opacity:0.55; }
+
+  @keyframes ibmBlink {
+    0%, 60%, 100% { opacity: 0.35; }
+    30% { opacity: 1; }
+  }
+  .ibm-lamp { animation: ibmBlink 3.6s ease-in-out infinite; }
+  .ibm-lamp:nth-child(2) { animation-delay: 1.1s; }
+  .ibm-lamp:nth-child(3) { animation-delay: 2.2s; }
+
+  @keyframes ibmFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+  .ibm-gull { animation: ibmFloat 4s ease-in-out infinite; }
+</style>
+</head>
+<body>
+<svg class="ibm-svg" viewBox="0 0 1400 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="인천대교와 기념관">
+<title>영종도 인천대교기념관</title>
+<defs>
+  <linearGradient id="ibmPylonGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#f4f6f8"/>
+    <stop offset="0.5" stop-color="#dfe4e8"/>
+    <stop offset="1" stop-color="#c7cdd3"/>
+  </linearGradient>
+  <linearGradient id="ibmDeckGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#5c6b74"/>
+    <stop offset="1" stop-color="#3f4a52"/>
+  </linearGradient>
+  <linearGradient id="ibmWaterGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#8fc2d4"/>
+    <stop offset="1" stop-color="#5f9fb8"/>
+  </linearGradient>
+  <linearGradient id="ibmGlassGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#a9d3e6"/>
+    <stop offset="1" stop-color="#7fb2cc"/>
+  </linearGradient>
+</defs>
+
+<!-- 바다 (다리 하부 얇은 띠) -->
+<rect class="ibm-water" x="0" y="392" width="1400" height="46"/>
+<g class="ibm-wave">
+  <path d="M0,404 Q35,398 70,404 T140,404 T210,404 T280,404 T350,404 T420,404 T490,404 T560,404 T630,404 T700,404 T770,404 T840,404 T910,404 T980,404 T1050,404 T1120,404 T1190,404 T1260,404 T1330,404 T1400,404"/>
+  <path d="M0,418 Q35,412 70,418 T140,418 T210,418 T280,418 T350,418 T420,418 T490,418 T560,418 T630,418 T700,418 T770,418 T840,418 T910,418 T980,418 T1050,418 T1120,418 T1190,418 T1260,418 T1330,418 T1400,418" opacity="0.6"/>
+</g>
+
+<!-- 교각 (바다 속) -->
+<rect x="672" y="360" width="56" height="40" fill="#8b9096"/>
+
+<!-- 케이블 (좌측 팬) -->
+<g class="ibm-cable">
+  <line x1="700" y1="70" x2="120" y2="392"/>
+  <line x1="700" y1="90" x2="200" y2="392"/>
+  <line x1="700" y1="112" x2="280" y2="392"/>
+  <line x1="700" y1="136" x2="360" y2="392"/>
+  <line x1="700" y1="160" x2="440" y2="392"/>
+  <line x1="700" y1="184" x2="520" y2="392"/>
+  <line x1="700" y1="208" x2="600" y2="392"/>
+  <line x1="700" y1="232" x2="660" y2="392"/>
+</g>
+<!-- 케이블 (우측 팬) -->
+<g class="ibm-cable">
+  <line x1="700" y1="70" x2="990" y2="392"/>
+  <line x1="700" y1="90" x2="1060" y2="392"/>
+  <line x1="700" y1="112" x2="130" y2="392" opacity="0"/>
+  <line x1="700" y1="112" x2="920" y2="392"/>
+  <line x1="700" y1="136" x2="850" y2="392"/>
+  <line x1="700" y1="160" x2="820" y2="392"/>
+  <line x1="700" y1="184" x2="790" y2="392"/>
+  <line x1="700" y1="208" x2="765" y2="392"/>
+  <line x1="700" y1="232" x2="735" y2="392"/>
+</g>
+
+<!-- 주 상판 (도로) -->
+<rect class="ibm-deck" x="0" y="360" width="1400" height="16"/>
+<rect x="0" y="360" width="1400" height="3" fill="#7c8992"/>
+<g stroke="#9aa4ab" stroke-width="1" stroke-dasharray="18,14" opacity="0.6">
+  <line x1="0" y1="368" x2="1400" y2="368"/>
+</g>
+
+<!-- 주탑 (다이아몬드형 사장교 주탑) -->
+<polygon class="ibm-pylon" points="655,360 745,360 715,60 730,44 700,20 670,44 685,60"/>
+<polygon class="ibm-pylon-edge" points="655,360 685,360 685,60 670,44 655,60"/>
+<rect x="662" y="150" width="76" height="10" fill="#b6bec4"/>
+<rect x="668" y="240" width="64" height="10" fill="#b6bec4"/>
+<circle cx="700" cy="20" r="5" fill="#e6eaec"/>
+<circle class="ibm-lamp" cx="700" cy="20" r="8" fill="#fff2b0"/>
+<circle class="ibm-lamp" cx="672" cy="46" r="5" fill="#fff2b0"/>
+<circle class="ibm-lamp" cx="728" cy="46" r="5" fill="#fff2b0"/>
+
+<!-- ════════════════════════════════
+     기념관 건물 (우측 저층 건물)
+════════════════════════════════ -->
+<rect x="960" y="256" width="410" height="104" fill="#e9e6df"/>
+<rect x="960" y="256" width="410" height="10" fill="#cfcabd"/>
+<polygon points="950,256 985,232 1440,232 1440,256" fill="#d7d2c6"/>
+<polygon points="950,256 985,232 985,238 958,256" fill="#c3bdae"/>
+
+<!-- 유리 커튼월 -->
+<g fill="url(#ibmGlassGrad)">
+  <rect x="978" y="270" width="66" height="70"/>
+  <rect x="1054" y="270" width="66" height="70"/>
+  <rect x="1130" y="270" width="66" height="70"/>
+  <rect x="1206" y="270" width="66" height="70"/>
+  <rect x="1282" y="270" width="66" height="70"/>
+</g>
+<g stroke="#5c7c8e" stroke-width="1" opacity="0.5" fill="none">
+  <line x1="1011" y1="270" x2="1011" y2="340"/>
+  <line x1="1087" y1="270" x2="1087" y2="340"/>
+  <line x1="1163" y1="270" x2="1163" y2="340"/>
+  <line x1="1239" y1="270" x2="1239" y2="340"/>
+  <line x1="1315" y1="270" x2="1315" y2="340"/>
+</g>
+<g fill="#fff" opacity="0.15">
+  <rect x="982" y="274" width="24" height="60"/>
+  <rect x="1134" y="274" width="24" height="60"/>
+  <rect x="1286" y="274" width="24" height="60"/>
+</g>
+
+<!-- 출입구 -->
+<rect x="1150" y="322" width="46" height="38" fill="#5a3b26"/>
+<rect x="1155" y="326" width="17" height="34" fill="#3f2a1a"/>
+<rect x="1174" y="326" width="17" height="34" fill="#3f2a1a"/>
+
+<!-- 간판 -->
+<rect x="1020" y="238" width="230" height="26" fill="#1f4e78" opacity="0.92"/>
+<text x="1135" y="257" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#fff" font-weight="bold">인천대교 기념관</text>
+
+<!-- 깃대 -->
+<line x1="945" y1="360" x2="945" y2="266" stroke="#8a8a86" stroke-width="3"/>
+<polygon points="945,266 945,286 985,278" fill="#c94b3f"/>
+
+<!-- 하단 그림자 -->
+<rect x="0" y="358" width="1400" height="3" fill="#000" opacity="0.08"/>
+
+<!-- 갈매기 -->
+<g class="ibm-gull" stroke="#5f6a70" stroke-width="2" fill="none" stroke-linecap="round">
+  <path d="M300,120 Q312,110 324,120 M324,120 Q336,110 348,120"/>
+</g>
+<g class="ibm-gull" stroke="#5f6a70" stroke-width="2" fill="none" stroke-linecap="round" style="animation-delay:1.5s">
+  <path d="M420,90 Q430,82 440,90 M440,90 Q450,82 460,90"/>
+</g>
+</svg>
+</body>
+</html>

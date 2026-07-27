@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아라뱃길·청라호수공원 MATHTOUR - STAGE 3</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+        @import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #fdfbf7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #ffffff;
+            overflow: hidden;
+            transition: background-color 0.5s ease;
+        }
+
+        /* 게임 컨테이너 (16:9 비율 고정) */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background: #e0f7fa;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.5s ease;
+        }
+
+        /* 음악분수 스포트라이트 오버레이 */
+        #spotlight-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0;
+            background: radial-gradient(circle at 50% 60%, rgba(255, 255, 255, 0.6) 0%, rgba(0, 0, 0, 0.4) 70%);
+            mix-blend-mode: overlay;
+            transition: opacity 0.4s ease, background 0.4s ease;
+        }
+
+        /* 스테이지 상단 표시바 (글래스모피즘) */
+        .stage-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 119, 190, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(64, 224, 208, 0.5);
+            border-radius: 30px;
+            padding: 10px 30px;
+            font-family: 'NanumSquareRound', sans-serif;
+            color: #1a365d;
+            font-size: 1.2rem;
+            font-weight: 700;
+            z-index: 20;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        /* 캐릭터 배치 영역 */
+        .char-wrapper {
+            position: absolute;
+            width: 260px;
+            height: 320px;
+            overflow: visible;
+            z-index: 3;
+            transition: filter 0.2s ease;
+        }
+
+        .inactive {
+            filter: brightness(0.55);
+        }
+
+        /* 대화창 (유형 2) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            background: rgba(26, 54, 93, 0.85);
+            border: 1px solid #40e0d0;
+            border-radius: 15px;
+            padding: 25px 35px;
+            box-sizing: border-box;
+            z-index: 15;
+            color: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #speaker-name {
+            font-family: 'NanumSquareRound', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #40e0d0;
+            margin-bottom: 10px;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.15rem;
+            color: #ffffff;
+            line-height: 1.6;
+            letter-spacing: -0.02em;
+        }
+
+        /* 건너뛰기 버튼 */
+        #btn-skip {
+            position: absolute;
+            right: 20px;
+            bottom: 150px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.8);
+            color: #1a365d;
+            border: 1px solid #0077be;
+            border-radius: 50px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.2s;
+        }
+
+        #btn-skip:hover {
+            background-color: #0077be;
+            color: #ffffff;
+        }
+
+        /* 수학 퀴즈 컨테이너 (유형 3) - 크기 소폭 확장하여 누적 통계 수용 */
+        .quiz-container {
+            display: none;
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 520px;
+            max-height: 500px;
+            background: rgba(10, 25, 47, 0.95);
+            backdrop-filter: blur(12px);
+            border: 2px solid #40e0d0;
+            border-radius: 20px;
+            padding: 18px;
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(64, 224, 208, 0.2);
+            overflow-y: auto;
+            overflow-x: hidden;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, 10px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        .quiz-container::-webkit-scrollbar { width: 6px; }
+        .quiz-container::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 10px; }
+        .quiz-container::-webkit-scrollbar-thumb { background: #0077be; border-radius: 10px; }
+
+        /* 인터랙티브 분수 영역 */
+        .fountain-section {
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 15px 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 14px;
+            border: 1px solid rgba(64, 224, 208, 0.2);
+        }
+        .fountain-emoji {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+        .action-btn {
+            background: linear-gradient(135deg, #0077be, #005580);
+            color: white;
+            border: 1px solid #40e0d0;
+            padding: 10px 22px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 119, 190, 0.4);
+            transition: all 0.2s;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .action-btn:hover {
+            background: #40e0d0;
+            color: #1a365d;
+        }
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* 기록 표시 영역 및 색깔별 누적 통계판 스타일 */
+        .log-section {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: #e0f7fa;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+        .color-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-top: 8px;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(64, 224, 208, 0.2);
+        }
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+        .stat-color-name {
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .stat-count {
+            color: #40e0d0;
+            font-weight: bold;
+        }
+
+        .color-chips {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 8px;
+            max-height: 50px;
+            overflow-y: auto;
+        }
+        .chip {
+            padding: 3px 8px;
+            border-radius: 10px;
+            color: #000;
+            font-weight: bold;
+            font-size: 0.75rem;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* 수학 미션 영역 */
+        .mission-section {
+            display: none;
+            background: rgba(26, 54, 93, 0.9);
+            border: 2px solid #40e0d0;
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 10px;
+            box-shadow: 0 0 15px rgba(64, 224, 208, 0.3);
+            animation: fadeUp 0.5s forwards;
+        }
+        
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mission-title {
+            color: #40e0d0;
+            font-family: 'NanumSquareRound', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .mission-question {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            word-break: keep-all;
+            color: #ffffff;
+        }
+        .highlight { color: #40e0d0; font-weight: bold; }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .answer-input {
+            width: 55%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #40e0d0;
+            background: #e0f7fa;
+            color: #1a365d;
+            font-size: 0.95rem;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-weight: bold;
+            text-align: center;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .answer-input:focus {
+            box-shadow: 0 0 8px #40e0d0;
+            border-color: #0077be;
+        }
+        
+        .check-btn {
+            background: #0077be;
+            color: white;
+            border: 1px solid #40e0d0;
+            border-radius: 8px;
+            padding: 0 16px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Noto Sans KR', sans-serif;
+            transition: all 0.2s;
+        }
+        .check-btn:hover {
+            background: #40e0d0;
+            color: #1a365d;
+        }
+        
+        .feedback {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            min-height: 20px;
+        }
+        .feedback.error { color: #fc8181; }
+        .feedback.success { color: #68d391; }
+
+        /* 내부 다음으로 이동 버튼 */
+        .next-btn-internal {
+            display: none;
+            text-align: center;
+            background: linear-gradient(135deg, #40e0d0, #0077be);
+            color: #1a365d;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin-top: 12px;
+            box-shadow: 0 4px 12px rgba(64, 224, 208, 0.4);
+            cursor: pointer;
+            border: none;
+            width: 100%;
+        }
+
+        /* 폭죽 효과 */
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #f6e05e;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: fall 1.5s linear forwards;
+            z-index: 100;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(300px) rotate(360deg); opacity: 0; }
+        }
+
+        /* 공통 이동 버튼 */
+        .btn-nav {
+            position: absolute;
+            bottom: 20px;
+            padding: 12px 30px;
+            background-color: #0077be;
+            color: #ffffff;
+            border: 1px solid #40e0d0;
+            border-radius: 50px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 119, 190, 0.3);
+            transition: all 0.3s ease;
+            z-index: 20;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-nav:hover {
+            background-color: #40e0d0;
+            color: #1a365d;
+            box-shadow: 0 6px 15px rgba(64, 224, 208, 0.4);
+        }
+
+        #btn-prev {
+            left: 20px;
+            display: none;
+        }
+
+        #btn-next {
+            right: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- 음악분수 스포트라이트 오버레이 -->
+    <div id="spotlight-overlay"></div>
+
+    <!-- 상단 스테이지 표시바 -->
+    <div class="stage-bar">아라뱃길·청라호수공원 MATHTOUR</div>
+
+    <!-- 에셋: 청라호수공원 음악분수 -->
+    <div style="position:absolute; left:0; bottom:0; width:1066px; height:600px; overflow:hidden; z-index:1;">
+        <iframe src="청라호수공원_음악분수.html" scrolling="no" style="border:0; width:1000px; height:500px; transform:scale(1.2); transform-origin:top left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 인보 -->
+    <div class="char-wrapper" id="char-인보" style="position:absolute; left:70px; bottom:20px; width:260px; height:320px; overflow:visible; z-index:3;">
+        <iframe src="등장인물_인보.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 서연 -->
+    <div class="char-wrapper" id="char-서연" style="position:absolute; left:650px; bottom:20px; width:260px; height:320px; overflow:visible; z-index:3;">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 민우 -->
+    <div class="char-wrapper" id="char-민우" style="position:absolute; left:800px; bottom:20px; width:260px; height:320px; overflow:visible; z-index:3;">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
+    </div>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-name">화자</div>
+        <div id="dialogue-text">대사 내용</div>
+    </div>
+    <button id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
+
+    <!-- 수학 퀴즈 컨테이너 -->
+    <div class="quiz-container" id="quiz-container">
+        <div class="fountain-section">
+            <div class="fountain-emoji" id="fountain">⛲</div>
+            <button class="action-btn" id="operate-btn" onclick="operateFountain()">분수 작동시키기 💦</button>
+            <div class="log-section">
+                <p>총 작동 횟수: <strong id="click-count">0</strong>번</p>
+                
+                <!-- 색깔별 누적 횟수 통계판 -->
+                <div class="color-stats-grid" id="color-stats-grid">
+                    <div class="stat-item"><span class="stat-color-name" style="color:#fc8181">빨강</span><span id="cnt-빨강" class="stat-count">0회</span></div>
+                    <div class="stat-item"><span class="stat-color-name" style="color:#f6ad55">주황</span><span id="cnt-주황" class="stat-count">0회</span></div>
+                    <div class="stat-item"><span class="stat-color-name" style="color:#f6e05e">노랑</span><span id="cnt-노랑" class="stat-count">0회</span></div>
+                    <div class="stat-item"><span class="stat-color-name" style="color:#68d391">초록</span><span id="cnt-초록" class="stat-count">0회</span></div>
+                    <div class="stat-item"><span class="stat-color-name" style="color:#63b3ed">파랑</span><span id="cnt-파랑" class="stat-count">0회</span></div>
+                    <div class="stat-item"><span class="stat-color-name" style="color:#7f9cf5">남색</span><span id="cnt-남색" class="stat-count">0회</span></div>
+                    <div class="stat-item"><span class="stat-color-name" style="color:#b794f4">보라</span><span id="cnt-보라" class="stat-count">0회</span></div>
+                </div>
+
+                <div class="color-chips" id="color-log"></div>
+            </div>
+        </div>
+
+        <div class="mission-section" id="mission-section">
+            <div class="mission-title">🎯 인보의 수리 미션!</div>
+            <p class="mission-question">
+                분수를 직접 작동해봤지? 7가지 색깔이 완전히 무작위로 한 번씩 켜진다면, 다음에 버튼을 눌렀을 때 딱 <span class="highlight">'파란색'</span> 조명이 켜질 수학적 확률은 얼마일까?
+            </p>
+            <div class="input-group">
+                <input type="text" id="answer-input" class="answer-input" placeholder="예: 1/7 또는 7분의1" autocomplete="off">
+                <button class="check-btn" onclick="checkAnswer()">정답 확인</button>
+            </div>
+            <div class="feedback" id="feedback-msg"></div>
+            <button class="next-btn-internal" id="next-btn-internal" onclick="goToNextPage()">다음 코스로 이동하기 ➡️</button>
+        </div>
+    </div>
+
+    <!-- 하단 공통 이동 버튼 -->
+    <button id="btn-prev" class="btn-nav" onclick="window.location.href='d02.html'">◀ 이전</button>
+    <button id="btn-next" class="btn-nav" onclick="goToNextPage()">다음 ▶</button>
+</div>
+
+<script>
+    const dialogues = [
+        { speaker: "민우", text: "그런데 지금 조명에 문제가 있는거 같은데 ?", target: "char-민우" },
+        { speaker: "서연", text: "그러게 조명이 하나씩만 켜지는거 같아.", target: "char-서연" },
+        { speaker: "인보", text: "이런, 분수의 AI제어기가 고장 나서, 한 번에 하나의 조명만 켜지고 있어.", target: "char-인보" },
+        { speaker: "인보", text: "어떤색이 켜질지는 완전히 무작위로 결정되고 있어 !", target: "char-인보" },
+        { speaker: "인보", text: "혹시 너희들이 분수 수리를 도와주지 않을래 ?", target: "char-인보" },
+        { speaker: "인보", text: "먼저 내가 만든 패드를 통해 분수가 켜지는 모습을 관찰해보자!", target: "char-인보" }
+    ];
+
+    let currentDialogueIndex = 0;
+    const charWrappers = [
+        document.getElementById('char-인보'),
+        document.getElementById('char-서연'),
+        document.getElementById('char-민우')
+    ];
+    const dialogueBox = document.getElementById('dialogue-box');
+    const speakerNameEl = document.getElementById('speaker-name');
+    const dialogueTextEl = document.getElementById('dialogue-text');
+    const btnSkip = document.getElementById('btn-skip');
+    const quizContainer = document.getElementById('quiz-container');
+    const btnPrev = document.getElementById('btn-prev');
+
+    function updateDialogueUI() {
+        if (currentDialogueIndex >= dialogues.length) {
+            startQuiz();
+            return;
+        }
+        
+        const currentData = dialogues[currentDialogueIndex];
+        speakerNameEl.innerText = currentData.speaker;
+        dialogueTextEl.innerText = currentData.text;
+
+        charWrappers.forEach(wrapper => {
+            if (wrapper.id === currentData.target) {
+                wrapper.classList.remove('inactive');
+            } else {
+                wrapper.classList.add('inactive');
+            }
+        });
+    }
+
+    function advanceDialogue() {
+        currentDialogueIndex++;
+        updateDialogueUI();
+    }
+
+    function skipDialogue() {
+        startQuiz();
+    }
+
+    function startQuiz() {
+        dialogueBox.style.display = 'none';
+        btnSkip.style.display = 'none';
+        quizContainer.style.display = 'block';
+        btnPrev.style.display = 'flex';
+
+        charWrappers.forEach(wrapper => wrapper.classList.remove('inactive'));
+    }
+
+    updateDialogueUI();
+
+    const colors = [
+        { name: '빨강', hex: '#fc8181', bgHex: '#fed7d7' },
+        { name: '주황', hex: '#f6ad55', bgHex: '#feebc8' },
+        { name: '노랑', hex: '#f6e05e', bgHex: '#fefcbf' },
+        { name: '초록', hex: '#68d391', bgHex: '#c6f6d5' },
+        { name: '파랑', hex: '#63b3ed', bgHex: '#bee3f8' },
+        { name: '남색', hex: '#7f9cf5', bgHex: '#e2e8f0' },
+        { name: '보라', hex: '#b794f4', bgHex: '#e9d8fd' }
+    ];
+
+    // 색깔별 누적 횟수를 저장할 객체
+    const colorCounts = {
+        '빨강': 0, '주황': 0, '노랑': 0, '초록': 0,
+        '파랑': 0, '남색': 0, '보라': 0
+    };
+
+    let clickCount = 0;
+    const REQUIRED_CLICKS = 5;
+
+    function operateFountain() {
+        clickCount++;
+        document.getElementById('click-count').innerText = clickCount;
+
+        const randomIndex = Math.floor(Math.random() * colors.length);
+        const selectedColor = colors[randomIndex];
+
+        // 해당 색상 누적 횟수 증가 및 통계판 업데이트
+        colorCounts[selectedColor.name]++;
+        document.getElementById(`cnt-${selectedColor.name}`).innerText = colorCounts[selectedColor.name] + '회';
+
+        const fountain = document.getElementById('fountain');
+        fountain.style.textShadow = `0 0 30px ${selectedColor.hex}, 0 0 60px ${selectedColor.hex}`;
+        fountain.style.transform = 'scale(1.1)';
+        setTimeout(() => { fountain.style.transform = 'scale(1)'; }, 200);
+
+        // 1. 배경색 전환
+        const gameContainer = document.getElementById('game-container');
+        gameContainer.style.backgroundColor = selectedColor.bgHex;
+        document.body.style.backgroundColor = selectedColor.bgHex;
+
+        // 2. 스포트라이트 조명 연출
+        const spotlight = document.getElementById('spotlight-overlay');
+        spotlight.style.background = `radial-gradient(circle at 50% 65%, ${selectedColor.hex}aa 0%, rgba(0, 0, 0, 0.5) 75%)`;
+        spotlight.style.opacity = '1';
+
+        // 일정 시간 후 복귀
+        setTimeout(() => {
+             gameContainer.style.backgroundColor = '#e0f7fa';
+             document.body.style.backgroundColor = '#fdfbf7';
+             spotlight.style.opacity = '0';
+        }, 800);
+
+        const logContainer = document.getElementById('color-log');
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+        chip.style.backgroundColor = selectedColor.bgHex;
+        chip.style.color = selectedColor.hex.replace(/[0-9a-f]{2}$/i, '00');
+        chip.innerText = selectedColor.name;
+        logContainer.appendChild(chip);
+
+        if (clickCount === REQUIRED_CLICKS) {
+            const missionSection = document.getElementById('mission-section');
+            missionSection.style.display = 'block';
+            setTimeout(() => {
+                quizContainer.scrollTo({ top: quizContainer.scrollHeight, behavior: 'smooth' });
+            }, 300);
+        }
+    }
+
+    function checkAnswer() {
+        const input = document.getElementById('answer-input').value;
+        const feedback = document.getElementById('feedback-msg');
+        
+        const cleanInput = input.replace(/\s+/g, '').toLowerCase();
+        const validAnswers = ['1/7', '7분의1', '칠분의일'];
+        
+        if (validAnswers.includes(cleanInput)) {
+            feedback.innerText = "🎉 정답이야! 삐리릭- 제어기가 완벽하게 수리되었어!";
+            feedback.className = "feedback success";
+            document.getElementById('answer-input').disabled = true;
+            document.getElementById('operate-btn').disabled = true;
+            
+            document.getElementById('next-btn-internal').style.display = 'block';
+            document.getElementById('btn-next').style.display = 'flex';
+            
+            createConfetti();
+            
+            setTimeout(() => {
+                quizContainer.scrollTo({ top: quizContainer.scrollHeight, behavior: 'smooth' });
+            }, 300);
+        } else {
+            feedback.innerText = "❌ 앗, 다시 생각해 볼까? (힌트: 전체 색깔 수는 7개이고, 파란색은 1개야!)";
+            feedback.className = "feedback error";
+            
+            const inputEl = document.getElementById('answer-input');
+            inputEl.style.transform = 'translateX(-5px)';
+            setTimeout(() => inputEl.style.transform = 'translateX(5px)', 100);
+            setTimeout(() => inputEl.style.transform = 'translateX(-5px)', 200);
+            setTimeout(() => inputEl.style.transform = 'translateX(0)', 300);
+        }
+    }
+
+    function goToNextPage() {
+        window.location.href = 'd04.html';
+    }
+
+    function createConfetti() {
+        const confettiColors = ['#fc8181', '#f6e05e', '#68d391', '#63b3ed', '#b794f4', '#40e0d0'];
+        const container = document.getElementById('game-container');
+        
+        for (let i = 0; i < 35; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+            confetti.style.animationDelay = Math.random() * 0.5 + 's';
+            container.appendChild(confetti);
+            
+            setTimeout(() => {
+                confetti.remove();
+            }, 2000);
+        }
+    }
+</script>
+</body>
+</html>
