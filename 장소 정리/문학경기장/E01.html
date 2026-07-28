@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문학경기장 MATHTOUR - 박태환 수영장 안내</title>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Pretendard', sans-serif;
+      color: #1e293b;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background-color: #f8fafc;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+      border-radius: 12px;
+    }
+
+    /* 배경 이미지 */
+    .bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    /* 상단 상태 바 */
+    .top-bar {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      right: 20px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      z-index: 10;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    .top-bar .title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #2563eb;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .top-bar .title::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background-color: #2563eb;
+      border-radius: 50%;
+    }
+
+    .top-bar .stage-info {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 14px;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    /* 스테이지 중앙 무대 연출 영역 */
+    .stage-area {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* 캐릭터 바운스 애니메이션 */
+    @keyframes gentleBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .char-wrapper {
+      position: absolute;
+      width: 260px;
+      height: 320px;
+      overflow: visible;
+      transition: filter 0.3s ease, transform 0.3s ease;
+      animation: gentleBounce 2.5s infinite ease-in-out;
+    }
+
+    #char-민우 {
+      left: 320px;
+      bottom: 60px;
+      animation-delay: 0s;
+    }
+
+    #char-서연 {
+      right: 320px;
+      bottom: 60px;
+      animation-delay: 1.25s;
+    }
+
+    /* 말풍선 스타일 */
+    .speech-bubble {
+      position: absolute;
+      z-index: 15;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 16px 20px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      max-width: 260px;
+      min-width: 200px;
+      border: 2px solid #2563eb;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      opacity: 0;
+      transform: translateY(10px) scale(0.95);
+      visibility: hidden;
+    }
+
+    .speech-bubble.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      visibility: visible;
+    }
+
+    .speech-bubble:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 12px 28px -5px rgba(37, 99, 235, 0.25);
+    }
+
+    /* 민우 말풍선 (머리 좌측 상단 위치) */
+    #bubble-민우 {
+      left: 170px;
+      bottom: 350px;
+      border-bottom-right-radius: 4px;
+    }
+
+    #bubble-민우::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      right: 20px;
+      border-width: 12px 10px 0 10px;
+      border-style: solid;
+      border-color: #2563eb transparent transparent transparent;
+    }
+
+    #bubble-민우::before {
+      content: '';
+      position: absolute;
+      bottom: -9px;
+      right: 22px;
+      border-width: 10px 8px 0 8px;
+      border-style: solid;
+      border-color: #ffffff transparent transparent transparent;
+      z-index: 1;
+    }
+
+    /* 서연 말풍선 (머리 우측 상단 위치) */
+    #bubble-서연 {
+      right: 170px;
+      bottom: 350px;
+      border-bottom-left-radius: 4px;
+    }
+
+    #bubble-서연::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 20px;
+      border-width: 12px 10px 0 10px;
+      border-style: solid;
+      border-color: #2563eb transparent transparent transparent;
+    }
+
+    #bubble-서연::before {
+      content: '';
+      position: absolute;
+      bottom: -9px;
+      left: 22px;
+      border-width: 10px 8px 0 8px;
+      border-style: solid;
+      border-color: #ffffff transparent transparent transparent;
+      z-index: 1;
+    }
+
+    .bubble-speaker {
+      font-size: 13px;
+      font-weight: 700;
+      color: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .bubble-text {
+      font-size: 15px;
+      font-weight: 500;
+      color: #1e293b;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+
+    .click-hint {
+      font-size: 11px;
+      color: #94a3b8;
+      text-align: right;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* 이동 버튼 */
+    .btn-nav {
+      position: absolute;
+      z-index: 20;
+      background-color: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'Pretendard', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-nav:hover {
+      background-color: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 10px -1px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-nav:active {
+      transform: translateY(0);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 20px;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 20px;
+    }
+
+    /* 비활성화 인물 처리 */
+    .inactive {
+      filter: brightness(0.65);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 배경 이미지 -->
+    <img src="박태환수영장외부.png" alt="박태환수영장 외부" class="bg-img">
+
+    <!-- 상단 바 -->
+    <div class="top-bar">
+      <div class="title">문학경기장 MATHTOUR</div>
+      <div class="stage-info">STAGE 01 : 박태환 수영장 입구</div>
+    </div>
+
+    <!-- 무대 연출 (인물 배치) -->
+    <div class="stage-area">
+      <!-- 민우 -->
+      <div class="char-wrapper" id="char-민우">
+        <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+      </div>
+
+      <!-- 서연 -->
+      <div class="char-wrapper" id="char-서연">
+        <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1); transform-origin:bottom left; pointer-events:none;"></iframe>
+      </div>
+    </div>
+
+    <!-- 민우 말풍선 -->
+    <div class="speech-bubble" id="bubble-민우" onclick="advanceDialogue()">
+      <div class="bubble-speaker">
+        <span>민우</span>
+      </div>
+      <div class="bubble-text" id="text-민우"></div>
+      <div class="click-hint">클릭하여 계속 ▶</div>
+    </div>
+
+    <!-- 서연 말풍선 -->
+    <div class="speech-bubble" id="bubble-서연" onclick="advanceDialogue()">
+      <div class="bubble-speaker">
+        <span>서연</span>
+      </div>
+      <div class="bubble-text" id="text-서연"></div>
+      <div class="click-hint">클릭하여 계속 ▶</div>
+    </div>
+
+    <!-- 하단 이동 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="goPrev()">◀ 이전</button>
+    <button class="btn-nav" id="btn-next" onclick="goNext()">다음 ▶</button>
+  </div>
+
+  <script>
+    // 대화 스크립트 데이터
+    const dialogues = [
+      {
+        speaker: "민우",
+        text: "안녕하세요! 박태환 수영장에 오신 것을 환영합니다! 😊",
+        target: "char-민우",
+        bubble: "bubble-민우",
+        textField: "text-민우"
+      },
+      {
+        speaker: "서연",
+        text: "혹시 문학경기장에 박태환 수영장이 왜 생겼는지 알고 계시나요? 🏊‍♂️",
+        target: "char-서연",
+        bubble: "bubble-서연",
+        textField: "text-서연"
+      },
+      {
+        speaker: "민우",
+        text: "숨겨진 수학적 사실과 재미있는 이야기를 알아보러 떠나봅시다!",
+        target: "char-민우",
+        bubble: "bubble-민우",
+        textField: "text-민우"
+      },
+      {
+        speaker: "서연",
+        text: "다 함께 출~발! GO GO! ✨",
+        target: "char-서연",
+        bubble: "bubble-서연",
+        textField: "text-서연"
+      }
+    ];
+
+    let currentIndex = 0;
+
+    function updateDialogue() {
+      const current = dialogues[currentIndex];
+      
+      const minuwChar = document.getElementById('char-민우');
+      const seoyeonChar = document.getElementById('char-서연');
+      const minuwBubble = document.getElementById('bubble-민우');
+      const seoyeonBubble = document.getElementById('bubble-서연');
+
+      // 모든 말풍선 일단 닫기
+      minuwBubble.classList.remove('active');
+      seoyeonBubble.classList.remove('active');
+
+      if (current.speaker === "민우") {
+        minuwChar.classList.remove('inactive');
+        seoyeonChar.classList.add('inactive');
+        
+        document.getElementById('text-민우').innerText = current.text;
+        minuwBubble.classList.add('active');
+      } else {
+        seoyeonChar.classList.remove('inactive');
+        minuwChar.classList.add('inactive');
+        
+        document.getElementById('text-서연').innerText = current.text;
+        seoyeonBubble.classList.add('active');
+      }
+    }
+
+    function advanceDialogue() {
+      if (currentIndex < dialogues.length - 1) {
+        currentIndex++;
+        updateDialogue();
+      } else {
+        // 모든 대화 완료 시 다음으로 자동 이동하거나 포커스 강조
+        goNext();
+      }
+    }
+
+    function goPrev() {
+      window.location.href = "index.html";
+    }
+
+    function goNext() {
+      window.location.href = "E02.html";
+    }
+
+    // 초기화 실행
+    window.addEventListener('DOMContentLoaded', () => {
+      updateDialogue();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>인천 매쓰투어 HTML 점검 · 수정 보고서</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#fff; --ink:#1a1d21; --muted:#5f6672; --line:#e3e6ea;
+    --red:#c0392b; --redbg:#fdecea; --amber:#b26a00; --amberbg:#fff5e5;
+    --blue:#1f5fa8; --bluebg:#eaf2fb; --green:#1e7a4b; --greenbg:#e8f6ee;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{--bg:#14161a;--card:#1c1f24;--ink:#e8eaed;--muted:#9aa2ad;--line:#2c3138;
+      --redbg:#3a1f1c;--amberbg:#3a2c14;--bluebg:#16283d;--greenbg:#15301f;
+      --red:#ff8b7d;--amber:#ffc266;--blue:#7fb4f0;--green:#6fd39b;}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;
+    line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1020px;margin:0 auto;padding:32px 20px 80px}
+  header{margin-bottom:24px}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:-.4px}
+  .sub{color:var(--muted);font-size:14px}
+  h2{font-size:19px;margin:40px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--line);letter-spacing:-.3px}
+  h3{font-size:15px;margin:22px 0 8px;color:var(--muted);font-weight:600}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:14px 0}
+  table{width:100%;border-collapse:collapse;font-size:14px;background:var(--card);
+    border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--bg);font-weight:600;font-size:13px;color:var(--muted)}
+  tr:last-child td{border-bottom:none}
+  code{font-family:"Cascadia Mono",Consolas,monospace;font-size:12.5px;
+    background:var(--bg);padding:1px 5px;border-radius:4px;border:1px solid var(--line)}
+  .pill{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+  .p-red{background:var(--redbg);color:var(--red)}
+  .p-amber{background:var(--amberbg);color:var(--amber)}
+  .p-blue{background:var(--bluebg);color:var(--blue)}
+  .p-green{background:var(--greenbg);color:var(--green)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .stat .n{font-size:26px;font-weight:700;letter-spacing:-1px}
+  .stat .l{font-size:12.5px;color:var(--muted);margin-top:2px}
+  ul{margin:8px 0;padding-left:20px} li{margin:4px 0}
+  .fix{background:var(--greenbg);border-left:3px solid var(--green);padding:10px 14px;
+    border-radius:0 8px 8px 0;margin:10px 0;font-size:13.5px}
+  .warn{background:var(--amberbg);border-left:3px solid var(--amber);padding:10px 14px;
+    border-radius:0 8px 8px 0;margin:10px 0;font-size:13.5px}
+  .alert{background:var(--redbg);border-left:3px solid var(--red);padding:10px 14px;
+    border-radius:0 8px 8px 0;margin:10px 0;font-size:13.5px}
+  .note{font-size:13px;color:var(--muted);margin-top:6px}
+  .done{color:var(--green);font-weight:700}
+  .chk{font-size:15px}
+  .banner{background:var(--greenbg);border:1px solid var(--green);border-radius:12px;
+    padding:16px 20px;margin:18px 0}
+  .banner b{color:var(--green)}
+  td.c{text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>인천 매쓰투어 — 점검 · 수정 · 코스 제작 보고서 (3차)</h1>
+  <div class="sub">「장소 정리」 폴더 · 8개 장소 48코스 · 링크 전수 검사 + 208개 장면 렌더링 검사 + 7개 코스 신규 제작 · 2026-07-28</div>
+</header>
+
+<div class="banner">
+  <b>✔ 전체 완성</b> — 링크 8건 + 장면 레이아웃 30개 파일을 수정하고, 비어 있던 <b>7개 코스 28장면을 새로 제작</b>했습니다.
+  이제 8개 장소 모두 A~F 6코스가 완비되었고, 폴더 전체의 <b>깨진 링크는 0건</b>입니다.
+  수정 전 원본은 <code>_수정전백업</code> 폴더에 보관되어 있습니다.
+  <br><span class="note">1~3번 = 링크 점검 / 4번 = 장면 레이아웃 점검 / <b>5번 = 이번 코스 제작</b></span>
+</div>
+
+<div class="grid">
+  <div class="stat"><div class="n">0</div><div class="l">폴더 전체 깨진 링크</div></div>
+  <div class="stat"><div class="n">48</div><div class="l">완성된 코스 (48개 전부)</div></div>
+  <div class="stat"><div class="n">7</div><div class="l">새로 제작한 코스</div></div>
+  <div class="stat"><div class="n">28</div><div class="l">새로 만든 장면</div></div>
+  <div class="stat"><div class="n">208</div><div class="l">장면 렌더링 전수 검사</div></div>
+</div>
+
+<h2>1. 이번에 수정한 내용</h2>
+<table>
+<thead><tr><th>#</th><th>장소</th><th>파일</th><th>수정 내용</th></tr></thead>
+<tbody>
+<tr><td class="c">1</td><td>영종도</td><td><code>A03.html</code> <code>A04.html</code></td>
+<td>하위 <code>영종도\영종도\</code>에만 있던 두 파일을 상위 폴더로 <b>복사</b>. 배경 이미지 <code>인천대교주탑.png</code>도 함께 복사 <span class="done">✔</span></td></tr>
+<tr><td class="c">2</td><td>영종도</td><td><code>A03.html</code></td>
+<td>다음 버튼이 존재하지 않는 <code>인천대교기념관.html</code>로 향하던 것을 <code>A04.html</code>로 수정 <span class="done">✔</span></td></tr>
+<tr><td class="c">3</td><td>인천차이나타운</td><td><code>A04.html</code></td>
+<td>다음 버튼이 자기 자신(<code>A04.html</code>)을 가리키던 것을 <code>A05.html</code>로 수정 → A05 도달 가능 <span class="done">✔</span></td></tr>
+<tr><td class="c">4</td><td>문학경기장</td><td><code>F04.html</code></td>
+<td>마지막 버튼이 없는 파일 <code>End.html</code>로 향하던 것을 <code>index.html</code>로 수정 <span class="done">✔</span></td></tr>
+<tr><td class="c">5</td><td>문학경기장</td><td><code>A01.html</code></td>
+<td>에셋 iframe 경로 <code>야구글러브.html</code> → <code>문학경기장_에셋_야구글러브.html</code> <span class="done">✔</span></td></tr>
+<tr><td class="c">6</td><td>소래포구</td><td><code>E01.html</code></td>
+<td>에셋 iframe 경로 <code>풍차.html</code> → <code>소래포구_풍차.html</code> <span class="done">✔</span></td></tr>
+<tr><td class="c">7</td><td>인천차이나타운</td><td><code>D01.html</code></td>
+<td>배경 이미지 <code>인천개항박물관.png</code> → <code>인천개항박물관 내부.png</code> <span class="done">✔</span></td></tr>
+<tr><td class="c">8</td><td>인천차이나타운</td><td><code>D02.html</code> <code>D04.html</code></td>
+<td>등장인물 iframe 경로에서 없는 폴더 <code>./D02_files/</code>·<code>./D04_files/</code> 제거 (총 4건) <span class="done">✔</span></td></tr>
+</tbody>
+</table>
+
+<div class="fix"><b>수정 결과</b> — 영종도 A코스가 <code>A01→A02→A03→A04→index</code> 4장으로 완성되었고,
+인천차이나타운 A코스도 <code>A01→…→A05→index</code> 5장 전체가 이어집니다.
+문학경기장·소래포구·인천차이나타운의 깨진 링크는 <b>0건</b>이 되었습니다.</div>
+
+<h2>2. 미제작 코스 체크리스트 <span class="pill p-green">→ 5번에서 모두 제작 완료</span></h2>
+<div class="card">
+<p>배정표와 대조한 결과, 아래 6개 코스는 <b>담당자가 배정되지 않아 제작되지 않은 것이 맞았습니다.</b>
+이후 요청에 따라 <b>7개 코스를 모두 새로 제작</b>했습니다 — 자세한 내용은 <b>5번</b>을 보세요.</p>
+<table>
+<thead><tr><th>분임</th><th>장소</th><th>코스</th><th>배정 인원</th><th>필요한 파일</th><th>상태</th></tr></thead>
+<tbody>
+<tr><td>1분임</td><td>문학경기장</td><td class="c"><b>D</b></td><td>5명 (A·B·C·E·F)</td><td><code>D01~D0n.html</code></td><td><span class="pill p-green">제작 완료 ✔</span></td></tr>
+<tr><td>2분임</td><td>인천차이나타운</td><td class="c"><b>E</b></td><td>5명 (A·B·C·D·F)</td><td><code>E01~E0n.html</code></td><td><span class="pill p-green">제작 완료 ✔</span></td></tr>
+<tr><td>3분임</td><td>영종도</td><td class="c"><b>B</b></td><td>5명 (A·C·D·E·F)</td><td><code>B01~B0n.html</code></td><td><span class="pill p-green">제작 완료 ✔</span></td></tr>
+<tr><td>4분임</td><td>송도센트럴파크</td><td class="c"><b>C</b></td><td>5명 (A·B·D·E·F)</td><td><code>C01~C0n.html</code></td><td><span class="pill p-green">제작 완료 ✔</span></td></tr>
+<tr><td>7분임</td><td>인천도호부청사·인천향교</td><td class="c"><b>C</b></td><td>5명 (A·B·D·E·F)</td><td><code>C01~C0n.html</code></td><td><span class="pill p-green">제작 완료 ✔</span></td></tr>
+<tr><td>8분임</td><td>아라뱃길·청라호수공원</td><td class="c"><b>C</b></td><td>5명 (A·B·D·E·F)</td><td><code>C01~C0n.html</code></td><td><span class="pill p-green">제작 완료 ✔</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>⚠ 배정표와 어긋나는 곳이 딱 한 군데 있습니다</h3>
+<div class="alert">
+<b>인천차이나타운 F코스 — 담당자가 있는데 장면 파일이 없습니다.</b><br>
+배정표상 <b>2분임 홍준표 선생님(인천하늘중학교) · 「맥아더장군 동상」</b>이 담당인데,
+폴더에 <code>F01.html</code>부터 없었습니다. (현재는 임시로 제작해 두었습니다 — 5번 참고)<br>
+장소 소개 페이지 <code>인천차이나타운_맥아더장군동상.html</code>은 만들어져 있고 index에서도 잘 열립니다.
+<b>코스 장면(F01~)만 제출되지 않은 상태</b>이니, 미제작 코스로 넘기기 전에 홍준표 선생님께 파일이 있는지 한 번 확인해 보시는 게 좋겠습니다.
+</div>
+
+<h3>배정표 ↔ 폴더 대조표</h3>
+<table>
+<thead><tr><th>분임</th><th>장소</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>확인</th></tr></thead>
+<tbody>
+<tr><td>1분임</td><td>문학경기장</td><td class="c">5장</td><td class="c">4장</td><td class="c">5장</td><td class="c"><span class="pill p-blue">미배정</span></td><td class="c">4장</td><td class="c">4장</td><td class="c done">일치</td></tr>
+<tr><td>2분임</td><td>인천차이나타운</td><td class="c">5장</td><td class="c">6장</td><td class="c">4장</td><td class="c">4장</td><td class="c"><span class="pill p-blue">미배정</span></td><td class="c"><span class="pill p-red">홍준표<br>미제출</span></td><td class="c"><b style="color:var(--red)">불일치</b></td></tr>
+<tr><td>3분임</td><td>영종도</td><td class="c">4장 <span class="done">↑</span></td><td class="c"><span class="pill p-blue">미배정</span></td><td class="c">4장</td><td class="c">4장</td><td class="c">4장</td><td class="c">4장</td><td class="c done">일치</td></tr>
+<tr><td>4분임</td><td>송도센트럴파크</td><td class="c">5장</td><td class="c">4장</td><td class="c"><span class="pill p-blue">미배정</span></td><td class="c">4장</td><td class="c">4장</td><td class="c">4장</td><td class="c done">일치</td></tr>
+<tr><td>5분임</td><td>소래포구</td><td class="c">6장</td><td class="c">4장</td><td class="c">5장</td><td class="c">5장</td><td class="c">5장</td><td class="c">4장</td><td class="c done">일치 (6명 전원)</td></tr>
+<tr><td>6분임</td><td>월미도</td><td class="c">4장</td><td class="c">4장</td><td class="c">6장</td><td class="c">5장</td><td class="c">5장</td><td class="c">4장</td><td class="c done">일치 (6명 전원)</td></tr>
+<tr><td>7분임</td><td>인천도호부청사·인천향교</td><td class="c">4장</td><td class="c">4장</td><td class="c"><span class="pill p-blue">미배정</span></td><td class="c">4장</td><td class="c">4장</td><td class="c">4장</td><td class="c done">일치</td></tr>
+<tr><td>8분임</td><td>아라뱃길·청라호수공원</td><td class="c">4장</td><td class="c">5장</td><td class="c"><span class="pill p-blue">미배정</span></td><td class="c">5장</td><td class="c">5장</td><td class="c">4장</td><td class="c done">일치</td></tr>
+</tbody>
+</table>
+<p class="note">영종도 A <span class="done">↑</span> = 이번 수정으로 2장 → 4장 완성. 송도 A코스 5장은 <code>A01·A02·A03-1·A03-2·A04</code> 구성입니다.</p>
+
+<h2>3. 아직 남은 문제</h2>
+
+<h3>3-1. 소래포구 F코스 — F04에 도달할 수 없음 <span class="pill p-amber">확인 필요</span></h3>
+<div class="card">
+<p><code>F03.html</code>이 <code>수학퍼즐_F03/</code> 폴더의 퍼즐 8종(하노이탑·마방진·한붓그리기·SET게임·님게임·8퀸)으로 분기하는데,
+퍼즐 파일 어디에도 <code>F04.html</code>로 돌아오는 링크가 없습니다. 마지막 장면이 사실상 사장되어 있습니다.</p>
+<div class="warn"><b>선택지</b> ① 퍼즐 8개에 "<code>../F04.html</code>로 돌아가기" 버튼 추가
+② <code>F03.html</code>에 퍼즐과 별개의 "다음 장면" 버튼 추가.
+<br>어느 쪽으로 할지 알려 주시면 바로 반영하겠습니다.
+<br class="note">추가로 <code>F04.html</code>의 복귀 버튼은 본 <code>index.html</code>이 아니라 <code>index(소염교).html</code>로 향합니다.</div>
+</div>
+
+<h3>3-2. 마지막 장면에서 index로 못 돌아오는 코스 4개</h3>
+<table>
+<thead><tr><th>장소</th><th>코스</th><th>마지막 파일</th><th>내용</th></tr></thead>
+<tbody>
+<tr><td>영종도</td><td>E</td><td><code>E04.html</code></td><td>복귀 버튼 자체가 없음</td></tr>
+<tr><td>인천도호부청사·인천향교</td><td>B</td><td><code>B04.html</code></td><td>이전(B03)만 있고 복귀 버튼 없음</td></tr>
+<tr><td>인천차이나타운</td><td>D</td><td><code>D04.html</code></td><td>복귀 버튼 없음</td></tr>
+<tr><td>소래포구</td><td>F</td><td><code>F04.html</code></td><td>본 index가 아닌 <code>index(소염교).html</code>로 복귀</td></tr>
+</tbody>
+</table>
+<p class="note">나머지 코스는 마지막 장면에서 <code>index.html</code>로 정상 복귀합니다. 영종도 A코스는 이번 수정으로 복귀까지 확인됐습니다.</p>
+
+<h3>3-3. 웹서버에 올리면 깨지는 대소문자 링크 21건</h3>
+<div class="card">
+<p>윈도우 탐색기에서는 대소문자를 구분하지 않아 지금은 잘 열리지만,
+<b>구글 사이트도구·GitHub Pages·학교 홈페이지에 올리면 그대로 깨집니다.</b></p>
+<table>
+<thead><tr><th>장소</th><th>내용</th><th>건수</th><th>위험도</th></tr></thead>
+<tbody>
+<tr><td>아라뱃길·청라호수공원</td><td>D코스 전체가 <code>d01~d05.html</code> 소문자로 링크 (실제 <code>D01~D05.html</code>)</td><td class="c">9</td><td><span class="pill p-red">코스 전체 먹통</span></td></tr>
+<tr><td>송도센트럴파크</td><td><code>F01~F04</code>가 <code>트라이보울.PNG</code> 참조 (실제 <code>.png</code>)</td><td class="c">4</td><td><span class="pill p-amber">배경 안 뜸</span></td></tr>
+<tr><td>인천차이나타운</td><td><code>B01·B02·B06</code>의 <code>.PNG</code> 참조</td><td class="c">3</td><td><span class="pill p-amber">배경 안 뜸</span></td></tr>
+<tr><td>인천도호부청사·인천향교</td><td><code>B02~B04</code>의 <code>옥사내부.PNG</code></td><td class="c">3</td><td><span class="pill p-amber">배경 안 뜸</span></td></tr>
+<tr><td>월미도</td><td><code>F01</code> → <code>A02.html</code> (실제 <code>a02.html</code>), <code>B04</code> → <code>월미도전망대.PNG</code></td><td class="c">2</td><td><span class="pill p-amber">일부 이동 불가</span></td></tr>
+</tbody>
+</table>
+<p class="note">웹 배포 계획이 있으시면 말씀해 주세요. 21건 일괄 수정해 드리겠습니다.</p>
+</div>
+
+<h3>3-4. 중복 폴더 정리</h3>
+<table>
+<thead><tr><th>위치</th><th>내용</th><th>판정</th></tr></thead>
+<tbody>
+<tr><td><code>소래포구\소래포구\</code></td><td>A01~A06 등</td><td>상위와 전부 동일 → <b>삭제 가능</b></td></tr>
+<tr><td><code>월미도\E01~E05\</code></td><td>E01~E05</td><td>상위와 전부 동일 → <b>삭제 가능</b></td></tr>
+<tr><td><code>영종도\영종도\</code></td><td>A01~A04</td><td>필요한 파일을 상위로 옮겼음 → <b>이제 삭제 가능</b></td></tr>
+<tr><td><code>송도센트럴파크\국립세계문자박물관\</code></td><td>A01~A04</td><td><b>A02·A03-1이 상위와 내용이 다름</b> → 어느 쪽이 최종본인지 확인 필요</td></tr>
+</tbody>
+</table>
+<p class="note">송도 차이: 상위 <code>A02</code>는 배경이 <code>훼손.png</code>, 하위는 <code>전경.png</code>.
+<code>A03-1</code>은 하위 버전이 8KB 더 크고 제목이 "A03-1 (곡선 모델링)"입니다.</p>
+
+<h3>3-5. index에서 연결되지 않은 파일</h3>
+<div class="card">
+<ul>
+<li><b>제작용 도구</b>(모든 폴더 공통) — <code>등장인물 모아보기.html</code>, <code>OO_에셋_*.html</code>,
+<code>범용_SVG_캐릭터_생성기_v7.html</code>, <code>에셋_프롬프트_생성기.html</code>, <code>읽걷쓰-캐릭터-생성기.html</code>
+<span class="note">→ 의도적 미연결로 보입니다</span></li>
+<li><b>연결하려다 만 수학퀴즈</b> — 소래포구 <code>C04 수학퀴즈.html</code>(C04 안에 링크 없음),
+월미도 <code>B03수학퀴즈.html</code>(B03 안에 링크 없음)</li>
+<li><b>작업 중 사본</b> — 아라뱃길 <code>아라뱃길_아라폭포 (1).html</code>·<code>청라루1.html</code>·<code>청라루2.html</code>·<code>엘리베이터앞.html</code>,
+인천도호부 <code>인천향교 명륜당.html</code>(<code>인천향교_명륜당.html</code>과 중복), 월미도 <code>04.html</code>,
+문학경기장 <code>어린이박물관내부.html</code>·<code>어린이박물관내부공룡.html</code></li>
+<li><b>기타</b> — 소래포구 <code>탐구배지.html</code>·<code>갈대_바람결.html</code>(F04에서 연결됨), 인천도호부 <code>경우의 수.html</code>·<code>인천도호부청사_객사.html</code></li>
+</ul>
+</div>
+
+<h3>3-6. 최상위 3개 파일</h3>
+<table>
+<thead><tr><th>파일</th><th>상태</th><th>내용</th></tr></thead>
+<tbody>
+<tr><td><code>_코스지도.html</code></td><td><span class="pill p-amber">13곳 중 8곳만</span></td>
+<td>강화도·부평·옹진군·인천대공원·인하대 폴더가 이 안에 없어 5개 링크가 깨짐 (다른 위치에 있다면 정상)</td></tr>
+<tr><td><code>_검수판.html</code></td><td><span class="pill p-red">78개 중 43개 깨짐</span></td>
+<td>위 5곳 링크 + <code>문학경기장_관중석</code>, <code>소래포구_염전2</code> 등 실제로 만들어지지 않은 장소 파일</td></tr>
+<tr><td><code>_에셋모음.html</code></td><td><span class="pill p-red">52개 전부 깨짐</span></td>
+<td><code>장소/에셋/OO_에셋_XX.html</code> 경로로 찾는데, 실제 파일은 <code>에셋</code> 하위폴더 없이 장소 폴더에 바로 있음 → 경로에서 <code>에셋/</code>만 빼면 대부분 해결</td></tr>
+</tbody>
+</table>
+
+
+<h2>4. 장면 레이아웃 점검 · 수정 <span class="pill p-green">신규</span></h2>
+<div class="banner">
+  <b>✔ 180개 장면 전수 렌더링 검사 완료</b> — 실제 브라우저(Chromium)로 180개 장면을 PC(1200×800)와
+  태블릿 가로(1024×768) 두 해상도에서 열어, 등장인물·대화창·에셋의 실제 위치를 픽셀 단위로 측정했습니다.
+  겹침·잘림이 의심되는 <b>44개 장면을 화면으로 직접 확인</b>했고, 그중 실제 결함인
+  <b>30개 파일을 수정</b>했습니다. 원본은 <code>_수정전백업\장면레이아웃수정_전_원본30개.zip</code>에 보관했습니다.
+</div>
+
+<h3>4-1. 가장 심각했던 문제 — 아라뱃길 D04 <span class="pill p-red">화면 전체가 깨져 있었음</span></h3>
+<div class="card">
+<p><code>아라뱃길청라호수공원\D04.html</code> 파일 맨 앞에 <b>파이썬 코드 조각이 그대로 저장</b>돼 있었습니다.</p>
+<p><code>html_content = """&lt;!DOCTYPE html&gt;</code> … 파일 끝 <code>"""&nbsp;with open('d04.html','w')…</code></p>
+<p>이 한 줄 때문에 브라우저가 문서를 정상 HTML로 인식하지 못해(호환 모드), 무대가 1066×600이 아니라
+<b>632×356으로 찌그러지고</b> 등장인물·대화창·버튼이 전부 화면 밖으로 튀어나가 있었습니다.
+앞뒤 코드 조각을 제거하니 정상으로 돌아왔습니다.</p>
+</div>
+
+<h3>4-2. 수정한 30개 파일</h3>
+<table>
+<thead><tr><th>유형</th><th>장소 · 파일</th><th>수정 내용</th></tr></thead>
+<tbody>
+<tr><td><span class="pill p-red">문서 깨짐</span></td><td>아라뱃길 <code>D04</code></td><td>파이썬 코드 껍데기 제거 → 무대 크기 정상화</td></tr>
+<tr><td><span class="pill p-amber">인물이 화면 밖으로 잘림</span></td>
+<td>문학경기장 <code>F01</code> · 송도 <code>B01</code> · 아라뱃길 <code>A01 A02 A04 D02 D03 D04</code> ·
+영종도 <code>A03</code> · 월미도 <code>E03</code> · 도호부 <code>A02 B02 E01 F03</code> · 차이나타운 <code>C03</code></td>
+<td>오른쪽 끝 인물이 최대 240px까지 무대 밖으로 잘려 있었습니다. 좌표를 <code>left</code> 기준에서 <b><code>right</code> 기준으로 바꿔</b>
+화면 폭이 달라져도 잘리지 않도록 했습니다 (태블릿에서도 해결).</td></tr>
+<tr><td><span class="pill p-amber">대화창이 인물을 가림</span></td><td>송도 <code>B03</code> · 영종도 <code>E02</code></td>
+<td>인물이 대화창에 거의 다 가려 얼굴만 겨우 보이거나 안 보였습니다. 인물을 50~70px 올려 상반신이 드러나게 했습니다.</td></tr>
+<tr><td><span class="pill p-amber">인물이 무대 아래로 빠짐</span></td><td>도호부 <code>B02</code></td>
+<td>좌표에 <code>calc(30px - 2cm)</code>(= -45px)가 들어가 인물 3명이 바닥 아래로 내려가 있었습니다. px 값으로 정리했습니다.</td></tr>
+<tr><td><span class="pill p-blue">배경이 안 뜨던 문제</span></td>
+<td>송도 <code>F01~F04</code> · 월미도 <code>B04 F01</code> · 도호부 <code>B02 B03 B04</code> ·
+차이나타운 <code>B01 B02 B06</code> · 아라뱃길 <code>D01~D05</code></td>
+<td>2번 보고서에서 지적한 <b>대소문자 불일치 22건</b>을 함께 수정했습니다
+(<code>.PNG→.png</code>, <code>d02.html→D02.html</code>, <code>A02.html→a02.html</code>).
+윈도우에서는 보이지만 웹에 올리면 배경이 통째로 안 뜨던 문제입니다.
+실제로 도호부 <code>B02</code>는 검사용 렌더링에서 배경이 아예 안 나왔고, 수정 후 정상 표시됩니다.</td></tr>
+</tbody>
+</table>
+
+<h3>4-3. 검사했지만 손대지 않은 것</h3>
+<div class="card">
+<p>겹침으로 감지됐지만 <b>확인해 보니 의도된 연출</b>이라 그대로 두었습니다.</p>
+<ul>
+<li><b>대화창이 인물의 하반신을 덮는 것</b> — 비주얼노벨의 일반적인 구성입니다. 얼굴이 보이면 정상으로 판정했습니다.</li>
+<li><b>인물끼리 어깨가 겹치는 것</b> — 둘이 나란히 서 있는 연출로, 21건 모두 얼굴은 가려지지 않았습니다.</li>
+<li><b>배경 iframe이 인물을 덮는 것으로 잡힌 17건</b> — 실제로는 무대 전체를 채우는 배경 레이어였습니다.</li>
+<li><b>모달·퍼즐 화면이 인물을 덮는 것</b> — 문제 풀이 중 의도적으로 앞에 뜨는 창입니다.</li>
+</ul>
+<div class="warn"><b>판단을 보류한 2곳</b> — 영종도 <code>C03</code>(드론 게임)와 도호부 <code>E02</code>(기와 도표)는
+인물이 대화창·도표에 완전히 가려 있으나, 화면이 이미 UI로 꽉 차 있어 인물을 옮기면 다른 요소와 충돌할 수 있습니다.
+인물을 보이게 할지, 그 장면에서는 빼도 될지 알려 주시면 반영하겠습니다.</div>
+</div>
+
+
+<h2>5. 빠져 있던 7개 코스 제작 완료 <span class="pill p-green">신규</span></h2>
+<div class="banner">
+  <b>✔ 48개 코스 전체 완성</b> — 담당자가 배정되지 않았던 6개 코스와 미제출이었던 인천차이나타운 F코스까지,
+  <b>7개 코스 · 28개 장면</b>을 새로 제작해 각 폴더에 넣었습니다.
+  이제 <b>8개 장소 모두 A~F 6코스가 완비</b>되었고, 폴더 전체의 깨진 링크는 <b>0건</b>입니다.
+</div>
+
+<h3>5-1. 제작한 코스와 수학 주제</h3>
+<table>
+<thead><tr><th>분임</th><th>장소 · 코스</th><th>답사 지점</th><th>수학 주제</th><th>수학활동</th></tr></thead>
+<tbody>
+<tr><td>1분임<br><span class="note">중학교</span></td><td>문학경기장 <b>D</b></td><td>체육공원 · 400m 육상 트랙</td>
+<td>원의 둘레 — 레인 폭 1.22 m → 한 바퀴 약 7.7 m 차이, 8레인은 약 54 m 차이</td><td>한붓그리기</td></tr>
+<tr><td>4분임<br><span class="note">중학교</span></td><td>송도센트럴파크 <b>C</b></td><td>동북아무역센터(포스코타워-송도)</td>
+<td>평균과 단위 환산 — 305 m ÷ 68층 ≈ 4.49 m, 분속 420 m → 초속 7 m</td><td>하노이 탑</td></tr>
+<tr><td>3분임<br><span class="note">중학교</span></td><td>영종도 <b>B</b></td><td>왕산마리나</td>
+<td>단위 환산과 제곱근 — 1 ft = 0.3048 m, √98,604 ≈ 314 m</td><td>강 건너기 퍼즐</td></tr>
+<tr><td>2분임<br><span class="note">중학교</span></td><td>인천차이나타운 <b>E</b></td><td>인천제물포구청(옛 인천부 청사)</td>
+<td>평↔㎡ 환산, 연면적 ÷ 건축면적 ≈ 2.1로 층수 추정, 선대칭</td><td>노노그램</td></tr>
+<tr><td>2분임<br><span class="note">중학교</span></td><td>인천차이나타운 <b>F</b></td><td>자유공원 맥아더 장군 동상</td>
+<td>닮음비 — 3 m : 1.8 m = 5 : 3 → 부피비 125 : 27 ≈ 4.63배</td><td>스키테일 암호</td></tr>
+<tr><td>7분임<br><span class="note">고등학교</span></td><td>인천도호부청사·인천향교 <b>C</b></td><td>인천향교 동재·서재</td>
+<td>칸(間)의 곱셈 구조, 기둥 수 (m+1)(n+1) = 15, 직사각형 개수 C(5,2)·C(3,2) = 30</td><td>켄켄</td></tr>
+<tr><td>8분임<br><span class="note">고등학교</span></td><td>아라뱃길·청라호수공원 <b>C</b></td><td>수향원 수향루</td>
+<td>정팔각형 — 한 내각 135°, 대각선 20개, 높이:길이 9:21 = 3:7</td><td>8퀸 퍼즐</td></tr>
+</tbody>
+</table>
+<p class="note">답사 지점은 각 폴더 <code>index.html</code>이 이미 그 코스에 연결해 둔 장소를 그대로 따랐습니다.
+과정(중/고)은 「분임별 장소 및 코스 배정 결과」의 분임 구분에 맞췄습니다.</p>
+
+<h3>5-2. 각 코스의 4장면 구성</h3>
+<div class="card">
+<table>
+<thead><tr><th>장면</th><th>구성</th></tr></thead>
+<tbody>
+<tr><td><b>01 도착</b></td><td>민우·서연이 장소에 도착해 첫인상을 나누고, 수학적으로 볼 거리를 예고합니다.</td></tr>
+<tr><td><b>02 관찰</b></td><td>대화와 함께 <b>「확인된 수치」 정보 카드</b>가 뜹니다. 준공 연도·크기·개수 등 조사한 사실과 출처를 함께 실었습니다.</td></tr>
+<tr><td><b>03 탐구 미션</b></td><td>실제 수치로 만든 <b>3문항</b>을 풉니다. 답을 입력해 확인하면 풀이가 나오고, 3문항을 모두 맞히면
+<b>수학활동 퍼즐</b>이 모달로 열리며 다음 장면으로 넘어갈 수 있습니다.</td></tr>
+<tr><td><b>04 정리</b></td><td>배운 개념을 정리 카드로 요약하고 <b>현장에서 직접 해 볼 활동</b>을 제안한 뒤 index로 돌아갑니다.</td></tr>
+</tbody>
+</table>
+<div class="fix"><b>기존 코스와 맞춘 부분</b> — 1066×600 16:9 무대, 상단 표시바, 등장인물 iframe(민우·서연)과 화자 강조 효과,
+클릭으로 넘기는 대화창, 이전/건너뛰기/다음 버튼 배치까지 기존 코스와 동일한 규격으로 만들었습니다.
+배경은 각 폴더에 이미 있던 장소 SVG(예: <code>영종도_왕산마리나.html</code>)를 그대로 활용했습니다.</div>
+</div>
+
+<h3>5-3. 사실 확인과 출처</h3>
+<div class="card">
+<p>정보 카드에 넣은 수치는 모두 웹에서 확인한 자료를 근거로 했고, 각 카드 하단에 출처를 적었습니다.
+자료마다 값이 다르거나 확인되지 않은 항목은 문제에서 제외했습니다.</p>
+<ul>
+<li><b>송도 동북아무역센터</b> — 연면적이 자료마다 달라(195,924 ㎡ vs 138,315 ㎡) 문제에서 뺐습니다.</li>
+<li><b>인천향교</b> — 칸수 기록이 백과사전과 실측 기술이 서로 달라, 실측 기술(정면×측면)을 따르고 카드에 각주를 달았습니다.
+현재 동재·서재 건물이 <b>1983년에 새로 지은 것</b>이라는 점도 명시했습니다.</li>
+<li><b>맥아더 장군 동상</b> — 인터넷에 도는 "높이 5 m" 등은 근거가 확인되지 않아, 국가보훈부 현충시설 자료의 3 m + 좌대 3 m를 썼습니다.</li>
+<li><b>수향루</b> — 아라마루 전망대(수향 4경)와 <b>다른 지점</b>(수향 5경 수향원)이라는 점을 카드에 표시했습니다.</li>
+<li><b>인천제물포구청</b> — 2026년 7월 1일 중구·동구 통합으로 제물포구가 출범한 최신 상황을 반영했습니다.</li>
+</ul>
+</div>
+
+<h3>5-4. 추가된 파일</h3>
+<table>
+<thead><tr><th>폴더</th><th>새 장면</th><th>수학활동 파일</th></tr></thead>
+<tbody>
+<tr><td>문학경기장</td><td><code>D01~D04.html</code></td><td><code>수학활동_한붓그리기.html</code></td></tr>
+<tr><td>송도센트럴파크</td><td><code>C01~C04.html</code></td><td><code>수학활동_하노이탑.html</code></td></tr>
+<tr><td>영종도</td><td><code>B01~B04.html</code></td><td><code>수학활동_강건너기퍼즐.html</code></td></tr>
+<tr><td>인천도호부청사·인천향교</td><td><code>C01~C04.html</code></td><td><code>수학활동_켄켄.html</code></td></tr>
+<tr><td>아라뱃길·청라호수공원</td><td><code>C01~C04.html</code></td><td><code>수학활동_8퀸퍼즐.html</code></td></tr>
+<tr><td>인천차이나타운</td><td><code>E01~E04.html</code> <code>F01~F04.html</code></td><td><code>수학활동_노노그램.html</code> <code>수학활동_스키테일암호.html</code></td></tr>
+</tbody>
+</table>
+<p class="note">수학활동 파일은 「수학퀴즈_V2」에서 각 장소 폴더로 <b>복사</b>했습니다. 장소 폴더만 따로 옮기거나 웹에 올려도 링크가 끊기지 않습니다.
+모달 안에서 실행되므로 원래 있던 '목록으로' 버튼만 숨김 처리했습니다.</p>
+
+<h3>5-5. 검증 결과</h3>
+<div class="card">
+<table>
+<thead><tr><th>항목</th><th>결과</th></tr></thead>
+<tbody>
+<tr><td>8개 폴더 코스 완비</td><td><span class="pill p-green">A~F 6코스 전부 ✔</span></td></tr>
+<tr><td>폴더 전체 깨진 링크</td><td><span class="pill p-green">0건</span></td></tr>
+<tr><td>새 장면 28개 렌더링</td><td><span class="pill p-green">겹침·잘림 0건 (PC 1200×800 · 태블릿 1024×768)</span></td></tr>
+<tr><td>미션 정답 판정 21문항</td><td><span class="pill p-green">전부 정상 동작 ✔</span></td></tr>
+<tr><td>수학활동 모달 7개</td><td><span class="pill p-green">전부 정상 로드 ✔</span></td></tr>
+<tr><td>JavaScript 오류</td><td><span class="pill p-green">0건</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>6. 다음에 하면 좋을 일</h2>
+<div class="card">
+<ol>
+<li><b>인천차이나타운 F코스</b> — 임시로 제작해 두었습니다. 홍준표 선생님 원본이 있으면 교체하세요. <span class="pill p-amber">확인 필요</span></li>
+<li><b>소래포구 F코스</b> — F04 → index 복귀 수정 완료 <span class="done">✔</span> (F03→F04는 원래 정상이었습니다)</li>
+<li>복귀 버튼 없는 코스 3개(영종도 E · 도호부 B · 차이나타운 D)에 index 돌아가기 버튼 추가</li>
+<li>웹 배포 전 <code>_에셋모음.html</code> 경로 수정 (대소문자 22건은 수정 완료 <span class="done">✔</span>)</li>
+<li>중복 하위 폴더 3개 삭제 (송도는 최종본 확인 후)</li>
+<li>새로 만든 7개 코스의 대사·난이도를 검토하고, 필요하면 수학활동을 다른 것으로 바꾸기</li>
+</ol>
+</div>
+
+</div>
+</body>
+</html>

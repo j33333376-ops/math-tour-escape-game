@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>켄켄 (KenKen)</title>
+  <style>
+    :root {
+      /* ===== 공통 디자인 토큰 (전체 퀴즈 공용) ===== */
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #ea580c;
+      --accent-soft: #fff7ed;
+      --border-color: #e2e8f0;
+      --success: #10b981;
+      --error: #ef4444;
+      --radius-card: 16px;
+      --radius-ctrl: 10px;
+      --shadow-card: 0 10px 25px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+    }
+
+    .app-layout {
+      display: flex;
+      width: 100%; height: 100%;
+      padding: 2vh 2vw;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-side {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      width: 38vw;
+      max-width: 440px;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-block h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+
+    .header-block p {
+      margin: 0 0 20px 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .control-group {
+      background: var(--primary-soft);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .control-header label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .col-badge {
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .col-badge.accent { background: var(--accent); }
+    .col-badge.muted  { background: #94a3b8; }
+
+    input[type=range] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+
+    .stat-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .btn-row { display: flex; gap: 8px; }
+
+    .btn-check, .btn-ghost {
+      border-radius: var(--radius-ctrl);
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .btn-check { background: var(--primary); color: #fff; border: none; }
+    .btn-check:hover:not(:disabled) { background: var(--primary-dark); }
+    .btn-check:active:not(:disabled) { transform: translateY(1px); }
+    .btn-ghost { background: var(--card-bg); color: var(--primary-dark); border: 1px solid var(--border-color); }
+    .btn-ghost:hover:not(:disabled) { background: var(--primary-soft); }
+    .btn-ghost:active:not(:disabled) { transform: translateY(1px); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .answer-group { padding-top: 16px; border-top: 2px dashed var(--border-color); }
+
+    .feedback {
+      margin-top: 10px;
+      font-weight: 700;
+      text-align: center;
+      min-height: 20px;
+      font-size: 0.95rem;
+      word-break: keep-all;
+      line-height: 1.45;
+    }
+    .feedback.success { color: var(--success); }
+    .feedback.error   { color: var(--error); }
+    .feedback.info    { color: var(--text-muted); }
+
+    .board-side {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      padding: 10px;
+    }
+
+    .board-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      border: 4px solid var(--border-color);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    @media (orientation: portrait) {
+      .app-layout { flex-direction: column; justify-content: flex-start; padding-top: 2vh; gap: 12px; }
+      .panel-side { width: 96vw; max-width: none; padding: 16px; }
+      .board-side { width: 96vw; flex: 1; padding: 0 0 2vh 0; }
+      .header-block p { margin-bottom: 12px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 520px) {
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.2rem; }
+      .header-block p { display: none; }
+      .control-group { padding: 8px 12px; margin-bottom: 10px; }
+      .stat-row { margin-bottom: 8px; }
+    }
+
+    /* ===== 켄켄 전용 ===== */
+    .board-wrapper {
+      --u: min(66vmin, 56vh, 440px);
+      flex-direction: column;
+      align-items: center;
+      gap: calc(var(--u) * 0.05);
+      padding: calc(var(--u) * 0.05);
+      touch-action: manipulation;
+      user-select: none;
+    }
+
+    .kenken {
+      display: grid;
+      grid-template-columns: repeat(var(--n), 1fr);
+      grid-template-rows: repeat(var(--n), 1fr);
+      width: var(--u);
+      height: var(--u);
+      flex: 0 0 auto;
+      background: #334155;      /* 바깥 테두리색 (셀 사이로 살짝 비침) */
+    }
+
+    .kcell {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      border: 1px solid #cbd5e1;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .kcell:not(.sel):hover { background: var(--primary-soft); }
+    .kcell.peer:not(.sel) { background: #f8fafc; }
+    .kcell.sel { background: #dbeafe; box-shadow: inset 0 0 0 3px var(--primary); z-index: 3; }
+
+    /* 케이지 경계 (굵게) — 각 경계는 한 번만 그림 */
+    .kcell.bd-t { border-top: 3px solid #334155; }
+    .kcell.bd-l { border-left: 3px solid #334155; }
+    .kcell.bd-r { border-right: 3px solid #334155; }
+    .kcell.bd-b { border-bottom: 3px solid #334155; }
+
+    .cage-label {
+      position: absolute;
+      top: calc(var(--u) / var(--n) * 0.05);
+      left: calc(var(--u) / var(--n) * 0.08);
+      font-size: max(10px, calc(var(--u) / var(--n) * 0.24));
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      pointer-events: none;
+      z-index: 2;
+      letter-spacing: -0.02em;
+    }
+
+    .kval {
+      font-size: calc(var(--u) / var(--n) * 0.52);
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+    }
+    .kval.conflict { color: var(--error); }
+
+    /* 숫자 패드 */
+    .tray {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: calc(var(--u) * 0.028);
+      width: var(--u);
+    }
+    .chip {
+      flex: 1 1 0;
+      aspect-ratio: 1 / 1;
+      min-width: 0;
+      border-radius: 12px;
+      border: 2px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--primary-dark);
+      font-weight: 800;
+      font-size: clamp(0.95rem, calc(var(--u) * 0.075), 1.7rem);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(15,23,42,.07);
+      transition: transform 0.12s, background 0.12s, border-color 0.12s;
+    }
+    .chip:hover { background: var(--primary-soft); transform: translateY(-2px); }
+    .chip:active { transform: translateY(0); }
+    .chip.selected { background: var(--primary); color: #fff; border-color: var(--primary-dark); transform: scale(1.06); }
+    .chip.eraser { color: var(--text-muted); }
+    .chip.eraser.selected { background: var(--error); color: #fff; border-color: #b91c1c; }
+
+    .note {
+      background: var(--accent-soft);
+      border: 1px solid #fed7aa;
+      border-radius: var(--radius-ctrl);
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      color: #9a3412;
+      line-height: 1.5;
+      word-break: keep-all;
+      margin-bottom: 14px;
+    }
+
+    /* 세그먼트 버튼 (크기 프리셋) */
+    .seg-row { display: flex; gap: 6px; }
+    .seg-btn {
+      flex: 1;
+      padding: 9px 4px;
+      border-radius: var(--radius-ctrl);
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .seg-btn:hover:not(.active) { background: var(--primary-soft); }
+    .seg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary-dark); }
+
+    /* ===================================================================
+       반응형 안전장치 — PC/모바일, 가로/세로 어디서도 잘리지 않게
+       =================================================================== */
+    .app-layout { min-height: 0; min-width: 0; }
+    .board-side { min-height: 0; min-width: 0; }
+
+    /* 패널이 화면보다 길어지면 화면을 밀지 않고 패널 안에서만 스크롤 */
+    .panel-side {
+      max-height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    @media (orientation: portrait) {
+      .panel-side { max-height: 48%; flex: 0 0 auto; }
+      .board-side { flex: 1 1 auto; }
+      .board-wrapper { --u: min(84vmin, 40vh, 420px); }
+    }
+    @media (orientation: landscape) and (max-height: 620px) {
+      .board-wrapper { --u: min(64vmin, 66vh, 440px); }
+    }
+
+    @media (orientation: landscape) and (max-height: 560px) {
+      .app-layout { padding: 8px; gap: 10px; }
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.12rem; margin-bottom: 4px; }
+      .header-block p  { display: none; }
+      .stat-row { margin-bottom: 8px; }
+      .answer-group { padding-top: 10px; margin-top: 10px !important; }
+      .feedback { font-size: 0.82rem; margin-top: 6px; min-height: 16px; }
+      .btn-row button { padding: 8px 12px; font-size: 0.85rem; }
+    }
+    @media (orientation: landscape) and (max-height: 430px) {
+      .rule-note, .note { font-size: 0.7rem; padding: 6px 8px; margin-bottom: 8px; line-height: 1.4; }
+      .control-group { padding: 7px 10px; margin-bottom: 8px; }
+      .col-badge { font-size: 0.72rem; padding: 3px 9px; }
+    }
+
+    /* ===== 목록(index.html)으로 돌아가는 버튼 ===== */
+    /* MATHTOUR: 모달 내 실행용 — 목록 버튼 숨김 */
+    .home-btn { display:none !important; }
+    .home-btn-orig {
+      position: fixed;
+      top: max(10px, env(safe-area-inset-top, 0px));
+      left: max(10px, env(safe-area-inset-left, 0px));
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px 8px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+      color: #1e293b;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: transform .18s, box-shadow .18s, color .18s, border-color .18s, background .18s;
+    }
+    .home-btn:hover {
+      background: #fff;
+      color: #1d4ed8;
+      border-color: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px -6px rgba(37, 99, 235, 0.5);
+    }
+    .home-btn:active { transform: translateY(0); }
+    .home-btn:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+    .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* 좁거나 납작한 화면에서는 아이콘만 */
+    @media (max-width: 560px), (orientation: landscape) and (max-height: 430px) {
+      .home-btn { padding: 8px; gap: 0; }
+      .home-btn .label { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="home-btn" href="index.html" title="게임 목록으로 돌아가기" aria-label="게임 목록으로 돌아가기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.2V20h13v-9.8"/>
+    </svg>
+    <span class="label">목록</span>
+  </a>
+
+
+  <div class="app-layout">
+    <div class="panel-side">
+      <div class="header-block">
+        <h2>켄켄 (KenKen)</h2>
+        <p>가로·세로에 1~n을 <b>한 번씩</b>. 굵은 칸(케이지) 안 숫자로<br><b>목표수와 연산</b>을 만들면 완성!</p>
+      </div>
+
+      <div class="note">
+        💡 케이지 라벨 <b>6×</b>는 그 케이지 칸들을 <b>곱하면 6</b>, <b>3−</b>는 <b>빼면 3</b>, <b>12+</b>는 <b>더하면 12</b>라는 뜻. 라벨만 있는 한 칸은 <b>그 수</b>가 정답이에요.
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <label>크기</label>
+          <span class="col-badge" id="sizeBadge">4 × 4</span>
+        </div>
+        <div class="seg-row" id="sizeRow">
+          <button class="seg-btn" data-n="3">3×3</button>
+          <button class="seg-btn active" data-n="4">4×4</button>
+          <button class="seg-btn" data-n="5">5×5</button>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <span class="col-badge muted" id="fillBadge">채운 칸 0 / 16</span>
+        <span class="col-badge accent" id="cageBadge">케이지 0개</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-ghost" id="clearBtn">🧽 지우기</button>
+        <button class="btn-check" id="newBtn">🔄 새 문제</button>
+      </div>
+
+      <div class="answer-group" style="margin-top:16px">
+        <div class="feedback info" id="feedback">칸을 고른 뒤 아래 숫자를 누르세요.</div>
+      </div>
+    </div>
+
+    <div class="board-side">
+      <div class="board-wrapper" id="wrapper">
+        <div class="kenken" id="kenken"></div>
+        <div class="tray" id="tray"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================================
+    //  켄켄 (KenKen) — 라틴방진 + 케이지 연산
+    //  1) 무작위 라틴방진 정답 생성 (백트래킹)
+    //  2) 인접 칸을 성장시켜 케이지(1~4칸)로 분할
+    //  3) 케이지마다 연산/목표수 부여 (검증된 알고리즘)
+    //  승리: 전부 채움 + 각 행·열 1~n 순열 + 모든 케이지 연산 = 목표수
+    // ==========================================================
+    const wrapper   = document.getElementById('wrapper');
+    const kenkenEl  = document.getElementById('kenken');
+    const trayEl    = document.getElementById('tray');
+    const sizeRow   = document.getElementById('sizeRow');
+    const sizeBadge = document.getElementById('sizeBadge');
+    const fillBadge = document.getElementById('fillBadge');
+    const cageBadge = document.getElementById('cageBadge');
+    const clearBtn  = document.getElementById('clearBtn');
+    const newBtn    = document.getElementById('newBtn');
+    const feedback  = document.getElementById('feedback');
+
+    const SYM = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+
+    let n = 4;
+    let solution = [];    // 정답 라틴방진 (1..n) flat
+    let grid = [];        // 플레이어 입력 (0 = 빈칸) flat
+    let cageOf = [];      // 각 칸의 케이지 id
+    let cages = [];       // { id, cells:[], op, target, anchor, label }
+    let sel = null;       // 선택된 칸
+    let armed = null;     // 선택된 숫자칩 (0 = 지우개)
+    let solved = false;
+    let cells = [], chipEls = [];
+
+    const rc = (i) => [Math.floor(i / n), i % n];
+
+    function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+    // ---------- 라틴방진 생성 ----------
+    function makeLatin() {
+      const g = new Array(n * n).fill(0);
+      const ok = (i, v) => {
+        const r = Math.floor(i / n), c = i % n;
+        for (let k = 0; k < n; k++) { if (g[r * n + k] === v) return false; if (g[k * n + c] === v) return false; }
+        return true;
+      };
+      function fill(i) {
+        if (i === n * n) return true;
+        for (const v of shuffle([...Array(n)].map((_, k) => k + 1))) {
+          if (ok(i, v)) { g[i] = v; if (fill(i + 1)) return true; g[i] = 0; }
+        }
+        return false;
+      }
+      fill(0);
+      return g;
+    }
+
+    function neighbors(i) {
+      const r = Math.floor(i / n), c = i % n; const res = [];
+      if (r > 0) res.push(i - n);
+      if (r < n - 1) res.push(i + n);
+      if (c > 0) res.push(i - 1);
+      if (c < n - 1) res.push(i + 1);
+      return res;
+    }
+    function pickSize() { const bag = [1, 2, 2, 3, 3, 3, 4]; return bag[Math.floor(Math.random() * bag.length)]; }
+
+    // ---------- 케이지 연산 부여 ----------
+    function assignOp(cg) {
+      const vals = cg.cells.map(i => solution[i]);
+      const sz = vals.length;
+      cg.anchor = Math.min(...cg.cells);
+      if (sz === 1) { cg.op = ''; cg.target = vals[0]; cg.label = String(cg.target); return; }
+      if (sz === 2) {
+        const a = Math.max(vals[0], vals[1]), b = Math.min(vals[0], vals[1]);
+        const ops = (a === b) ? ['+', '*'] : ['+', '-', '*'];
+        if (a !== b && a % b === 0) ops.push('/');
+        const op = ops[Math.floor(Math.random() * ops.length)];
+        cg.op = op;
+        cg.target = op === '+' ? a + b : op === '-' ? a - b : op === '*' ? a * b : a / b;
+      } else {
+        const op = Math.random() < 0.5 ? '+' : '*';
+        cg.op = op;
+        cg.target = op === '+' ? vals.reduce((x, y) => x + y, 0) : vals.reduce((x, y) => x * y, 1);
+      }
+      cg.label = cg.target + SYM[cg.op];
+    }
+
+    // ---------- 케이지 분할 ----------
+    function makeCages() {
+      const total = n * n;
+      cageOf = new Array(total).fill(-1);
+      cages = [];
+      let cid = 0;
+      while (true) {
+        const un = [];
+        for (let i = 0; i < total; i++) if (cageOf[i] === -1) un.push(i);
+        if (un.length === 0) break;
+        const seed = un[Math.floor(Math.random() * un.length)];
+        const target = Math.min(pickSize(), un.length);
+        const cs = [seed]; cageOf[seed] = cid;
+        while (cs.length < target) {
+          const front = [];
+          for (const cc of cs) for (const nb of neighbors(cc)) if (cageOf[nb] === -1 && front.indexOf(nb) === -1) front.push(nb);
+          if (front.length === 0) break;
+          const pick = front[Math.floor(Math.random() * front.length)];
+          cageOf[pick] = cid; cs.push(pick);
+        }
+        const cg = { id: cid, cells: cs }; assignOp(cg); cages.push(cg); cid++;
+      }
+    }
+
+    // ---------- 새 문제 ----------
+    function newPuzzle() {
+      solution = makeLatin();
+      makeCages();
+      grid = new Array(n * n).fill(0);
+      sel = null; armed = null; solved = false;
+      setFeedback('칸을 고른 뒤 아래 숫자를 누르세요.', 'info');
+      build();
+      buildTray();
+    }
+
+    // ---------- 보드 만들기 ----------
+    function build() {
+      kenkenEl.style.setProperty('--n', n);
+      kenkenEl.innerHTML = '';
+      cells = new Array(n * n);
+      const anchorLabel = {};
+      cages.forEach(cg => { anchorLabel[cg.anchor] = cg.label; });
+
+      for (let i = 0; i < n * n; i++) {
+        const [r, c] = rc(i);
+        const d = document.createElement('div');
+        d.className = 'kcell';
+        d.dataset.i = i;
+        // 케이지 경계 (각 경계 1회만)
+        if (r === 0) d.classList.add('bd-t');
+        if (c === 0) d.classList.add('bd-l');
+        if (c === n - 1 || cageOf[i] !== cageOf[i + 1]) d.classList.add('bd-r');
+        if (r === n - 1 || cageOf[i] !== cageOf[i + n]) d.classList.add('bd-b');
+        if (anchorLabel[i] !== undefined) {
+          const lab = document.createElement('div');
+          lab.className = 'cage-label';
+          lab.textContent = anchorLabel[i];
+          d.appendChild(lab);
+        }
+        kenkenEl.appendChild(d);
+        cells[i] = d;
+      }
+      render();
+    }
+
+    function buildTray() {
+      trayEl.innerHTML = '';
+      chipEls = [];
+      for (let v = 1; v <= n; v++) {
+        const c = document.createElement('div');
+        c.className = 'chip'; c.dataset.v = v; c.textContent = v;
+        trayEl.appendChild(c); chipEls.push(c);
+      }
+      const e = document.createElement('div');
+      e.className = 'chip eraser'; e.dataset.v = 0; e.textContent = '🧽';
+      trayEl.appendChild(e); chipEls.push(e);
+    }
+
+    function setFeedback(t, k) { feedback.textContent = t; feedback.className = 'feedback ' + k; }
+
+    // ---------- 규칙 검사 ----------
+    function conflicts() {                 // 같은 행/열에 같은 수 → 충돌 칸 집합
+      const bad = new Set();
+      for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+        const v = grid[r * n + c]; if (!v) continue;
+        for (let k = 0; k < n; k++) {
+          if (k !== c && grid[r * n + k] === v) bad.add(r * n + c);
+          if (k !== r && grid[k * n + c] === v) bad.add(r * n + c);
+        }
+      }
+      return bad;
+    }
+
+    function cageSatisfied(cg) {
+      const vals = cg.cells.map(i => grid[i]);
+      if (vals.some(v => !v)) return false;
+      const sz = vals.length;
+      if (sz === 1) return vals[0] === cg.target;
+      if (cg.op === '+') return vals.reduce((a, b) => a + b, 0) === cg.target;
+      if (cg.op === '*') return vals.reduce((a, b) => a * b, 1) === cg.target;
+      if (cg.op === '-') { const a = Math.max(...vals), b = Math.min(...vals); return a - b === cg.target; }
+      if (cg.op === '/') { const a = Math.max(...vals), b = Math.min(...vals); return b !== 0 && a % b === 0 && a / b === cg.target; }
+      return false;
+    }
+
+    function checkWin() {
+      for (let i = 0; i < n * n; i++) if (grid[i] < 1 || grid[i] > n) return false;
+      for (let r = 0; r < n; r++) { const s = new Set(); for (let c = 0; c < n; c++) s.add(grid[r * n + c]); if (s.size !== n) return false; }
+      for (let c = 0; c < n; c++) { const s = new Set(); for (let r = 0; r < n; r++) s.add(grid[r * n + c]); if (s.size !== n) return false; }
+      for (const cg of cages) if (!cageSatisfied(cg)) return false;
+      return true;
+    }
+
+    // ---------- 그리기 ----------
+    function render() {
+      const bad = conflicts();
+      const filled = grid.filter(v => v !== 0).length;
+      fillBadge.textContent = '채운 칸 ' + filled + ' / ' + (n * n);
+      cageBadge.textContent = '케이지 ' + cages.length + '개';
+
+      let selR = -1, selC = -1;
+      if (sel !== null) { [selR, selC] = rc(sel); }
+
+      for (let i = 0; i < n * n; i++) {
+        const el = cells[i];
+        const [r, c] = rc(i);
+        // 값 span 갱신 (라벨은 유지)
+        let val = el.querySelector('.kval');
+        if (grid[i]) {
+          if (!val) { val = document.createElement('div'); val.className = 'kval'; el.appendChild(val); }
+          val.textContent = grid[i];
+          val.classList.toggle('conflict', bad.has(i));
+        } else if (val) { val.remove(); }
+
+        el.classList.toggle('sel', sel === i);
+        el.classList.toggle('peer', sel !== null && sel !== i && (r === selR || c === selC));
+      }
+
+      chipEls.forEach(ch => ch.classList.toggle('selected', armed !== null && parseInt(ch.dataset.v, 10) === armed));
+
+      if (!solved && filled === n * n && bad.size === 0 && checkWin()) {
+        solved = true;
+        sel = null; armed = null;
+        for (let i = 0; i < n * n; i++) cells[i].classList.remove('sel', 'peer');
+        chipEls.forEach(ch => ch.classList.remove('selected'));
+        setFeedback('🎉 완성! 모든 케이지와 가로·세로 규칙을 맞췄어요.', 'success');
+      }
+    }
+
+    // ---------- 입력 ----------
+    function placeAt(i, v) {
+      if (solved) return;
+      grid[i] = v;
+    }
+
+    kenkenEl.addEventListener('click', (e) => {
+      if (solved) return;
+      const el = e.target.closest('.kcell'); if (!el) return;
+      const i = parseInt(el.dataset.i, 10);
+      if (armed !== null) { placeAt(i, armed); sel = i; }
+      else sel = (sel === i) ? null : i;
+      render();
+    });
+
+    trayEl.addEventListener('click', (e) => {
+      if (solved) return;
+      const ch = e.target.closest('.chip'); if (!ch) return;
+      const v = parseInt(ch.dataset.v, 10);
+      if (sel !== null) { placeAt(sel, v); armed = null; }     // 칸이 선택돼 있으면 바로 입력
+      else armed = (armed === v) ? null : v;                   // 아니면 숫자를 골라둠(스탬프)
+      render();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (solved || sel === null) return;
+      if (e.key >= '1' && e.key <= String(n)) { placeAt(sel, parseInt(e.key, 10)); render(); }
+      else if (e.key === 'Backspace' || e.key === 'Delete' || e.key === '0') { placeAt(sel, 0); render(); }
+    });
+
+    clearBtn.addEventListener('click', () => {
+      if (solved) return;
+      grid = new Array(n * n).fill(0);
+      sel = null; armed = null;
+      setFeedback('모두 지웠습니다.', 'info');
+      render();
+    });
+
+    sizeRow.addEventListener('click', (e) => {
+      const b = e.target.closest('.seg-btn'); if (!b) return;
+      n = parseInt(b.dataset.n, 10);
+      sizeBadge.textContent = n + ' × ' + n;
+      [...sizeRow.children].forEach(x => x.classList.toggle('active', x === b));
+      newPuzzle();
+    });
+
+    newBtn.addEventListener('click', newPuzzle);
+
+    // 시작
+    newPuzzle();
+  </script>
+</body>
+</html>

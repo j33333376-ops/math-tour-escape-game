@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>F04 소염교에서 잠시 쉬어가기</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding:wght@400;700&family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+    :root{--red:#8c3030;--gold:#d4af37;--paper:#f5f0e6;--ink:#2d3748;--teal:#285e5b}
+    *{box-sizing:border-box} html,body{width:100%;height:100%;margin:0}
+    body{display:grid;place-items:center;overflow:hidden;background:#17191a;font-family:'Noto Sans KR',sans-serif;color:var(--ink)}
+    button,textarea{font:inherit}
+    #game-container{position:relative;width:min(100vw,1066px);aspect-ratio:16/9;overflow:hidden;background:#b88355;box-shadow:0 18px 60px #0009}
+    #background{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover}
+    #game-container::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(#30190b30 0%,transparent 38%,#07171a66 100%)}
+    .top-bar{position:absolute;left:50%;top:16px;z-index:20;min-width:420px;transform:translateX(-50%);padding:9px 30px;border:1px solid var(--gold);border-radius:4px;background:#281d19df;color:#fff;text-align:center}
+    .top-bar h1{margin:0;font:700 25px/1.25 'Nanum Myeongjo',serif}
+    #progress{position:absolute;right:20px;top:20px;z-index:21;padding:8px 15px;border:1px solid var(--gold);border-radius:4px;background:#281d19df;color:#fff;font:700 15px 'Nanum Gothic Coding',monospace}
+    .char-wrapper{position:absolute;bottom:55px;z-index:3;width:182px;height:224px;overflow:visible;transition:filter .25s,transform .25s}
+    .char-wrapper iframe{width:260px;height:320px;border:0;pointer-events:none;transform:scale(.7);transform-origin:bottom left}
+    #char-민우{left:18px} #char-서연{right:18px}
+    #char-서연 iframe{transform:scale(.7) scaleX(-1);transform-origin:bottom center}
+    .char-wrapper.inactive{filter:brightness(.48);transform:scale(.97)}
+    .char-wrapper.active{filter:brightness(1.08);transform:translateY(-4px)}
+    .reed{position:absolute;bottom:0;z-index:2;width:210px;height:250px;overflow:hidden;pointer-events:none;opacity:.9}
+    .reed iframe{width:420px;height:500px;border:0;pointer-events:none;transform:scale(.5);transform-origin:bottom left}
+    #reed-left{left:0} #reed-right{right:0;transform:scaleX(-1)}
+    #dialogue-box{position:absolute;left:50%;bottom:18px;z-index:15;width:65%;min-height:112px;transform:translateX(-50%);padding:14px 70px 14px 20px;border:1px solid var(--gold);border-radius:4px;background:#090807df;color:#fff;box-shadow:0 7px 20px #0008;cursor:pointer}
+    #speaker-name{margin-bottom:6px;color:#f1cc5e;font:700 17px 'Nanum Gothic Coding',monospace}
+    #dialogue-text{margin:0;font-size:15px;line-height:1.65} #continue{position:absolute;right:15px;bottom:12px;color:#f1cc5e;font-size:13px}
+    .panel{position:absolute;left:50%;top:99px;z-index:12;display:none;width:min(650px,72%);transform:translateX(-50%);border:1px solid var(--gold);border-radius:6px;background:#f5f0e6eb;box-shadow:0 12px 32px #0008;backdrop-filter:blur(6px)}
+    .panel.visible{display:block;animation:appear .4s ease-out}
+    @keyframes appear{from{opacity:0;transform:translate(-50%,12px)}}
+    #rest-panel{left:18px;right:auto;top:72px;width:220px;transform:none;padding:8px 9px;text-align:left;background:#f5f0e696;backdrop-filter:blur(1px);box-shadow:0 5px 14px #0003}
+    #rest-panel.visible{animation:none}
+    #rest-panel h2,#reflection-panel h2{margin:0 0 4px;color:var(--red);font:700 15px 'Nanum Myeongjo',serif}
+    #rest-panel p{margin:2px 0 5px;font-size:8px;line-height:1.35}
+    .rest-content{display:grid;grid-template-columns:42px 1fr;gap:5px;align-items:center}
+    .timer{position:relative;display:grid;place-items:center;width:40px;height:40px;margin:auto;border-radius:50%;background:conic-gradient(var(--gold) var(--angle,0deg),#ddd6c5 0);box-shadow:inset 0 0 0 4px #f5f0e6}
+    .timer span{font:700 12px 'Nanum Gothic Coding',monospace;color:var(--teal)}
+    .mission-list{display:grid;grid-template-columns:repeat(2,1fr);gap:3px;margin:3px 0 5px}
+    .mission{padding:3px 1px;border:1px solid #bca876;border-radius:4px;background:#fffaf0c9;color:#57452c;font-size:7px;line-height:1.2;text-align:center}
+    .mission.done{border-color:#4b9a6d;background:#eaf8ef;color:#286040}
+    .rest-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+    .encouragement{margin:0 auto 4px!important;padding:3px 5px;border-left:2px solid var(--gold);background:#fff8e6a8;color:#664d20;font-size:7px!important}
+    #rest-panel .primary,#rest-panel .secondary{padding:4px 6px;font-size:7px}
+    .primary,.secondary,.btn-nav{padding:10px 22px;border:1px solid var(--gold);border-radius:4px;background:var(--red);color:#fff;font-weight:700;cursor:pointer;transition:background .2s,transform .2s}
+    .primary:hover,.secondary:hover,.btn-nav:hover{background:#661f1f;transform:translateY(-2px)}
+    .secondary{background:var(--teal)}
+    #finish-observation{display:none;background:#655641}
+    .hotspot{position:absolute;z-index:11;display:none;border:2px solid #fff1a3;border-radius:50%;background:#d4af3738;box-shadow:0 0 0 7px #fff4b321;color:#fff;font-weight:700;cursor:pointer;animation:hotspotPulse 1.7s ease-in-out infinite}
+    .hotspot.visible{display:grid;place-items:center}.hotspot.found{display:none}
+    #spot-reed{left:11%;top:47%;width:54px;height:54px}
+    #spot-water{left:49%;top:64%;width:62px;height:62px}
+    #spot-bridge{left:57%;top:44%;width:58px;height:58px}
+    #spot-bird{left:67%;top:31%;width:50px;height:50px}
+    @keyframes hotspotPulse{50%{transform:scale(1.12);box-shadow:0 0 0 13px #fff4b30d}}
+    .water-ripple{position:absolute;left:50%;top:69%;z-index:2;width:250px;height:48px;transform:translate(-50%,-50%);border:2px solid #ffe9a36b;border-radius:50%;pointer-events:none;opacity:0;animation:ripple 4s ease-out infinite}
+    .water-ripple.r2{animation-delay:2s}
+    @keyframes ripple{0%{opacity:0;transform:translate(-50%,-50%) scale(.35)}25%{opacity:.72}100%{opacity:0;transform:translate(-50%,-50%) scale(1.5)}}
+    #reflection-panel{top:82px;width:min(715px,75%);padding:19px 22px}
+    .reflection-head{display:flex;justify-content:space-between;align-items:start;gap:15px}
+    #reflection-status{padding:5px 10px;border-radius:999px;background:#ded7c5;font-size:13px;white-space:nowrap}
+    .prompt-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+    .prompt{padding:9px;border:1px solid #cdbb8b;border-radius:5px;background:#fffdf5}
+    .prompt label{display:block;min-height:40px;margin-bottom:6px;color:#583b27;font-size:12px;font-weight:700;line-height:1.45}
+    .prompt textarea{display:block;width:100%;height:51px;resize:none;border:1px solid #b8ad97;border-radius:4px;padding:7px;background:#fff;color:var(--ink);font-size:12px;line-height:1.4}
+    .prompt.done{border-color:#4f9a72;background:#eff9f1}.counter{display:block;margin-top:3px;text-align:right;color:#71685b;font-size:10px}
+    #complete-area{display:none;align-items:center;justify-content:center;gap:16px;margin-top:11px;padding-top:10px;border-top:1px solid #cfbf96}
+    #complete-area.visible{display:flex}.badge{width:70px;height:70px;overflow:hidden}
+    .badge iframe{width:300px;height:300px;border:0;pointer-events:none;transform:scale(.2333);transform-origin:top left}
+    .btn-nav{position:absolute;bottom:20px;z-index:25} #btn-prev{left:20px} #btn-end{right:20px;display:none}
+    @media(max-width:760px){
+      .top-bar{top:8px;min-width:290px;padding:7px 12px}.top-bar h1{font-size:18px}#progress{top:10px;right:8px;font-size:11px}
+      .char-wrapper{transform:scale(.72);transform-origin:bottom}#char-민우{left:-38px}#char-서연{right:-38px}
+      #dialogue-box{width:66%;min-height:94px;padding:9px 45px 9px 12px}#dialogue-text{font-size:12px;line-height:1.45}
+      .panel{top:67px;width:70%}#rest-panel{left:8px;right:auto;top:52px;width:190px;max-width:42%;padding:6px}.rest-content{grid-template-columns:34px 1fr;gap:3px}.timer{width:32px;height:32px}.timer span{font-size:9px}.mission{padding:2px 1px;font-size:6px}
+      #reflection-panel{top:61px;width:72%;padding:11px}.prompt-grid{gap:5px;margin-top:7px}.prompt{padding:5px}.prompt label{min-height:28px;font-size:9px}.prompt textarea{height:34px;padding:4px;font-size:9px}
+      .btn-nav{bottom:8px;padding:7px 14px}#btn-prev{left:8px}#btn-end{right:8px}.reed{opacity:.65}
+    }
+  </style>
+</head>
+<body>
+  <main id="game-container" aria-label="소염교 매쓰투어 휴식과 성찰 장면">
+    <img id="background" src="소염교_노을휴식.png" alt="노을빛 소염교와 갈대 습지">
+    <header class="top-bar"><h1>F04 소염교에서 잠시 쉬어가기</h1></header>
+    <div id="progress">4 / 4</div>
+    <div class="reed" id="reed-left"><iframe src="갈대_바람결.html" scrolling="no" title="바람에 흔들리는 갈대"></iframe></div>
+    <div class="reed" id="reed-right"><iframe src="갈대_바람결.html" scrolling="no" title="바람에 흔들리는 갈대"></iframe></div>
+    <div class="water-ripple"></div><div class="water-ripple r2"></div>
+    <button class="hotspot" id="spot-reed" type="button" aria-label="흔들리는 갈대 관찰" onclick="completeMission('reed')">갈대</button>
+    <button class="hotspot" id="spot-water" type="button" aria-label="잔잔한 물결 관찰" onclick="completeMission('water')">물결</button>
+    <button class="hotspot" id="spot-bridge" type="button" aria-label="소염교의 아치 관찰" onclick="completeMission('bridge')">아치</button>
+    <button class="hotspot" id="spot-bird" type="button" aria-label="소염교 위쪽의 철새 관찰" onclick="completeMission('bird')">철새</button>
+    <div class="char-wrapper inactive" id="char-민우"><iframe src="등장인물_민우.html" scrolling="no" title="민우"></iframe></div>
+    <div class="char-wrapper inactive" id="char-서연"><iframe src="등장인물_서연.html" scrolling="no" title="서연"></iframe></div>
+
+    <section id="dialogue-box" role="button" tabindex="0" aria-label="대화 계속하기">
+      <div id="speaker-name">나레이션</div><p id="dialogue-text"></p><span id="continue">계속 ▶</span>
+    </section>
+
+    <section class="panel" id="rest-panel" aria-labelledby="rest-title">
+      <h2 id="rest-title">풍경을 바라보며 잠시 쉬어가세요</h2>
+      <p class="encouragement" id="encouragement"></p>
+      <p>30초 안에 풍경 속 네 가지 관찰 지점을 찾아 선택해 보세요. 모두 찾으면 바로 다음 단계로 이동할 수 있습니다.</p>
+      <div class="rest-content">
+        <div class="timer" id="timer"><span id="time">30</span></div>
+        <div>
+          <div class="mission-list">
+            <div class="mission" id="mission-reed">○ 흔들리는 갈대</div>
+            <div class="mission" id="mission-water">○ 번지는 물결</div>
+            <div class="mission" id="mission-bridge">○ 소염교의 아치</div>
+            <div class="mission" id="mission-bird">○ 아치 위쪽 철새</div>
+          </div>
+          <div class="rest-actions">
+            <button class="primary" id="rest-start" type="button" onclick="startRest()">관찰 시작</button>
+            <button class="secondary" id="sound-toggle" type="button" onclick="toggleNatureSound()">자연 소리 켜기</button>
+            <button class="secondary" id="finish-observation" type="button" onclick="finishRest()">관찰 마치기</button>
+            <button class="secondary" id="reflect-start" type="button" onclick="showReflection()" style="display:none">성찰 기록하기</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="reflection-panel" aria-labelledby="reflection-title">
+      <div class="reflection-head">
+        <div><h2 id="reflection-title">오늘의 탐구 기록</h2><small>두 문항 이상에 각각 20자 이상 작성하세요.</small></div>
+        <span id="reflection-status">완료 0 / 2</span>
+      </div>
+      <div class="prompt-grid">
+        <div class="prompt"><label for="r1">1. 소염교와 소래염전에 관해 새롭게 알게 된 것은?</label><textarea id="r1" maxlength="180"></textarea><span class="counter">0 / 20자</span></div>
+        <div class="prompt"><label for="r2">2. 통행 자료에서 발견한 수학적 특징은?</label><textarea id="r2" maxlength="180"></textarea><span class="counter">0 / 20자</span></div>
+        <div class="prompt"><label for="r3">3. 조사 시간·날씨·위치가 달라지면 결과는 어떻게 달라질까?</label><textarea id="r3" maxlength="180"></textarea><span class="counter">0 / 20자</span></div>
+        <div class="prompt"><label for="r4">4. 어려운 문제를 해결하기 위해 어떤 방법을 시도했나?</label><textarea id="r4" maxlength="180"></textarea><span class="counter">0 / 20자</span></div>
+      </div>
+      <div id="complete-area">
+        <div class="badge"><iframe src="탐구배지.html" scrolling="no" title="탐구 완료 배지"></iframe></div>
+        <strong>탐구 완료! 자연·역사·수학을 연결했습니다.</strong>
+      </div>
+    </section>
+
+    <button class="btn-nav" id="btn-prev" type="button" onclick="window.location.href='F03.html'">이전</button>
+    <button class="btn-nav" id="btn-end" type="button" onclick="window.location.href='index(소염교).html'">코스 마치기</button>
+  </main>
+  <script>
+    const dialogues=[
+      {speaker:'나레이션',text:'수학 탐구를 마치자 소염교 위로 부드러운 저녁 햇빛이 내려앉았습니다. 바람에 흔들리는 갈대와 잔잔한 갯골을 바라보며 잠시 쉬어가세요.',target:null},
+      {speaker:'민우',text:'문제를 풀 때는 정신이 없었는데, 이제 보니 소염교와 습지의 풍경이 정말 평화롭다.',target:'char-민우'},
+      {speaker:'서연',text:'같은 장소인데도 역사와 수학을 알고 나니까 처음과는 다르게 보여.',target:'char-서연'},
+      {speaker:'민우',text:'모든 문제를 바로 해결하지 못했어도, 어떤 방법을 시도했는지 돌아보는 것이 중요한 것 같아.',target:'char-민우'},
+      {speaker:'서연',text:'맞아. 오늘 사용한 관찰 방법과 수학적 전략은 다른 장소를 탐구할 때도 활용할 수 있을 거야.',target:'char-서연'},
+      {speaker:'나레이션',text:'잠시 계산과 퍼즐을 멈추고, 소염교의 풍경을 천천히 관찰해 보세요.',target:null}
+    ];
+    let dialogueIndex=0,timerId=null,restStarted=false,audioContext=null,windNode=null,windGain=null,birdTimer=null;
+    const missions=new Set();
+    const dialogueBox=document.getElementById('dialogue-box');
+    function renderDialogue(){
+      const d=dialogues[dialogueIndex];document.getElementById('speaker-name').textContent=d.speaker;document.getElementById('dialogue-text').textContent=d.text;
+      document.querySelectorAll('.char-wrapper').forEach(el=>{el.classList.toggle('active',el.id===d.target);el.classList.toggle('inactive',el.id!==d.target)});
+    }
+    function advanceDialogue(){
+      if(dialogueIndex<dialogues.length-1){dialogueIndex++;renderDialogue();return}
+      dialogueBox.style.display='none';document.querySelectorAll('.char-wrapper').forEach(el=>el.classList.remove('active','inactive'));document.getElementById('rest-panel').classList.add('visible');
+    }
+    function startRest(){
+      if(restStarted)return;restStarted=true;document.getElementById('rest-start').disabled=true;
+      document.querySelectorAll('.hotspot').forEach(el=>el.classList.add('visible'));
+      let left=30;document.getElementById('time').textContent=left;
+      setTimeout(()=>{if(missions.size<4)document.getElementById('finish-observation').style.display='inline-block'},8000);
+      timerId=setInterval(()=>{left--;document.getElementById('time').textContent=left;document.getElementById('timer').style.setProperty('--angle',`${(30-left)*12}deg`);
+        if(left<=0)finishRest();
+      },1000);
+    }
+    function completeMission(name){
+      if(!restStarted)return;missions.add(name);
+      document.getElementById(`spot-${name}`).classList.add('found');
+      const item=document.getElementById(`mission-${name}`);item.classList.add('done');item.textContent=`✓ ${name==='reed'?'흔들리는 갈대':name==='water'?'번지는 물결':name==='bridge'?'소염교의 아치':'아치 위쪽 철새'}`;
+      if(missions.size===4)finishRest();
+    }
+    function finishRest(){
+      if(timerId){clearInterval(timerId);timerId=null}
+      document.querySelectorAll('.hotspot').forEach(el=>el.classList.remove('visible'));
+      document.getElementById('rest-start').style.display='none';document.getElementById('finish-observation').style.display='none';
+      document.getElementById('reflect-start').style.display='inline-block';document.getElementById('time').textContent='✓';
+      document.getElementById('timer').style.setProperty('--angle','360deg');
+    }
+    function toggleNatureSound(){
+      const button=document.getElementById('sound-toggle');
+      if(audioContext){stopNatureSound();button.textContent='자연 소리 켜기';return}
+      audioContext=new (window.AudioContext||window.webkitAudioContext)();
+      const length=audioContext.sampleRate*2,buffer=audioContext.createBuffer(1,length,audioContext.sampleRate),data=buffer.getChannelData(0);
+      for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*.22;
+      windNode=audioContext.createBufferSource();windNode.buffer=buffer;windNode.loop=true;
+      const filter=audioContext.createBiquadFilter();filter.type='lowpass';filter.frequency.value=620;
+      windGain=audioContext.createGain();windGain.gain.value=.14;windNode.connect(filter).connect(windGain).connect(audioContext.destination);windNode.start();
+      birdTimer=setInterval(playBird,5000);button.textContent='자연 소리 끄기';
+    }
+    function playBird(){
+      if(!audioContext)return;const osc=audioContext.createOscillator(),gain=audioContext.createGain();osc.type='sine';osc.frequency.setValueAtTime(1250,audioContext.currentTime);osc.frequency.exponentialRampToValueAtTime(1850,audioContext.currentTime+.18);gain.gain.setValueAtTime(.0001,audioContext.currentTime);gain.gain.exponentialRampToValueAtTime(.035,audioContext.currentTime+.04);gain.gain.exponentialRampToValueAtTime(.0001,audioContext.currentTime+.28);osc.connect(gain).connect(audioContext.destination);osc.start();osc.stop(audioContext.currentTime+.3);
+    }
+    function stopNatureSound(){if(birdTimer)clearInterval(birdTimer);if(windNode)windNode.stop();audioContext.close();audioContext=null;windNode=null}
+    function showReflection(){if(audioContext){stopNatureSound();document.getElementById('sound-toggle').textContent='자연 소리 켜기'}document.getElementById('rest-panel').classList.remove('visible');document.getElementById('reflection-panel').classList.add('visible')}
+    const mode=new URLSearchParams(location.search).get('mode')||localStorage.getItem('f03Mode')||'complete';
+    document.getElementById('encouragement').textContent=mode==='attempt'?'어려움 속에서도 시도와 전략을 기록했습니다. 그 과정도 소중한 탐구입니다.':'자료와 퍼즐을 끝까지 탐구했습니다. 스스로 완성한 과정을 천천히 돌아보세요.';
+    document.querySelectorAll('textarea').forEach(area=>area.addEventListener('input',()=>{
+      const count=area.value.trim().length,card=area.closest('.prompt');card.querySelector('.counter').textContent=`${count} / 20자`;card.classList.toggle('done',count>=20);
+      const completed=[...document.querySelectorAll('textarea')].filter(el=>el.value.trim().length>=20).length;
+      document.getElementById('reflection-status').textContent=`완료 ${Math.min(completed,2)} / 2`;
+      if(completed>=2){document.getElementById('complete-area').classList.add('visible');document.getElementById('btn-end').style.display='block';localStorage.setItem('f04Completed','true')}
+    }));
+    dialogueBox.addEventListener('click',advanceDialogue);dialogueBox.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();advanceDialogue()}});
+    renderDialogue();
+  </script>
+</body>
+</html>

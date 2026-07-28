@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인천차이나타운 MATHTOUR - E02</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#101318;display:flex;justify-content:center;align-items:center;min-height:100vh;
+  font-family:'Noto Sans KR',sans-serif;color:#1f2933}
+#game-container{position:relative;width:100%;max-width:1066px;aspect-ratio:16/9;overflow:hidden;
+  background:linear-gradient(#dfe9f4 0%,#f3ecdc 58%,#d8c9b0 58%,#b9a888 100%);box-shadow:0 10px 30px rgba(0,0,0,.75);border:2px solid #d4af37}
+.layer{position:absolute;overflow:hidden;pointer-events:none}
+.layer iframe{border:0;pointer-events:none;display:block}
+#top-bar{position:absolute;top:15px;left:20px;z-index:9;background:rgba(0,0,0,.62);
+  border:1px solid #d4af37;padding:8px 18px;border-radius:4px;color:#d4af37;
+  font-family:'Nanum Myeongjo',serif;font-weight:700;font-size:15px;letter-spacing:.5px;
+  box-shadow:0 2px 6px rgba(0,0,0,.45)}
+#stage-tag{position:absolute;top:15px;right:20px;z-index:9;background:rgba(0,0,0,.62);
+  border:1px solid #d4af37;padding:8px 14px;border-radius:4px;color:#d4af37;
+  font-family:'Nanum Gothic Coding',monospace;font-size:13px;letter-spacing:1px}
+.char-wrapper{position:absolute;z-index:4;overflow:visible;transition:filter .25s ease}
+.char-wrapper.inactive{filter:brightness(.55) saturate(.85)}
+#dialogue-box{position:absolute;left:50%;transform:translateX(-50%);bottom:24px;width:74%;
+  max-width:770px;min-height:148px;background:rgba(16,18,22,.86);border:2px solid #d4af37;
+  border-radius:7px;padding:18px 24px 26px;z-index:12;cursor:pointer;
+  box-shadow:0 4px 16px rgba(0,0,0,.55)}
+#speaker-name{font-family:'Nanum Gothic Coding',monospace;font-size:17px;font-weight:700;
+  color:#d4af37;margin-bottom:9px;border-bottom:1px dashed rgba(255,255,255,.28);
+  padding-bottom:5px;display:inline-block}
+#dialogue-text{font-size:15.5px;color:#fff;line-height:1.65;letter-spacing:-.02em;word-break:keep-all}
+#click-prompt{position:absolute;bottom:8px;right:16px;font-size:12px;color:#d4af37;animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.btn-nav{position:absolute;z-index:20;background:#8c3030;color:#fff;border:1px solid #d4af37;
+  border-radius:4px;padding:10px 22px;font-family:'Noto Sans KR',sans-serif;font-weight:700;
+  font-size:14.5px;cursor:pointer;transition:background-color .2s,transform .1s;
+  box-shadow:0 2px 5px rgba(0,0,0,.45)}
+.btn-nav:hover{background:#661f1f}
+.btn-nav:active{transform:scale(.96)}
+#btn-prev{left:20px;bottom:22px}
+#btn-next,#btn-skip,#btn-end{right:20px;bottom:22px}
+.panel{position:absolute;background:rgba(253,251,246,.97);border:2px solid #d4af37;
+  border-radius:8px;box-shadow:0 6px 22px rgba(0,0,0,.45);z-index:14;color:#1f2933}
+.panel h2{font-family:'Nanum Myeongjo',serif;font-size:18px;color:#8c3030;
+  border-bottom:2px solid #d4af37;padding-bottom:7px;margin-bottom:11px;letter-spacing:-.02em}
+.fact-row{display:flex;gap:10px;font-size:13.5px;line-height:1.5;padding:5px 0;
+  border-bottom:1px dotted rgba(0,0,0,.13)}
+.fact-row:last-child{border-bottom:none}
+.fact-k{flex:0 0 118px;font-weight:700;color:#8c3030}
+.fact-v{flex:1;word-break:keep-all}
+.note{margin-top:9px;font-size:12px;color:#6b7280;line-height:1.5;word-break:keep-all}
+.q-block{margin-bottom:13px}
+.q-text{font-size:14px;line-height:1.6;margin-bottom:7px;word-break:keep-all}
+.q-text b{color:#8c3030}
+.q-row{display:flex;align-items:center;gap:7px}
+.q-row input{width:118px;padding:7px 9px;border:1.5px solid #b9c2cc;border-radius:4px;
+  font-family:'Nanum Gothic Coding',monospace;font-size:14px;text-align:right}
+.q-row span{font-size:13.5px;color:#4b5563}
+.q-row button{background:#8c3030;color:#fff;border:none;border-radius:4px;padding:7px 14px;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+.q-fb{font-size:12.5px;margin-top:5px;min-height:17px;font-weight:700}
+.ok{color:#1e7a4b} .no{color:#c0392b}
+.hint{font-size:12px;color:#6b7280;margin-top:3px}
+#puzzle-modal{position:absolute;inset:0;background:rgba(8,10,14,.86);z-index:30;
+  display:none;justify-content:center;align-items:center}
+#puzzle-modal.open{display:flex}
+#puzzle-frame{width:88%;height:86%;border:2px solid #d4af37;border-radius:8px;background:#fff}
+#puzzle-close{position:absolute;top:14px;right:18px;z-index:31;background:#8c3030;color:#fff;
+  border:1px solid #d4af37;border-radius:4px;padding:8px 16px;font-weight:700;cursor:pointer;
+  font-size:13.5px;font-family:'Noto Sans KR',sans-serif}
+.badge{display:inline-block;background:#8c3030;color:#fff;border-radius:99px;padding:2px 11px;
+  font-size:12px;font-weight:700;margin-bottom:8px}
+ul.sum{margin:0 0 0 17px;padding:0}
+ul.sum li{font-size:13.5px;line-height:1.7;margin-bottom:4px;word-break:keep-all}
+</style>
+</head>
+<body>
+<div id="game-container">
+  <div class="layer" style="left:220px;bottom:8px; width:576px;height:425px;z-index:1;">
+    <iframe src="인천차이나타운_인천제물포구청.html" scrolling="no" style="width:800px;height:590px;transform:scale(0.7200);transform-origin:top left;"></iframe>
+  </div>
+  <div id="top-bar">개항장 · 옛 인천부 청사</div>
+  <div id="stage-tag">E02 · 2/4</div>
+  <div class="char-wrapper" id="char-민우" style="left:26px;bottom:6px; width:260px;height:320px;">
+    <iframe src="등장인물_민우.html" scrolling="no" style="border:0;width:260px;height:320px;transform:scale(1.00);transform-origin:bottom left;pointer-events:none;"></iframe>
+  </div>
+  <div class="char-wrapper" id="char-서연" style="left:250px;bottom:6px; width:260px;height:320px;">
+    <iframe src="등장인물_서연.html" scrolling="no" style="border:0;width:260px;height:320px;transform:scale(1.00) scaleX(-1);transform-origin:center bottom;pointer-events:none;"></iframe>
+  </div>
+  <div class="panel" style="right:26px;top:64px;width:404px;padding:16px 18px;">
+    <h2>옛 인천부 청사 · 확인된 사실</h2><div class="fact-row"><div class="fact-k">건립</div><div class="fact-v">1932년 8월 기공 → 1933년 6월 25일 준공 (약 10개월)</div></div><div class="fact-row"><div class="fact-k">지정</div><div class="fact-v">국가등록문화재 제249호 (2006년 4월 14일)</div></div><div class="fact-row"><div class="fact-k">건축면적</div><div class="fact-v">198.58평 ≈ 656.5 ㎡</div></div><div class="fact-row"><div class="fact-k">연면적</div><div class="fact-v">412.35평 ≈ 1,363.2 ㎡</div></div><div class="fact-row"><div class="fact-k">구조 · 형태</div><div class="fact-v">철근콘크리트조 + 벽돌 외벽, 凸자형 좌우대칭 평면, 평지붕</div></div><div class="fact-row"><div class="fact-k">쓰임의 변화</div><div class="fact-v">인천부 청사 → 인천시청 → 인천직할시청 → 중구청 → 2026년 7월 제물포구청 신포청사</div></div><div class="fact-row"><div class="fact-k">단위</div><div class="fact-v">1평 ≈ 3.3058 ㎡</div></div><div class="note">출처: 국가기록원 · 인천투데이 · 나무위키. 2026년 7월 1일 중구와 동구가 통합되어 제물포구가 되었습니다.</div>
+  </div>
+  <div id="dialogue-box" onclick="advanceDialogue()">
+    <div id="speaker-name">-</div>
+    <div id="dialogue-text">대화를 불러오는 중입니다...</div>
+    <div id="click-prompt">▼ 클릭하여 계속</div>
+  </div>
+  <button id="btn-prev" class="btn-nav" onclick="location.href='E01.html'">이전</button>
+  <button id="btn-skip" class="btn-nav" onclick="finishDialogue()">건너뛰기</button>
+  <button id="btn-next" class="btn-nav" onclick="location.href='E03.html'" style="display:none;">다음</button>
+</div>
+<script>
+const dialogues = [
+  {
+    "speaker": "서연",
+    "text": "평면이 위에서 보면 凸 자 모양이래. 중앙 현관이 앞으로 튀어나온 좌우대칭 구조야.",
+    "target": "char-서연"
+  },
+  {
+    "speaker": "민우",
+    "text": "안내판에 건축면적 198.58평, 연면적 412.35평이라고 적혀 있어. 평이 뭐지?",
+    "target": "char-민우"
+  },
+  {
+    "speaker": "서연",
+    "text": "옛 넓이 단위야. 1평은 약 3.3058㎡. 그런데 '건축면적'과 '연면적'의 차이를 알면 재미있는 걸 알 수 있어.",
+    "target": "char-서연"
+  },
+  {
+    "speaker": "민우",
+    "text": "건축면적은 바닥에 닿는 넓이, 연면적은 모든 층 바닥을 다 더한 넓이지? 그럼 나누면…",
+    "target": "char-민우"
+  },
+  {
+    "speaker": "서연",
+    "text": "맞아, 층수를 짐작할 수 있지. 직접 계산해 보자!",
+    "target": "char-서연"
+  }
+];
+let idx = 0;
+function updateDialogue(){
+  const c = dialogues[idx];
+  document.getElementById('speaker-name').innerText = c.speaker;
+  document.getElementById('dialogue-text').innerText = c.text;
+  document.querySelectorAll('.char-wrapper').forEach(w=>{
+    if(!c.target) w.classList.remove('inactive');
+    else w.classList.toggle('inactive', w.id !== c.target);
+  });
+}
+function advanceDialogue(){
+  idx++;
+  if(idx < dialogues.length) updateDialogue(); else finishDialogue();
+}
+function finishDialogue(){
+  document.getElementById('dialogue-box').style.display='none';
+  const s=document.getElementById('btn-skip'); if(s) s.style.display='none';
+  document.querySelectorAll('.char-wrapper').forEach(w=>w.classList.remove('inactive'));
+  onDialogueEnd();
+}
+function onDialogueEnd(){ document.getElementById('btn-next').style.display='block'; }
+window.onload = function(){ updateDialogue(); };
+</script>
+</body>
+</html>

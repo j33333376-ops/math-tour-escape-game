@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>노노그램 (네모로직)</title>
+  <style>
+    :root {
+      /* ===== 공통 디자인 토큰 (전체 퀴즈 공용) ===== */
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #ea580c;
+      --accent-soft: #fff7ed;
+      --border-color: #e2e8f0;
+      --success: #10b981;
+      --error: #ef4444;
+      --radius-card: 16px;
+      --radius-ctrl: 10px;
+      --shadow-card: 0 10px 25px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+    }
+
+    .app-layout {
+      display: flex;
+      width: 100%; height: 100%;
+      padding: 2vh 2vw;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-side {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      width: 38vw;
+      max-width: 440px;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-block h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+
+    .header-block p {
+      margin: 0 0 20px 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .control-group {
+      background: var(--primary-soft);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .control-header label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .col-badge {
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .col-badge.accent { background: var(--accent); }
+    .col-badge.muted  { background: #94a3b8; }
+
+    input[type=range] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+
+    .stat-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .btn-row { display: flex; gap: 8px; }
+
+    .btn-check, .btn-ghost {
+      border-radius: var(--radius-ctrl);
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .btn-check { background: var(--primary); color: #fff; border: none; }
+    .btn-check:hover:not(:disabled) { background: var(--primary-dark); }
+    .btn-check:active:not(:disabled) { transform: translateY(1px); }
+    .btn-ghost { background: var(--card-bg); color: var(--primary-dark); border: 1px solid var(--border-color); }
+    .btn-ghost:hover:not(:disabled) { background: var(--primary-soft); }
+    .btn-ghost:active:not(:disabled) { transform: translateY(1px); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .answer-group { padding-top: 16px; border-top: 2px dashed var(--border-color); }
+
+    .feedback {
+      margin-top: 10px;
+      font-weight: 700;
+      text-align: center;
+      min-height: 20px;
+      font-size: 0.95rem;
+      word-break: keep-all;
+      line-height: 1.45;
+    }
+    .feedback.success { color: var(--success); }
+    .feedback.error   { color: var(--error); }
+    .feedback.info    { color: var(--text-muted); }
+
+    .board-side {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      padding: 10px;
+    }
+
+    .board-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      border: 4px solid var(--border-color);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    @media (orientation: portrait) {
+      .app-layout { flex-direction: column; justify-content: flex-start; padding-top: 2vh; gap: 12px; }
+      .panel-side { width: 96vw; max-width: none; padding: 16px; }
+      .board-side { width: 96vw; flex: 1; padding: 0 0 2vh 0; }
+      .header-block p { margin-bottom: 12px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 520px) {
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.2rem; }
+      .header-block p { display: none; }
+      .control-group { padding: 8px 12px; margin-bottom: 10px; }
+      .stat-row { margin-bottom: 8px; }
+    }
+
+    /* ===== 노노그램 전용 ===== */
+    .board-wrapper {
+      --u: min(72vmin, 60vh, 500px);
+      padding: calc(var(--u) * 0.035);
+      touch-action: none;
+      user-select: none;
+    }
+
+    .nono {
+      display: grid;
+      /* grid-template-columns / rows / --cell 는 JS 에서 크기별로 설정 */
+    }
+
+    /* 힌트 영역 */
+    .corner { background: transparent; }
+
+    .chint, .rhint {
+      display: flex;
+      color: var(--text-muted);
+      font-weight: 800;
+      font-size: calc(var(--cell) * 0.44);
+      line-height: 1;
+      background: #f8fafc;
+    }
+    .chint {                    /* 위쪽 열 힌트: 세로로 아래정렬 */
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: calc(var(--cell) * 0.14);
+      gap: calc(var(--cell) * 0.1);
+      border-left: 1px solid #eef2f6;
+    }
+    .rhint {                    /* 왼쪽 행 힌트: 가로로 오른쪽정렬 */
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: calc(var(--cell) * 0.14);
+      gap: calc(var(--cell) * 0.28);
+      border-top: 1px solid #eef2f6;
+    }
+    .chint span, .rhint span { display: block; }
+    .chint.ok, .rhint.ok { color: var(--success); }
+
+    /* 셀 */
+    .cell {
+      border: 1px solid #d5dde7;
+      background: var(--card-bg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: calc(var(--cell) * 0.6);
+      font-weight: 800;
+      color: #94a3b8;
+      transition: background 0.1s ease, transform 0.05s ease;
+    }
+    .cell:not(.fill):hover { background: var(--primary-soft); }
+    .cell.fill {
+      background: #334155;
+      border-color: #334155;
+      color: transparent;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+    }
+    .cell.reveal { animation: pop 0.35s ease; }
+    @keyframes pop { 0%{ transform: scale(0.6); } 60%{ transform: scale(1.12); } 100%{ transform: scale(1); } }
+
+    /* 5칸마다 굵은 격자선 + 바깥 테두리 */
+    .cell.blk-l { border-left-width: 3px;  border-left-color: #475569; }
+    .cell.blk-t { border-top-width: 3px;   border-top-color: #475569; }
+    .cell.blk-r { border-right-width: 3px; border-right-color: #475569; }
+    .cell.blk-b { border-bottom-width: 3px; border-bottom-color: #475569; }
+
+    .nono.done .cell { cursor: default; }
+
+    .note {
+      background: var(--accent-soft);
+      border: 1px solid #fed7aa;
+      border-radius: var(--radius-ctrl);
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      color: #9a3412;
+      line-height: 1.5;
+      word-break: keep-all;
+      margin-bottom: 14px;
+    }
+
+    /* 세그먼트 버튼 (크기 프리셋 / 모드) */
+    .seg-row { display: flex; gap: 6px; }
+    .seg-btn {
+      flex: 1;
+      padding: 9px 4px;
+      border-radius: var(--radius-ctrl);
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .seg-btn:hover:not(.active) { background: var(--primary-soft); }
+    .seg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary-dark); }
+    .seg-btn.active.tool-x { background: var(--accent); border-color: #c2410c; }
+
+    /* ===================================================================
+       반응형 안전장치 — PC/모바일, 가로/세로 어디서도 잘리지 않게
+       =================================================================== */
+    .app-layout { min-height: 0; min-width: 0; }
+    .board-side { min-height: 0; min-width: 0; }
+
+    /* 패널이 화면보다 길어지면 화면을 밀지 않고 패널 안에서만 스크롤 */
+    .panel-side {
+      max-height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    @media (orientation: portrait) {
+      .panel-side { max-height: 50%; flex: 0 0 auto; }
+      .board-side { flex: 1 1 auto; }
+      .board-wrapper { --u: min(90vmin, 44vh, 460px); }
+    }
+    @media (orientation: landscape) and (max-height: 640px) {
+      .board-wrapper { --u: min(72vmin, 74vh, 500px); }
+    }
+
+    /* 폰 가로처럼 세로가 짧은 화면 */
+    @media (orientation: landscape) and (max-height: 560px) {
+      .app-layout { padding: 8px; gap: 10px; }
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.12rem; margin-bottom: 4px; }
+      .header-block p  { display: none; }
+      .stat-row { margin-bottom: 8px; }
+      .answer-group { padding-top: 10px; margin-top: 10px !important; }
+      .feedback { font-size: 0.82rem; margin-top: 6px; min-height: 16px; }
+      .btn-row button { padding: 8px 12px; font-size: 0.85rem; }
+    }
+    @media (orientation: landscape) and (max-height: 430px) {
+      .rule-note, .note { font-size: 0.7rem; padding: 6px 8px; margin-bottom: 8px; line-height: 1.4; }
+      .control-group { padding: 7px 10px; margin-bottom: 8px; }
+      .col-badge { font-size: 0.72rem; padding: 3px 9px; }
+    }
+
+    /* ===== 목록(index.html)으로 돌아가는 버튼 ===== */
+    /* MATHTOUR: 모달 내 실행용 — 목록 버튼 숨김 */
+    .home-btn { display:none !important; }
+    .home-btn-orig {
+      position: fixed;
+      top: max(10px, env(safe-area-inset-top, 0px));
+      left: max(10px, env(safe-area-inset-left, 0px));
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px 8px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+      color: #1e293b;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: transform .18s, box-shadow .18s, color .18s, border-color .18s, background .18s;
+    }
+    .home-btn:hover {
+      background: #fff;
+      color: #1d4ed8;
+      border-color: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px -6px rgba(37, 99, 235, 0.5);
+    }
+    .home-btn:active { transform: translateY(0); }
+    .home-btn:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+    .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* 좁거나 납작한 화면에서는 아이콘만 */
+    @media (max-width: 560px), (orientation: landscape) and (max-height: 430px) {
+      .home-btn { padding: 8px; gap: 0; }
+      .home-btn .label { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="home-btn" href="index.html" title="게임 목록으로 돌아가기" aria-label="게임 목록으로 돌아가기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.2V20h13v-9.8"/>
+    </svg>
+    <span class="label">목록</span>
+  </a>
+
+
+  <div class="app-layout">
+    <div class="panel-side">
+      <div class="header-block">
+        <h2>노노그램 (네모로직)</h2>
+        <p>줄 바깥 숫자만큼 칸을 <b>연속으로</b> 칠하세요.<br>모든 행·열의 힌트를 맞추면 그림 완성!</p>
+      </div>
+
+      <div class="note">
+        💡 숫자는 그 줄에서 <b>연속으로 칠할 칸 수</b>예요. 숫자가 여러 개면 <b>순서대로</b>, 덩어리 사이엔 <b>빈칸이 하나 이상</b> 있어야 합니다. 아닌 칸은 <b>X</b>로 표시해 두면 편해요.
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <label>크기</label>
+          <span class="col-badge" id="sizeBadge">8 × 8</span>
+        </div>
+        <div class="seg-row" id="sizeRow">
+          <button class="seg-btn" data-n="5">5×5</button>
+          <button class="seg-btn active" data-n="8">8×8</button>
+          <button class="seg-btn" data-n="10">10×10</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <label>도구</label>
+          <span class="col-badge accent" id="modeBadge">칠하기</span>
+        </div>
+        <div class="seg-row" id="modeRow">
+          <button class="seg-btn active" data-mode="fill">🖌 칠하기</button>
+          <button class="seg-btn tool-x" data-mode="x">✕ X표시</button>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <span class="col-badge muted" id="fillBadge">칠한 칸 0</span>
+        <span class="col-badge accent" id="lineBadge">완성 줄 0 / 0</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-ghost" id="hintBtn">💡 힌트</button>
+        <button class="btn-ghost" id="clearBtn">🧽 지우기</button>
+        <button class="btn-check" id="newBtn">🔄 새 문제</button>
+      </div>
+
+      <div class="answer-group" style="margin-top:16px">
+        <div class="feedback info" id="feedback">칸을 눌러 칠해보세요. (우클릭 = X표시)</div>
+      </div>
+    </div>
+
+    <div class="board-side">
+      <div class="board-wrapper">
+        <div class="nono" id="nono"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================================
+    //  노노그램 (Picross) — 무작위 정답 생성 → 행/열 힌트 계산
+    //  승리: 칠한 패턴이 모든 행·열 힌트를 만족 (생성 정답과 달라도 인정)
+    //  board 값: 0 = 빈칸, 1 = 칠함, 2 = X표시
+    // ==========================================================
+    const nonoEl   = document.getElementById('nono');
+    const sizeRow   = document.getElementById('sizeRow');
+    const sizeBadge = document.getElementById('sizeBadge');
+    const modeRow   = document.getElementById('modeRow');
+    const modeBadge = document.getElementById('modeBadge');
+    const fillBadge = document.getElementById('fillBadge');
+    const lineBadge = document.getElementById('lineBadge');
+    const hintBtn   = document.getElementById('hintBtn');
+    const clearBtn  = document.getElementById('clearBtn');
+    const newBtn    = document.getElementById('newBtn');
+    const feedback  = document.getElementById('feedback');
+
+    let N = 8;
+    let solution = [];    // 0/1 flat
+    let rowH = [], colH = [];
+    let board = [];       // 0/1/2 flat
+    let mode = 'fill';
+    let solved = false;
+    let cells = [];       // DOM flat
+    let rhintEls = [], chintEls = [];
+
+    const idx = (r, c) => r * N + c;
+
+    // ---------- 힌트 계산 ----------
+    function lineRuns(arr) {           // arr: 0/1 배열 → 연속 길이 배열([0] = 전부 빈칸)
+      const runs = []; let cnt = 0;
+      for (const v of arr) {
+        if (v === 1) cnt++;
+        else { if (cnt > 0) runs.push(cnt); cnt = 0; }
+      }
+      if (cnt > 0) runs.push(cnt);
+      return runs.length ? runs : [0];
+    }
+    function rowArr(src, r) { const a = []; for (let c = 0; c < N; c++) a.push(src[idx(r, c)] === 1 ? 1 : 0); return a; }
+    function colArr(src, c) { const a = []; for (let r = 0; r < N; r++) a.push(src[idx(r, c)] === 1 ? 1 : 0); return a; }
+    function arrEq(a, b) { if (a.length !== b.length) return false; for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false; return true; }
+
+    // ---------- 정답 생성 ----------
+    function genSolution() {
+      const p = 0.55 + Math.random() * 0.10;   // 채움률 55~65%
+      let g;
+      while (true) {
+        g = new Array(N * N).fill(0);
+        for (let i = 0; i < N * N; i++) g[i] = Math.random() < p ? 1 : 0;
+        let ok = true;
+        for (let r = 0; r < N && ok; r++) if (rowArr(g, r).every(v => v === 0)) ok = false;
+        for (let c = 0; c < N && ok; c++) if (colArr(g, c).every(v => v === 0)) ok = false;
+        if (ok) break;
+      }
+      return g;
+    }
+
+    function newPuzzle() {
+      solution = genSolution();
+      rowH = []; colH = [];
+      for (let r = 0; r < N; r++) rowH.push(lineRuns(rowArr(solution, r)));
+      for (let c = 0; c < N; c++) colH.push(lineRuns(colArr(solution, c)));
+      board = new Array(N * N).fill(0);
+      solved = false;
+      setFeedback('칸을 눌러 칠해보세요. (우클릭 = X표시)', 'info');
+      build();
+    }
+
+    // ---------- 보드 만들기 ----------
+    function build() {
+      const rh = Math.max(1, ...rowH.map(h => h.length));   // 행 힌트 최대 개수
+      const ch = Math.max(1, ...colH.map(h => h.length));   // 열 힌트 최대 개수
+      const denom = Math.max(rh + N, ch + N);
+
+      nonoEl.style.setProperty('--cell', 'calc(var(--u) / ' + denom + ')');
+      nonoEl.style.gridTemplateColumns = 'calc(var(--cell) * ' + rh + ') repeat(' + N + ', var(--cell))';
+      nonoEl.style.gridTemplateRows    = 'calc(var(--cell) * ' + ch + ') repeat(' + N + ', var(--cell))';
+
+      nonoEl.innerHTML = '';
+      cells = new Array(N * N);
+      rhintEls = []; chintEls = [];
+
+      // (0,0) 코너
+      const corner = document.createElement('div');
+      corner.className = 'corner';
+      nonoEl.appendChild(corner);
+
+      // 상단 열 힌트
+      for (let c = 0; c < N; c++) {
+        const d = document.createElement('div');
+        d.className = 'chint';
+        colH[c].forEach(num => { const s = document.createElement('span'); s.textContent = num; d.appendChild(s); });
+        nonoEl.appendChild(d);
+        chintEls.push(d);
+      }
+
+      // 각 행: 왼쪽 행 힌트 + 셀들
+      for (let r = 0; r < N; r++) {
+        const rh2 = document.createElement('div');
+        rh2.className = 'rhint';
+        rowH[r].forEach(num => { const s = document.createElement('span'); s.textContent = num; rh2.appendChild(s); });
+        nonoEl.appendChild(rh2);
+        rhintEls.push(rh2);
+
+        for (let c = 0; c < N; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          if (c % 5 === 0) cell.classList.add('blk-l');
+          if (r % 5 === 0) cell.classList.add('blk-t');
+          if (c === N - 1) cell.classList.add('blk-r');
+          if (r === N - 1) cell.classList.add('blk-b');
+          cell.dataset.i = idx(r, c);
+          nonoEl.appendChild(cell);
+          cells[idx(r, c)] = cell;
+        }
+      }
+      render();
+    }
+
+    function setFeedback(t, k) { feedback.textContent = t; feedback.className = 'feedback ' + k; }
+
+    // ---------- 그리기 / 판정 ----------
+    function render() {
+      let filled = 0, doneLines = 0;
+      const totalLines = 2 * N;
+
+      for (let i = 0; i < N * N; i++) {
+        const el = cells[i];
+        const v = board[i];
+        el.classList.toggle('fill', v === 1);
+        el.textContent = (v === 2) ? '✕' : '';
+        if (v === 1) filled++;
+      }
+
+      // 행/열 힌트 충족 표시
+      for (let r = 0; r < N; r++) {
+        const ok = arrEq(lineRuns(rowArr(board, r)), rowH[r]);
+        rhintEls[r].classList.toggle('ok', ok);
+        if (ok) doneLines++;
+      }
+      for (let c = 0; c < N; c++) {
+        const ok = arrEq(lineRuns(colArr(board, c)), colH[c]);
+        chintEls[c].classList.toggle('ok', ok);
+        if (ok) doneLines++;
+      }
+
+      fillBadge.textContent = '칠한 칸 ' + filled;
+      lineBadge.textContent = '완성 줄 ' + doneLines + ' / ' + totalLines;
+
+      if (!solved && doneLines === totalLines) {
+        solved = true;
+        nonoEl.classList.add('done');
+        hintBtn.disabled = true;
+        setFeedback('🎉 완성! 모든 행·열 힌트를 맞췄어요.', 'success');
+      }
+    }
+
+    // ---------- 칠하기 로직 ----------
+    function applyAt(i, val) {
+      if (solved || board[i] === val) return false;
+      board[i] = val;
+      return true;
+    }
+
+    // 클릭/드래그로 칠할 값 결정
+    function paintTarget(i) {
+      if (mode === 'fill') return board[i] === 1 ? 0 : 1;   // 칠해져 있으면 지우고, 아니면 칠함
+      return board[i] === 2 ? 0 : 2;                        // X 있으면 지우고, 아니면 X
+    }
+
+    // ---------- 포인터(마우스+터치) 드래그 칠하기 ----------
+    let painting = false, paintVal = null;
+
+    function cellIndexFrom(target) {
+      const el = target && target.closest ? target.closest('.cell') : null;
+      return el ? parseInt(el.dataset.i, 10) : -1;
+    }
+
+    nonoEl.addEventListener('pointerdown', (e) => {
+      if (solved) return;
+      const i = cellIndexFrom(e.target);
+      if (i < 0) return;
+      if (e.pointerType === 'mouse' && e.button === 2) return;   // 우클릭은 contextmenu 에서 처리
+      e.preventDefault();
+      paintVal = paintTarget(i);
+      painting = true;
+      if (applyAt(i, paintVal)) render();
+      try { nonoEl.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+
+    nonoEl.addEventListener('pointermove', (e) => {
+      if (!painting) return;
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const i = cellIndexFrom(el);
+      if (i >= 0 && applyAt(i, paintVal)) render();
+    });
+
+    function endPaint() { painting = false; paintVal = null; }
+    nonoEl.addEventListener('pointerup', endPaint);
+    nonoEl.addEventListener('pointercancel', endPaint);
+
+    // 데스크톱 우클릭 = X 토글
+    nonoEl.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      if (solved) return;
+      const i = cellIndexFrom(e.target);
+      if (i < 0) return;
+      if (applyAt(i, board[i] === 2 ? 0 : 2)) render();
+    });
+
+    // ---------- 버튼 ----------
+    function setMode(m) {
+      mode = m;
+      modeBadge.textContent = (m === 'fill') ? '칠하기' : 'X표시';
+      [...modeRow.children].forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+    }
+
+    modeRow.addEventListener('click', (e) => {
+      const b = e.target.closest('.seg-btn'); if (!b) return;
+      setMode(b.dataset.mode);
+    });
+
+    sizeRow.addEventListener('click', (e) => {
+      const b = e.target.closest('.seg-btn'); if (!b) return;
+      N = parseInt(b.dataset.n, 10);
+      sizeBadge.textContent = N + ' × ' + N;
+      [...sizeRow.children].forEach(x => x.classList.toggle('active', x === b));
+      hintBtn.disabled = false;
+      newPuzzle();
+    });
+
+    clearBtn.addEventListener('click', () => {
+      if (solved) return;
+      board = new Array(N * N).fill(0);
+      setFeedback('모두 지웠습니다.', 'info');
+      render();
+    });
+
+    hintBtn.addEventListener('click', () => {
+      if (solved) return;
+      // 정답에서 칠해야 하는데 아직 안 칠한 칸을 하나 공개
+      const cand = [];
+      for (let i = 0; i < N * N; i++) if (solution[i] === 1 && board[i] !== 1) cand.push(i);
+      let pick = -1;
+      if (cand.length) pick = cand[Math.floor(Math.random() * cand.length)];
+      else {
+        // 정답상 비어야 하는데 칠해둔 칸을 X로 정정
+        const bad = [];
+        for (let i = 0; i < N * N; i++) if (solution[i] === 0 && board[i] === 1) bad.push(i);
+        if (bad.length) { const j = bad[Math.floor(Math.random() * bad.length)]; board[j] = 2; setFeedback('💡 이 칸은 비어 있어요 (X).', 'info'); render(); flash(j); return; }
+      }
+      if (pick >= 0) {
+        board[pick] = 1;
+        setFeedback('💡 한 칸을 칠해 드렸어요.', 'info');
+        render();
+        flash(pick);
+      }
+    });
+
+    function flash(i) {
+      const el = cells[i];
+      el.classList.remove('reveal');
+      void el.offsetWidth;
+      el.classList.add('reveal');
+    }
+
+    newBtn.addEventListener('click', newPuzzle);
+
+    // 시작
+    setMode('fill');
+    newPuzzle();
+  </script>
+</body>
+</html>

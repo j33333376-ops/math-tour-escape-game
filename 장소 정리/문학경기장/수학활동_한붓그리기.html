@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>한붓그리기 (오일러 경로)</title>
+  <style>
+    :root {
+      /* ===== 공통 디자인 토큰 (전체 퀴즈 공용) ===== */
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #ea580c;
+      --accent-soft: #fff7ed;
+      --border-color: #e2e8f0;
+      --success: #10b981;
+      --error: #ef4444;
+      --radius-card: 16px;
+      --radius-ctrl: 10px;
+      --shadow-card: 0 10px 25px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+    }
+
+    .app-layout {
+      display: flex;
+      width: 100%; height: 100%;
+      padding: 2vh 2vw;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-side {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      width: 38vw;
+      max-width: 440px;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-block h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+
+    .header-block p {
+      margin: 0 0 20px 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .control-group {
+      background: var(--primary-soft);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .control-header label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .col-badge {
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .col-badge.accent { background: var(--accent); }
+    .col-badge.muted  { background: #94a3b8; }
+
+    input[type=range] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+
+    .stat-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .btn-row { display: flex; gap: 8px; }
+
+    .btn-check, .btn-ghost {
+      border-radius: var(--radius-ctrl);
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .btn-check { background: var(--primary); color: #fff; border: none; }
+    .btn-check:hover:not(:disabled) { background: var(--primary-dark); }
+    .btn-check:active:not(:disabled) { transform: translateY(1px); }
+    .btn-ghost { background: var(--card-bg); color: var(--primary-dark); border: 1px solid var(--border-color); }
+    .btn-ghost:hover:not(:disabled) { background: var(--primary-soft); }
+    .btn-ghost:active:not(:disabled) { transform: translateY(1px); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .answer-group { padding-top: 16px; border-top: 2px dashed var(--border-color); }
+
+    .feedback {
+      margin-top: 10px;
+      font-weight: 700;
+      text-align: center;
+      min-height: 20px;
+      font-size: 0.95rem;
+      word-break: keep-all;
+      line-height: 1.45;
+    }
+    .feedback.success { color: var(--success); }
+    .feedback.error   { color: var(--error); }
+    .feedback.info    { color: var(--text-muted); }
+
+    .board-side {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      padding: 10px;
+    }
+
+    .board-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      border: 4px solid var(--border-color);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    @media (orientation: portrait) {
+      .app-layout { flex-direction: column; justify-content: flex-start; padding-top: 2vh; gap: 12px; }
+      .panel-side { width: 96vw; max-width: none; padding: 16px; }
+      .board-side { width: 96vw; flex: 1; padding: 0 0 2vh 0; }
+      .header-block p { margin-bottom: 12px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 520px) {
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.2rem; }
+      .header-block p { display: none; }
+      .control-group { padding: 8px 12px; margin-bottom: 10px; }
+      .stat-row { margin-bottom: 8px; }
+    }
+
+    /* ===== 한붓그리기 전용 ===== */
+    .board-wrapper { width: 100%; height: 100%; padding: 12px; }
+    #graphSvg { width: 100%; height: 100%; }
+
+    .edge {
+      fill: none;
+      stroke: #cbd5e1;
+      stroke-width: 6;
+      stroke-linecap: round;
+      transition: stroke 0.25s;
+    }
+    .edge.used { stroke: var(--accent); }
+    .edge.hot  { stroke: var(--primary); stroke-dasharray: 10 8; }
+
+    .node {
+      fill: var(--card-bg);
+      stroke: var(--primary);
+      stroke-width: 4;
+      cursor: pointer;
+      transition: fill 0.15s, stroke 0.15s;
+    }
+    .node:hover { fill: var(--primary-soft); }
+    .node.current { fill: var(--primary); stroke: var(--primary-dark); }
+    .node.reachable { stroke: var(--accent); stroke-width: 6; }
+    .node.odd-mark { stroke-dasharray: 6 5; }
+
+    .node-label { font-size: 15px; font-weight: 800; fill: var(--text-main); pointer-events: none; text-anchor: middle; }
+    .node.current + .node-label { fill: #fff; }
+
+    .shape-row { display: flex; gap: 6px; margin-bottom: 14px; }
+    .shape-btn {
+      flex: 1;
+      padding: 8px 4px;
+      border-radius: var(--radius-ctrl);
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .shape-btn:hover { background: var(--primary-soft); }
+    .shape-btn.active { background: var(--primary); color: #fff; border-color: var(--primary-dark); }
+
+    /* ===================================================================
+       반응형 안전장치 — PC/모바일, 가로/세로 어디서도 잘리지 않게
+       =================================================================== */
+    .app-layout { min-height: 0; min-width: 0; }
+    .board-side { min-height: 0; min-width: 0; }
+
+    /* 패널이 화면보다 길어지면 화면을 밀지 않고 패널 안에서만 스크롤 */
+    .panel-side {
+      max-height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    @media (orientation: portrait) {
+      .panel-side { max-height: 54%; flex: 0 0 auto; }
+      .board-side { flex: 1 1 auto; }
+    }
+
+    /* 폰 가로처럼 세로가 짧은 화면 */
+    @media (orientation: landscape) and (max-height: 560px) {
+      .app-layout { padding: 8px; gap: 10px; }
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.12rem; margin-bottom: 4px; }
+      .header-block p  { display: none; }
+      .stat-row { margin-bottom: 8px; }
+      .answer-group { padding-top: 10px; margin-top: 10px !important; }
+      .feedback { font-size: 0.82rem; margin-top: 6px; min-height: 16px; }
+      .btn-row button { padding: 8px 12px; font-size: 0.85rem; }
+    }
+    @media (orientation: landscape) and (max-height: 430px) {
+      .rule-note, .note { font-size: 0.7rem; padding: 6px 8px; margin-bottom: 8px; line-height: 1.4; }
+      .control-group { padding: 7px 10px; margin-bottom: 8px; }
+      .col-badge { font-size: 0.72rem; padding: 3px 9px; }
+    }
+
+    /* ===== 목록(index.html)으로 돌아가는 버튼 ===== */
+    /* MATHTOUR: 모달 내 실행용 — 목록 버튼 숨김 */
+    .home-btn { display:none !important; }
+    .home-btn-orig {
+      position: fixed;
+      top: max(10px, env(safe-area-inset-top, 0px));
+      left: max(10px, env(safe-area-inset-left, 0px));
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px 8px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+      color: #1e293b;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: transform .18s, box-shadow .18s, color .18s, border-color .18s, background .18s;
+    }
+    .home-btn:hover {
+      background: #fff;
+      color: #1d4ed8;
+      border-color: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px -6px rgba(37, 99, 235, 0.5);
+    }
+    .home-btn:active { transform: translateY(0); }
+    .home-btn:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+    .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* 좁거나 납작한 화면에서는 아이콘만 */
+    @media (max-width: 560px), (orientation: landscape) and (max-height: 430px) {
+      .home-btn { padding: 8px; gap: 0; }
+      .home-btn .label { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="home-btn" href="index.html" title="게임 목록으로 돌아가기" aria-label="게임 목록으로 돌아가기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.2V20h13v-9.8"/>
+    </svg>
+    <span class="label">목록</span>
+  </a>
+
+
+  <div class="app-layout">
+    <div class="panel-side">
+      <div class="header-block">
+        <h2>한붓그리기</h2>
+        <p>점을 클릭해 출발한 뒤, 이어진 점을 차례로 클릭하세요.<br>같은 선을 두 번 지나지 않고 <b>모든 선</b>을 그리면 성공!</p>
+      </div>
+
+      <div class="shape-row" id="shapeRow"></div>
+
+      <div class="stat-row">
+        <span class="col-badge muted" id="edgeBadge">선 0 / 0</span>
+        <span class="col-badge accent" id="oddBadge">홀수점 0개</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-ghost" id="hintBtn">💡 홀수점 보기</button>
+        <button class="btn-ghost" id="undoBtn">↶ 되돌리기</button>
+        <button class="btn-check" id="resetBtn">🔄 다시</button>
+      </div>
+
+      <div class="answer-group" style="margin-top:16px">
+        <div class="feedback info" id="feedback">아무 점이나 클릭해서 출발하세요.</div>
+      </div>
+    </div>
+
+    <div class="board-side">
+      <div class="board-wrapper">
+        <svg id="graphSvg" viewBox="0 0 400 340" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // ==========================================================
+    //  한붓그리기 — 오일러 경로 / 오일러 회로
+    //  홀수점(연결된 선이 홀수 개인 점)이 0개면 아무 데서나 출발해 제자리로,
+    //  2개면 두 홀수점 중 하나에서 출발해야 하고,
+    //  4개 이상이면 한붓그리기가 불가능하다.
+    // ==========================================================
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+
+    // c = 곡선 휨 정도 (평행한 다중 간선을 구분하기 위함)
+    const SHAPES = {
+      house: {
+        name: '집',
+        nodes: [ {x:80,y:280}, {x:320,y:280}, {x:320,y:140}, {x:80,y:140}, {x:200,y:50} ],
+        labels: ['A','B','C','D','E'],
+        edges: [ [0,1,0],[1,2,0],[2,3,0],[3,0,0],[3,4,0],[4,2,0] ]
+      },
+      envelope: {
+        name: '봉투',
+        nodes: [ {x:70,y:280}, {x:330,y:280}, {x:330,y:150}, {x:70,y:150}, {x:200,y:55} ],
+        labels: ['A','B','C','D','E'],
+        edges: [ [0,1,0],[1,2,0],[2,3,0],[3,0,0],[3,4,0],[4,2,0],[0,2,0],[1,3,0] ]
+      },
+      star: {
+        name: '별',
+        nodes: [ {x:200,y:45}, {x:335,y:145}, {x:283,y:300}, {x:117,y:300}, {x:65,y:145} ],
+        labels: ['A','B','C','D','E'],
+        edges: [ [0,2,0],[2,4,0],[4,1,0],[1,3,0],[3,0,0] ]
+      },
+      konigsberg: {
+        name: '쾨니히스베르크',
+        nodes: [ {x:200,y:55}, {x:105,y:175}, {x:200,y:295}, {x:320,y:175} ],
+        labels: ['북','섬','남','동'],
+        edges: [ [0,1,32],[0,1,-32],[2,1,32],[2,1,-32],[0,3,0],[2,3,0],[1,3,0] ]
+      }
+    };
+
+    const svg       = document.getElementById('graphSvg');
+    const shapeRow  = document.getElementById('shapeRow');
+    const edgeBadge = document.getElementById('edgeBadge');
+    const oddBadge  = document.getElementById('oddBadge');
+    const hintBtn   = document.getElementById('hintBtn');
+    const undoBtn   = document.getElementById('undoBtn');
+    const resetBtn  = document.getElementById('resetBtn');
+    const feedback  = document.getElementById('feedback');
+
+    let key = 'house';
+    let shape, used = [], current = null, history = [], hintOn = false, finished = false;
+    let edgeEls = [], nodeEls = [];
+
+    function degrees() {
+      const deg = new Array(shape.nodes.length).fill(0);
+      shape.edges.forEach(([a, b]) => { deg[a]++; deg[b]++; });
+      return deg;
+    }
+    function oddNodes() {
+      const deg = degrees();
+      return deg.map((d, i) => (d % 2 === 1 ? i : -1)).filter(i => i >= 0);
+    }
+
+    function edgePath(a, b, c) {
+      const p1 = shape.nodes[a], p2 = shape.nodes[b];
+      if (!c) return 'M ' + p1.x + ' ' + p1.y + ' L ' + p2.x + ' ' + p2.y;
+      const mx = (p1.x + p2.x) / 2, my = (p1.y + p2.y) / 2;
+      const dx = p2.x - p1.x, dy = p2.y - p1.y;
+      const len = Math.hypot(dx, dy) || 1;
+      const cx = mx + (-dy / len) * c * 2;
+      const cy = my + ( dx / len) * c * 2;
+      return 'M ' + p1.x + ' ' + p1.y + ' Q ' + cx + ' ' + cy + ' ' + p2.x + ' ' + p2.y;
+    }
+
+    function build() {
+      shape = SHAPES[key];
+      used = new Array(shape.edges.length).fill(false);
+      current = null;
+      history = [];
+      finished = false;
+      svg.innerHTML = '';
+      edgeEls = [];
+      nodeEls = [];
+
+      shape.edges.forEach(([a, b, c], i) => {
+        const p = document.createElementNS(SVG_NS, 'path');
+        p.setAttribute('d', edgePath(a, b, c));
+        p.setAttribute('class', 'edge');
+        svg.appendChild(p);
+        edgeEls.push(p);
+      });
+
+      shape.nodes.forEach((n, i) => {
+        const circle = document.createElementNS(SVG_NS, 'circle');
+        circle.setAttribute('cx', n.x);
+        circle.setAttribute('cy', n.y);
+        circle.setAttribute('r', 19);
+        circle.setAttribute('class', 'node');
+        circle.dataset.i = i;
+        svg.appendChild(circle);
+
+        const t = document.createElementNS(SVG_NS, 'text');
+        t.setAttribute('x', n.x);
+        t.setAttribute('y', n.y + 5);
+        t.setAttribute('class', 'node-label');
+        t.textContent = shape.labels[i];
+        svg.appendChild(t);
+
+        nodeEls.push(circle);
+      });
+
+      const odd = oddNodes();
+      oddBadge.textContent = '홀수점 ' + odd.length + '개';
+
+      let msg;
+      if (odd.length === 0) msg = '홀수점이 0개 → 어느 점에서 출발해도 되고, 출발점으로 돌아옵니다.';
+      else if (odd.length === 2) msg = '홀수점이 2개 → 그중 한 점에서 출발해야 성공합니다.';
+      else msg = '홀수점이 ' + odd.length + '개 → 이 도형은 한붓그리기가 불가능합니다. 직접 확인해 보세요!';
+      setFeedback(msg, 'info');
+
+      render();
+    }
+
+    function unusedEdgesFrom(v) {
+      const out = [];
+      shape.edges.forEach(([a, b], i) => {
+        if (used[i]) return;
+        if (a === v) out.push({ i, to: b });
+        else if (b === v) out.push({ i, to: a });
+      });
+      return out;
+    }
+
+    function setFeedback(t, k) {
+      feedback.textContent = t;
+      feedback.className = 'feedback ' + k;
+    }
+
+    function render() {
+      const total = shape.edges.length;
+      const cnt = used.filter(Boolean).length;
+      edgeBadge.textContent = '선 ' + cnt + ' / ' + total;
+      undoBtn.disabled = history.length === 0;
+
+      const odd = oddNodes();
+      const reachable = current === null ? [] : unusedEdgesFrom(current).map(e => e.to);
+
+      edgeEls.forEach((el, i) => {
+        el.classList.toggle('used', used[i]);
+        const hot = current !== null && !used[i] &&
+                    (shape.edges[i][0] === current || shape.edges[i][1] === current);
+        el.classList.toggle('hot', hot);
+      });
+
+      nodeEls.forEach((el, i) => {
+        el.classList.toggle('current', current === i);
+        el.classList.toggle('reachable', reachable.includes(i));
+        el.classList.toggle('odd-mark', hintOn && odd.includes(i));
+      });
+
+      if (cnt === total && !finished) {
+        finished = true;
+        setFeedback('🎉 성공! 모든 선을 한 번씩 지났습니다. (' + total + '개 선)', 'success');
+        return;
+      }
+      if (current !== null && !finished && reachable.length === 0) {
+        setFeedback('막혔습니다! 남은 선 ' + (total - cnt) + '개. 되돌리기로 다른 길을 찾아보세요.', 'error');
+      }
+    }
+
+    svg.addEventListener('click', (e) => {
+      if (finished) return;
+      const el = e.target.closest('.node');
+      if (!el) return;
+      const v = parseInt(el.dataset.i, 10);
+
+      if (current === null) {
+        current = v;
+        const odd = oddNodes();
+        if (odd.length === 2 && !odd.includes(v)) {
+          setFeedback(shape.labels[v] + '에서 출발했습니다. 힌트: 홀수점 2개일 땐 홀수점에서 출발해야 해요.', 'info');
+        } else {
+          setFeedback(shape.labels[v] + '에서 출발했습니다.', 'info');
+        }
+        render();
+        return;
+      }
+
+      const cand = unusedEdgesFrom(current).filter(x => x.to === v);
+      if (cand.length === 0) {
+        setFeedback('그 점으로 가는 아직 안 그린 선이 없습니다.', 'error');
+        return;
+      }
+      const chosen = cand[0];
+      used[chosen.i] = true;
+      history.push({ edge: chosen.i, from: current });
+      current = v;
+      if (used.filter(Boolean).length < shape.edges.length) {
+        setFeedback('좋아요! 선 ' + used.filter(Boolean).length + '개째.', 'info');
+      }
+      render();
+    });
+
+    undoBtn.addEventListener('click', () => {
+      if (history.length === 0) return;
+      const last = history.pop();
+      used[last.edge] = false;
+      current = last.from;
+      finished = false;
+      setFeedback('되돌렸습니다.', 'info');
+      render();
+    });
+
+    resetBtn.addEventListener('click', build);
+
+    hintBtn.addEventListener('click', () => {
+      hintOn = !hintOn;
+      hintBtn.textContent = hintOn ? '💡 홀수점 숨기기' : '💡 홀수점 보기';
+      if (hintOn) {
+        const odd = oddNodes();
+        const names = odd.map(i => shape.labels[i]).join(', ');
+        setFeedback(odd.length === 0
+          ? '홀수점이 없습니다 (모든 점이 짝수) → 출발점으로 되돌아오는 오일러 회로!'
+          : '홀수점(점선 테두리): ' + names + ' — 총 ' + odd.length + '개', 'info');
+      }
+      render();
+    });
+
+    Object.keys(SHAPES).forEach(k => {
+      const b = document.createElement('button');
+      b.className = 'shape-btn' + (k === key ? ' active' : '');
+      b.textContent = SHAPES[k].name;
+      b.addEventListener('click', () => {
+        key = k;
+        [...shapeRow.children].forEach(c => c.classList.remove('active'));
+        b.classList.add('active');
+        hintOn = false;
+        hintBtn.textContent = '💡 홀수점 보기';
+        build();
+      });
+      shapeRow.appendChild(b);
+    });
+
+    build();
+
+  </script>
+</body>
+</html>

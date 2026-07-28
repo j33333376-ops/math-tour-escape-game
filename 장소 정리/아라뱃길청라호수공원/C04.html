@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아라뱃길·청라호수공원 MATHTOUR - C04</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#101318;display:flex;justify-content:center;align-items:center;min-height:100vh;
+  font-family:'Noto Sans KR',sans-serif;color:#1f2933}
+#game-container{position:relative;width:100%;max-width:1066px;aspect-ratio:16/9;overflow:hidden;
+  background:linear-gradient(#dff1ff 0%,#f4fbff 56%,#bfe2f2 56%,#8bc7de 100%);box-shadow:0 10px 30px rgba(0,0,0,.75);border:2px solid #7fd4e8}
+.layer{position:absolute;overflow:hidden;pointer-events:none}
+.layer iframe{border:0;pointer-events:none;display:block}
+#top-bar{position:absolute;top:15px;left:20px;z-index:9;background:rgba(0,0,0,.62);
+  border:1px solid #7fd4e8;padding:8px 18px;border-radius:4px;color:#7fd4e8;
+  font-family:'Nanum Myeongjo',serif;font-weight:700;font-size:15px;letter-spacing:.5px;
+  box-shadow:0 2px 6px rgba(0,0,0,.45)}
+#stage-tag{position:absolute;top:15px;right:20px;z-index:9;background:rgba(0,0,0,.62);
+  border:1px solid #7fd4e8;padding:8px 14px;border-radius:4px;color:#7fd4e8;
+  font-family:'Nanum Gothic Coding',monospace;font-size:13px;letter-spacing:1px}
+.char-wrapper{position:absolute;z-index:4;overflow:visible;transition:filter .25s ease}
+.char-wrapper.inactive{filter:brightness(.55) saturate(.85)}
+#dialogue-box{position:absolute;left:50%;transform:translateX(-50%);bottom:24px;width:74%;
+  max-width:770px;min-height:148px;background:rgba(16,18,22,.86);border:2px solid #7fd4e8;
+  border-radius:7px;padding:18px 24px 26px;z-index:12;cursor:pointer;
+  box-shadow:0 4px 16px rgba(0,0,0,.55)}
+#speaker-name{font-family:'Nanum Gothic Coding',monospace;font-size:17px;font-weight:700;
+  color:#7fd4e8;margin-bottom:9px;border-bottom:1px dashed rgba(255,255,255,.28);
+  padding-bottom:5px;display:inline-block}
+#dialogue-text{font-size:15.5px;color:#fff;line-height:1.65;letter-spacing:-.02em;word-break:keep-all}
+#click-prompt{position:absolute;bottom:8px;right:16px;font-size:12px;color:#7fd4e8;animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.btn-nav{position:absolute;z-index:20;background:#0e7490;color:#fff;border:1px solid #7fd4e8;
+  border-radius:4px;padding:10px 22px;font-family:'Noto Sans KR',sans-serif;font-weight:700;
+  font-size:14.5px;cursor:pointer;transition:background-color .2s,transform .1s;
+  box-shadow:0 2px 5px rgba(0,0,0,.45)}
+.btn-nav:hover{background:#0a5468}
+.btn-nav:active{transform:scale(.96)}
+#btn-prev{left:20px;bottom:22px}
+#btn-next,#btn-skip,#btn-end{right:20px;bottom:22px}
+.panel{position:absolute;background:rgba(253,251,246,.97);border:2px solid #7fd4e8;
+  border-radius:8px;box-shadow:0 6px 22px rgba(0,0,0,.45);z-index:14;color:#1f2933}
+.panel h2{font-family:'Nanum Myeongjo',serif;font-size:18px;color:#0e7490;
+  border-bottom:2px solid #7fd4e8;padding-bottom:7px;margin-bottom:11px;letter-spacing:-.02em}
+.fact-row{display:flex;gap:10px;font-size:13.5px;line-height:1.5;padding:5px 0;
+  border-bottom:1px dotted rgba(0,0,0,.13)}
+.fact-row:last-child{border-bottom:none}
+.fact-k{flex:0 0 118px;font-weight:700;color:#0e7490}
+.fact-v{flex:1;word-break:keep-all}
+.note{margin-top:9px;font-size:12px;color:#6b7280;line-height:1.5;word-break:keep-all}
+.q-block{margin-bottom:13px}
+.q-text{font-size:14px;line-height:1.6;margin-bottom:7px;word-break:keep-all}
+.q-text b{color:#0e7490}
+.q-row{display:flex;align-items:center;gap:7px}
+.q-row input{width:118px;padding:7px 9px;border:1.5px solid #b9c2cc;border-radius:4px;
+  font-family:'Nanum Gothic Coding',monospace;font-size:14px;text-align:right}
+.q-row span{font-size:13.5px;color:#4b5563}
+.q-row button{background:#0e7490;color:#fff;border:none;border-radius:4px;padding:7px 14px;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+.q-fb{font-size:12.5px;margin-top:5px;min-height:17px;font-weight:700}
+.ok{color:#1e7a4b} .no{color:#c0392b}
+.hint{font-size:12px;color:#6b7280;margin-top:3px}
+#puzzle-modal{position:absolute;inset:0;background:rgba(8,10,14,.86);z-index:30;
+  display:none;justify-content:center;align-items:center}
+#puzzle-modal.open{display:flex}
+#puzzle-frame{width:88%;height:86%;border:2px solid #7fd4e8;border-radius:8px;background:#fff}
+#puzzle-close{position:absolute;top:14px;right:18px;z-index:31;background:#0e7490;color:#fff;
+  border:1px solid #7fd4e8;border-radius:4px;padding:8px 16px;font-weight:700;cursor:pointer;
+  font-size:13.5px;font-family:'Noto Sans KR',sans-serif}
+.badge{display:inline-block;background:#0e7490;color:#fff;border-radius:99px;padding:2px 11px;
+  font-size:12px;font-weight:700;margin-bottom:8px}
+ul.sum{margin:0 0 0 17px;padding:0}
+ul.sum li{font-size:13.5px;line-height:1.7;margin-bottom:4px;word-break:keep-all}
+</style>
+</head>
+<body>
+<div id="game-container">
+  <div class="layer" style="left:357px;bottom:10px; width:352px;height:418px;z-index:1;">
+    <iframe src="아라뱃길_수향루.html" scrolling="no" style="width:640px;height:760px;transform:scale(0.5500);transform-origin:top left;"></iframe>
+  </div>
+  <div id="top-bar">경인아라뱃길 · 수향루 탐구 완료</div>
+  <div id="stage-tag">C04 · 4/4</div>
+  <div class="char-wrapper" id="char-민우" style="left:44px;bottom:6px; width:260px;height:320px;">
+    <iframe src="등장인물_민우.html" scrolling="no" style="border:0;width:260px;height:320px;transform:scale(1.00);transform-origin:bottom left;pointer-events:none;"></iframe>
+  </div>
+  <div class="char-wrapper" id="char-서연" style="right:44px;bottom:6px; width:260px;height:320px;">
+    <iframe src="등장인물_서연.html" scrolling="no" style="border:0;width:260px;height:320px;transform:scale(1.00) scaleX(-1);transform-origin:center bottom;pointer-events:none;"></iframe>
+  </div>
+  <div id="summary" class="panel" style="left:50%;transform:translateX(-50%);top:78px;width:700px;padding:18px 24px;display:none;">
+    <div class="badge">코스 정리</div>
+    <h2>C코스에서 배운 것</h2>
+    <ul class="sum"><li><b>정n각형의 내각</b> — (n−2)×180°÷n. 정팔각형은 135°.</li><li><b>대각선의 개수</b> — n(n−3)/2. 정팔각형은 20개.</li><li><b>비의 간단한 표현</b> — 9 : 21 = 3 : 7. 최대공약수로 약분하면 구조가 드러난다.</li><li><b>8퀸 문제</b> — 8×8 판에 서로 공격하지 않는 퀸 8개를 놓는 방법은 92가지(회전·대칭을 같게 보면 12가지).</li><li>현장에서 할 일 — 수향루에서 25 m 떨어져 꼭대기를 올려다본 각을 재고, tan을 이용해 높이 9 m를 검증해 보기.</li></ul>
+  </div>
+  <div id="dialogue-box" onclick="advanceDialogue()">
+    <div id="speaker-name">-</div>
+    <div id="dialogue-text">대화를 불러오는 중입니다...</div>
+    <div id="click-prompt">▼ 클릭하여 계속</div>
+  </div>
+  <button id="btn-prev" class="btn-nav" onclick="location.href='C03.html'">이전</button>
+  <button id="btn-skip" class="btn-nav" onclick="finishDialogue()">건너뛰기</button>
+  <button id="btn-end" class="btn-nav" onclick="location.href='index.html'" style="display:none;">코스 마치기</button>
+</div>
+<script>
+const dialogues = [
+  {
+    "speaker": "민우",
+    "text": "지붕 하나에 정팔각형의 성질이 다 들어 있었어. 135도, 대각선 20개.",
+    "target": "char-민우"
+  },
+  {
+    "speaker": "서연",
+    "text": "8퀸 퍼즐도 결국 8이라는 수를 다루는 문제였지. 서로 공격하지 않게 놓는 방법이 92가지나 된대.",
+    "target": "char-서연"
+  },
+  {
+    "speaker": "민우",
+    "text": "9 : 21이 3 : 7로 줄어드는 것도 좋았어. 축소 모형을 만든다면 이 비를 그대로 지키면 되겠네.",
+    "target": "char-민우"
+  },
+  {
+    "speaker": "서연",
+    "text": "옛 목수들은 공식 없이도 이 비율을 손끝으로 알았을 거야. 수학은 늘 우리보다 먼저 와 있었네.",
+    "target": "char-서연"
+  }
+];
+let idx = 0;
+function updateDialogue(){
+  const c = dialogues[idx];
+  document.getElementById('speaker-name').innerText = c.speaker;
+  document.getElementById('dialogue-text').innerText = c.text;
+  document.querySelectorAll('.char-wrapper').forEach(w=>{
+    if(!c.target) w.classList.remove('inactive');
+    else w.classList.toggle('inactive', w.id !== c.target);
+  });
+}
+function advanceDialogue(){
+  idx++;
+  if(idx < dialogues.length) updateDialogue(); else finishDialogue();
+}
+function finishDialogue(){
+  document.getElementById('dialogue-box').style.display='none';
+  const s=document.getElementById('btn-skip'); if(s) s.style.display='none';
+  document.querySelectorAll('.char-wrapper').forEach(w=>w.classList.remove('inactive'));
+  onDialogueEnd();
+}
+function onDialogueEnd(){
+  document.getElementById('summary').style.display='block';
+  document.getElementById('btn-end').style.display='block';
+}
+window.onload = function(){ updateDialogue(); };
+</script>
+</body>
+</html>

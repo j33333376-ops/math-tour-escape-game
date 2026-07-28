@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영종도 MATHTOUR - A03</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Noto Sans KR', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 게임 메인 컨테이너 (16:9 비율) */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            background-color: #0b0c10;
+            overflow: hidden;
+            border: 2px solid #00f0ff;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            filter: brightness(0.65) contract(1.1);
+        }
+
+        /* 헤더 바 */
+        #header-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: rgba(11, 12, 16, 0.85);
+            border-bottom: 2px solid #00f0ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 20;
+            box-shadow: 0 2px 10px rgba(0, 240, 255, 0.2);
+        }
+
+        .header-title {
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 1.1rem;
+            color: #00f0ff;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px #00f0ff;
+        }
+
+        .header-sub {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 0.85rem;
+            color: #e0ffff;
+        }
+
+        /* 무대 요소 레이어 */
+        #stage-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* 인물 Wrapper */
+        .char-wrapper {
+            transition: filter 0.3s ease, transform 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .char-wrapper.inactive {
+            filter: brightness(0.4) grayscale(0.3);
+        }
+
+        /* 대화창 UI */
+        #dialogue-box {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 900px;
+            height: 140px;
+            background: rgba(11, 12, 16, 0.9);
+            border: 2px solid #00f0ff;
+            border-radius: 8px;
+            padding: 15px 25px;
+            z-index: 10;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.25), inset 0 0 10px rgba(0, 240, 255, 0.1);
+        }
+
+        #speaker-name {
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 1.2rem;
+            color: #00f0ff;
+            margin-bottom: 8px;
+            text-shadow: 0 0 5px #00f0ff;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1rem;
+            color: #ffffff;
+            line-height: 1.6;
+            letter-spacing: 0.05em;
+            white-space: pre-line;
+        }
+
+        .click-prompt {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 0.8rem;
+            color: #00f0ff;
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes blink {
+            from { opacity: 0.3; }
+            to { opacity: 1; }
+        }
+
+        /* 공통 네비게이션 버튼 */
+        .btn-nav {
+            position: absolute;
+            bottom: 20px;
+            background: rgba(11, 12, 16, 0.8);
+            border: 2px solid #00f0ff;
+            color: #00f0ff;
+            padding: 8px 24px;
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 25;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+            text-shadow: 0 0 3px #00f0ff;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        .btn-nav:hover {
+            background: #00f0ff;
+            color: #0b0c10;
+            text-shadow: none;
+            box-shadow: 0 0 15px #00f0ff;
+        }
+
+        #btn-prev { left: 20px; }
+        #btn-next { right: 20px; }
+        #btn-skip { right: 20px; }
+
+        /* 퀴즈 컨테이너 레이어 */
+        #quiz-layer {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 40px);
+            z-index: 15;
+            display: none;
+            background: rgba(11, 12, 16, 0.95);
+            backdrop-filter: blur(5px);
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        /* 퀴즈 서식 커스텀 오버라이드 (SF 스타일 조정) */
+        .quiz-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            color: #e0ffff;
+            transform: scale(0.85);
+            transform-origin: top center;
+        }
+
+        .quiz-wrapper header h1 {
+            color: #00f0ff !important;
+            font-family: 'Black Han Sans', sans-serif !important;
+            text-shadow: 0 0 8px #00f0ff;
+        }
+
+        .quiz-wrapper .card, .quiz-wrapper .visual-card {
+            background-color: rgba(30, 41, 59, 0.7) !important;
+            border: 1px solid #00f0ff !important;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15) !important;
+        }
+
+        .quiz-wrapper .btn-primary {
+            background-color: #00f0ff !important;
+            color: #0b0c10 !important;
+            font-family: 'Black Han Sans', sans-serif !important;
+            font-weight: normal !important;
+            transition: all 0.2s !important;
+        }
+
+        .quiz-wrapper .btn-primary:hover {
+            background-color: #e0ffff !important;
+            box-shadow: 0 0 10px #00f0ff !important;
+        }
+
+        .quiz-wrapper input[type="number"], .quiz-wrapper input[type="range"] {
+            accent-color: #00f0ff !important;
+        }
+
+        .quiz-wrapper input[type="number"] {
+            border-bottom: 2px solid #00f0ff !important;
+            color: #00f0ff !important;
+            font-family: 'Nanum Gothic Coding', monospace !important;
+        }
+
+        /* 퀴즈 모달 서식 */
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 12, 16, 0.9);
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 100; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1; pointer-events: auto;
+        }
+
+        .modal-card {
+            background: #1e293b; border: 2px solid #00f0ff;
+            border-radius: 12px; padding: 25px; max-width: 400px;
+            width: 90%; text-align: center;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+        }
+
+        .modal-card h2 {
+            font-family: 'Black Han Sans', sans-serif;
+            color: #00f0ff; margin-bottom: 10px;
+        }
+
+        .badge-icon {
+            width: 80px; height: 80px; margin: 0 auto 15px;
+            background: radial-gradient(circle, #00f0ff 0%, #005580 100%);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 2.5rem;
+            box-shadow: 0 0 20px #00f0ff;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- 배경 이미지 -->
+    <img src="인천대교주탑.png" class="bg-img" alt="인천대교 주탑 배경">
+
+    <!-- 상단 헤더 바 -->
+    <div id="header-bar">
+        <span class="header-title">영종도 MATHTOUR : SF 우주 방어기지</span>
+        <span class="header-sub">SECTOR: 인천대교 주탑 측량</span>
+    </div>
+
+    <!-- 무대 인물 레이어 -->
+    <div id="stage-layer">
+        <!-- 민우 (우측 중앙) -->
+        <div class="char-wrapper" id="char-민우" style="position:absolute; left: 580px; bottom: 20px; width: 260px; height: 320px;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; pointer-events:none;"></iframe>
+        </div>
+        <!-- 서연 (우측 끝) -->
+        <div class="char-wrapper" id="char-서연" style="position:absolute; right:26px; bottom: 20px; width: 260px; height: 320px;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; pointer-events:none;"></iframe>
+        </div>
+    </div>
+
+    <!-- 대화창 UI -->
+    <div id="dialogue-box" onclick="advanceDialogue()">
+        <div id="speaker-name">민우</div>
+        <div id="dialogue-text">대사를 불러오는 중...</div>
+        <div class="click-prompt">CLICK TO CONTINUE ▶</div>
+    </div>
+
+    <!-- 네비게이션 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="goPrev()">◀ 이전</button>
+    <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기 ▶</button>
+    <button class="btn-nav" id="btn-next" style="display:none;" onclick="goNext()">인천대교기념관 이동 ▶</button>
+
+    <!-- 유형 3 수학 퀴즈 레이어 -->
+    <div id="quiz-layer">
+        <div class="quiz-wrapper">
+            <header>
+                <h1>🌉 [미션] 인천대교 주탑의 높이를 측정하라!</h1>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 4px;">삼각비(tan)를 활용해 직접 오르지 않고 거대 주탑의 높이를 간접 측정해봅시다.</p>
+                <span style="background: rgba(0,240,255,0.15); color: #00f0ff; border: 1px solid rgba(0,240,255,0.3); padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; display: inline-block; margin-top: 6px;">교육과정 연계: [9수03-17] 삼각비의 활용</span>
+            </header>
+
+            <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 15px; margin-top: 15px;">
+                <!-- 시뮬레이터 -->
+                <div class="visual-card" style="position: relative; border-radius: 12px; overflow: hidden; height: 360px;">
+                    <div style="padding: 10px 15px; background: rgba(15,23,42,0.8); border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.85rem; font-weight: bold; color: #00f0ff;">📐 시뮬레이터 & 가상 클리노미터</span>
+                        <span style="font-size: 0.75rem; color: #94a3b8;">주탑 끝점(B)을 드래그해보세요</span>
+                    </div>
+                    <div style="position: relative; width: 100%; height: calc(100% - 37px); background: #0b1329;">
+                        <canvas id="simCanvas"></canvas>
+                        <div style="position: absolute; top: 10px; left: 10px; background: rgba(15,23,42,0.85); border: 1px solid #00f0ff; border-radius: 6px; padding: 6px 10px; font-size: 0.75rem; color: #cbd5e1; line-height: 1.4;">
+                            거리 (a): <span id="disp-dist" style="color:#00f0ff; font-weight:bold;">300</span> m<br>
+                            앙각 (θ): <span id="disp-angle" style="color:#00f0ff; font-weight:bold;">38.0</span>°<br>
+                            tan(θ): <span id="disp-tan" style="color:#00f0ff; font-weight:bold;">0.7813</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 조작 및 제출 -->
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div class="card" style="padding: 15px; border-radius: 12px;">
+                        <div style="font-size: 0.95rem; font-weight: bold; color: #00f0ff; margin-bottom: 10px;">⚙️ 조작 컨트롤러</div>
+                        <div style="margin-bottom: 10px;">
+                            <div style="display:flex; justify-shadow:space-between; font-size:0.8rem; margin-bottom:4px;">
+                                <span>측정 거리 (a)</span>
+                                <span id="val-dist" style="color:#00f0ff; font-family:monospace;">300 m</span>
+                            </div>
+                            <input type="range" id="slider-dist" min="100" max="500" step="10" value="300" style="width: 100%;">
+                        </div>
+                        <div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:4px;">
+                                <span>측정자 눈높이 (h₁)</span>
+                                <span id="val-eye" style="color:#00f0ff; font-family:monospace;">1.6 m</span>
+                            </div>
+                            <input type="number" id="input-eye" value="1.6" step="0.1" min="0.5" max="2.5" style="width: 100%; background:#0f172a; padding: 4px 8px; border-radius: 4px; border:1px solid #334155;">
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding: 15px; border-radius: 12px;">
+                        <div style="font-size: 0.95rem; font-weight: bold; color: #00f0ff; margin-bottom: 8px;">🎯 미션 제출</div>
+                        <div style="background: rgba(30,41,59,0.7); border-left: 3px solid #00f0ff; padding: 8px 10px; font-size: 0.8rem; line-height: 1.4; margin-bottom: 8px;">
+                            <strong>[문제]</strong> 주탑에서 <strong>300m</strong> 떨어진 지점에서 주탑 끝을 바라보았을 때 앙각이 <strong>38°</strong>이고, 눈높이가 <strong>1.6m</strong>라면 주탑 높이는 얼마일까요?<br>
+                            <span style="color:#94a3b8; font-size:0.75rem;">(tan(38°) ≈ 0.789 적용)</span>
+                        </div>
+                        <div style="font-size: 0.8rem; text-align: center; color: #94a3b8; margin-bottom: 8px; font-family: monospace;">
+                            높이(h) = (a × tan θ) + h₁
+                        </div>
+                        <input type="number" id="input-answer" placeholder="계산값 입력 (예: 238.3)" step="0.1" style="width: 100%; background: #0f172a; padding: 8px; border-radius: 4px; border: 1px solid #00f0ff; color: #00f0ff; font-size: 0.9rem; margin-bottom: 8px;">
+                        <button class="btn-primary" id="btn-submit" onclick="checkAnswer()" style="width: 100%; padding: 10px; border: none; border-radius: 6px; cursor: pointer;">정답 확인하기</button>
+                        <div id="feedback" style="margin-top: 6px; font-size: 0.8rem; text-align: center; min-height: 18px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 클리어 모달 -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-card">
+            <div class="badge-icon">🏅</div>
+            <h2>미션 클리어!</h2>
+            <p style="font-size: 0.85rem; color: #e0ffff; margin-bottom: 15px;">'인천대교 명예 측량사' 디지털 배지를 획득하셨습니다!</p>
+            <div style="background: #0f172a; padding: 10px; border-radius: 6px; color: #00f0ff; font-weight: bold; margin-bottom: 15px; font-size: 0.9rem;">
+                계산된 인천대교 주탑 높이: 238.3 m
+            </div>
+            <button class="btn-primary" onclick="closeModalAndEnableNext()" style="width: 100%; padding: 10px; border: none; border-radius: 6px; cursor: pointer;">확인 및 완료</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 대화 스크립트 데이터
+    const dialogues = [
+        { speaker: "민우", text: "와... 거대한 인천대교 주탑이 한눈에 보여! 저 높이는 도대체 얼마나 될까?", target: "char-민우" },
+        { speaker: "서연", text: "직접 올라가지 않고도 높이를 재는 방법이 있어. 바로 '삼각비'를 이용하는 거지!", target: "char-서연" },
+        { speaker: "민우", text: "삼각비? 중학교에서 배운 그 직각삼각형에서의 변의 길이의 비율 말이야?", target: "char-민우" },
+        { speaker: "서연", text: "맞아! 기준각의 크기가 정해지면, 직각삼각형의 크기와 상관없이 밑변과 높이의 비율인 tan(탄젠트) 값은 항상 일정해.", target: "char-서연" },
+        { speaker: "서연", text: "따라서 '주탑과의 거리(밑변)'와 '올라다본 각도(앙각)'만 측정하면 삼각비로 주탑의 높이를 완벽하게 계산할 수 있어!", target: "char-서연" },
+        { speaker: "민우", text: "멋진데? 그럼 직접 삼각비 공식으로 주탑 높이를 계산해 보자!", target: "char-민우" },
+        { speaker: "서연", text: "좋아! 높이를 정확히 구하면 '인천대교 명예 측량사' 디지털 배지를 받을 수 있대. 도전해보자!", target: "char-서연" }
+    ];
+
+    let currentIndex = 0;
+    const prevUrl = "A02.html";
+    const nextUrl = "A04.html";
+
+    // 초기화
+    window.onload = function() {
+        updateDialogue();
+        initCanvas();
+    };
+
+    // 대화 진행 함수
+    function advanceDialogue() {
+        if (currentIndex < dialogues.length - 1) {
+            currentIndex++;
+            updateDialogue();
+        } else {
+            finishDialogue();
+        }
+    }
+
+    function updateDialogue() {
+        const current = dialogues[currentIndex];
+        document.getElementById("speaker-name").innerText = current.speaker;
+        document.getElementById("dialogue-text").innerText = current.text;
+
+        // Speaker Highlight
+        document.querySelectorAll('.char-wrapper').forEach(el => el.classList.add('inactive'));
+        if (current.target) {
+            const activeChar = document.getElementById(current.target);
+            if (activeChar) activeChar.classList.remove('inactive');
+        }
+    }
+
+    function skipDialogue() {
+        finishDialogue();
+    }
+
+    function finishDialogue() {
+        document.getElementById("dialogue-box").style.display = "none";
+        document.getElementById("btn-skip").style.display = "none";
+        document.querySelectorAll('.char-wrapper').forEach(el => el.classList.remove('inactive'));
+        
+        // 퀴즈 레이어 활성화
+        document.getElementById("quiz-layer").style.display = "block";
+        resizeCanvas();
+    }
+
+    // 네비게이션 함수
+    function goPrev() {
+        window.location.href = prevUrl;
+    }
+
+    function goNext() {
+        window.location.href = nextUrl;
+    }
+
+    /* --- 유형 3 수학 퀴즈 & Canvas 시뮬레이터 로직 --- */
+    let canvas, ctx;
+    let distance = 300;
+    let eyeHeight = 1.6;
+    const towerHeight = 238.3;
+
+    function initCanvas() {
+        canvas = document.getElementById('simCanvas');
+        if (!canvas) return;
+        ctx = canvas.getContext('2d');
+
+        document.getElementById('slider-dist').addEventListener('input', (e) => {
+            distance = parseFloat(e.target.value);
+            updateUI();
+        });
+
+        document.getElementById('input-eye').addEventListener('input', (e) => {
+            eyeHeight = parseFloat(e.target.value) || 1.6;
+            document.getElementById('val-eye').textContent = `${eyeHeight} m`;
+            updateUI();
+        });
+
+        window.addEventListener('resize', resizeCanvas);
+    }
+
+    function resizeCanvas() {
+        if (!canvas) return;
+        const container = canvas.parentElement;
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+        draw();
+    }
+
+    function getAngleRad() {
+        const h = towerHeight - eyeHeight;
+        return Math.atan2(h, distance);
+    }
+
+    function draw() {
+        if (!ctx) return;
+        const w = canvas.width;
+        const h = canvas.height;
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Sky Background
+        let grad = ctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, '#0b1329');
+        grad.addColorStop(1, '#1e293b');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+
+        const towerX = w * 0.8;
+        const groundY = h - 30;
+        const scale = (h - 70) / 260;
+
+        const observerX = towerX - (distance * scale);
+        const observerEyeY = groundY - (eyeHeight * scale);
+        const towerTopY = groundY - (towerHeight * scale);
+
+        // Ground
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, groundY, w, 30);
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, groundY);
+        ctx.lineTo(w, groundY);
+        ctx.stroke();
+
+        // Tower (Incheon Bridge Pylon Shape)
+        ctx.save();
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 8;
+
+        ctx.beginPath();
+        ctx.moveTo(towerX - 15, groundY);
+        ctx.lineTo(towerX - 4, towerTopY + 30);
+        ctx.lineTo(towerX, towerTopY);
+        ctx.lineTo(towerX + 4, towerTopY + 30);
+        ctx.lineTo(towerX + 15, groundY);
+        ctx.stroke();
+        ctx.restore();
+
+        // Observer
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(observerX, observerEyeY - 4, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Triangle
+        ctx.save();
+        ctx.strokeStyle = '#00f0ff';
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(observerX, observerEyeY);
+        ctx.lineTo(towerX, observerEyeY);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.moveTo(towerX, observerEyeY);
+        ctx.lineTo(towerX, towerTopY);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#10b981';
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.moveTo(observerX, observerEyeY);
+        ctx.lineTo(towerX, towerTopY);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function updateUI() {
+        const angleRad = getAngleRad();
+        const angleDeg = angleRad * (180 / Math.PI);
+        const tanVal = Math.tan(angleRad);
+
+        document.getElementById('disp-dist').textContent = distance;
+        document.getElementById('disp-angle').textContent = angleDeg.toFixed(1);
+        document.getElementById('disp-tan').textContent = tanVal.toFixed(4);
+        document.getElementById('val-dist').textContent = `${distance} m`;
+
+        draw();
+    }
+
+    // 퀴즈 정답 체크
+    function checkAnswer() {
+        const userAns = parseFloat(document.getElementById("input-answer").value);
+        const feedback = document.getElementById("feedback");
+
+        // 공식 계산: 300 * 0.789 + 1.6 = 236.7 + 1.6 = 238.3
+        const expected = 238.3;
+
+        if (Math.abs(userAns - expected) <= 0.5) {
+            feedback.style.color = "#34d399";
+            feedback.innerText = "정답입니다! 명예 측량사 배지를 획득하셨습니다.";
+            document.getElementById("modal").classList.add("active");
+        } else {
+            feedback.style.color = "#f87171";
+            feedback.innerText = "오답입니다. tan(38°) ≈ 0.789 값을 활용해 다시 계산해보세요.";
+        }
+    }
+
+    function closeModalAndEnableNext() {
+        document.getElementById("modal").classList.remove("active");
+        document.getElementById("btn-next").style.display = "block";
+    }
+</script>
+
+</body>
+</html>

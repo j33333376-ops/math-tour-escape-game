@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>신포국제시장 - F03. 문학경기장 인공암벽장</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #0d0f12;
+            color: #ffffff;
+            font-family: 'Noto Sans KR', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 16:9 프레임 게임 컨테이너 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1066px;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background-color: #1a1815;
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        /* 배경 이미지 */
+        .bg-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            filter: brightness(0.85);
+        }
+
+        /* 상단 스테이지 바 */
+        #stage-bar {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(20, 20, 20, 0.85);
+            border: 1px solid #d4af37;
+            border-radius: 6px;
+            padding: 6px 18px;
+            font-family: 'Nanum Myeongjo', serif;
+            font-size: 1.05rem;
+            color: #d4af37;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 인물 Wrapper 및 Iframe 배치 */
+        .char-wrapper {
+            position: absolute;
+            z-index: 3;
+            transition: filter 0.25s ease, transform 0.25s ease;
+        }
+
+        .char-wrapper.inactive {
+            filter: brightness(0.55);
+        }
+
+        /* 공통 버튼 디자인 */
+        .btn-nav {
+            position: absolute;
+            z-index: 20;
+            background: #8c3030;
+            color: #ffffff;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn-nav:hover {
+            background: #661f1f;
+            transform: translateY(-2px);
+        }
+
+        #btn-prev {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #btn-next {
+            right: 20px;
+            bottom: 20px;
+            display: none; /* 정답 36 입력 시 활성화 */
+        }
+
+        #btn-skip {
+            right: 20px;
+            bottom: 20px;
+        }
+
+        /* 하단 대화창 (유형 2) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 88%;
+            max-width: 920px;
+            height: 125px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            padding: 16px 24px;
+            box-sizing: border-box;
+            z-index: 10;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        #speaker-name {
+            font-family: 'Nanum Gothic Coding', monospace;
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 8px;
+        }
+
+        #dialogue-text {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+
+        .click-prompt {
+            position: absolute;
+            right: 20px;
+            bottom: 12px;
+            font-size: 0.8rem;
+            color: #d4af37;
+            animation: blink 1.2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* ==========================================================================
+           유형 3 수학 퀴즈 컨테이너 및 요청 소스 전용 스타일
+           ========================================================================== */
+        .quiz-container {
+            position: absolute;
+            top: 52%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 92%;
+            max-width: 900px;
+            height: 480px;
+            background: linear-gradient(145deg, #1f242d 0%, #151921 100%);
+            border: 2px solid #d4af37;
+            border-radius: 16px;
+            padding: 15px 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.2);
+            display: none; /* 대화 종료 후 표시 */
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 15;
+            box-sizing: border-box;
+        }
+
+        .quiz-container header {
+            text-align: center;
+            width: 100%;
+        }
+
+        .quiz-container .badge {
+            background: linear-gradient(135deg, #8c3030 0%, #b23b3b 100%);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 4px;
+            border: 1px solid #d4af37;
+            letter-spacing: 1px;
+            font-family: 'Nanum Myeongjo', serif;
+        }
+
+        .quiz-container h1 {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #f7fff7;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Nanum Myeongjo', serif;
+        }
+
+        .quiz-container .subtitle {
+            font-size: 0.82rem;
+            color: #a0aec0;
+            margin-top: 2px;
+            line-height: 1.3;
+        }
+
+        .level-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .level-btn {
+            flex: 1;
+            max-width: 160px;
+            padding: 6px 8px;
+            background: #2a313d;
+            border: 2px solid #4a5568;
+            border-radius: 8px;
+            color: #cbd5e0;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+
+        .level-btn:hover {
+            background: #363f4e;
+            border-color: #718096;
+            color: #fff;
+        }
+
+        .level-btn.active {
+            background: linear-gradient(135deg, #8c3030 0%, #682020 100%);
+            border-color: #d4af37;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+        }
+
+        .board-wrapper {
+            position: relative;
+            background: repeating-linear-gradient(
+                45deg,
+                #232832,
+                #232832 12px,
+                #1d212a 12px,
+                #1d212a 24px
+            );
+            border: 2px solid #4a5568;
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .grid-container {
+            position: relative;
+            width: 230px;
+            height: 230px;
+        }
+
+        #svg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .holds-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .hold {
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 900;
+            font-size: 0.75rem;
+            font-family: 'Nanum Gothic Coding', monospace;
+            box-shadow: 0 3px 0px rgba(0,0,0,0.5), inset -2px -2px 3px rgba(0,0,0,0.4);
+            transition: transform 0.15s, filter 0.2s, background-color 0.2s;
+        }
+
+        .hold:hover:not(.obstacle) {
+            transform: translate(-50%, -50%) scale(1.2);
+            filter: brightness(1.25);
+        }
+
+        .hold.start {
+            background: #2b6cb0 !important;
+            color: #ffffff;
+            border: 2px solid #90cdf4;
+            box-shadow: 0 0 10px #3182ce;
+        }
+
+        .hold.goal {
+            background: #c53030 !important;
+            color: #ffffff;
+            border: 2px solid #feb2b2;
+            box-shadow: 0 0 10px #e53e3e;
+        }
+
+        .hold.obstacle {
+            background: #2d3748 !important;
+            color: #e2e8f0;
+            border: 2px solid #718096;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .hold.required {
+            background: #d69e2e !important;
+            color: #ffffff;
+            border: 2px solid #faf089;
+            box-shadow: 0 0 10px #d69e2e;
+        }
+
+        .hold.visited {
+            box-shadow: 0 0 10px #d4af37, inset -2px -2px 4px rgba(0,0,0,0.5);
+            border: 2px solid #fff;
+        }
+
+        .dp-badge {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: rgba(14, 116, 144, 0.95);
+            color: #a5f3fc;
+            border: 1px solid #22d3ee;
+            border-radius: 8px;
+            padding: 0px 4px;
+            font-size: 0.65rem;
+            font-weight: 900;
+            pointer-events: none;
+        }
+
+        .board-controls {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 6px;
+        }
+
+        .ctrl-btn {
+            background: rgba(45, 55, 72, 0.8);
+            border: 1px solid #4a5568;
+            color: #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ctrl-btn:hover {
+            background: #4a5568;
+            color: #fff;
+        }
+
+        .ctrl-btn.active-hint {
+            background: #0891b2;
+            border-color: #22d3ee;
+            color: #fff;
+        }
+
+        .quiz-section {
+            width: 100%;
+            background: #1a202c;
+            border: 1px solid #2d3748;
+            border-radius: 10px;
+            padding: 10px 14px;
+            text-align: center;
+        }
+
+        .quiz-title {
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+            line-height: 1.4;
+        }
+
+        .quiz-title span.highlight {
+            color: #d4af37;
+            font-weight: 900;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        input[type="number"] {
+            width: 110px;
+            padding: 6px 10px;
+            border: 2px solid #4a5568;
+            border-radius: 6px;
+            background: #0f172a;
+            color: #fff;
+            font-size: 1.05rem;
+            text-align: center;
+            font-weight: 900;
+            outline: none;
+            font-family: 'Nanum Gothic Coding', monospace;
+        }
+
+        input[type="number"]:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-submit {
+            padding: 6px 18px;
+            background: linear-gradient(135deg, #8c3030 0%, #682020 100%);
+            color: #fff;
+            border: 1px solid #d4af37;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #a83838;
+        }
+
+        .feedback-msg {
+            margin-top: 6px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            min-height: 18px;
+        }
+        .feedback-msg.error { color: #f87171; }
+        .feedback-msg.success { color: #4ade80; }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            border-radius: 16px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #1e2430;
+            border: 2px solid #d4af37;
+            border-radius: 14px;
+            padding: 20px 24px;
+            text-align: center;
+            max-width: 360px;
+            width: 85%;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .modal-content h2 {
+            color: #d4af37;
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+            font-family: 'Nanum Myeongjo', serif;
+        }
+
+        .modal-content p {
+            color: #cbd5e0;
+            margin-bottom: 16px;
+            line-height: 1.5;
+            font-size: 0.85rem;
+        }
+
+        .climber-character {
+            font-size: 2.8rem;
+            margin-bottom: 6px;
+            display: inline-block;
+            animation: cheer 0.6s infinite alternate ease-in-out;
+        }
+
+        @keyframes cheer {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-8px) scale(1.1); }
+        }
+
+        .btn-modal {
+            background: linear-gradient(135deg, #d4af37 0%, #b58d26 100%);
+            color: #1a202c;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        @keyframes goldGlow {
+            0% { stroke: #d4af37; stroke-width: 2; opacity: 0.4; }
+            50% { stroke: #fff5c0; stroke-width: 4; opacity: 1; filter: drop-shadow(0 0 6px #d4af37); }
+            100% { stroke: #d4af37; stroke-width: 2; opacity: 0.4; }
+        }
+
+        .gold-path {
+            animation: goldGlow 1.5s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 배경 이미지 -->
+        <img src="암벽등반3.png" class="bg-img" alt="문학경기장 인공암벽장 배경">
+
+        <!-- 상단 스테이지 바 -->
+        <div id="stage-bar">
+            <span>🏛️</span>
+            <span>신포국제시장 - F03. 문학경기장 인공암벽장</span>
+        </div>
+
+        <!-- 등장인물: 민우 (우측 배치, scale 0.75) -->
+        <div class="char-wrapper" id="char-민우" style="right: 200px; bottom: 20px; width: 195px; height: 240px; overflow: visible;">
+            <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.75); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 등장인물: 서연 (우측 배치, 겹치지 않게 위치, scale 0.75) -->
+        <div class="char-wrapper" id="char-서연" style="right: 25px; bottom: 20px; width: 195px; height: 240px; overflow: visible;">
+            <iframe src="등장인물_서연.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(0.75); transform-origin:bottom left; pointer-events:none;"></iframe>
+        </div>
+
+        <!-- 공통 이동 버튼 -->
+        <button class="btn-nav" id="btn-prev" onclick="window.location.href='F02.html'">이전</button>
+        <button class="btn-nav" id="btn-next" onclick="window.location.href='F04.html'">다음 Stage ▶</button>
+        <button class="btn-nav" id="btn-skip" onclick="skipDialogue()">건너뛰기</button>
+
+        <!-- 하단 대화창 (유형 2) -->
+        <div id="dialogue-box" onclick="advanceDialogue()">
+            <div id="speaker-name">민우</div>
+            <div id="dialogue-text">대사 로딩 중...</div>
+            <div class="click-prompt">클릭하여 계속 ▼</div>
+        </div>
+
+        <!-- 수학 퀴즈 컨테이너 (유형 3) -->
+        <div class="quiz-container" id="quizContainer">
+            <header>
+                <span class="badge">인천 문학경기장 Math Tour</span>
+                <h1>🧗‍♂️ 암벽등반 루트 파인딩</h1>
+                <p class="subtitle" id="levelDesc">시작점(S)부터 정상(G)까지 최단 경로의 수 구하기</p>
+            </header>
+
+            <!-- 레벨 선택 버튼 (Level 1, 2, 3) -->
+            <div class="level-selector">
+                <button class="level-btn active" onclick="switchLevel(1)">Level 1<br><small>(기본 3×3)</small></button>
+                <button class="level-btn" onclick="switchLevel(2)">Level 2<br><small>(장애물 4×4)</small></button>
+                <button class="level-btn" onclick="switchLevel(3)">Level 3<br><small>(곱의 법칙 5×5)</small></button>
+            </div>
+
+            <!-- 컨트롤 버튼 및 암벽 격자 지도 -->
+            <div class="board-wrapper">
+                <div class="board-controls">
+                    <button class="ctrl-btn" id="hintBtn" onclick="toggleHint()">💡 힌트 보기 (합의 법칙)</button>
+                    <button class="ctrl-btn" onclick="resetUserPath()">🔄 경로 리셋</button>
+                </div>
+
+                <div class="grid-container" id="gridContainer">
+                    <svg id="svg-canvas"></svg>
+                    <div class="holds-layer" id="holdsLayer"></div>
+                </div>
+            </div>
+
+            <!-- 하단 퀴즈 및 입력 섹션 -->
+            <div class="quiz-section">
+                <div class="quiz-title" id="quizQuestion">질문 로딩 중...</div>
+                <div class="input-group">
+                    <input type="number" id="answerInput" placeholder="정답" min="0">
+                    <button class="btn-submit" onclick="checkAnswer()">정답 확인</button>
+                </div>
+                <div class="feedback-msg" id="feedbackMsg"></div>
+            </div>
+
+            <!-- 정답 / 축하 모달 팝업 -->
+            <div class="modal-overlay" id="resultModal">
+                <div class="modal-content">
+                    <div id="modalGraphic"></div>
+                    <h2 id="modalTitle">🎉 루트 파인딩 성공!</h2>
+                    <p id="modalDesc">축하합니다!</p>
+                    <button class="btn-modal" id="modalBtn" onclick="handleModalAction()">다음 레벨 이동 ➔</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           1. 대화 스크립트 관리 (Visual Novel 스크립트)
+           ========================================================================== */
+        const dialogues = [
+            { speaker: "민우", text: "여기가 바로 문학경기장에 있는 인공암벽장이구나! 정말 거대하고 높아!", target: "char-민우" },
+            { speaker: "서연", text: "암벽 등반을 성공하려면 무작정 오르기보다 가장 효율적인 최단 경로 수부터 파악해야 해.", target: "char-서연" },
+            { speaker: "민우", text: "최단 경로? 시작점에서 정해진 홀드를 거쳐 정상까지 가는 경우의 수를 계산하라는 거구나!", target: "char-민우" },
+            { speaker: "서연", text: "맞아! 경우의 수와 합의·곱의 법칙을 활용해서 암벽등반 루트를 완등해봐!", target: "char-서연" }
+        ];
+
+        let currentIndex = 0;
+
+        function updateDialogue() {
+            const dialogue = dialogues[currentIndex];
+            document.getElementById("speaker-name").innerText = dialogue.speaker;
+            document.getElementById("dialogue-text").innerText = dialogue.text;
+
+            document.querySelectorAll(".char-wrapper").forEach(el => {
+                if (el.id === dialogue.target) {
+                    el.classList.remove("inactive");
+                } else {
+                    el.classList.add("inactive");
+                }
+            });
+        }
+
+        function advanceDialogue() {
+            currentIndex++;
+            if (currentIndex < dialogues.length) {
+                updateDialogue();
+            } else {
+                endDialogue();
+            }
+        }
+
+        function skipDialogue() {
+            endDialogue();
+        }
+
+        function endDialogue() {
+            document.getElementById("dialogue-box").style.display = "none";
+            document.getElementById("btn-skip").style.display = "none";
+
+            document.querySelectorAll(".char-wrapper").forEach(el => {
+                el.classList.remove("inactive");
+            });
+
+            // 대화 종료 후 퀴즈 화면 출력
+            document.getElementById("quizContainer").style.display = "flex";
+            switchLevel(1);
+        }
+
+        /* ==========================================================================
+           2. 수학 퀴즈 로직 (요청서 소스 연동)
+           ========================================================================== */
+        const LEVEL_DATA = {
+            1: {
+                gridSize: 3,
+                obstacles: [],
+                required: null,
+                desc: "기본 3×3 격자에서 시작점(S)부터 정상(G)까지 가는 최단 경로의 수를 구해보세요.",
+                question: "시작점(S)에서 정상(G)까지 <span class='highlight'>오른쪽</span> 또는 <span class='highlight'>위쪽</span>으로만 이동하는 최단 경로의 수는 몇 가지인가요?"
+            },
+            2: {
+                gridSize: 4,
+                obstacles: [{r: 1, c: 1}, {r: 2, c: 2}],
+                required: null,
+                desc: "이동할 수 없는 '장애물 홀드(☠️)'를 피해서 가는 최단 경로의 수를 구해보세요.",
+                question: "장애물 홀드(☠️)를 <span class='highlight'>우회하여</span> 정상(G)까지 가는 최단 경로의 수는 몇 가지인가요?"
+            },
+            3: {
+                gridSize: 5,
+                obstacles: [],
+                required: {r: 2, c: 2},
+                desc: "필수 경유 홀드(⭐)를 반드시 거쳐 정상(G)으로 올라가는 곱의 법칙 문제에 도전해보세요.",
+                question: "시작점(S) ➔ <span class='highlight'>필수 홀드(⭐)</span> ➔ 정상(G) 순서로 반드시 거쳐 가는 최단 경로의 수는 몇 가지인가요?"
+            }
+        };
+
+        const HOLD_COLORS = ['#38a169', '#dd6b20', '#805ad5', '#d69e2e', '#3182ce'];
+
+        let currentLevel = 1;
+        let userPath = [];
+        let showHint = false;
+        let dpTable = [];
+        let correctAnswer = 0;
+
+        const holdsLayer = document.getElementById('holdsLayer');
+        const svgCanvas = document.getElementById('svg-canvas');
+        const feedbackMsg = document.getElementById('feedbackMsg');
+        const answerInput = document.getElementById('answerInput');
+        const hintBtn = document.getElementById('hintBtn');
+
+        function calculateDP() {
+            const config = LEVEL_DATA[currentLevel];
+            const N = config.gridSize;
+            
+            dpTable = Array.from({ length: N }, () => Array(N).fill(0));
+
+            const isObstacle = (r, c) => config.obstacles.some(o => o.r === r && o.c === c);
+
+            if (currentLevel === 1 || currentLevel === 2) {
+                dpTable[N - 1][0] = 1;
+
+                for (let r = N - 1; r >= 0; r--) {
+                    for (let c = 0; c < N; c++) {
+                        if (isObstacle(r, c)) {
+                            dpTable[r][c] = 0;
+                            continue;
+                        }
+                        if (r === N - 1 && c === 0) continue;
+
+                        let count = 0;
+                        if (r + 1 < N) count += dpTable[r + 1][c];
+                        if (c - 1 >= 0) count += dpTable[r][c - 1];
+
+                        dpTable[r][c] = count;
+                    }
+                }
+                correctAnswer = dpTable[0][N - 1];
+            } 
+            else if (currentLevel === 3) {
+                const req = config.required;
+
+                const dp1 = Array.from({ length: N }, () => Array(N).fill(0));
+                dp1[N - 1][0] = 1;
+
+                for (let r = N - 1; r >= req.r; r--) {
+                    for (let c = 0; c <= req.c; c++) {
+                        if (r === N - 1 && c === 0) continue;
+                        let count = 0;
+                        if (r + 1 < N) count += dp1[r + 1][c];
+                        if (c - 1 >= 0) count += dp1[r][c - 1];
+                        dp1[r][c] = count;
+                    }
+                }
+
+                const dp2 = Array.from({ length: N }, () => Array(N).fill(0));
+                dp2[req.r][req.c] = 1;
+
+                for (let r = req.r; r >= 0; r--) {
+                    for (let c = req.c; c < N; c++) {
+                        if (r === req.r && c === req.c) continue;
+                        let count = 0;
+                        if (r + 1 < N) count += dp2[r + 1][c];
+                        if (c - 1 >= 0) count += dp2[r][c - 1];
+                        dp2[r][c] = count;
+                    }
+                }
+
+                for (let r = 0; r < N; r++) {
+                    for (let c = 0; c < N; c++) {
+                        if (r >= req.r && c <= req.c) {
+                            dpTable[r][c] = dp1[r][c];
+                        } else if (r <= req.r && c >= req.c) {
+                            dpTable[r][c] = dp2[r][c];
+                        } else {
+                            dpTable[r][c] = 0;
+                        }
+                    }
+                }
+
+                const waysToP = dp1[req.r][req.c];
+                const waysPtoG = dp2[0][N - 1];
+                correctAnswer = waysToP * waysPtoG; // 6 * 6 = 36
+            }
+        }
+
+        function switchLevel(lvl) {
+            currentLevel = lvl;
+            showHint = false;
+            hintBtn.classList.remove('active-hint');
+            
+            document.querySelectorAll('.level-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx + 1 === lvl);
+            });
+
+            const config = LEVEL_DATA[lvl];
+            document.getElementById('levelDesc').innerText = config.desc;
+            document.getElementById('quizQuestion').innerHTML = config.question;
+            
+            answerInput.value = '';
+            feedbackMsg.innerText = '';
+            feedbackMsg.className = 'feedback-msg';
+
+            calculateDP();
+            initGrid();
+        }
+
+        function initGrid() {
+            holdsLayer.innerHTML = '';
+            svgCanvas.innerHTML = '';
+            userPath = [];
+
+            const config = LEVEL_DATA[currentLevel];
+            const N = config.gridSize;
+            const containerSize = 230;
+            const step = containerSize / (N - 1);
+
+            for (let r = 0; r < N; r++) {
+                for (let c = 0; c < N; c++) {
+                    const hold = document.createElement('div');
+                    hold.classList.add('hold');
+                    
+                    const posX = c * step;
+                    const posY = r * step;
+
+                    hold.style.left = `${posX}px`;
+                    hold.style.top = `${posY}px`;
+
+                    const isStart = (r === N - 1 && c === 0);
+                    const isGoal = (r === 0 && c === N - 1);
+                    const isObstacle = config.obstacles.some(o => o.r === r && o.c === c);
+                    const isRequired = config.required && (config.required.r === r && config.required.c === c);
+
+                    if (isStart) {
+                        hold.classList.add('start');
+                        hold.innerText = 'S';
+                    } else if (isGoal) {
+                        hold.classList.add('goal');
+                        hold.innerText = 'G';
+                    } else if (isObstacle) {
+                        hold.classList.add('obstacle');
+                        hold.innerText = '☠️';
+                    } else if (isRequired) {
+                        hold.classList.add('required');
+                        hold.innerText = '⭐';
+                    } else {
+                        const colorIdx = (r + c) % HOLD_COLORS.length;
+                        hold.style.backgroundColor = HOLD_COLORS[colorIdx];
+                    }
+
+                    hold.dataset.r = r;
+                    hold.dataset.c = c;
+                    hold.dataset.x = posX;
+                    hold.dataset.y = posY;
+
+                    hold.addEventListener('click', () => handleHoldClick(r, c, posX, posY, isObstacle));
+
+                    holdsLayer.appendChild(hold);
+                }
+            }
+
+            const startX = 0;
+            const startY = (N - 1) * step;
+            userPath.push({ r: N - 1, c: 0, x: startX, y: startY });
+            updateHoldVisits();
+            renderDPBadges();
+        }
+
+        function handleHoldClick(r, c, x, y, isObstacle) {
+            if (isObstacle) {
+                showFeedback("장애물 홀드에는 오를 수 없습니다!", "error");
+                return;
+            }
+
+            const lastPoint = userPath[userPath.length - 1];
+
+            const isRight = (r === lastPoint.r && c === lastPoint.c + 1);
+            const isUp = (c === lastPoint.c && r === lastPoint.r - 1);
+
+            if (isRight || isUp) {
+                userPath.push({ r, c, x, y });
+                drawUserPath();
+                updateHoldVisits();
+                showFeedback("", "");
+            } else if (r === lastPoint.r && c === lastPoint.c) {
+                // 동일 홀드 재클릭 무시
+            } else {
+                showFeedback("최단 경로는 '오른쪽' 또는 '위쪽'으로만 이동 가능합니다!", "error");
+            }
+        }
+
+        function drawUserPath() {
+            const existingLines = document.querySelectorAll('.user-line');
+            existingLines.forEach(line => line.remove());
+
+            for (let i = 0; i < userPath.length - 1; i++) {
+                const p1 = userPath[i];
+                const p2 = userPath[i + 1];
+
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', p1.x);
+                line.setAttribute('y1', p1.y);
+                line.setAttribute('x2', p2.x);
+                line.setAttribute('y2', p2.y);
+                line.setAttribute('stroke', '#d4af37');
+                line.setAttribute('stroke-width', '4');
+                line.setAttribute('stroke-linecap', 'round');
+                line.classList.add('user-line');
+
+                svgCanvas.appendChild(line);
+            }
+        }
+
+        function updateHoldVisits() {
+            const allHolds = document.querySelectorAll('.hold');
+            allHolds.forEach(h => {
+                const hr = parseInt(h.dataset.r);
+                const hc = parseInt(h.dataset.c);
+                const visited = userPath.some(p => p.r === hr && p.c === hc);
+                if (visited && !h.classList.contains('start') && !h.classList.contains('goal')) {
+                    h.classList.add('visited');
+                } else {
+                    h.classList.remove('visited');
+                }
+            });
+        }
+
+        function resetUserPath() {
+            const config = LEVEL_DATA[currentLevel];
+            const N = config.gridSize;
+            const step = 230 / (N - 1);
+            userPath = [{ r: N - 1, c: 0, x: 0, y: (N - 1) * step }];
+            drawUserPath();
+            updateHoldVisits();
+            showFeedback("", "");
+        }
+
+        function toggleHint() {
+            showHint = !showHint;
+            hintBtn.classList.toggle('active-hint', showHint);
+            renderDPBadges();
+        }
+
+        function renderDPBadges() {
+            document.querySelectorAll('.dp-badge').forEach(b => b.remove());
+
+            if (!showHint) return;
+
+            const allHolds = document.querySelectorAll('.hold');
+            allHolds.forEach(h => {
+                const r = parseInt(h.dataset.r);
+                const c = parseInt(h.dataset.c);
+                
+                const badge = document.createElement('div');
+                badge.classList.add('dp-badge');
+                badge.innerText = dpTable[r][c];
+                h.appendChild(badge);
+            });
+        }
+
+        function showFeedback(msg, type) {
+            feedbackMsg.innerText = msg;
+            feedbackMsg.className = `feedback-msg ${type}`;
+        }
+
+        function checkAnswer() {
+            const userVal = parseInt(answerInput.value, 10);
+
+            if (isNaN(userVal)) {
+                showFeedback("숫자를 입력해 주세요!", "error");
+                return;
+            }
+
+            if (userVal === correctAnswer) {
+                showFeedback("정답입니다! 황금빛 최단 경로를 확인해보세요.", "success");
+                renderGoldPathsAnimation();
+
+                // 조건 판정: 정답이 36 이면 다음 stage (F04.html) 버튼 활성화
+                if (userVal === 36) {
+                    document.getElementById("btn-next").style.display = "block";
+                }
+
+                setTimeout(() => {
+                    openSuccessModal();
+                }, 1200);
+            } else {
+                if (currentLevel === 1) {
+                    showFeedback("다시 계산해볼까요? 각 홀드로 오를 수 있는 경우의 수를 더하는 '합의 법칙'을 활용해보세요!", "error");
+                } else if (currentLevel === 2) {
+                    showFeedback("장애물이 있는 홀드(☠️)는 경우의 수를 0으로 두고 합의 법칙을 적용해보세요!", "error");
+                } else {
+                    showFeedback("(시작점 ➔ 필수 홀드)까지의 경우의 수와 (필수 홀드 ➔ 정상)까지의 경우의 수를 구해 곱해보세요!", "error");
+                }
+            }
+        }
+
+        function renderGoldPathsAnimation() {
+            svgCanvas.innerHTML = '';
+            const config = LEVEL_DATA[currentLevel];
+            const N = config.gridSize;
+            const step = 230 / (N - 1);
+
+            const isObstacle = (r, c) => config.obstacles.some(o => o.r === r && o.c === c);
+
+            function findAllPaths(r, c, path) {
+                if (r === 0 && c === N - 1) {
+                    if (currentLevel === 3) {
+                        const req = config.required;
+                        const hasVisitedReq = path.some(p => p.r === req.r && p.c === req.c);
+                        if (!hasVisitedReq) return;
+                    }
+
+                    for (let i = 0; i < path.length - 1; i++) {
+                        const p1 = path[i];
+                        const p2 = path[i + 1];
+
+                        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        line.setAttribute('x1', p1.c * step);
+                        line.setAttribute('y1', p1.r * step);
+                        line.setAttribute('x2', p2.c * step);
+                        line.setAttribute('y2', p2.r * step);
+                        line.classList.add('gold-path');
+
+                        svgCanvas.appendChild(line);
+                    }
+                    return;
+                }
+
+                if (r > 0 && !isObstacle(r - 1, c)) {
+                    findAllPaths(r - 1, c, [...path, { r: r - 1, c }]);
+                }
+                if (c < N - 1 && !isObstacle(r, c + 1)) {
+                    findAllPaths(r, c + 1, [...path, { r, c: c + 1 }]);
+                }
+            }
+
+            findAllPaths(N - 1, 0, [{ r: N - 1, c: 0 }]);
+        }
+
+        function openSuccessModal() {
+            const modal = document.getElementById('resultModal');
+            const graphic = document.getElementById('modalGraphic');
+            const title = document.getElementById('modalTitle');
+            const desc = document.getElementById('modalDesc');
+            const btn = document.getElementById('modalBtn');
+
+            if (currentLevel < 3) {
+                graphic.innerHTML = '';
+                title.innerText = `🎉 Level ${currentLevel} 클리어!`;
+                desc.innerText = `축하합니다! 경우의 수 원리를 바르게 이해하셨네요.\n다음 단계 미션에 도전해볼까요?`;
+                btn.innerText = "다음 레벨 이동 ➔";
+            } else {
+                graphic.innerHTML = '<div class="climber-character">🧗‍♂️🏆</div>';
+                title.innerText = "문학경기장 정복 완료!";
+                desc.innerText = "당신은 경우의 수 마스터입니다!\n정답 36을 맞추어 다음 Stage 이동 버튼이 활성화되었습니다!";
+                btn.innerText = "확인";
+            }
+
+            modal.classList.add('active');
+        }
+
+        function handleModalAction() {
+            document.getElementById('resultModal').classList.remove('active');
+            if (currentLevel < 3) {
+                switchLevel(currentLevel + 1);
+            }
+        }
+
+        // 대화 시스템 시작
+        updateDialogue();
+    </script>
+</body>
+</html>

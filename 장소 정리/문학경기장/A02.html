@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문학경기장 MATHTOUR - STAGE 2: 소인수분해 스마트 게이트</title>
+  
+  <!-- Pretendard & Roboto Mono Fonts -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ssg: {
+              red: '#C8102E',
+              darkred: '#8B0000',
+              accent: '#FF4D4D',
+              dark: '#0A0D14',
+              panel: '#161B26',
+              border: '#2A3245'
+            }
+          },
+          fontFamily: {
+            sans: ['Pretendard', 'sans-serif'],
+            mono: ['Roboto Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    /* CSS Resets & Base Setup */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #0f172a;
+      font-family: 'Pretendard', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #1e293b;
+      overflow: hidden;
+    }
+
+    /* 16:9 Game Container (1066px x 600px 고정/가변 대응) */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background-color: #f8fafc;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Laser Scanner Animation */
+    @keyframes scan {
+      0% { top: 5%; opacity: 0.3; }
+      50% { top: 90%; opacity: 1; }
+      100% { top: 5%; opacity: 0.3; }
+    }
+    .scanner-laser {
+      animation: scan 2.2s ease-in-out infinite;
+    }
+
+    /* Bounce Animation */
+    @keyframes bounce-slow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-bounce-slow {
+      animation: bounce-slow 1.5s infinite;
+    }
+
+    /* Navigation Buttons */
+    .btn-nav {
+      position: absolute;
+      background-color: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Pretendard', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+      transition: all 0.2s ease;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-nav:hover {
+      background-color: #1d4ed8;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(29, 78, 216, 0.45);
+    }
+
+    .btn-nav:active {
+      transform: translateY(0);
+    }
+
+    #btn-prev {
+      left: 16px;
+      bottom: 12px;
+    }
+
+    #btn-next {
+      right: 16px;
+      bottom: 12px;
+      background-color: #10b981;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+    }
+
+    #btn-next:hover {
+      background-color: #059669;
+      box-shadow: 0 6px 16px rgba(5, 150, 105, 0.45);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Game Container (16:9 Aspect Ratio) -->
+  <div id="game-container">
+
+    <!-- 1. Background Image & Dark Overlay -->
+    <img src="인천SSG랜더스필드 외부.png" alt="SSG 랜더스필드 배경" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+    <div style="position: absolute; inset: 0; background: rgba(10, 13, 20, 0.78); z-index: 1;"></div>
+
+    <!-- 2. Header / Stage Bar -->
+    <header style="position: relative; z-index: 10;" class="bg-ssg-panel/90 backdrop-blur border-b border-ssg-border px-5 py-2 shadow-lg flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="w-2.5 h-6 bg-ssg-red rounded-full inline-block"></span>
+        <div>
+          <h1 class="font-black text-sm text-white tracking-wider flex items-center gap-2">
+            INCHEON SSG LANDERS FIELD · MATHTOUR
+          </h1>
+          <p class="text-[10px] text-slate-400">STAGE 2 : [9수01-01] 소인수분해 스마트 게이트 보안 인증</p>
+        </div>
+      </div>
+      
+      <!-- Progress Bar & Status Badge -->
+      <div class="flex items-center gap-4">
+        <div class="hidden sm:flex items-center gap-2 bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-700">
+          <span class="text-[11px] text-slate-400 font-bold">진행도:</span>
+          <div class="w-20 bg-slate-800 h-1.5 rounded-full overflow-hidden border border-slate-700">
+            <div class="bg-blue-500 h-full w-2/5 rounded-full"></div>
+          </div>
+          <span class="text-[11px] text-blue-400 font-mono font-bold">2 / 5</span>
+        </div>
+        <div id="gate-status-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-900/60 text-red-400 border border-red-600/50 flex items-center gap-1.5 shadow-sm">
+          <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span>
+          GATE: LOCKED
+        </div>
+      </div>
+    </header>
+
+    <!-- 3. Main Content Area (Central Quiz Panel) -->
+    <main style="position: relative; z-index: 10;" class="px-2 py-1 flex-1 flex items-center justify-center">
+      
+      <div class="w-full max-w-[670px] grid grid-cols-12 gap-3 items-stretch my-auto">
+
+        <!-- Left Column: Barcode & Story Panel (5/12) -->
+        <section class="col-span-5 bg-ssg-panel/95 border border-ssg-border rounded-xl p-3 shadow-2xl flex flex-col justify-between gap-2 backdrop-blur-md">
+          
+          <!-- Story Banner -->
+          <div class="bg-slate-900/90 rounded-lg p-2 border border-slate-800">
+            <div class="flex items-center gap-1.5 text-ssg-accent font-bold mb-0.5 text-[11px]">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0 1 18 0z"></path></svg>
+              미션 안내
+            </div>
+            <p class="text-[10px] text-slate-300 leading-tight">
+              티켓 번호 <strong class="text-yellow-400 font-bold">180</strong>을 소인수분해하여 지수 다이얼 <span class="text-ssg-accent font-mono font-bold">(a, b, c)</span>을 설정하세요!
+            </p>
+          </div>
+
+          <!-- Barcode Scanner Window -->
+          <div class="relative bg-slate-950 rounded-lg p-2.5 border border-slate-800 overflow-hidden flex flex-col items-center justify-center shadow-inner my-auto">
+            <div class="scanner-laser absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_10px_#FF0000] z-20"></div>
+            
+            <div class="text-[9px] font-mono text-slate-500 mb-1 tracking-widest">[ SMART TICKET SCANNER ]</div>
+
+            <!-- Barcode graphic -->
+            <div class="bg-white px-2.5 py-1.5 rounded shadow flex flex-col items-center w-full max-w-[170px]">
+              <div class="flex items-center justify-between w-full h-6 gap-0.5 mb-0.5 overflow-hidden">
+                <div class="w-1.5 h-full bg-black"></div>
+                <div class="w-0.5 h-full bg-black"></div>
+                <div class="w-2 h-full bg-black"></div>
+                <div class="w-0.5 h-full bg-black"></div>
+                <div class="w-1.5 h-full bg-black"></div>
+                <div class="w-2.5 h-full bg-black"></div>
+                <div class="w-0.5 h-full bg-black"></div>
+                <div class="w-1.5 h-full bg-black"></div>
+                <div class="w-2 h-full bg-black"></div>
+              </div>
+              <span class="text-[9px] text-slate-600 font-mono">TICKET: #2026-180</span>
+            </div>
+
+            <!-- Target number display -->
+            <div class="mt-1.5 text-center">
+              <div class="text-[9px] text-slate-400">인증 대상 수 (Target Number)</div>
+              <div id="target-number" class="text-2xl font-black font-mono tracking-widest text-white drop-shadow-[0_0_8px_rgba(200,16,46,0.6)]">
+                180
+              </div>
+            </div>
+          </div>
+
+          <!-- Tip Box -->
+          <div class="text-[9px] text-slate-400 bg-slate-900/70 p-1.5 rounded border border-slate-800/80">
+            💡 <strong class="text-slate-200">Tip:</strong> 소인수분해 공식<br>(180 = 2<sup>a</sup> × 3<sup>b</sup> × 5<sup>c</sup>)
+          </div>
+
+        </section>
+
+        <!-- Right Column: Exponent Controls & Display (7/12) -->
+        <section class="col-span-7 bg-ssg-panel/95 border border-ssg-border rounded-xl p-3 shadow-2xl flex flex-col justify-between backdrop-blur-md">
+          
+          <div>
+            <!-- Gate Status Card -->
+            <div id="gate-display-card" class="bg-gradient-to-r from-red-950/70 via-slate-900 to-red-950/70 border border-red-800/80 rounded-lg px-3 py-1.5 mb-2 transition-all duration-500">
+              <div class="flex justify-between items-center">
+                <div>
+                  <span class="text-[9px] uppercase tracking-wider text-slate-400">보안 게이트 상태</span>
+                  <h2 id="gate-status-text" class="text-base font-black text-red-500 tracking-wider">
+                    🔒 LOCKED (인증 필요)
+                  </h2>
+                </div>
+                <div id="gate-icon" class="text-xl text-red-500">
+                  🔒
+                </div>
+              </div>
+            </div>
+
+            <!-- Math Equation Display -->
+            <div class="bg-slate-950 px-2.5 py-1.5 rounded-lg border border-slate-800 mb-2 text-center">
+              <div class="text-[9px] text-slate-400 mb-0.5">실시간 소인수분해 거듭제곱 계산식</div>
+              <div class="text-lg font-bold font-mono tracking-wide text-white flex items-center justify-center gap-1">
+                <span>2<sup id="exp-a-disp" class="text-ssg-accent text-base font-black">0</sup></span>
+                <span class="text-slate-500">×</span>
+                <span>3<sup id="exp-b-disp" class="text-ssg-accent text-base font-black">0</sup></span>
+                <span class="text-slate-500">×</span>
+                <span>5<sup id="exp-c-disp" class="text-ssg-accent text-base font-black">0</sup></span>
+                <span class="text-slate-400"> = </span>
+                <span id="current-calc-value" class="text-yellow-400 font-mono text-xl font-black ml-1">1</span>
+              </div>
+              <div id="calc-feedback" class="text-[10px] text-slate-400 h-3.5">
+                목표 값 180과 일치하도록 지수를 조정하세요.
+              </div>
+            </div>
+
+            <!-- Exponent Dial Controllers -->
+            <div class="space-y-1.5">
+              
+              <!-- Exponent a (Base 2) -->
+              <div class="bg-slate-900/90 px-2.5 py-1 rounded-lg border border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded bg-ssg-red/20 border border-ssg-red/50 flex items-center justify-center text-ssg-accent font-bold text-xs">
+                    2
+                  </div>
+                  <div>
+                    <div class="text-[11px] font-bold text-white">밑: 2 (소인수)</div>
+                    <div class="text-[9px] text-slate-400">지수 <span class="text-ssg-accent font-bold">a</span> 값 조정</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button onclick="changeExponent('a', -1)" class="w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white font-bold text-sm transition flex items-center justify-center border border-slate-700 shadow">-</button>
+                  <span id="exp-a-val" class="text-base font-black font-mono w-5 text-center text-yellow-400">0</span>
+                  <button onclick="changeExponent('a', 1)" class="w-6 h-6 rounded bg-ssg-red hover:bg-red-600 active:bg-red-700 text-white font-bold text-sm transition flex items-center justify-center border border-red-500 shadow">+</button>
+                </div>
+              </div>
+
+              <!-- Exponent b (Base 3) -->
+              <div class="bg-slate-900/90 px-2.5 py-1 rounded-lg border border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded bg-ssg-red/20 border border-ssg-red/50 flex items-center justify-center text-ssg-accent font-bold text-xs">
+                    3
+                  </div>
+                  <div>
+                    <div class="text-[11px] font-bold text-white">밑: 3 (소인수)</div>
+                    <div class="text-[9px] text-slate-400">지수 <span class="text-ssg-accent font-bold">b</span> 값 조정</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button onclick="changeExponent('b', -1)" class="w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white font-bold text-sm transition flex items-center justify-center border border-slate-700 shadow">-</button>
+                  <span id="exp-b-val" class="text-base font-black font-mono w-5 text-center text-yellow-400">0</span>
+                  <button onclick="changeExponent('b', 1)" class="w-6 h-6 rounded bg-ssg-red hover:bg-red-600 active:bg-red-700 text-white font-bold text-sm transition flex items-center justify-center border border-red-500 shadow">+</button>
+                </div>
+              </div>
+
+              <!-- Exponent c (Base 5) -->
+              <div class="bg-slate-900/90 px-2.5 py-1 rounded-lg border border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded bg-ssg-red/20 border border-ssg-red/50 flex items-center justify-center text-ssg-accent font-bold text-xs">
+                    5
+                  </div>
+                  <div>
+                    <div class="text-[11px] font-bold text-white">밑: 5 (소인수)</div>
+                    <div class="text-[9px] text-slate-400">지수 <span class="text-ssg-accent font-bold">c</span> 값 조정</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button onclick="changeExponent('c', -1)" class="w-6 h-6 rounded bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white font-bold text-sm transition flex items-center justify-center border border-slate-700 shadow">-</button>
+                  <span id="exp-c-val" class="text-base font-black font-mono w-5 text-center text-yellow-400">0</span>
+                  <button onclick="changeExponent('c', 1)" class="w-6 h-6 rounded bg-ssg-red hover:bg-red-600 active:bg-red-700 text-white font-bold text-sm transition flex items-center justify-center border border-red-500 shadow">+</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Success Alert Container -->
+          <div id="success-action-container" class="hidden mt-1.5 pt-1.5 border-t border-slate-800">
+            <div class="bg-emerald-950/80 border border-emerald-500/50 p-2 rounded-lg text-center mb-1.5">
+              <div class="text-emerald-400 font-bold text-[11px] mb-0.5">🎉 보안 인증 성공! (180 = 2² × 3² × 5¹)</div>
+              <p class="text-[10px] text-emerald-200">인증 승인 완료! 그라운드로 입장하세요.</p>
+            </div>
+            <button onclick="handleEnterField()" class="w-full py-1.5 bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-black text-xs rounded-lg shadow-lg transition duration-200 animate-bounce-slow flex items-center justify-center gap-1">
+              <span>⚾ SSG랜더스필드 그라운드 입장하기</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </button>
+          </div>
+
+        </section>
+
+      </div>
+
+    </main>
+
+    <!-- 4. Footer Bar -->
+    <footer style="position: relative; z-index: 10;" class="bg-ssg-panel/90 border-t border-ssg-border py-1 text-center text-[10px] text-slate-400">
+      SSG 랜더스필드 매쓰투어 (Math Tour) · 중학교 수학 [9수01-01] 소인수분해 연계 체험 프로그램
+    </footer>
+
+    <!-- 5. Navigation Buttons -->
+    <button id="btn-prev" class="btn-nav" onclick="location.href='A01.html'">
+      <span>◀ 이전 (A01.html)</span>
+    </button>
+
+    <button id="btn-next" class="btn-nav" onclick="location.href='A03.html'">
+      <span>다음 (A03.html) ▶</span>
+    </button>
+
+  </div>
+
+  <!-- JavaScript Implementation -->
+  <script>
+    // Exponent States (a, b, c)
+    let state = {
+      a: 0, // Base 2 exponent
+      b: 0, // Base 3 exponent
+      c: 0  // Base 5 exponent
+    };
+
+    const TARGET = 180;
+    let isCleared = false;
+
+    // Web Audio API Context
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    // 1. Tick Sound
+    function playTickSound() {
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.04);
+
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.04);
+      } catch (e) {
+        console.log("Audio play error:", e);
+      }
+    }
+
+    // 2. Success Fanfare Sound
+    function playSuccessSound() {
+      try {
+        const ctx = getAudioContext();
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, index) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + index * 0.1);
+
+          gain.gain.setValueAtTime(0, ctx.currentTime + index * 0.1);
+          gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + index * 0.1 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + index * 0.1 + 0.4);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc.start(ctx.currentTime + index * 0.1);
+          osc.stop(ctx.currentTime + index * 0.1 + 0.45);
+        });
+      } catch (e) {
+        console.log("Audio play error:", e);
+      }
+    }
+
+    // Change Exponent Function
+    function changeExponent(variable, delta) {
+      if (isCleared) return;
+
+      playTickSound();
+
+      if (state[variable] + delta >= 0 && state[variable] + delta <= 5) {
+        state[variable] += delta;
+      }
+
+      updateUI();
+    }
+
+    // UI and Calculation Update
+    function updateUI() {
+      // 1. Update Dial Values
+      document.getElementById('exp-a-val').innerText = state.a;
+      document.getElementById('exp-b-val').innerText = state.b;
+      document.getElementById('exp-c-val').innerText = state.c;
+
+      // 2. Update Equation Displays
+      document.getElementById('exp-a-disp').innerText = state.a;
+      document.getElementById('exp-b-disp').innerText = state.b;
+      document.getElementById('exp-c-disp').innerText = state.c;
+
+      // 3. Calculate Current Value: 2^a * 3^b * 5^c
+      const calcValue = Math.pow(2, state.a) * Math.pow(3, state.b) * Math.pow(5, state.c);
+      const calcValElem = document.getElementById('current-calc-value');
+      const feedbackElem = document.getElementById('calc-feedback');
+      
+      calcValElem.innerText = calcValue.toLocaleString();
+
+      // Feedback Text & Color Rules
+      if (calcValue === TARGET) {
+        calcValElem.className = "text-emerald-400 font-mono text-xl font-black ml-1 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]";
+        feedbackElem.innerText = "정답입니다! 180 = 2² × 3² × 5¹";
+        feedbackElem.className = "text-[10px] text-emerald-400 font-bold";
+        
+        if (!isCleared) {
+          triggerSuccess();
+        }
+      } else {
+        if (calcValue > TARGET) {
+          calcValElem.className = "text-red-500 font-mono text-xl font-black ml-1";
+          feedbackElem.innerText = "계산값이 목표 수(180)보다 큽니다. 지수를 줄여보세요.";
+          feedbackElem.className = "text-[10px] text-red-400";
+        } else {
+          calcValElem.className = "text-yellow-400 font-mono text-xl font-black ml-1";
+          feedbackElem.innerText = "목표 수 180과 일치하도록 지수를 맞춰주세요.";
+          feedbackElem.className = "text-[10px] text-slate-400";
+        }
+      }
+    }
+
+    // Trigger Success
+    function triggerSuccess() {
+      isCleared = true;
+
+      // Play sound
+      playSuccessSound();
+
+      // Update Top Status Badge
+      const statusBadge = document.getElementById('gate-status-badge');
+      statusBadge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-900/60 text-emerald-400 border border-emerald-500/50 flex items-center gap-1.5 shadow-sm";
+      statusBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> GATE: UNLOCKED`;
+
+      // Update Gate Display Card
+      const gateCard = document.getElementById('gate-display-card');
+      gateCard.className = "bg-gradient-to-r from-emerald-950/80 via-slate-900 to-emerald-950/80 border border-emerald-500 rounded-lg px-3 py-1.5 mb-2 transition-all duration-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]";
+
+      document.getElementById('gate-status-text').innerText = "🔓 OPEN (인증 완료)";
+      document.getElementById('gate-status-text').className = "text-base font-black text-emerald-400 tracking-wider";
+      document.getElementById('gate-icon').innerText = "🔓";
+      document.getElementById('gate-icon').className = "text-xl text-emerald-400 animate-bounce";
+
+      // Unhide Success Container
+      const actionContainer = document.getElementById('success-action-container');
+      actionContainer.classList.remove('hidden');
+
+      // Unhide Next Navigation Button
+      const btnNext = document.getElementById('btn-next');
+      btnNext.style.display = 'flex';
+    }
+
+    // Handle Enter Field Button Click
+    function handleEnterField() {
+      alert("⚾ 축하합니다! SSG랜더스필드 그라운드 입장이 완료되었습니다.\n[다음 매쓰투어 코너로 이동합니다.]");
+      location.href = 'A03.html';
+    }
+
+    // Initialize Page
+    window.addEventListener('DOMContentLoaded', () => {
+      // Initially hide Next button for Quiz Scene until cleared
+      document.getElementById('btn-next').style.display = 'none';
+      updateUI();
+    });
+  </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-html_content = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -492,7 +492,7 @@ html_content = """<!DOCTYPE html>
     </div>
 
     <!-- 등장인물: 민우 (화면 오른쪽 두 번째) -->
-    <div class="char-wrapper" id="char-민우" style="left:800px; bottom:20px;">
+    <div class="char-wrapper" id="char-민우" style="right:6px; bottom:20px;">
         <iframe src="등장인물_민우.html" scrolling="no" style="border:0; width:260px; height:320px; transform:scale(1) scaleX(-1); transform-origin:bottom left; pointer-events:none;"></iframe>
     </div>
 
@@ -576,8 +576,8 @@ html_content = """<!DOCTYPE html>
     </div>
 
     <!-- 하단 공통 이동 버튼 -->
-    <button id="btn-prev" class="btn-nav" onclick="window.location.href='d04.html'">◀ 이전</button>
-    <button id="btn-next" class="btn-nav" onclick="window.location.href='d05.html'">다음 ▶</button>
+    <button id="btn-prev" class="btn-nav" onclick="window.location.href='D04.html'">◀ 이전</button>
+    <button id="btn-next" class="btn-nav" onclick="window.location.href='D05.html'">다음 ▶</button>
 </div>
 
 <script>
@@ -795,8 +795,4 @@ html_content = """<!DOCTYPE html>
     }
 </script>
 </body>
-</html>"""
-
-with open('d04.html', 'w', encoding='utf-8') as f:
-    f.write(html_content)
-print("d04.html updated with Mission Complete screen.")
+</html>

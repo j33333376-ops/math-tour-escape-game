@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>인천차이나타운 MATHTOUR - 인천개항박물관</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      background: radial-gradient(circle, #f5f0e6 0%, #d9c8a7 75%, #80634c 100%);
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    #game-container {
+      position: relative;
+      width: min(100%, 1066px);
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      isolation: isolate;
+      background: #251411;
+      border: 4px solid #d4af37;
+      border-radius: 7px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.5), inset 0 0 28px rgba(0,0,0,.45);
+    }
+
+    #background-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      filter: sepia(.25) brightness(.8) contrast(1.06);
+    }
+
+    .scene-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(to bottom, rgba(30,12,10,.24), transparent 45%, rgba(20,7,5,.42)),
+        radial-gradient(circle at center, transparent 38%, rgba(15,5,4,.5) 100%);
+    }
+
+    #stage-bar {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      z-index: 12;
+      transform: translateX(-50%);
+      max-width: calc(100% - 40px);
+      padding: 10px 28px;
+      color: #f7df8b;
+      background: rgba(27,12,10,.8);
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      box-shadow: 0 5px 18px rgba(0,0,0,.4);
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: clamp(16px, 2.1vw, 24px);
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    #stage-bar::before, #stage-bar::after {
+      content: '◆';
+      margin: 0 10px;
+      color: #d4af37;
+      font-size: .65em;
+    }
+
+    .char-wrapper {
+      position: absolute;
+      z-index: 3;
+      width: 234px;
+      height: 288px;
+      overflow: visible;
+      filter: drop-shadow(0 12px 10px rgba(0,0,0,.5));
+      animation: floatCharacter 3.2s ease-in-out infinite;
+    }
+
+    .char-wrapper iframe {
+      display: block;
+      width: 260px;
+      height: 320px;
+      border: 0;
+      pointer-events: none;
+      transform-origin: bottom left;
+    }
+
+    #char-민우 { left: 34px; bottom: 24px; }
+    #char-민우 iframe { transform: scale(.9); }
+
+    #char-서연 {
+      right: 34px;
+      bottom: 24px;
+      animation-delay: .45s;
+    }
+    #char-서연 iframe { transform: scale(.9) scaleX(-1); }
+
+    .name-tag {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      z-index: 4;
+      min-width: 76px;
+      padding: 6px 12px;
+      transform: translateX(-50%);
+      color: #fff5d6;
+      background: rgba(103,29,29,.94);
+      border: 1px solid #d4af37;
+      border-radius: 3px;
+      box-shadow: 0 4px 10px rgba(0,0,0,.4);
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    #situation-box {
+      position: absolute;
+      top: 96px;
+      left: 50%;
+      z-index: 10;
+      width: min(54%, 575px);
+      min-height: 350px;
+      padding: 26px 38px 30px;
+      transform: translateX(-50%);
+      overflow: hidden;
+      color: #2d3748;
+      background:
+        linear-gradient(rgba(249,239,210,.97), rgba(226,204,160,.97)),
+        repeating-linear-gradient(0deg, transparent 0, transparent 25px, rgba(93,60,31,.08) 26px);
+      border: 2px solid #8c3030;
+      border-radius: 5px;
+      box-shadow: 0 15px 30px rgba(0,0,0,.42), inset 0 0 0 5px rgba(212,175,55,.24), inset 0 0 28px rgba(74,44,22,.18);
+    }
+
+    #situation-box::before, #situation-box::after {
+      content: '';
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      opacity: .75;
+    }
+
+    #situation-box::before {
+      top: 10px;
+      left: 10px;
+      border-top: 2px solid #8c3030;
+      border-left: 2px solid #8c3030;
+    }
+
+    #situation-box::after {
+      right: 10px;
+      bottom: 10px;
+      border-right: 2px solid #8c3030;
+      border-bottom: 2px solid #8c3030;
+    }
+
+    .situation-title {
+      margin: 0 0 18px;
+      padding-bottom: 10px;
+      color: #772828;
+      border-bottom: 1px solid rgba(140,48,48,.45);
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: clamp(21px, 2.5vw, 30px);
+      text-align: center;
+    }
+
+    .story-line {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      gap: 8px;
+      margin: 10px 0;
+      font-size: clamp(13px, 1.42vw, 17px);
+      line-height: 1.6;
+      letter-spacing: -.02em;
+    }
+
+    .speaker {
+      color: #8c3030;
+      font-family: 'Nanum Gothic Coding', monospace;
+      font-weight: 700;
+    }
+
+    .dialogue { color: #34291f; }
+
+    .together-line {
+      margin-top: 15px;
+      padding: 11px 13px;
+      color: #6d2424;
+      background: rgba(255,249,228,.66);
+      border-top: 1px solid rgba(140,48,48,.35);
+      border-bottom: 1px solid rgba(140,48,48,.35);
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: clamp(14px, 1.65vw, 19px);
+      font-weight: 700;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    .btn-nav {
+      position: absolute;
+      z-index: 20;
+      bottom: 20px;
+      padding: 10px 24px;
+      color: white;
+      background: #8c3030;
+      border: 1px solid #d4af37;
+      border-radius: 4px;
+      box-shadow: 0 5px 14px rgba(0,0,0,.4);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+    }
+
+    .btn-nav:hover {
+      background: #661f1f;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0,0,0,.48);
+    }
+
+    #btn-prev { display: none; left: 20px; }
+    #btn-next { right: 20px; }
+
+    #transition-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    #transition-layer.active {
+      display: block;
+      animation: darken 1.35s ease-in forwards;
+    }
+
+    .portal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100px;
+      height: 100px;
+      transform: translate(-50%, -50%);
+      border: 5px solid #d4af37;
+      border-radius: 50%;
+      box-shadow: 0 0 20px #d4af37, 0 0 55px #8c3030, inset 0 0 28px #8c3030;
+      animation: expandPortal 1.25s cubic-bezier(.65,0,.85,.2) forwards;
+    }
+
+    .portal::before, .portal::after {
+      content: '';
+      position: absolute;
+      inset: -24px;
+      border: 3px dashed rgba(255,227,139,.88);
+      border-radius: 50%;
+      animation: rotatePortal .55s linear infinite;
+    }
+
+    .portal::after {
+      inset: -48px;
+      border: 2px solid;
+      border-color: rgba(140,48,48,.9) transparent rgba(212,175,55,.9) transparent;
+      animation-duration: .42s;
+      animation-direction: reverse;
+    }
+
+    .portal-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      transform: translate(-50%, -50%);
+      background: #140303;
+      border-radius: 50%;
+      box-shadow: 0 0 30px 12px rgba(140,48,48,.85), 0 0 85px 30px rgba(212,175,55,.45);
+      animation: expandDarkness 1.2s ease-in forwards;
+    }
+
+    #game-container.sucked-in > :not(#transition-layer) {
+      animation: suckContents 1.18s cubic-bezier(.65,0,.85,.2) forwards;
+    }
+
+    @keyframes floatCharacter {
+      0%, 100% { margin-bottom: 0; }
+      50% { margin-bottom: 5px; }
+    }
+
+    @keyframes rotatePortal {
+      from { transform: rotate(0); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes expandPortal {
+      0% { width: 80px; height: 80px; opacity: 0; transform: translate(-50%,-50%) rotate(0) scale(.25); }
+      25% { opacity: 1; }
+      75% { width: 720px; height: 720px; transform: translate(-50%,-50%) rotate(280deg); }
+      100% { width: 1450px; height: 1450px; opacity: .2; transform: translate(-50%,-50%) rotate(540deg) scale(1.15); }
+    }
+
+    @keyframes expandDarkness {
+      0% { width: 20px; height: 20px; }
+      65% { width: 80px; height: 80px; }
+      100% { width: 1900px; height: 1900px; background: #050000; }
+    }
+
+    @keyframes darken {
+      0% { background: rgba(7,0,0,0); }
+      70% { background: rgba(7,0,0,.15); }
+      100% { background: rgba(5,0,0,1); }
+    }
+
+    @keyframes suckContents {
+      0% { transform: scale(1) rotate(0); filter: blur(0); opacity: 1; }
+      35% { transform: scale(1.04) rotate(-1deg); }
+      75% { transform: scale(.42) rotate(10deg); filter: blur(3px); opacity: .85; }
+      100% { transform: scale(.015) rotate(42deg); filter: blur(14px); opacity: 0; }
+    }
+
+    @media (max-width: 820px) {
+      #situation-box { top: 84px; width: 58%; min-height: auto; padding: 20px 24px 24px; }
+      .story-line { grid-template-columns: 48px 1fr; margin: 6px 0; }
+      #char-민우 { left: 4px; }
+      #char-서연 { right: 4px; }
+      .char-wrapper { width: 195px; height: 240px; }
+      #char-민우 iframe { transform: scale(.75); }
+      #char-서연 iframe { transform: scale(.75) scaleX(-1); }
+    }
+
+    @media (max-width: 590px) {
+      #stage-bar { top: 8px; padding: 7px 12px; }
+      #stage-bar::before, #stage-bar::after { margin: 0 4px; }
+      #situation-box { top: 58px; width: 68%; padding: 13px 16px 17px; }
+      .situation-title { margin-bottom: 7px; padding-bottom: 5px; }
+      .story-line { grid-template-columns: 40px 1fr; gap: 5px; margin: 3px 0; line-height: 1.35; }
+      .together-line { margin-top: 6px; padding: 5px 7px; line-height: 1.35; }
+      .char-wrapper { width: 143px; height: 176px; }
+      #char-민우 iframe { transform: scale(.55); }
+      #char-서연 iframe { transform: scale(.55) scaleX(-1); }
+      .name-tag { bottom: -4px; min-width: 55px; padding: 3px 7px; font-size: 10px; }
+      .btn-nav { right: 9px; bottom: 9px; padding: 7px 14px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main id="game-container" aria-label="인천개항박물관 상황 연출 장면">
+    <img id="background-image" src="인천개항박물관.png" alt="인천개항박물관 배경" />
+    <div class="scene-overlay"></div>
+
+    <header id="stage-bar">인천차이나타운 MATHTOUR · 인천개항박물관</header>
+
+    <div class="char-wrapper" id="char-민우" aria-label="등장인물 민우">
+      <iframe src="등장인물_민우.html" scrolling="no" title="민우"></iframe>
+      <div class="name-tag">민우</div>
+    </div>
+
+    <section id="situation-box" aria-label="인천개항박물관 소개">
+      <h1 class="situation-title">인천개항박물관으로 떠나요!</h1>
+
+      <div class="story-line">
+        <span class="speaker">민우</span>
+        <span class="dialogue">서연아, 오늘은 인천개항박물관에 가보자!</span>
+      </div>
+
+      <div class="story-line">
+        <span class="speaker">서연</span>
+        <span class="dialogue">좋아! 이곳은 인천이 개항한 이후의 역사와 근대 문화를 배울 수 있는 박물관이야.</span>
+      </div>
+
+      <div class="story-line">
+        <span class="speaker">민우</span>
+        <span class="dialogue">안에는 어떤 것들이 전시되어 있어?</span>
+      </div>
+
+      <div class="story-line">
+        <span class="speaker">서연</span>
+        <span class="dialogue">경인선 철도, 옛 화폐, 개항기 생활 모습 등을 볼 수 있어. 역사도 배우고 수학과 연결해서 생각해 볼 수도 있지.</span>
+      </div>
+
+      <div class="story-line">
+        <span class="speaker">민우</span>
+        <span class="dialogue">정말 재미있겠다! 우리 함께 둘러보자.</span>
+      </div>
+
+      <div class="together-line">“역사와 수학을 함께 배우는 인천개항박물관으로 떠나요!”</div>
+    </section>
+
+    <div class="char-wrapper" id="char-서연" aria-label="등장인물 서연">
+      <iframe src="등장인물_서연.html" scrolling="no" title="서연"></iframe>
+      <div class="name-tag">서연</div>
+    </div>
+
+    <button type="button" class="btn-nav" id="btn-prev" disabled>이전</button>
+    <button type="button" class="btn-nav" id="btn-next" onclick="goToNextScene()">다음 장면 ▶</button>
+
+    <div id="transition-layer" aria-hidden="true">
+      <div class="portal"></div>
+      <div class="portal-center"></div>
+    </div>
+  </main>
+
+  <script>
+    const nextSceneUrl = 'D02.html';
+    let isTransitioning = false;
+
+    function goToNextScene() {
+      if (isTransitioning) return;
+      isTransitioning = true;
+
+      const gameContainer = document.getElementById('game-container');
+      const transitionLayer = document.getElementById('transition-layer');
+      const nextButton = document.getElementById('btn-next');
+
+      nextButton.disabled = true;
+      nextButton.style.pointerEvents = 'none';
+      transitionLayer.classList.add('active');
+
+      window.setTimeout(() => {
+        gameContainer.classList.add('sucked-in');
+      }, 100);
+
+      window.setTimeout(() => {
+        window.location.href = nextSceneUrl;
+      }, 1350);
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === 'ArrowRight' || event.key === ' ') {
+        event.preventDefault();
+        goToNextScene();
+      }
+    });
+  </script>
+</body>
+</html>

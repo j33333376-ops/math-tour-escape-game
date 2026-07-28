@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>문학경기장 MATHTOUR - D03</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&family=Nanum+Gothic+Coding:wght@400;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#101318;display:flex;justify-content:center;align-items:center;min-height:100vh;
+  font-family:'Noto Sans KR',sans-serif;color:#1f2933}
+#game-container{position:relative;width:100%;max-width:1066px;aspect-ratio:16/9;overflow:hidden;
+  background:linear-gradient(#bfe6ff 0%,#e9f6ff 54%,#cfe8b8 54%,#a5cd82 100%);box-shadow:0 10px 30px rgba(0,0,0,.75);border:2px solid #7cc0ff}
+.layer{position:absolute;overflow:hidden;pointer-events:none}
+.layer iframe{border:0;pointer-events:none;display:block}
+#top-bar{position:absolute;top:15px;left:20px;z-index:9;background:rgba(0,0,0,.62);
+  border:1px solid #7cc0ff;padding:8px 18px;border-radius:4px;color:#7cc0ff;
+  font-family:'Nanum Myeongjo',serif;font-weight:700;font-size:15px;letter-spacing:.5px;
+  box-shadow:0 2px 6px rgba(0,0,0,.45)}
+#stage-tag{position:absolute;top:15px;right:20px;z-index:9;background:rgba(0,0,0,.62);
+  border:1px solid #7cc0ff;padding:8px 14px;border-radius:4px;color:#7cc0ff;
+  font-family:'Nanum Gothic Coding',monospace;font-size:13px;letter-spacing:1px}
+.char-wrapper{position:absolute;z-index:4;overflow:visible;transition:filter .25s ease}
+.char-wrapper.inactive{filter:brightness(.55) saturate(.85)}
+#dialogue-box{position:absolute;left:50%;transform:translateX(-50%);bottom:24px;width:74%;
+  max-width:770px;min-height:148px;background:rgba(16,18,22,.86);border:2px solid #7cc0ff;
+  border-radius:7px;padding:18px 24px 26px;z-index:12;cursor:pointer;
+  box-shadow:0 4px 16px rgba(0,0,0,.55)}
+#speaker-name{font-family:'Nanum Gothic Coding',monospace;font-size:17px;font-weight:700;
+  color:#7cc0ff;margin-bottom:9px;border-bottom:1px dashed rgba(255,255,255,.28);
+  padding-bottom:5px;display:inline-block}
+#dialogue-text{font-size:15.5px;color:#fff;line-height:1.65;letter-spacing:-.02em;word-break:keep-all}
+#click-prompt{position:absolute;bottom:8px;right:16px;font-size:12px;color:#7cc0ff;animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.btn-nav{position:absolute;z-index:20;background:#1c5fa8;color:#fff;border:1px solid #7cc0ff;
+  border-radius:4px;padding:10px 22px;font-family:'Noto Sans KR',sans-serif;font-weight:700;
+  font-size:14.5px;cursor:pointer;transition:background-color .2s,transform .1s;
+  box-shadow:0 2px 5px rgba(0,0,0,.45)}
+.btn-nav:hover{background:#154a85}
+.btn-nav:active{transform:scale(.96)}
+#btn-prev{left:20px;bottom:22px}
+#btn-next,#btn-skip,#btn-end{right:20px;bottom:22px}
+.panel{position:absolute;background:rgba(253,251,246,.97);border:2px solid #7cc0ff;
+  border-radius:8px;box-shadow:0 6px 22px rgba(0,0,0,.45);z-index:14;color:#1f2933}
+.panel h2{font-family:'Nanum Myeongjo',serif;font-size:18px;color:#1c5fa8;
+  border-bottom:2px solid #7cc0ff;padding-bottom:7px;margin-bottom:11px;letter-spacing:-.02em}
+.fact-row{display:flex;gap:10px;font-size:13.5px;line-height:1.5;padding:5px 0;
+  border-bottom:1px dotted rgba(0,0,0,.13)}
+.fact-row:last-child{border-bottom:none}
+.fact-k{flex:0 0 118px;font-weight:700;color:#1c5fa8}
+.fact-v{flex:1;word-break:keep-all}
+.note{margin-top:9px;font-size:12px;color:#6b7280;line-height:1.5;word-break:keep-all}
+.q-block{margin-bottom:13px}
+.q-text{font-size:14px;line-height:1.6;margin-bottom:7px;word-break:keep-all}
+.q-text b{color:#1c5fa8}
+.q-row{display:flex;align-items:center;gap:7px}
+.q-row input{width:118px;padding:7px 9px;border:1.5px solid #b9c2cc;border-radius:4px;
+  font-family:'Nanum Gothic Coding',monospace;font-size:14px;text-align:right}
+.q-row span{font-size:13.5px;color:#4b5563}
+.q-row button{background:#1c5fa8;color:#fff;border:none;border-radius:4px;padding:7px 14px;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+.q-fb{font-size:12.5px;margin-top:5px;min-height:17px;font-weight:700}
+.ok{color:#1e7a4b} .no{color:#c0392b}
+.hint{font-size:12px;color:#6b7280;margin-top:3px}
+#puzzle-modal{position:absolute;inset:0;background:rgba(8,10,14,.86);z-index:30;
+  display:none;justify-content:center;align-items:center}
+#puzzle-modal.open{display:flex}
+#puzzle-frame{width:88%;height:86%;border:2px solid #7cc0ff;border-radius:8px;background:#fff}
+#puzzle-close{position:absolute;top:14px;right:18px;z-index:31;background:#1c5fa8;color:#fff;
+  border:1px solid #7cc0ff;border-radius:4px;padding:8px 16px;font-weight:700;cursor:pointer;
+  font-size:13.5px;font-family:'Noto Sans KR',sans-serif}
+.badge{display:inline-block;background:#1c5fa8;color:#fff;border-radius:99px;padding:2px 11px;
+  font-size:12px;font-weight:700;margin-bottom:8px}
+ul.sum{margin:0 0 0 17px;padding:0}
+ul.sum li{font-size:13.5px;line-height:1.7;margin-bottom:4px;word-break:keep-all}
+</style>
+</head>
+<body>
+<div id="game-container">
+  <div class="layer" style="left:35px;bottom:1px; width:996px;height:598px;z-index:1;">
+    <iframe src="문학경기장_체육공원.html" scrolling="no" style="width:1200px;height:720px;transform:scale(0.8300);transform-origin:top left;"></iframe>
+  </div>
+  <div id="top-bar">문학경기장 · 트랙의 비밀을 풀어라</div>
+  <div id="stage-tag">D03 · 3/4</div>
+  <div class="char-wrapper" id="char-민우" style="left:44px;bottom:6px; width:260px;height:320px;">
+    <iframe src="등장인물_민우.html" scrolling="no" style="border:0;width:260px;height:320px;transform:scale(1.00);transform-origin:bottom left;pointer-events:none;"></iframe>
+  </div>
+  <div class="char-wrapper" id="char-서연" style="right:44px;bottom:6px; width:260px;height:320px;">
+    <iframe src="등장인물_서연.html" scrolling="no" style="border:0;width:260px;height:320px;transform:scale(1.00) scaleX(-1);transform-origin:center bottom;pointer-events:none;"></iframe>
+  </div>
+  <div id="mission" class="panel" style="left:50%;transform:translateX(-50%);top:54px;width:660px;padding:16px 22px;display:none;">
+    <div class="badge">수학 탐구 미션</div>
+    <h2>트랙 한 바퀴, 몇 m나 차이 날까?</h2><div class="q-block"><div class="q-text"><b>Q1.</b> 2레인을 한 바퀴 도는 거리는 1레인보다 몇 m 더 길까요? (레인 폭 1.22 m, π ≈ 3.14, 소수 첫째 자리까지)</div><div class="q-row"><input id="ans0" inputmode="decimal" placeholder="답 입력"><span>m</span><button onclick="checkAns(0)">확인</button></div><div class="q-fb" id="fb0"></div><div class="hint">곡선 구간은 양 끝 반원 두 개 = 원 하나입니다.</div></div><div class="q-block"><div class="q-text"><b>Q2.</b> 그렇다면 가장 바깥 <b>8레인</b>은 1레인보다 몇 m 더 길까요? (정수로 반올림)</div><div class="q-row"><input id="ans1" inputmode="decimal" placeholder="답 입력"><span>m</span><button onclick="checkAns(1)">확인</button></div><div class="q-fb" id="fb1"></div><div class="hint">1레인에서 8레인까지는 레인 폭이 몇 번 벌어질까요?</div></div><div class="q-block"><div class="q-text"><b>Q3.</b> 체육공원(14,568 ㎡)은 주경기장 필드(105 m × 68 m)의 몇 배일까요? (소수 첫째 자리까지)</div><div class="q-row"><input id="ans2" inputmode="decimal" placeholder="답 입력"><span>배</span><button onclick="checkAns(2)">확인</button></div><div class="q-fb" id="fb2"></div><div class="hint">먼저 필드의 넓이를 구해 보세요.</div></div>
+    <div style="text-align:right;margin-top:6px;"><button class="btn-nav" style="position:static;box-shadow:none;display:none;" id="btn-puzzle" onclick="openPuzzle()">한붓그리기 도전하기</button></div>
+  </div>
+  <div id="puzzle-modal"><button id="puzzle-close" onclick="closePuzzle()">닫기</button><iframe id="puzzle-frame" src=""></iframe></div>
+  <div id="dialogue-box" onclick="advanceDialogue()">
+    <div id="speaker-name">-</div>
+    <div id="dialogue-text">대화를 불러오는 중입니다...</div>
+    <div id="click-prompt">▼ 클릭하여 계속</div>
+  </div>
+  <button id="btn-prev" class="btn-nav" onclick="location.href='D02.html'">이전</button>
+  <button id="btn-skip" class="btn-nav" onclick="finishDialogue()">건너뛰기</button>
+  <button id="btn-next" class="btn-nav" onclick="location.href='D04.html'" style="display:none;">다음</button>
+</div>
+<script>
+const dialogues = [
+  {
+    "speaker": "서연",
+    "text": "레인 폭은 1.22m야. 2레인을 도는 사람은 1레인보다 반지름이 딱 1.22m 큰 원을 도는 셈이지.",
+    "target": "char-서연"
+  },
+  {
+    "speaker": "민우",
+    "text": "반지름이 r만큼 커지면 둘레는 2πr만큼 늘어나니까… 계산해 볼게!",
+    "target": "char-민우"
+  }
+];
+let idx = 0;
+function updateDialogue(){
+  const c = dialogues[idx];
+  document.getElementById('speaker-name').innerText = c.speaker;
+  document.getElementById('dialogue-text').innerText = c.text;
+  document.querySelectorAll('.char-wrapper').forEach(w=>{
+    if(!c.target) w.classList.remove('inactive');
+    else w.classList.toggle('inactive', w.id !== c.target);
+  });
+}
+function advanceDialogue(){
+  idx++;
+  if(idx < dialogues.length) updateDialogue(); else finishDialogue();
+}
+function finishDialogue(){
+  document.getElementById('dialogue-box').style.display='none';
+  const s=document.getElementById('btn-skip'); if(s) s.style.display='none';
+  document.querySelectorAll('.char-wrapper').forEach(w=>w.classList.remove('inactive'));
+  onDialogueEnd();
+}
+const ANS = [{"a": 7.7, "tol": 0.15, "sol": "2 × 3.14 × 1.22 = 7.66 → 약 7.7 m", "hint2": "반지름이 1.22 m 커지면 둘레는 2πr 만큼 늘어납니다."}, {"a": 54, "tol": 1.2, "sol": "7.66 × 7 = 53.6 → 약 54 m. 400 m 트랙에서 13% 넘게 차이 납니다!", "hint2": "1→8레인이면 레인 폭 차이는 7번입니다."}, {"a": 2.0, "tol": 0.15, "sol": "105 × 68 = 7,140 ㎡, 14,568 ÷ 7,140 ≈ 2.0배", "hint2": "필드 넓이 = 가로 × 세로입니다."}];
+let solved = 0;
+function onDialogueEnd(){ document.getElementById('mission').style.display='block'; }
+function checkAns(i){
+  const el=document.getElementById('ans'+i), fb=document.getElementById('fb'+i);
+  const v=parseFloat((el.value||'').replace(/[^0-9.\-]/g,''));
+  if(isNaN(v)){ fb.className='q-fb no'; fb.innerText='숫자를 입력해 주세요.'; return; }
+  if(Math.abs(v-ANS[i].a) <= ANS[i].tol){
+    fb.className='q-fb ok'; fb.innerText='정답입니다! '+ANS[i].sol;
+    if(!el.disabled){ el.disabled=true; solved++; }
+    if(solved===ANS.length){
+      document.getElementById('btn-puzzle').style.display='inline-block';
+      document.getElementById('btn-next').style.display='block';
+    }
+  } else { fb.className='q-fb no'; fb.innerText='다시 계산해 볼까요? '+ANS[i].hint2; }
+}
+function openPuzzle(){
+  document.getElementById('puzzle-frame').src=PUZZLE;
+  document.getElementById('puzzle-modal').classList.add('open');
+}
+function closePuzzle(){
+  document.getElementById('puzzle-modal').classList.remove('open');
+  document.getElementById('puzzle-frame').src='';
+}
+const PUZZLE = "수학활동_한붓그리기.html";
+window.onload = function(){ updateDialogue(); };
+</script>
+</body>
+</html>

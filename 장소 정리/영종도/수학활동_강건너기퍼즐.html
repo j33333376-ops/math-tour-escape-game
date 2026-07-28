@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>늑대·염소·양배추 강 건너기</title>
+  <style>
+    :root {
+      /* ===== 공통 디자인 토큰 (전체 퀴즈 공용) ===== */
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #ea580c;
+      --accent-soft: #fff7ed;
+      --border-color: #e2e8f0;
+      --success: #10b981;
+      --error: #ef4444;
+      --radius-card: 16px;
+      --radius-ctrl: 10px;
+      --shadow-card: 0 10px 25px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+    }
+
+    .app-layout {
+      display: flex;
+      width: 100%; height: 100%;
+      padding: 2vh 2vw;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-side {
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      width: 38vw;
+      max-width: 440px;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-block h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+
+    .header-block p {
+      margin: 0 0 20px 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .control-group {
+      background: var(--primary-soft);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .control-header label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .col-badge {
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .col-badge.accent { background: var(--accent); }
+    .col-badge.muted  { background: #94a3b8; }
+
+    input[type=range] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+
+    .stat-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .btn-row { display: flex; gap: 8px; }
+
+    .btn-check, .btn-ghost {
+      border-radius: var(--radius-ctrl);
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .btn-check { background: var(--primary); color: #fff; border: none; }
+    .btn-check:hover:not(:disabled) { background: var(--primary-dark); }
+    .btn-check:active:not(:disabled) { transform: translateY(1px); }
+    .btn-ghost { background: var(--card-bg); color: var(--primary-dark); border: 1px solid var(--border-color); }
+    .btn-ghost:hover:not(:disabled) { background: var(--primary-soft); }
+    .btn-ghost:active:not(:disabled) { transform: translateY(1px); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .answer-group { padding-top: 16px; border-top: 2px dashed var(--border-color); }
+
+    .feedback {
+      margin-top: 10px;
+      font-weight: 700;
+      text-align: center;
+      min-height: 20px;
+      font-size: 0.95rem;
+      word-break: keep-all;
+      line-height: 1.45;
+    }
+    .feedback.success { color: var(--success); }
+    .feedback.error   { color: var(--error); }
+    .feedback.info    { color: var(--text-muted); }
+
+    .board-side {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      padding: 10px;
+    }
+
+    .board-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      border: 4px solid var(--border-color);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    @media (orientation: portrait) {
+      .app-layout { flex-direction: column; justify-content: flex-start; padding-top: 2vh; gap: 12px; }
+      .panel-side { width: 96vw; max-width: none; padding: 16px; }
+      .board-side { width: 96vw; flex: 1; padding: 0 0 2vh 0; }
+      .header-block p { margin-bottom: 12px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 520px) {
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.2rem; }
+      .header-block p { display: none; }
+      .control-group { padding: 8px 12px; margin-bottom: 10px; }
+      .stat-row { margin-bottom: 8px; }
+    }
+
+    /* ===== 강 건너기 전용 =====
+       모든 크기는 --unit(장면 높이) 기준. JS가 ResizeObserver 로 --unit 을 갱신한다. */
+    .board-side { align-self: stretch; padding: 6px 0; }
+    .board-wrapper { width: 100%; height: 100%; min-height: min(360px, 100%); padding: 0; border: none; background: transparent; box-shadow: none; }
+
+    .scene {
+      --unit: 420px;   /* JS가 덮어씀 */
+      --k: 1;          /* 배 위 캐릭터 축소 비율 */
+      position: relative;
+      width: 100%; height: 100%;
+      min-height: min(360px, 100%);
+      border-radius: var(--radius-card);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      background: linear-gradient(180deg, #dbeafe 0%, #eff6ff 46%, #f0f9ff 100%);
+      touch-action: none;
+      user-select: none;
+    }
+
+    /* ---------- 하늘 ---------- */
+    .cloud { position: absolute; background: #fff; border-radius: 999px; opacity: .85; }
+    .cloud::before, .cloud::after { content:''; position: absolute; background: #fff; border-radius: 50%; }
+    .c1 { top: 10%; left: 9%; width: 54px; height: 18px; animation: cloudDrift 34s linear infinite; }
+    .c1::before { width: 24px; height: 24px; top: -11px; left: 9px; }
+    .c1::after  { width: 18px; height: 18px; top: -7px;  left: 30px; }
+    .c2 { top: 17%; left: 63%; width: 40px; height: 14px; animation: cloudDrift 46s linear infinite reverse; }
+    .c2::before { width: 19px; height: 19px; top: -9px; left: 7px; }
+    .c2::after  { width: 14px; height: 14px; top: -6px; left: 23px; }
+    @keyframes cloudDrift { to { transform: translateX(26px); } }
+
+    .sun {
+      position: absolute; top: 8%; right: 7%;
+      width: 38px; height: 38px; border-radius: 50%;
+      background: radial-gradient(circle, #fde68a, #fbbf24);
+      box-shadow: 0 0 28px rgba(251,191,36,.55);
+      animation: pulse 5s ease-in-out infinite;
+    }
+    @keyframes pulse { 50% { transform: scale(1.06); } }
+
+    /* ---------- 땅 / 강 (지면선 = 아래에서 45%) ---------- */
+    .land {
+      position: absolute; bottom: 0; height: 45%;
+      background: linear-gradient(180deg, #86efac 0%, #4ade80 20%, #a16207 21%, #854d0e 100%);
+    }
+    .land.left  { left: 0;  width: 27%; border-radius: 0 14px 0 0; }
+    .land.right { right: 0; width: 27%; border-radius: 14px 0 0 0; }
+    .land::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 20%;
+      background: repeating-linear-gradient(94deg, transparent 0 7px, rgba(22,101,52,.16) 7px 8px);
+    }
+
+    .bank-label {
+      position: absolute; bottom: 46.5%;
+      font-size: 0.72rem; font-weight: 800;
+      color: #166534;
+      background: rgba(255,255,255,.85);
+      padding: 3px 10px; border-radius: 999px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+      z-index: 6;
+    }
+    .lbl-left  { left: 2%; }
+    .lbl-right { right: 2%; }
+
+    .water {
+      position: absolute; bottom: 0; left: 27%; right: 27%; height: 45%;
+      background: linear-gradient(180deg, #7dd3fc 0%, #38bdf8 35%, #0284c7 100%);
+      overflow: hidden;
+    }
+    .water::before, .water::after {
+      content: ''; position: absolute; left: -50%; width: 200%; height: 10px;
+      background: radial-gradient(circle at 10px -4px, transparent 8px, rgba(255,255,255,.55) 9px, transparent 10px) repeat-x;
+      background-size: 22px 12px;
+    }
+    .water::before { top: 3px;  animation: ripple 5s linear infinite; }
+    .water::after  { top: 18px; opacity: .5; animation: ripple 7s linear infinite reverse; }
+    @keyframes ripple { to { transform: translateX(22px); } }
+    .sparkle { position: absolute; height: 3px; border-radius: 2px; background: rgba(255,255,255,.7); animation: shimmer 3.4s ease-in-out infinite; }
+    @keyframes shimmer { 0%,100% { opacity:.25; transform: scaleX(.7);} 50% { opacity:.9; transform: scaleX(1.25);} }
+
+    /* ---------- 자리(슬롯) ---------- */
+    /* height:0 + align-items:flex-end  →  컨테이너 아래 선이 "발이 닿는 지면선" */
+    .slots {
+      position: absolute; bottom: 45%; height: 0;
+      display: flex; align-items: flex-end; justify-content: space-around;
+      z-index: 4;
+      pointer-events: none;
+    }
+    .slots.left  { left: 0.5%; width: 26%; }
+    .slots.right { right: 0.5%; width: 26%; }
+
+    .pad {
+      position: relative;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+      gap: 3px;
+      min-width: 0;
+      pointer-events: none;
+    }
+
+    /* 비어 있는 자리 표시 */
+    .ghost {
+      width: calc(var(--unit) * 0.085);
+      height: calc(var(--unit) * 0.024);
+      border: 2px dashed #94a3b8;
+      border-radius: 50%;
+      opacity: .8;
+      transition: all 0.2s;
+    }
+    .pad.occupied > .ghost { opacity: 0; height: 0; border-width: 0; }
+
+    .pad-label {
+      font-size: clamp(9px, calc(var(--unit) * 0.028), 13px);
+      font-weight: 800;
+      line-height: 1;
+      color: #94a3b8;
+      background: rgba(255,255,255,.9);
+      border: 1.5px dashed #cbd5e1;
+      border-radius: 999px;
+      padding: 3px 8px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .pad.occupied > .pad-label {
+      color: #0f172a;
+      border-style: solid;
+      border-color: var(--primary);
+      background: #fff;
+    }
+    .pad.on-boat.occupied > .pad-label { border-color: var(--accent); color: #9a3412; }
+
+    /* ---------- 캐릭터 (배경 없음, 전신) ---------- */
+    .actor {
+      display: block;
+      pointer-events: auto;
+      filter: drop-shadow(0 5px 6px rgba(15,23,42,.18));
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+    .actor svg { height: 100%; width: auto; display: block; overflow: visible; }
+
+    .actor[data-id="farmer"]  { height: calc(var(--unit) * 0.150 * var(--k)); }
+    .actor[data-id="wolf"]    { height: calc(var(--unit) * 0.112 * var(--k)); }
+    .actor[data-id="goat"]    { height: calc(var(--unit) * 0.108 * var(--k)); }
+    .actor[data-id="cabbage"] { height: calc(var(--unit) * 0.080 * var(--k)); }
+
+    .actor.grabbable { cursor: grab; }
+    .actor.grabbable:hover { transform: translateY(-4px) scale(1.06); filter: drop-shadow(0 10px 10px rgba(15,23,42,.24)); }
+    .actor.dragging {
+      position: fixed !important;
+      z-index: 80;
+      cursor: grabbing;
+      pointer-events: none;
+      transform: scale(1.12) rotate(-3deg);
+      filter: drop-shadow(0 16px 16px rgba(15,23,42,.3));
+      transition: none;
+    }
+    .actor.danger { animation: hurt 0.45s ease 3; }
+    @keyframes hurt {
+      0%,100% { transform: translateX(0); }
+      25% { transform: translateX(-5px) rotate(-4deg); }
+      75% { transform: translateX(5px) rotate(4deg); }
+    }
+
+    .shadow { fill: rgba(15,23,42,.18); }
+    .deck-row .shadow { opacity: 0; }
+
+    /* ---------- 살아있는 듯한 미세 동작 ---------- */
+    .idle-sway  { transform-box: fill-box; transform-origin: 50% 100%; animation: sway 3.6s ease-in-out infinite; }
+    .breathe    { transform-box: fill-box; transform-origin: 50% 100%; animation: breathe 2.7s ease-in-out infinite; }
+    .head-bob   { transform-box: fill-box; transform-origin: 50% 90%;  animation: headBob 3.1s ease-in-out infinite; }
+    .tail-wag   { transform-box: fill-box; transform-origin: 100% 60%; animation: tailWag 1.15s ease-in-out infinite; }
+    .ear-twitch { transform-box: fill-box; transform-origin: 50% 100%; animation: earTwitch 4.2s ease-in-out infinite; }
+    .arm-l      { transform-box: fill-box; transform-origin: 50% 0%;   animation: armL 3.4s ease-in-out infinite; }
+    .arm-r      { transform-box: fill-box; transform-origin: 50% 0%;   animation: armR 3.9s ease-in-out infinite; }
+    .blink      { transform-box: fill-box; transform-origin: center;   animation: blink 4.6s ease-in-out infinite; }
+    .leaf-sway  { transform-box: fill-box; transform-origin: 50% 100%; animation: leafSway 4.4s ease-in-out infinite; }
+
+    @keyframes sway      { 0%,100% { transform: rotate(-0.9deg); } 50% { transform: rotate(0.9deg); } }
+    @keyframes breathe   { 0%,100% { transform: scale(1,1); }      50% { transform: scale(1.022, 1.035); } }
+    @keyframes headBob   { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-2px) rotate(-2.2deg); } }
+    @keyframes tailWag   { 0%,100% { transform: rotate(-9deg); }   50% { transform: rotate(15deg); } }
+    @keyframes earTwitch { 0%,86%,100% { transform: rotate(0deg); } 90% { transform: rotate(-16deg); } 94% { transform: rotate(6deg); } }
+    @keyframes armL      { 0%,100% { transform: rotate(3deg); }    50% { transform: rotate(-6deg); } }
+    @keyframes armR      { 0%,100% { transform: rotate(-3deg); }   50% { transform: rotate(6deg); } }
+    @keyframes blink     { 0%,92%,100% { transform: scaleY(1); }   95% { transform: scaleY(0.08); } }
+    @keyframes leafSway  { 0%,100% { transform: rotate(-2.2deg) scale(1); } 50% { transform: rotate(2.2deg) scale(1.02); } }
+
+    /* ---------- 배 ---------- */
+    /* 배 높이는 선체 SVG 가 결정. 수면(45%)에 뱃전이 걸치도록 아래로 내려 앉힌다. */
+    .boat {
+      position: absolute;
+      width: calc(var(--unit) * 0.40);
+      bottom: calc(45% - var(--unit) * 0.080);
+      transform: translateX(-50%);
+      transition: left 0.95s cubic-bezier(0.45, 0.05, 0.35, 1);
+      z-index: 5;
+    }
+    .boat.left  { left: 40%; }
+    .boat.right { left: 60%; }
+
+    .boat-inner { position: relative; animation: bob 2.9s ease-in-out infinite; }
+    @keyframes bob {
+      0%,100% { transform: translateY(0) rotate(-1deg); }
+      50%     { transform: translateY(-5px) rotate(1deg); }
+    }
+    .boat.sailing .boat-inner { animation: bobHard 0.75s ease-in-out infinite; }
+    @keyframes bobHard {
+      0%,100% { transform: translateY(0) rotate(-2.2deg); }
+      50%     { transform: translateY(-8px) rotate(2.2deg); }
+    }
+
+    .hull { display: block; width: 100%; height: auto;
+            filter: drop-shadow(0 5px 9px rgba(2,60,110,.35)); }
+
+    /* 갑판선: 선체 뱃전 높이 = 선체높이의 52% */
+    .deck-row {
+      --k: 0.88;
+      position: absolute; left: 6%; right: 6%;
+      bottom: calc(var(--unit) * 0.40 * 0.4364 * 0.52);
+      height: 0;
+      display: flex; align-items: flex-end; justify-content: space-around;
+      pointer-events: none;
+    }
+    .deck-row .pad-label { font-size: clamp(8px, calc(var(--unit) * 0.024), 11px); padding: 2px 7px; }
+    .deck-row .ghost { border-color: var(--accent); width: calc(var(--unit) * 0.07); }
+
+    /* 드롭 대상 강조 */
+    .drop-hint {
+      position: absolute; left: -6%; right: -6%; top: -4%; bottom: -8%;
+      border: 3px dashed var(--accent);
+      border-radius: 16px;
+      background: rgba(234, 88, 12, 0.08);
+      opacity: 0;
+      transition: opacity 0.18s;
+      pointer-events: none;
+    }
+    .boat.armed .drop-hint { opacity: 1; animation: hintPulse 1s ease-in-out infinite; }
+    .boat.over  .drop-hint { opacity: 1; background: rgba(16, 185, 129, 0.18); border-color: var(--success); }
+    @keyframes hintPulse { 50% { transform: scale(1.02); } }
+
+    .boom {
+      position: absolute; font-size: 2.2rem;
+      transform: translate(-50%,-50%) scale(0);
+      animation: boom 0.9s ease-out forwards;
+      pointer-events: none; z-index: 40;
+    }
+    @keyframes boom {
+      0%   { transform: translate(-50%,-50%) scale(0)   rotate(-30deg); opacity: 0; }
+      35%  { transform: translate(-50%,-50%) scale(1.3) rotate(8deg);   opacity: 1; }
+      100% { transform: translate(-50%,-70%) scale(1)   rotate(0deg);   opacity: 0; }
+    }
+
+    .rule-note {
+      background: var(--accent-soft);
+      border: 1px solid #fed7aa;
+      border-radius: var(--radius-ctrl);
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      color: #9a3412;
+      line-height: 1.55;
+      word-break: keep-all;
+      margin-bottom: 14px;
+    }
+
+    @media (orientation: portrait) {
+      .board-side { align-self: auto; }
+      .scene { min-height: min(320px, 100%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .idle-sway, .breathe, .head-bob, .tail-wag, .ear-twitch,
+      .arm-l, .arm-r, .blink, .leaf-sway, .boat-inner, .sun, .cloud, .sparkle { animation: none !important; }
+    }
+
+    /* ===================================================================
+       반응형 안전장치 — PC/모바일, 가로/세로 어디서도 잘리지 않게
+       =================================================================== */
+    .app-layout { min-height: 0; min-width: 0; }
+    .board-side { min-height: 0; min-width: 0; }
+
+    /* 패널이 화면보다 길어지면 화면을 밀지 않고 패널 안에서만 스크롤 */
+    .panel-side {
+      max-height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    @media (orientation: portrait) {
+      .panel-side { max-height: 54%; flex: 0 0 auto; }
+      .board-side { flex: 1 1 auto; }
+    }
+
+    /* 폰 가로처럼 세로가 짧은 화면 */
+    @media (orientation: landscape) and (max-height: 560px) {
+      .app-layout { padding: 8px; gap: 10px; }
+      .panel-side { padding: 12px; }
+      .header-block h2 { font-size: 1.12rem; margin-bottom: 4px; }
+      .header-block p  { display: none; }
+      .stat-row { margin-bottom: 8px; }
+      .answer-group { padding-top: 10px; margin-top: 10px !important; }
+      .feedback { font-size: 0.82rem; margin-top: 6px; min-height: 16px; }
+      .btn-row button { padding: 8px 12px; font-size: 0.85rem; }
+    }
+    @media (orientation: landscape) and (max-height: 430px) {
+      .rule-note, .note { font-size: 0.7rem; padding: 6px 8px; margin-bottom: 8px; line-height: 1.4; }
+      .control-group { padding: 7px 10px; margin-bottom: 8px; }
+      .col-badge { font-size: 0.72rem; padding: 3px 9px; }
+    }
+
+    /* ===== 목록(index.html)으로 돌아가는 버튼 ===== */
+    /* MATHTOUR: 모달 내 실행용 — 목록 버튼 숨김 */
+    .home-btn { display:none !important; }
+    .home-btn-orig {
+      position: fixed;
+      top: max(10px, env(safe-area-inset-top, 0px));
+      left: max(10px, env(safe-area-inset-left, 0px));
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px 8px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+      color: #1e293b;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: transform .18s, box-shadow .18s, color .18s, border-color .18s, background .18s;
+    }
+    .home-btn:hover {
+      background: #fff;
+      color: #1d4ed8;
+      border-color: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px -6px rgba(37, 99, 235, 0.5);
+    }
+    .home-btn:active { transform: translateY(0); }
+    .home-btn:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+    .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* 좁거나 납작한 화면에서는 아이콘만 */
+    @media (max-width: 560px), (orientation: landscape) and (max-height: 430px) {
+      .home-btn { padding: 8px; gap: 0; }
+      .home-btn .label { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="home-btn" href="index.html" title="게임 목록으로 돌아가기" aria-label="게임 목록으로 돌아가기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.2V20h13v-9.8"/>
+    </svg>
+    <span class="label">목록</span>
+  </a>
+
+
+  <div class="app-layout">
+    <div class="panel-side">
+      <div class="header-block">
+        <h2>늑대 · 염소 · 양배추</h2>
+        <p>농부가 셋을 모두 강 건너로 옮겨야 합니다.<br>배에는 농부 + <b>단 하나</b>만 탈 수 있어요.</p>
+      </div>
+
+      <div class="rule-note">
+        ⚠️ 농부가 없는 쪽에서는<br>
+        • 늑대와 염소를 같이 두면 → 염소가 잡아먹힘<br>
+        • 염소와 양배추를 같이 두면 → 양배추가 먹힘
+      </div>
+
+      <div class="stat-row">
+        <span class="col-badge muted" id="moveBadge">건넌 횟수 0</span>
+        <span class="col-badge accent">최소 7회</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-check" id="crossBtn">⛵ 강 건너기</button>
+      </div>
+      <div class="btn-row" style="margin-top:8px">
+        <button class="btn-ghost" id="undoBtn">↶ 되돌리기</button>
+        <button class="btn-ghost" id="resetBtn">🔄 처음부터</button>
+      </div>
+
+      <div class="answer-group" style="margin-top:16px">
+        <div class="feedback info" id="feedback">동물을 배의 <b>승객 자리</b>로 끌어다 놓으세요.</div>
+      </div>
+    </div>
+
+    <div class="board-side">
+      <div class="board-wrapper">
+        <div class="scene" id="scene">
+          <div class="sun"></div>
+          <div class="cloud c1"></div>
+          <div class="cloud c2"></div>
+
+          <div class="land left"></div>
+          <div class="land right"></div>
+          <span class="bank-label lbl-left">출발 쪽</span>
+          <span class="bank-label lbl-right">도착 쪽</span>
+
+          <div class="water" id="water"></div>
+
+          <div class="slots left"  id="slotsL"></div>
+          <div class="slots right" id="slotsR"></div>
+
+          <div class="boat left" id="boat">
+            <div class="drop-hint"></div>
+            <div class="boat-inner">
+              <svg class="hull" viewBox="0 0 220 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <path d="M8 46h204l-22 40a10 10 0 0 1-9 5H39a10 10 0 0 1-9-5z" fill="#b45309"/>
+  <path d="M8 46h204l-6 11H14z" fill="#f59e0b"/>
+  <rect x="4" y="38" width="212" height="10" rx="5" fill="#d97706"/>
+  <path d="M40 62h140l-9 17H49z" fill="#92400e" opacity=".35"/>
+  <path d="M30 51h160" stroke="#92400e" stroke-width="2" opacity=".4"/>
+</svg>
+              <div class="deck-row">
+                <div class="pad on-boat" id="passengerPad">
+                  <div class="pad-label" id="passengerLabel">승객 자리</div>
+                  <div class="ghost"></div>
+                </div>
+                <div class="pad on-boat occupied" id="farmerPad">
+                  <div class="pad-label">농부</div>
+                  <div class="ghost"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // ==========================================================
+    //  늑대·염소·양배추 — 상태공간 탐색 (최소 7번 건너기)
+    //  자리(pad)를 고정해 두고 배우를 그 안으로 옮긴다.
+    //  → "지금 어디에 있는지 / 배에 탔는지" 가 항상 명확하다.
+    // ==========================================================
+    const ITEMS = [
+      { id: 'wolf',    name: '늑대' },
+      { id: 'goat',    name: '염소' },
+      { id: 'cabbage', name: '양배추' }
+    ];
+
+    const SVGS = {
+      farmer:  `<svg viewBox="0 0 70 122" xmlns="http://www.w3.org/2000/svg"><title>농부</title>
+  <g class="idle-sway">
+    <ellipse class="shadow" cx="35" cy="117" rx="19" ry="4"/>
+    <g class="breathe">
+      <!-- 다리 -->
+      <rect x="25" y="84" width="8" height="24" rx="4" fill="#1e40af"/>
+      <rect x="37" y="84" width="8" height="24" rx="4" fill="#1d4ed8"/>
+      <!-- 장화 -->
+      <path d="M22 104h11v8H22a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2z" fill="#78350f"/>
+      <path d="M37 104h11a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H37z" fill="#8b4513"/>
+      <!-- 몸통(멜빵바지) -->
+      <path d="M21 52h28v34a5 5 0 0 1-5 5H26a5 5 0 0 1-5-5z" fill="#2563eb"/>
+      <path d="M21 52h28v9H21z" fill="#1d4ed8" opacity=".35"/>
+      <!-- 셔츠 -->
+      <rect x="20" y="45" width="30" height="12" rx="6" fill="#fef3c7"/>
+      <!-- 멜빵 -->
+      <path d="M28 45v9M42 45v9" stroke="#1d4ed8" stroke-width="4" stroke-linecap="round"/>
+      <rect x="29" y="64" width="12" height="10" rx="2" fill="#1d4ed8"/>
+      <!-- 팔 -->
+      <g class="arm-l"><rect x="12" y="50" width="9" height="27" rx="4.5" fill="#fef3c7"/>
+        <circle cx="16.5" cy="79" r="5" fill="#f0b78d"/></g>
+      <g class="arm-r"><rect x="49" y="50" width="9" height="27" rx="4.5" fill="#fef3c7"/>
+        <circle cx="53.5" cy="79" r="5" fill="#f0b78d"/></g>
+      <!-- 머리 -->
+      <g class="head-bob">
+        <rect x="31" y="36" width="8" height="8" fill="#f0b78d"/>
+        <circle cx="35" cy="29" r="13.5" fill="#f6c8a0"/>
+        <circle class="blink" cx="30.5" cy="29" r="2" fill="#1f2937"/>
+        <circle class="blink" cx="39.5" cy="29" r="2" fill="#1f2937"/>
+        <circle cx="26" cy="33.5" r="2.6" fill="#fda4af" opacity=".55"/>
+        <circle cx="44" cy="33.5" r="2.6" fill="#fda4af" opacity=".55"/>
+        <path d="M31 35.5q4 3.4 8 0" stroke="#b45309" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+        <!-- 밀짚모자 -->
+        <path d="M24 19a11.5 10 0 0 1 22 0z" fill="#fbbf24"/>
+        <ellipse cx="35" cy="19.5" rx="22" ry="5.5" fill="#f59e0b"/>
+        <ellipse cx="35" cy="18" rx="22" ry="4.5" fill="#fcd34d"/>
+        <path d="M24 19h22" stroke="#d97706" stroke-width="2.2" stroke-linecap="round"/>
+      </g>
+    </g>
+  </g></svg>`,
+      wolf:    `<svg viewBox="0 0 126 96" xmlns="http://www.w3.org/2000/svg"><title>늑대</title>
+  <g class="idle-sway">
+    <ellipse class="shadow" cx="66" cy="90" rx="36" ry="4.5"/>
+    <!-- 꼬리 -->
+    <g class="tail-wag"><path d="M30 50c-13-1-21-11-20-21 7 1 13 8 23 13z" fill="#7c8797"/>
+      <path d="M12 30c4 1 8 5 14 9" stroke="#5b6675" stroke-width="2" fill="none" stroke-linecap="round"/></g>
+    <!-- 뒷다리 -->
+    <rect x="32" y="56" width="9" height="28" rx="4.5" fill="#5b6675"/>
+    <rect x="46" y="56" width="9" height="28" rx="4.5" fill="#6b7787"/>
+    <g class="breathe">
+      <!-- 몸통 -->
+      <ellipse cx="60" cy="50" rx="33" ry="19" fill="#8b95a5"/>
+      <ellipse cx="60" cy="42" rx="30" ry="12" fill="#9aa4b4"/>
+      <ellipse cx="72" cy="58" rx="19" ry="10" fill="#cbd5e1" opacity=".55"/>
+    </g>
+    <!-- 앞다리 -->
+    <rect x="72" y="56" width="9" height="28" rx="4.5" fill="#5b6675"/>
+    <rect x="85" y="56" width="9" height="28" rx="4.5" fill="#6b7787"/>
+    <!-- 발 -->
+    <rect x="30" y="80" width="13" height="6" rx="3" fill="#475569"/>
+    <rect x="44" y="80" width="13" height="6" rx="3" fill="#475569"/>
+    <rect x="70" y="80" width="13" height="6" rx="3" fill="#475569"/>
+    <rect x="83" y="80" width="13" height="6" rx="3" fill="#475569"/>
+    <!-- 머리 -->
+    <g class="head-bob">
+      <g class="ear-twitch"><path d="M84 25l-3-15 14 8z" fill="#8b95a5"/>
+        <path d="M85 24l-2-9 8 5z" fill="#f9a8a8" opacity=".7"/></g>
+      <path d="M102 24l5-14 4 15z" fill="#8b95a5"/>
+      <path d="M103 24l3-8 2 8z" fill="#f9a8a8" opacity=".7"/>
+      <circle cx="95" cy="36" r="16" fill="#9aa4b4"/>
+      <path d="M104 36q16 0 20 7-7 8-20 5z" fill="#cbd5e1"/>
+      <circle cx="122" cy="42" r="3.2" fill="#1f2937"/>
+      <path d="M108 47q6 2 11 0" stroke="#64748b" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <circle class="blink" cx="100" cy="32" r="2.6" fill="#1f2937"/>
+      <circle cx="100.8" cy="31.2" r="0.9" fill="#fff"/>
+      <path d="M95 26q5-2.5 9 0" stroke="#5b6675" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </g>
+  </g></svg>`,
+      goat:    `<svg viewBox="0 0 126 96" xmlns="http://www.w3.org/2000/svg"><title>염소</title>
+  <g class="idle-sway">
+    <ellipse class="shadow" cx="66" cy="90" rx="34" ry="4.5"/>
+    <g class="tail-wag"><path d="M32 42l-11-7 2 12z" fill="#e2e8f0"/></g>
+    <rect x="34" y="56" width="8" height="28" rx="4" fill="#cbd5e1"/>
+    <rect x="47" y="56" width="8" height="28" rx="4" fill="#e2e8f0"/>
+    <g class="breathe">
+      <ellipse cx="61" cy="50" rx="31" ry="18" fill="#f8fafc"/>
+      <ellipse cx="61" cy="43" rx="28" ry="11" fill="#ffffff"/>
+      <ellipse cx="50" cy="55" rx="9" ry="6" fill="#e2e8f0" opacity=".8"/>
+    </g>
+    <rect x="72" y="56" width="8" height="28" rx="4" fill="#cbd5e1"/>
+    <rect x="84" y="56" width="8" height="28" rx="4" fill="#e2e8f0"/>
+    <rect x="32" y="81" width="12" height="6" rx="2.5" fill="#78716c"/>
+    <rect x="45" y="81" width="12" height="6" rx="2.5" fill="#78716c"/>
+    <rect x="70" y="81" width="12" height="6" rx="2.5" fill="#78716c"/>
+    <rect x="82" y="81" width="12" height="6" rx="2.5" fill="#78716c"/>
+    <g class="head-bob">
+      <!-- 뿔 -->
+      <path d="M92 22q7-9 4-16-6 5-9 13z" fill="#a8a29e"/>
+      <path d="M102 23q9-7 8-15-7 4-12 11z" fill="#c4bfba"/>
+      <!-- 귀 -->
+      <g class="ear-twitch"><ellipse cx="88" cy="36" rx="9" ry="4.5" transform="rotate(-18 88 36)" fill="#e2e8f0"/></g>
+      <circle cx="99" cy="37" r="14" fill="#ffffff"/>
+      <path d="M107 37q14 0 17 6-6 7-17 4z" fill="#f1f5f9"/>
+      <ellipse cx="121" cy="42" rx="2.8" ry="2.2" fill="#f9a8a8"/>
+      <path d="M110 47q5 2 9 0" stroke="#cbd5e1" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <circle class="blink" cx="104" cy="34" r="2.6" fill="#1f2937"/>
+      <circle cx="104.8" cy="33.2" r="0.9" fill="#fff"/>
+      <!-- 수염 -->
+      <path d="M104 50q2 10-2 13 6-2 7-12z" fill="#f1f5f9"/>
+    </g>
+  </g></svg>`,
+      cabbage: `<svg viewBox="0 0 104 96" xmlns="http://www.w3.org/2000/svg"><title>양배추</title>
+  <g class="idle-sway">
+    <ellipse class="shadow" cx="52" cy="90" rx="28" ry="4.5"/>
+    <g class="leaf-sway">
+      <path d="M52 82C22 82 8 64 12 42 16 22 34 12 52 12s36 10 40 30c4 22-10 40-40 40z" fill="#4ade80"/>
+      <path d="M52 78C28 78 15 62 18 44 22 26 36 17 52 17s30 9 34 27c3 18-10 34-34 34z" fill="#86efac"/>
+      <path d="M52 72C34 72 24 60 26 46 29 32 40 25 52 25s23 7 26 21c2 14-8 26-26 26z" fill="#bbf7d0"/>
+      <path d="M52 62c-9 0-15-6-14-13 1-7 7-11 14-11s13 4 14 11c1 7-5 13-14 13z" fill="#dcfce7"/>
+      <path d="M52 25v37M30 40q22 8 44 0M34 56q18-10 36 0" stroke="#22c55e" stroke-width="1.8" fill="none" opacity=".55" stroke-linecap="round"/>
+      <path d="M52 12c-4-8-14-9-18-4 5 1 9 4 12 9z" fill="#22c55e"/>
+      <path d="M52 12c4-9 15-9 19-3-6 0-11 3-14 8z" fill="#16a34a"/>
+    </g>
+  </g></svg>`
+    };
+
+    const scene    = document.getElementById('scene');
+    const water    = document.getElementById('water');
+    const slotsL   = document.getElementById('slotsL');
+    const slotsR   = document.getElementById('slotsR');
+    const boat     = document.getElementById('boat');
+    const passengerPad   = document.getElementById('passengerPad');
+    const passengerLabel = document.getElementById('passengerLabel');
+    const farmerPad = document.getElementById('farmerPad');
+    const crossBtn = document.getElementById('crossBtn');
+    const undoBtn  = document.getElementById('undoBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const moveBadge = document.getElementById('moveBadge');
+    const feedback  = document.getElementById('feedback');
+
+    let pos = {};
+    let passenger = null;
+    let moves = 0;
+    let history = [];
+    let over = false;
+    let sailing = false;
+    const actors = {};
+    const pads = { L: {}, R: {} };
+
+    // 받침 유무에 따른 조사 (늑대/염소/양배추는 모두 받침 없음)
+    function josa(word, withFinal, withoutFinal) {
+      const code = word.charCodeAt(word.length - 1);
+      const hasFinal = (code - 0xAC00) % 28 !== 0;
+      return word + (hasFinal ? withFinal : withoutFinal);
+    }
+
+    // ---------- 장면 크기에 맞춰 --unit 갱신 ----------
+    function setUnit() {
+      const r = scene.getBoundingClientRect();
+      if (!r.height) return;
+      const u = Math.min(r.height, r.width * 0.60);
+      scene.style.setProperty('--unit', u + 'px');
+    }
+    new ResizeObserver(setUnit).observe(scene);
+
+    // ---------- 물 반짝임 ----------
+    for (let i = 0; i < 7; i++) {
+      const s = document.createElement('div');
+      s.className = 'sparkle';
+      s.style.left  = (6 + Math.random() * 84) + '%';
+      s.style.top   = (20 + Math.random() * 64) + '%';
+      s.style.width = (10 + Math.random() * 20) + 'px';
+      s.style.animationDelay = (Math.random() * 3.4) + 's';
+      water.appendChild(s);
+    }
+
+    // ---------- 자리와 배우 만들기 ----------
+    function buildPads() {
+      [['L', slotsL], ['R', slotsR]].forEach(([side, container]) => {
+        ITEMS.forEach(it => {
+          const pad = document.createElement('div');
+          pad.className = 'pad';
+          pad.dataset.id = it.id;
+          pad.innerHTML = '<div class="pad-label">' + it.name + '</div><div class="ghost"></div>';
+          container.appendChild(pad);
+          pads[side][it.id] = pad;
+        });
+      });
+    }
+
+    function buildActors() {
+      ['farmer', ...ITEMS.map(i => i.id)].forEach((id, k) => {
+        const el = document.createElement('div');
+        el.className = 'actor';
+        el.dataset.id = id;
+        el.innerHTML = SVGS[id];
+        // 같은 리듬으로 움직이면 어색하니 개체마다 위상을 다르게
+        el.querySelectorAll('.idle-sway, .breathe, .head-bob, .tail-wag, .ear-twitch, .blink, .leaf-sway, .arm-l, .arm-r')
+          .forEach((g, j) => { g.style.animationDelay = (-(k * 0.7 + j * 0.31)).toFixed(2) + 's'; });
+        actors[id] = el;
+      });
+    }
+
+    // ---------- 규칙 ----------
+    function checkDanger() {
+      const away = pos.farmer === 'L' ? 'R' : 'L';
+      if (pos.wolf === away && pos.goat === away)
+        return { pair: ['wolf', 'goat'], msg: '늑대가 염소를 잡아먹었습니다!' };
+      if (pos.goat === away && pos.cabbage === away)
+        return { pair: ['goat', 'cabbage'], msg: '염소가 양배추를 먹어버렸습니다!' };
+      return null;
+    }
+
+    function setFeedback(t, k) {
+      feedback.textContent = t;
+      feedback.className = 'feedback ' + k;
+    }
+
+    function reset() {
+      pos = { farmer: 'L', wolf: 'L', goat: 'L', cabbage: 'L' };
+      passenger = null;
+      moves = 0;
+      history = [];
+      over = false;
+      sailing = false;
+      boat.classList.remove('sailing');
+      scene.querySelectorAll('.boom').forEach(b => b.remove());
+      setFeedback('동물을 배의 승객 자리로 끌어다 놓으세요.', 'info');
+      render();
+    }
+
+    function canGrab(id) {
+      if (over || sailing) return false;
+      if (passenger === id) return true;
+      return pos[id] === pos.farmer;   // 배(=농부)와 같은 쪽 강둑이어야 태울 수 있다
+    }
+
+    // pad 에 배우를 넣는다 (라벨 다음, 고스트 앞)
+    function place(pad, el) {
+      if (el.parentNode !== pad) pad.insertBefore(el, pad.querySelector('.ghost'));
+      pad.classList.add('occupied');
+    }
+
+    function render(dangerPair) {
+      place(farmerPad, actors.farmer);
+
+      ITEMS.forEach(it => {
+        const el = actors[it.id];
+        const bankPad = pads[pos[it.id]][it.id];
+        const otherPad = pads[pos[it.id] === 'L' ? 'R' : 'L'][it.id];
+
+        otherPad.classList.remove('occupied');
+
+        if (el.classList.contains('dragging')) {
+          bankPad.classList.remove('occupied');
+        } else if (passenger === it.id) {
+          place(passengerPad, el);
+          bankPad.classList.remove('occupied');
+        } else {
+          place(bankPad, el);
+        }
+        el.classList.toggle('grabbable', canGrab(it.id));
+        el.classList.toggle('danger', !!(dangerPair && dangerPair.includes(it.id)));
+      });
+
+      if (!passenger) passengerPad.classList.remove('occupied');
+      passengerLabel.textContent = passenger
+        ? ITEMS.find(i => i.id === passenger).name
+        : '승객 자리';
+
+      boat.classList.toggle('left',  pos.farmer === 'L');
+      boat.classList.toggle('right', pos.farmer === 'R');
+
+      moveBadge.textContent = '건넌 횟수 ' + moves;
+      crossBtn.disabled = over || sailing;
+      undoBtn.disabled = history.length === 0 || sailing;
+    }
+
+    // ---------- 드래그 앤 드롭 (마우스 + 터치) ----------
+    let drag = null;
+
+    scene.addEventListener('pointerdown', (e) => {
+      const el = e.target.closest('.actor');
+      if (!el) return;
+      const id = el.dataset.id;
+      if (id === 'farmer' || !canGrab(id)) return;
+
+      e.preventDefault();
+      const r = el.getBoundingClientRect();
+      drag = { el, id, moved: false, dx: e.clientX - r.left, dy: e.clientY - r.top,
+               startX: e.clientX, startY: e.clientY };
+      el.setPointerCapture(e.pointerId);
+      el.classList.add('dragging');
+      el.style.width = r.width + 'px';
+      el.style.height = r.height + 'px';
+      el.style.left = r.left + 'px';
+      el.style.top = r.top + 'px';
+      boat.classList.add('armed');
+      render();
+    });
+
+    scene.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) > 4) drag.moved = true;
+      drag.el.style.left = (e.clientX - drag.dx) + 'px';
+      drag.el.style.top  = (e.clientY - drag.dy) + 'px';
+      boat.classList.toggle('over', overBoat(e.clientX, e.clientY));
+    });
+
+    function overBoat(x, y) {
+      const b = boat.getBoundingClientRect();
+      const pad = 30;
+      return x > b.left - pad && x < b.right + pad && y > b.top - pad * 2 && y < b.bottom + pad;
+    }
+
+    scene.addEventListener('pointerup', (e) => {
+      if (!drag) return;
+      const { el, id, moved } = drag;
+      const dropped = overBoat(e.clientX, e.clientY);
+      drag = null;
+
+      el.classList.remove('dragging');
+      el.style.cssText = '';
+      boat.classList.remove('armed', 'over');
+
+      if (!moved) { toggleBoard(id); return; }   // 움직이지 않았으면 클릭으로 간주
+      if (dropped) board(id);
+      else if (passenger === id) unboard();
+      else render();
+    });
+
+    scene.addEventListener('pointercancel', () => {
+      if (!drag) return;
+      drag.el.classList.remove('dragging');
+      drag.el.style.cssText = '';
+      boat.classList.remove('armed', 'over');
+      drag = null;
+      render();
+    });
+
+    function board(id) {
+      if (!canGrab(id)) return;
+      const name = ITEMS.find(i => i.id === id).name;
+      if (passenger && passenger !== id) {
+        const old = ITEMS.find(i => i.id === passenger).name;
+        setFeedback(josa(old, '이', '가') + ' 내리고 ' + josa(name, '이', '가') + ' 탔습니다.', 'info');
+      } else {
+        setFeedback(josa(name, '을', '를') + ' 배에 태웠습니다.', 'info');
+      }
+      passenger = id;
+      render();
+    }
+
+    function unboard() {
+      passenger = null;
+      setFeedback('배를 비웠습니다. 빈 배로 건너도 됩니다.', 'info');
+      render();
+    }
+
+    function toggleBoard(id) {
+      if (passenger === id) unboard(); else board(id);
+    }
+
+    function boom(pair) {
+      pair.forEach(id => {
+        const r = actors[id].getBoundingClientRect();
+        const s = scene.getBoundingClientRect();
+        const b = document.createElement('div');
+        b.className = 'boom';
+        b.textContent = '💥';
+        b.style.left = (r.left + r.width / 2 - s.left) + 'px';
+        b.style.top  = (r.top + r.height / 3 - s.top) + 'px';
+        scene.appendChild(b);
+        setTimeout(() => b.remove(), 950);
+      });
+    }
+
+    // ---------- 강 건너기 ----------
+    crossBtn.addEventListener('click', () => {
+      if (over || sailing) return;
+
+      history.push({ pos: { ...pos }, passenger, moves });
+
+      const to = pos.farmer === 'L' ? 'R' : 'L';
+      pos.farmer = to;
+      if (passenger) pos[passenger] = to;
+      moves++;
+
+      sailing = true;
+      boat.classList.add('sailing');
+      render();
+      setFeedback('노를 젓는 중…', 'info');
+
+      setTimeout(() => {
+        sailing = false;
+        boat.classList.remove('sailing');
+        passenger = null;                     // 도착하면 강둑으로 내린다
+
+        const danger = checkDanger();
+        if (danger) {
+          over = true;
+          render(danger.pair);
+          boom(danger.pair);
+          setFeedback('❌ ' + danger.msg + ' 되돌리기를 눌러 다시 시도하세요.', 'error');
+          undoBtn.disabled = false;
+          return;
+        }
+
+        if (ITEMS.every(i => pos[i.id] === 'R') && pos.farmer === 'R') {
+          over = true;
+          render();
+          const best = (moves === 7) ? ' 최소 횟수(7회)로 성공했습니다!' : ' (최소는 7회)';
+          setFeedback('🎉 모두 무사히 건넜습니다! ' + moves + '회.' + best, 'success');
+          return;
+        }
+
+        render();
+        setFeedback('건넜습니다. (' + moves + '회) 아무도 다치지 않았어요.', 'info');
+      }, 980);
+    });
+
+    undoBtn.addEventListener('click', () => {
+      if (history.length === 0 || sailing) return;
+      const prev = history.pop();
+      pos = prev.pos;
+      passenger = prev.passenger;
+      moves = prev.moves;
+      over = false;
+      scene.querySelectorAll('.boom').forEach(b => b.remove());
+      setFeedback('되돌렸습니다. (' + moves + '회)', 'info');
+      render();
+    });
+
+    resetBtn.addEventListener('click', reset);
+
+    buildPads();
+    buildActors();
+    setUnit();
+    reset();
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문학경기장 MATHTOUR - STAGE 01</title>
+  
+  <!-- Pretendard & Roboto Mono 폰트 로드 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500;700&display=swap">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Pretendard', sans-serif;
+      color: #1e293b;
+      overflow: hidden;
+    }
+
+    /* 16:9 게임 컨테이너 */
+    #game-container {
+      position: relative;
+      width: 100vw;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #f8fafc;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    /* 배경 이미지 */
+    .bg-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      filter: brightness(0.92);
+    }
+
+    /* 상단 스테이지 표시바 */
+    #top-bar {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      right: 20px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .stage-badge {
+      background: #2563eb;
+      color: #ffffff;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .stage-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: #1e293b;
+      margin-left: 10px;
+    }
+
+    .progress-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progress-text {
+      font-size: 12px;
+      color: #64748b;
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 700;
+    }
+
+    .progress-bar-bg {
+      width: 120px;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      width: 10%;
+      height: 100%;
+      background: #2563eb;
+      border-radius: 4px;
+    }
+
+    /* 상황 연출 카드 컨테이너 */
+    #situation-card {
+      position: absolute;
+      top: 76px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 530px;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      z-index: 10;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #2563eb;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      font-family: 'Roboto Mono', monospace;
+      color: #64748b;
+      background: #f1f5f9;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .story-text {
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #334155;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    /* 해킹 경고문 박스 */
+    .alert-box {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+    }
+
+    .alert-title {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: #dc2626;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .alert-msg {
+      font-family: 'Roboto Mono', monospace;
+      font-size: 12.5px;
+      color: #991b1b;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+
+    /* 대화 진행 영역 */
+    #dialogue-area {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #dialogue-area:hover {
+      background: #f1f5f9;
+    }
+
+    .speaker-tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #ffffff;
+      background: #2563eb;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+
+    .dialogue-content {
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: #1e293b;
+      min-height: 40px;
+    }
+
+    .click-hint {
+      text-align: right;
+      font-size: 11px;
+      color: #94a3b8;
+      font-family: 'Roboto Mono', monospace;
+      margin-top: 4px;
+    }
+
+    /* 이동 버튼 */
+    .btn-nav {
+      position: absolute;
+      bottom: 20px;
+      height: 42px;
+      padding: 0 22px;
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Pretendard', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      transition: all 0.2s ease;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-nav:hover {
+      background: #1d4ed8;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-nav:active {
+      transform: translateY(0);
+    }
+
+    #btn-prev {
+      left: 20px;
+    }
+
+    #btn-next {
+      right: 20px;
+    }
+
+    /* 등장인물 서식 */
+    .char-wrapper {
+      transition: filter 0.25s ease, transform 0.25s ease;
+    }
+
+    .char-wrapper.inactive {
+      filter: brightness(0.55);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- 배경 이미지 -->
+    <img src="인천SSG랜더스필드 외부.png" alt="인천SSG랜더스필드 외부" class="bg-img">
+
+    <!-- 상단 진행 표시바 -->
+    <div id="top-bar">
+      <div style="display: flex; align-items: center;">
+        <span class="stage-badge">STAGE 01</span>
+        <span class="stage-title">문학경기장 MATHTOUR : 빅보드 해킹 사건</span>
+      </div>
+      <div class="progress-box">
+        <span class="progress-text">PROGRESS 10%</span>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 메인 상황 연출 카드 -->
+    <div id="situation-card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>📱</span> 바이브 패드(Vibe Pad) 브리핑
+        </div>
+        <div class="card-subtitle">ROLE: INターン DATA ANALYST</div>
+      </div>
+
+      <div class="story-text">
+        여러분은 SSG 랜더스의 <strong>인턴 데이터 분석가</strong>입니다.<br>
+        경기 시작 1시간 전, 야구장의 상징인 세계 최대 규모급 전광판 <strong>'빅보드'</strong>가 해킹을 당해 모든 시스템이 멈춰버렸습니다!
+      </div>
+
+      <!-- 해킹 경고문 -->
+      <div class="alert-box">
+        <div class="alert-title">⚠️ [SYSTEM WARNING] BIG BOARD HACKED</div>
+        <div class="alert-msg">
+          "랜더스필드 곳곳에 숨겨진 수학적 암호를 풀고 메인 서버에 올바른 코드를 입력하지 않으면, 오늘 경기는 취소된다!"
+        </div>
+      </div>
+
+      <!-- 대화 상자 -->
+      <div id="dialogue-area" onclick="advanceDialogue()">
+        <div>
+          <span id="speaker-badge" class="speaker-tag">민우</span>
+        </div>
+        <div id="dialogue-text" class="dialogue-content">
+          서연아! 큰일 났어. 경기 시작 1시간 전인데 빅보드 전광판이 완전히 마비됐어!
+        </div>
+        <div class="click-hint">클릭하여 다음 대화 ( <span id="dialogue-step">1</span> / 4 ) ▶</div>
+      </div>
+    </div>
+
+    <!-- 소품 에셋: 야구글러브 (원본 비율 유지) -->
+    <div style="position: absolute; left: 280px; bottom: 30px; width: 105px; height: 105px; z-index: 2; overflow: hidden;">
+      <iframe src="야구글러브.html" scrolling="no" style="border: 0; width: 300px; height: 300px; transform: scale(0.35); transform-origin: top left; pointer-events: none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 민우 (좌측, 260x320 고정 규격 s=0.85 적용) -->
+    <div class="char-wrapper" id="char-민우" style="position: absolute; left: 30px; bottom: 20px; width: 221px; height: 272px; z-index: 3; overflow: visible;">
+      <iframe src="등장인물_민우.html" scrolling="no" style="border: 0; width: 260px; height: 320px; transform: scale(0.85); transform-origin: bottom left; pointer-events: none;"></iframe>
+    </div>
+
+    <!-- 등장인물: 서연 (우측, 260x320 고정 규격 s=0.85 & 좌우 반전 적용) -->
+    <div class="char-wrapper inactive" id="char-서연" style="position: absolute; right: 30px; bottom: 20px; width: 221px; height: 272px; z-index: 3; overflow: visible;">
+      <iframe src="등장인물_서연.html" scrolling="no" style="border: 0; width: 260px; height: 320px; transform: scale(0.85) scaleX(-1); transform-origin: bottom center; pointer-events: none;"></iframe>
+    </div>
+
+    <!-- 이동 버튼 -->
+    <button class="btn-nav" id="btn-prev" onclick="goPrev()">◀ 이전</button>
+    <button class="btn-nav" id="btn-next" onclick="goNext()">다음 ▶</button>
+  </div>
+
+  <script>
+    // 대화 데이터 정의
+    const dialogues = [
+      {
+        speaker: "민우",
+        text: "서연아! 큰일 났어. 경기 시작 1시간 전인데 빅보드 전광판이 완전히 마비됐어!",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "붉은 경고문이 떠 있어... 제한시간 10분 안에 수학 암호를 풀어야 경기가 취소되지 않는대!",
+        target: "char-서연"
+      },
+      {
+        speaker: "민우",
+        text: "다행히 우리에겐 '바이브 패드(Vibe Pad)'가 있어. 경기장 구석구석을 수색해 암호를 풀자!",
+        target: "char-민우"
+      },
+      {
+        speaker: "서연",
+        text: "좋아, 인턴 데이터 분석가의 실력을 보여줄 때야. 먼저 메인 게이트 근처부터 점검하러 가자!",
+        target: "char-서연"
+      }
+    ];
+
+    let currentIndex = 0;
+
+    function updateDialogueUI() {
+      const current = dialogues[currentIndex];
+      
+      // 화자 이름 및 대사 업데이트
+      document.getElementById("speaker-badge").innerText = current.speaker;
+      document.getElementById("dialogue-text").innerText = current.text;
+      document.getElementById("dialogue-step").innerText = currentIndex + 1;
+
+      // 캐릭터 활성화/비활성화 (밝기 처리)
+      const minwoo = document.getElementById("char-민우");
+      const seoyeon = document.getElementById("char-서연");
+
+      if (current.target === "char-민우") {
+        minwoo.classList.remove("inactive");
+        seoyeon.classList.add("inactive");
+      } else {
+        seoyeon.classList.remove("inactive");
+        minwoo.classList.add("inactive");
+      }
+    }
+
+    function advanceDialogue() {
+      currentIndex = (currentIndex + 1) % dialogues.length;
+      updateDialogueUI();
+    }
+
+    // 페이지 이동 함수 (공통 규칙 준수)
+    function goPrev() {
+      window.location.href = "index.html";
+    }
+
+    function goNext() {
+      window.location.href = "A02.html";
+    }
+
+    // 초기 UI 설정
+    window.addEventListener("DOMContentLoaded", () => {
+      updateDialogueUI();
+    });
+  </script>
+</body>
+</html>

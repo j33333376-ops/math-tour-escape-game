@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문학경기장 MATHTOUR - STAGE 04</title>
+
+  <!-- Google Fonts & Pretendard CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@700;900&family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ssg: {
+              red: '#CE0E2D',
+              darkred: '#900A1F',
+              black: '#111827',
+              card: '#1F2937',
+              gold: '#F59E0B',
+            }
+          },
+          fontFamily: {
+            led: ['Orbitron', 'sans-serif'],
+            sans: ['Pretendard', 'Noto Sans KR', 'sans-serif'],
+            mono: ['Roboto Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #0f172a;
+      color: #1e293b;
+      font-family: 'Pretendard', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* 16:9 비율 유지 게임 컨테이너 */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1066px;
+      aspect-ratio: 16 / 9;
+      background-color: #f8fafc;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border-radius: 12px;
+    }
+
+    /* 상단 스테이지 바 */
+    .stage-bar {
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      right: 16px;
+      height: 42px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 30;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .stage-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stage-badge {
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    /* 공통 이동 버튼 */
+    .btn-nav {
+      position: absolute;
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+      transition: all 0.2s ease;
+      z-index: 40;
+    }
+
+    .btn-nav:hover {
+      background: #1d4ed8;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(29, 78, 216, 0.4);
+    }
+
+    #btn-prev {
+      left: 20px;
+      bottom: 16px;
+    }
+
+    #btn-next {
+      right: 20px;
+      bottom: 16px;
+      display: none; /* 퀴즈 성공 시 표시 */
+      background: #10b981;
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    }
+
+    #btn-next:hover {
+      background: #059669;
+      box-shadow: 0 6px 14px rgba(5, 150, 105, 0.4);
+    }
+
+    /* 퀴즈 영역 커스텀 오버레이 스크롤 */
+    .quiz-scroll-area {
+      max-height: calc(100% - 60px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #475569 transparent;
+    }
+    .quiz-scroll-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    .quiz-scroll-area::-webkit-scrollbar-thumb {
+      background-color: #475569;
+      border-radius: 3px;
+    }
+
+    /* 전광판 및 스마트 게이트 스타일 효과 */
+    .glow-gold {
+      text-shadow: 0 0 10px rgba(245, 158, 11, 0.6), 0 0 20px rgba(245, 158, 11, 0.3);
+    }
+    .glow-red {
+      text-shadow: 0 0 10px rgba(206, 14, 45, 0.8);
+    }
+    .glow-green {
+      text-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+    }
+
+    .gate-door-left, .gate-door-right {
+      transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+    .gate-open .gate-door-left {
+      transform: translateX(-100%);
+    }
+    .gate-open .gate-door-right {
+      transform: translateX(100%);
+    }
+
+    .btn-step:active {
+      transform: scale(0.92);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 16:9 메인 게임 컨테이너 -->
+  <div id="game-container">
+
+    <!-- 1. 배경 이미지 -->
+    <img src="인천SSG랜더스필드 내부.png" alt="인천 SSG 랜더스필드 내부" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+
+    <!-- 2. 상단 스테이지 표시바 -->
+    <header class="stage-bar">
+      <div class="stage-title">
+        <span class="stage-badge">STAGE 04</span>
+        <span>인천 SSG 랜더스필드 - 소인수분해 게이트</span>
+      </div>
+      <div class="flex items-center gap-2 text-xs text-slate-500 font-mono">
+        <i class="fa-solid fa-graduation-cap text-blue-600"></i> 모던 에듀테크 연구소 MATHTOUR
+      </div>
+    </header>
+
+    <!-- 3. 등장인물 오버레이 (좌/우 배치) -->
+    <!-- 민우 -->
+    <div class="char-wrapper" id="char-민우" style="position: absolute; left: 12px; bottom: 12px; width: 156px; height: 192px; overflow: visible; z-index: 3; pointer-events: none;">
+      <iframe src="등장인물_민우.html" scrolling="no" style="border: 0; width: 260px; height: 320px; transform: scale(0.6); transform-origin: bottom left; pointer-events: none;"></iframe>
+    </div>
+
+    <!-- 서연 -->
+    <div class="char-wrapper" id="char-서연" style="position: absolute; right: 12px; bottom: 12px; width: 156px; height: 192px; overflow: visible; z-index: 3; pointer-events: none;">
+      <iframe src="등장인물_서연.html" scrolling="no" style="border: 0; width: 260px; height: 320px; transform: scale(0.6) scaleX(-1); transform-origin: bottom right; pointer-events: none;"></iframe>
+    </div>
+
+    <!-- 4. 수학 퀴즈 컨테이너 (유형 3) -->
+    <div class="quiz-container absolute inset-0 pt-16 pb-14 px-12 z-10 flex flex-col justify-center">
+      <div class="quiz-scroll-area bg-gray-950/85 backdrop-blur-md border border-gray-800 rounded-2xl p-4 md:p-5 shadow-2xl text-gray-100">
+        
+        <!-- HEADER / 전광판 -->
+        <div class="bg-ssg-black border border-ssg-red/80 rounded-xl p-3 shadow-lg relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-3 mb-3">
+          <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-ssg-red via-ssg-gold to-ssg-red"></div>
+          
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-ssg-red rounded-lg flex items-center justify-center text-white text-lg shadow border border-red-400/30 shrink-0">
+              <i class="fa-solid fa-baseball"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="bg-ssg-gold/20 text-ssg-gold text-[10px] font-bold px-2 py-0.5 rounded-full border border-ssg-gold/40">MISSION 01</span>
+                <span class="text-[11px] text-gray-400"><i class="fa-solid fa-location-dot text-ssg-red mr-1"></i>SSG 랜더스필드 게이트 광장</span>
+              </div>
+              <h1 class="text-base md:text-lg font-black tracking-tight text-white mt-0.5">
+                소인수분해 스마트 게이트 암호 해독
+              </h1>
+            </div>
+          </div>
+
+          <!-- 전광판 상태창 -->
+          <div class="flex items-center gap-3 bg-gray-900/90 border border-gray-700 px-3 py-1.5 rounded-lg">
+            <div class="text-center px-1">
+              <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">GATE STATUS</p>
+              <p id="headerStatus" class="text-xs font-black text-ssg-red animate-pulse"><i class="fa-solid fa-lock mr-1"></i>LOCKED</p>
+            </div>
+            <div class="h-6 w-px bg-gray-700"></div>
+            <div class="text-center px-1">
+              <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">TARGET GCD</p>
+              <p class="text-sm font-led font-bold text-ssg-gold">18</p>
+            </div>
+            <div class="text-center px-1">
+              <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">TARGET LCM</p>
+              <p class="text-sm font-led font-bold text-ssg-gold">360</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- MAIN CONTENT GRID -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3">
+
+          <!-- [좌측] 스토리 및 등번호 분석 대시보드 -->
+          <section class="lg:col-span-5 flex flex-col gap-2.5">
+            
+            <!-- 스토리 카드 -->
+            <div class="bg-ssg-card border border-gray-700/80 rounded-xl p-3 shadow-md">
+              <div class="flex items-center gap-2 text-ssg-gold font-bold mb-1 text-xs">
+                <i class="fa-solid fa-bullhorn"></i>
+                <h2>미션 스토리</h2>
+              </div>
+              <p class="text-xs text-gray-300 leading-relaxed">
+                전광판에 에이스 투수 <span class="text-white font-bold bg-ssg-red/40 px-1 py-0.5 rounded border border-ssg-red/50">#72</span>와 거포 타자 <span class="text-white font-bold bg-amber-500/30 px-1 py-0.5 rounded border border-amber-500/40">#90</span>의 등번호가 떴습니다! 두 수의 소인수를 비교하여 <strong class="text-ssg-gold">최대공약수(GCD)</strong>와 <strong class="text-ssg-gold">최소공배수(LCM)</strong>를 구하세요.
+              </p>
+            </div>
+
+            <!-- 선수 유니폼 소인수분해 카드 -->
+            <div class="grid grid-cols-2 gap-2">
+              <div onclick="playClickSound()" class="bg-gradient-to-b from-ssg-red/30 to-ssg-card border border-ssg-red/60 rounded-xl p-2.5 text-center relative cursor-pointer hover:border-ssg-red transition group">
+                <div class="absolute top-1.5 left-1.5 bg-ssg-red text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-full">PITCHER</div>
+                <div class="mt-2 text-3xl font-black text-white group-hover:scale-105 transition-transform font-led glow-red">
+                  72
+                </div>
+                <div class="mt-2 pt-1.5 border-t border-gray-700/60">
+                  <p class="text-[10px] text-gray-400">소인수분해</p>
+                  <p class="text-xs font-bold text-amber-300 font-led">2<sup>3</sup> × 3<sup>2</sup></p>
+                </div>
+              </div>
+
+              <div onclick="playClickSound()" class="bg-gradient-to-b from-gray-800 to-ssg-card border border-amber-500/60 rounded-xl p-2.5 text-center relative cursor-pointer hover:border-amber-500 transition group">
+                <div class="absolute top-1.5 left-1.5 bg-amber-500 text-black text-[9px] font-extrabold px-1.5 py-0.5 rounded-full">HITTER</div>
+                <div class="mt-2 text-3xl font-black text-white group-hover:scale-105 transition-transform font-led glow-gold">
+                  90
+                </div>
+                <div class="mt-2 pt-1.5 border-t border-gray-700/60">
+                  <p class="text-[10px] text-gray-400">소인수분해</p>
+                  <p class="text-xs font-bold text-amber-300 font-led">2<sup>1</sup> × 3<sup>2</sup> × 5<sup>1</sup></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 소인수 비교 비주얼 매트릭스 -->
+            <div class="bg-ssg-card border border-gray-700/80 rounded-xl p-3 shadow-md">
+              <h3 class="text-xs font-bold text-gray-200 flex items-center gap-1.5 mb-2">
+                <i class="fa-solid fa-chart-simple text-ssg-red"></i> 소인수 지수 비교 분석표
+              </h3>
+              <div class="space-y-1.5 text-[11px]">
+                <div class="bg-gray-900/80 p-1.5 rounded-lg border border-gray-800 flex items-center justify-between">
+                  <span class="text-gray-300">소인수 <strong class="text-blue-400">2</strong>: 72(2³) vs 90(2¹)</span>
+                  <span class="font-mono text-[10px] text-gray-400">작은지수: <strong class="text-emerald-400">1</strong> | 큰지수: <strong class="text-amber-400">3</strong></span>
+                </div>
+                <div class="bg-gray-900/80 p-1.5 rounded-lg border border-gray-800 flex items-center justify-between">
+                  <span class="text-gray-300">소인수 <strong class="text-purple-400">3</strong>: 72(3²) vs 90(3²)</span>
+                  <span class="font-mono text-[10px] text-gray-400">작은지수: <strong class="text-emerald-400">2</strong> | 큰지수: <strong class="text-amber-400">2</strong></span>
+                </div>
+                <div class="bg-gray-900/80 p-1.5 rounded-lg border border-gray-800 flex items-center justify-between">
+                  <span class="text-gray-300">소인수 <strong class="text-emerald-400">5</strong>: 72(5⁰) vs 90(5¹)</span>
+                  <span class="font-mono text-[10px] text-gray-400">작은지수: <strong class="text-emerald-400">0</strong> | 큰지수: <strong class="text-amber-400">1</strong></span>
+                </div>
+              </div>
+            </div>
+
+          </section>
+
+          <!-- [우측] 인터랙티브 조작 판넬 -->
+          <section class="lg:col-span-7 flex flex-col gap-2.5">
+            
+            <!-- 1. 최대공약수(GCD) 조작기 -->
+            <div class="bg-ssg-card border border-emerald-500/40 rounded-xl p-3 shadow-md">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-1.5">
+                  <span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-xs"><i class="fa-solid fa-compress"></i></span>
+                  <h3 class="font-bold text-xs text-white">최대공약수 (GCD) 조작기</h3>
+                </div>
+                <div id="gcdBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-800 text-gray-400 border border-gray-700">
+                  조작 필요
+                </div>
+              </div>
+
+              <div class="bg-gray-900/90 rounded-lg p-2.5 border border-gray-800 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 font-led text-base">
+                  <!-- a -->
+                  <div class="flex flex-col items-center">
+                    <span class="text-[9px] font-sans text-gray-400">소인수 2</span>
+                    <div class="flex items-center bg-gray-800 rounded p-0.5 border border-gray-700">
+                      <button onclick="adjustExponent('a', -1)" class="btn-step w-6 h-6 rounded bg-gray-700 hover:bg-gray-600 text-white font-bold text-xs">-</button>
+                      <span class="w-6 text-center font-bold text-blue-400 text-base" id="val_a">0</span>
+                      <button onclick="adjustExponent('a', 1)" class="btn-step w-6 h-6 rounded bg-gray-700 hover:bg-gray-600 text-white font-bold text-xs">+</button>
+                    </div>
+                  </div>
+                  <span class="text-gray-500 mt-3">×</span>
+                  <!-- b -->
+                  <div class="flex flex-col items-center">
+                    <span class="text-[9px] font-sans text-gray-400">소인수 3</span>
+                    <div class="flex items-center bg-gray-800 rounded p-0.5 border border-gray-700">
+                      <button onclick="adjustExponent('b', -1)" class="btn-step w-6 h-6 rounded bg-gray-700 hover:bg-gray-600 text-white font-bold text-xs">-</button>
+                      <span class="w-6 text-center font-bold text-purple-400 text-base" id="val_b">0</span>
+                      <button onclick="adjustExponent('b', 1)" class="btn-step w-6 h-6 rounded bg-gray-700 hover:bg-gray-600 text-white font-bold text-xs">+</button>
+                    </div>
+                  </div>
+                  <span class="text-gray-500 mt-3">×</span>
+                  <!-- c -->
+                  <div class="flex flex-col items-center">
+                    <span class="text-[9px] font-sans text-gray-400">소인수 5</span>
+                    <div class="flex items-center bg-gray-800 rounded p-0.5 border border-gray-700">
+                      <button onclick="adjustExponent('c', -1)" class="btn-step w-6 h-6 rounded bg-gray-700 hover:bg-gray-600 text-white font-bold text-xs">-</button>
+                      <span class="w-6 text-center font-bold text-emerald-400 text-base" id="val_c">0</span>
+                      <button onclick="adjustExponent('c', 1)" class="btn-step w-6 h-6 rounded bg-gray-700 hover:bg-gray-600 text-white font-bold text-xs">+</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-right pl-3 border-l border-gray-800">
+                  <span class="text-[9px] text-gray-400 font-bold block">GCD 값</span>
+                  <div id="gcdResult" class="text-2xl font-black font-led text-gray-400">1</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. 최소공배수(LCM) 조작기 -->
+            <div class="bg-ssg-card border border-amber-500/40 rounded-xl p-3 shadow-md">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-1.5">
+                  <span class="bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded text-xs"><i class="fa-solid fa-expand"></i></span>
+                  <h3 class="font-bold text-xs text-white">최소공배수 (LCM) 조작기</h3>
+                </div>
+                <div id="lcmBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-800 text-gray-400 border border-gray-700">
+                  조작 필요
+                </div>
+              </div>
+
+              <div class="bg-gray-900/90 rounded-lg p-2.5 border border-gray-800 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 font-led text-base">
+                  <!-- d -->
+                  <div class="flex flex-col items-center">
+                    <span class="text-[9px] font-sans text-gray-400">소인수 2</span>
+                    <div class="flex items-center bg-gray-800 rounded p-0.5 border border-gray-700">
+                      <button onclick="adjustExponent('d', -1)" class="btn-step w-6 h-6 rounded bg-gray-700 hover:bg-gray-600 text-white font-bold text-xs">-</button>
+                      <span class="w-6 text-center font-bold text-blue-400 text-base" id="val_d">0</span>
+                      <button onclick="adjustExponent('d', 1)" class="btn-step w-6 h-6 rounded bg-gray-700 hover:bg-gray-600 text-white font-bold text-xs">+</button>
+                    </div>
+                  </div>
+                  <span class="text-gray-500 mt-3">×</span>
+                  <!-- e -->
+                  <div class="flex flex-col items-center">
+                    <span class="text-[9px] font-sans text-gray-400">소인수 3</span>
+                    <div class="flex items-center bg-gray-800 rounded p-0.5 border border-gray-700">
+                      <button onclick="adjustExponent('e', -1)" class="btn-step w-6 h-6 rounded bg-gray-700 hover:bg-gray-600 text-white font-bold text-xs">-</button>
+                      <span class="w-6 text-center font-bold text-purple-400 text-base" id="val_e">0</span>
+                      <button onclick="adjustExponent('e', 1)" class="btn-step w-6 h-6 rounded bg-gray-700 hover:bg-gray-600 text-white font-bold text-xs">+</button>
+                    </div>
+                  </div>
+                  <span class="text-gray-500 mt-3">×</span>
+                  <!-- f -->
+                  <div class="flex flex-col items-center">
+                    <span class="text-[9px] font-sans text-gray-400">소인수 5</span>
+                    <div class="flex items-center bg-gray-800 rounded p-0.5 border border-gray-700">
+                      <button onclick="adjustExponent('f', -1)" class="btn-step w-6 h-6 rounded bg-gray-700 hover:bg-gray-600 text-white font-bold text-xs">-</button>
+                      <span class="w-6 text-center font-bold text-emerald-400 text-base" id="val_f">0</span>
+                      <button onclick="adjustExponent('f', 1)" class="btn-step w-6 h-6 rounded bg-gray-700 hover:bg-gray-600 text-white font-bold text-xs">+</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-right pl-3 border-l border-gray-800">
+                  <span class="text-[9px] text-gray-400 font-bold block">LCM 값</span>
+                  <div id="lcmResult" class="text-2xl font-black font-led text-gray-400">1</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 피드백 메시지 박스 -->
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-2.5 flex items-start gap-2.5 shadow-sm">
+              <div class="w-7 h-7 rounded-lg bg-ssg-red/20 border border-ssg-red/40 flex items-center justify-center text-ssg-red text-xs shrink-0 mt-0.5">
+                <i class="fa-solid fa-user-ninja"></i>
+              </div>
+              <div class="flex-1">
+                <h4 class="text-[10px] font-bold text-ssg-gold uppercase">매쓰 코치 피드백</h4>
+                <p id="coachFeedback" class="text-xs text-gray-300 leading-tight mt-0.5">
+                  버튼을 눌러 지수를 조정하세요. GCD는 작은 지수, LCM은 큰 지수 선택!
+                </p>
+              </div>
+            </div>
+
+          </section>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 성공 모달 및 스마트 게이트 오버레이 -->
+    <div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-500">
+      <div id="gateContainer" class="absolute inset-0 overflow-hidden flex pointer-events-none">
+        <div class="gate-door-left w-1/2 h-full bg-gradient-to-r from-ssg-black to-ssg-darkred border-r-4 border-ssg-gold flex items-center justify-end pr-8">
+          <i class="fa-solid fa-shield-halved text-8xl text-ssg-red/20"></i>
+        </div>
+        <div class="gate-door-right w-1/2 h-full bg-gradient-to-l from-ssg-black to-ssg-darkred border-l-4 border-ssg-gold flex items-center justify-start pl-8">
+          <i class="fa-solid fa-shield-halved text-8xl text-ssg-red/20"></i>
+        </div>
+      </div>
+
+      <div class="relative z-10 bg-ssg-card border-2 border-ssg-gold rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl glow-gold transform scale-90 transition-transform duration-500" id="modalCard">
+        <div class="w-16 h-16 bg-gradient-to-tr from-ssg-gold to-yellow-200 text-black rounded-full flex items-center justify-center text-3xl mx-auto mb-3 shadow-lg border-2 border-white animate-bounce">
+          <i class="fa-solid fa-trophy"></i>
+        </div>
+        
+        <span class="bg-ssg-red text-white text-[10px] font-black px-2.5 py-0.5 rounded-full tracking-widest uppercase">MISSION COMPLETED!</span>
+        
+        <h2 class="text-xl font-black text-white mt-2 mb-1">
+          게이트 해제 완료!
+        </h2>
+        
+        <p class="text-xs text-gray-300 mb-5 leading-relaxed">
+          축하합니다! 지수 비교 규칙을 정확히 이해하셨습니다.<br>
+          <span class="text-emerald-400 font-bold">최대공약수: 18</span> (2¹ × 3²) <br>
+          <span class="text-amber-400 font-bold">최소공배수: 360</span> (2³ × 3² × 5¹)
+        </p>
+
+        <button onclick="goToNextCourse()" class="w-full py-3 bg-gradient-to-r from-ssg-red via-red-600 to-ssg-darkred hover:from-red-600 hover:to-ssg-red text-white font-black text-sm rounded-xl shadow-lg border border-red-400/40 flex items-center justify-center gap-2 transform active:scale-95 transition">
+          <span>다음 코스로 이동하기</span>
+          <i class="fa-solid fa-arrow-right-long"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 5. 네비게이션 버튼 -->
+    <button id="btn-prev" class="btn-nav" onclick="window.location.href='A03.html'">← 이전</button>
+    <button id="btn-next" class="btn-nav" onclick="window.location.href='A05.html'">다음 →</button>
+
+  </div>
+
+  <!-- JAVASCRIPT: LOGIC & AUDIO ENGINE -->
+  <script>
+    // 상태 관리
+    const state = {
+      gcd: { a: 0, b: 0, c: 0 },
+      lcm: { d: 0, e: 0, f: 0 },
+      isSolved: false
+    };
+
+    // 정답 목표 (72 = 2^3 * 3^2, 90 = 2^1 * 3^2 * 5^1)
+    const TARGET = {
+      gcd: 18,
+      lcm: 360,
+      gcdExponents: { a: 1, b: 2, c: 0 },
+      lcmExponents: { d: 3, e: 2, f: 1 }
+    };
+
+    // Web Audio API 사운드 엔진
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playClickSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.04);
+
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.04);
+    }
+
+    function playVictoryAudio() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const now = audioCtx.currentTime;
+      const notes = [
+        { f: 523.25, start: 0.0, duration: 0.15 },
+        { f: 659.25, start: 0.15, duration: 0.15 },
+        { f: 783.99, start: 0.30, duration: 0.15 },
+        { f: 1046.50, start: 0.45, duration: 0.8 }
+      ];
+
+      notes.forEach(note => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(note.f, now + note.start);
+
+        gain.gain.setValueAtTime(0, now + note.start);
+        gain.gain.linearRampToValueAtTime(0.25, now + note.start + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + note.start + note.duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now + note.start);
+        osc.stop(now + note.start + note.duration);
+      });
+
+      const bufferSize = audioCtx.sampleRate * 2.5;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = buffer.getChannelData(0);
+
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+
+      const whiteNoise = audioCtx.createBufferSource();
+      whiteNoise.buffer = buffer;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(600, now);
+      filter.frequency.exponentialRampToValueAtTime(1800, now + 1.2);
+      filter.Q.value = 1.2;
+
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.setValueAtTime(0, now);
+      noiseGain.gain.linearRampToValueAtTime(0.2, now + 0.4);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
+
+      whiteNoise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(audioCtx.destination);
+
+      whiteNoise.start(now);
+    }
+
+    function adjustExponent(varName, delta) {
+      playClickSound();
+
+      if (['a', 'b', 'c'].includes(varName)) {
+        state.gcd[varName] = Math.max(0, Math.min(4, state.gcd[varName] + delta));
+        document.getElementById(`val_${varName}`).innerText = state.gcd[varName];
+      } else if (['d', 'e', 'f'].includes(varName)) {
+        state.lcm[varName] = Math.max(0, Math.min(4, state.lcm[varName] + delta));
+        document.getElementById(`val_${varName}`).innerText = state.lcm[varName];
+      }
+
+      updateCalculations();
+    }
+
+    function updateCalculations() {
+      const currentGCD = Math.pow(2, state.gcd.a) * Math.pow(3, state.gcd.b) * Math.pow(5, state.gcd.c);
+      const currentLCM = Math.pow(2, state.lcm.d) * Math.pow(3, state.lcm.e) * Math.pow(5, state.lcm.f);
+
+      const gcdElem = document.getElementById('gcdResult');
+      const lcmElem = document.getElementById('lcmResult');
+
+      gcdElem.innerText = currentGCD;
+      lcmElem.innerText = currentLCM;
+
+      const isGcdCorrect = currentGCD === TARGET.gcd;
+      const gcdBadge = document.getElementById('gcdBadge');
+      if (isGcdCorrect) {
+        gcdBadge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 glow-green";
+        gcdBadge.innerText = "✓ GCD 완벽함!";
+        gcdElem.className = "text-2xl font-black font-led text-emerald-400 glow-green";
+      } else {
+        gcdBadge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-800 text-gray-400 border border-gray-700";
+        gcdBadge.innerText = "조작 필요";
+        gcdElem.className = "text-2xl font-black font-led text-gray-400";
+      }
+
+      const isLcmCorrect = currentLCM === TARGET.lcm;
+      const lcmBadge = document.getElementById('lcmBadge');
+      if (isLcmCorrect) {
+        lcmBadge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 glow-gold";
+        lcmBadge.innerText = "✓ LCM 완벽함!";
+        lcmElem.className = "text-2xl font-black font-led text-amber-400 glow-gold";
+      } else {
+        lcmBadge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-800 text-gray-400 border border-gray-700";
+        lcmBadge.innerText = "조작 필요";
+        lcmElem.className = "text-2xl font-black font-led text-gray-400";
+      }
+
+      generateCoachFeedback(isGcdCorrect, isLcmCorrect);
+
+      if (isGcdCorrect && isLcmCorrect && !state.isSolved) {
+        state.isSolved = true;
+        triggerSuccess();
+      }
+    }
+
+    function generateCoachFeedback(isGcdCorrect, isLcmCorrect) {
+      const coachElem = document.getElementById('coachFeedback');
+
+      if (isGcdCorrect && isLcmCorrect) {
+        coachElem.innerHTML = "<span class='text-emerald-400 font-bold'>🎉 완벽합니다!</span> 최대공약수(18)와 최소공배수(360)를 모두 정확히 구하셨습니다!";
+        return;
+      }
+
+      let hints = [];
+
+      if (!isGcdCorrect) {
+        if (state.gcd.a !== 1) {
+          hints.push("소인수 2 지수: 72(2³), 90(2¹) 중 작은 지수 <strong class='text-emerald-400'>1</strong> 선택");
+        } else if (state.gcd.b !== 2) {
+          hints.push("소인수 3 지수: 둘 다 3²이므로 공통 지수 <strong class='text-emerald-400'>2</strong> 선택");
+        } else if (state.gcd.c !== 0) {
+          hints.push("소인수 5 지수: 72에 5가 없으므로($5^0$) 작은 지수 <strong class='text-emerald-400'>0</strong> 선택");
+        }
+      }
+
+      if (!isLcmCorrect) {
+        if (state.lcm.d !== 3) {
+          hints.push("소인수 2 지수: 최소공배수는 큰 지수 <strong class='text-amber-400'>3</strong> 선택");
+        } else if (state.lcm.e !== 2) {
+          hints.push("소인수 3 지수: 동일 지수 <strong class='text-amber-400'>2</strong> 선택");
+        } else if (state.lcm.f !== 1) {
+          hints.push("소인수 5 지수: 90의 5¹을 포함해 <strong class='text-amber-400'>1</strong> 선택");
+        }
+      }
+
+      if (hints.length > 0) {
+        coachElem.innerHTML = hints[0];
+      }
+    }
+
+    function triggerSuccess() {
+      const headerStatus = document.getElementById('headerStatus');
+      headerStatus.className = "text-xs font-black text-emerald-400 animate-bounce";
+      headerStatus.innerHTML = "<i class='fa-solid fa-lock-open mr-1'></i>UNLOCKED";
+
+      playVictoryAudio();
+
+      // 다음 버튼 활성화
+      const btnNext = document.getElementById('btn-next');
+      if (btnNext) btnNext.style.display = 'block';
+
+      if (typeof confetti === 'function') {
+        const count = 200;
+        const defaults = { origin: { y: 0.7 } };
+
+        function fire(particleRatio, opts) {
+          confetti({
+            ...defaults,
+            ...opts,
+            particleCount: Math.floor(count * particleRatio)
+          });
+        }
+
+        fire(0.25, { spread: 26, startVelocity: 55, colors: ['#CE0E2D', '#F59E0B'] });
+        fire(0.2, { spread: 60, colors: ['#ffffff', '#22c55e'] });
+        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+      }
+
+      setTimeout(() => {
+        const modal = document.getElementById('successModal');
+        const card = document.getElementById('modalCard');
+        
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100');
+        
+        document.getElementById('gateContainer').classList.add('gate-open');
+        
+        card.classList.remove('scale-90');
+        card.classList.add('scale-100');
+      }, 300);
+    }
+
+    function goToNextCourse() {
+      window.location.href = "A05.html";
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateCalculations();
+    });
+  </script>
+</body>
+</html>

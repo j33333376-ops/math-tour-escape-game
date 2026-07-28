@@ -1,0 +1,46 @@
+<!-- 원본 크기: 600x600 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>축구공</title>
+<style>
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; }
+  .msb-svg { display:block; width:100%; height:auto; }
+  .msb-spin { animation: msb-spin 9s linear infinite; transform-origin: 300px 292px; }
+  @keyframes msb-spin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
+</style>
+</head>
+<body>
+<svg class="msb-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="축구공">
+<title>축구공</title>
+<desc>오각형과 육각형 가죽 조각으로 이루어진 축구공.</desc>
+<defs>
+  <radialGradient id="msbBall" cx="0.34" cy="0.28" r="0.82">
+    <stop offset="0" stop-color="#ffffff"/><stop offset="0.6" stop-color="#eef0f2"/><stop offset="1" stop-color="#b4bcc4"/>
+  </radialGradient>
+</defs>
+<ellipse cx="300" cy="556" rx="176" ry="30" fill="#2f4a2c" opacity="0.25"/>
+<circle cx="300" cy="292" r="252" fill="url(#msbBall)" stroke="#4a5058" stroke-width="7"/>
+<g class="msb-spin">
+  <g fill="#2b3138" stroke="#1a1f24" stroke-width="4" stroke-linejoin="round">
+    <polygon points="300,180 372,232 344,316 256,316 228,232"/>
+    <polygon points="300,52 356,74 372,140 300,168 228,140 244,74"/>
+    <polygon points="94,214 160,176 224,224 200,296 128,296"/>
+    <polygon points="506,214 440,176 376,224 400,296 472,296"/>
+    <polygon points="196,458 232,384 316,388 340,462 268,506"/>
+    <polygon points="404,458 368,384 292,388 268,462 340,506"/>
+  </g>
+  <g stroke="#4a5058" stroke-width="4" fill="none">
+    <path d="M300,168 L300,180"/><path d="M372,140 L372,232"/><path d="M228,140 L228,232"/>
+    <path d="M224,224 L228,232"/><path d="M376,224 L372,232"/>
+    <path d="M256,316 L232,384"/><path d="M344,316 L368,384"/>
+    <path d="M200,296 L232,384"/><path d="M400,296 L368,384"/>
+  </g>
+</g>
+<ellipse cx="214" cy="176" rx="66" ry="42" transform="rotate(-30 214 176)" fill="#ffffff" opacity="0.4"/>
+<path d="M96,340 C130,452 224,524 340,532" fill="none" stroke="#ffffff" stroke-width="10" opacity="0.2" stroke-linecap="round"/>
+</svg>
+</body>
+</html>
